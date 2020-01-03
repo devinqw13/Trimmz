@@ -30,7 +30,7 @@ settingsWidget(BuildContext context) {
     globals.userType == 2 ? CSLink('Mobile Transactions', () {final paymentMethodScreen = new PaymentMethod(); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}) : Container(),
 
     new CSHeader('Payment'),
-    new CSLink('Payment Method', () {final paymentMethodScreen = new PaymentMethod(); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}),
+    new CSLink('Payment Method', () {final paymentMethodScreen = new PaymentMethod(signup: false); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}),
     new CSHeader('General'),
     new CSLink('About', () {final aboutScreen = new AboutController(); Navigator.push(context, new MaterialPageRoute(builder: (context) => aboutScreen));}),
     new CSLink('Licensing', () {}),

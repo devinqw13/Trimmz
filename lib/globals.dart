@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 String baseUrl = "";
 int token;
 String username;
+String name;
 bool userAdmin;
 int userType;
 
@@ -17,6 +18,7 @@ Color textColorAlt = darkModeEnabled ? Colors.black : Colors.white;
 class LoginUser {
   int token;
   String username;
+  String name;
   String userEmail;
   bool userAdmin;
   int userType;

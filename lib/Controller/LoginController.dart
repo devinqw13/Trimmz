@@ -7,6 +7,8 @@ import '../dialogs.dart';
 import 'HomeHubController.dart';
 import 'package:flutter/services.dart';
 import 'BarberHubController.dart';
+import 'RegisterController.dart';
+import 'dart:ui';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super (key: key);
@@ -140,11 +142,13 @@ class LoginScreenState extends State<LoginScreen> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     Widget titleSection = new Container(
-      padding: const EdgeInsets.only(top: 60.0, left: 32.0, right: 32.0),
-      //margin: EdgeInsets.only(top: 50.0),
+      padding: const EdgeInsets.only(top: 160.0, left: 32.0, right: 32.0),
+      margin: EdgeInsets.only(top: 50.0),
+      // width: 100.0,
+      // height: 100.0,
       // decoration: new BoxDecoration(
       //   image: new DecorationImage(
-      //     image: new AssetImage('images/trimmz_icon_w.png'),
+      //     image: new AssetImage('images/trimmz_icon.png'),
       //     fit: BoxFit.fill,
       //   ),
       // )
@@ -193,7 +197,10 @@ class LoginScreenState extends State<LoginScreen> {
         controller: _passwordController,
         obscureText: true,
         autocorrect: false,
-        keyboardType: TextInputType.text,
+        keyboardType: TextInputType.visiblePassword,
+        onSubmitted: (value) {
+          _handleSubmitted(_usernameController.text, _passwordController.text, context);
+        },
         style: new TextStyle(
           fontSize: 18.0,
           color: Colors.white
@@ -212,24 +219,30 @@ class LoginScreenState extends State<LoginScreen> {
     );
 
     Widget buildLoginButton() {
-      return new Container(
-        padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
-        constraints: const BoxConstraints(maxHeight: 45.0, minWidth: 200.0, minHeight: 45.0),
-        width: MediaQuery.of(context).size.width * .85,
-        child: new RaisedButton(
-          child: new Text("Login",
-            style: new TextStyle(
-              fontSize: 19.0,
-              fontWeight: FontWeight.w300)
+      return new GestureDetector(
+        onTap: () {
+          _handleSubmitted(_usernameController.text, _passwordController.text, context);
+        },
+        child: Container(
+          padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
+          constraints: const BoxConstraints(maxHeight: 45.0, minWidth: 200.0, minHeight: 45.0),
+          width: MediaQuery.of(context).size.width * .85,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5.0),
+            gradient: new LinearGradient(
+              colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
+            )
           ),
-          shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(8.0),
-            side: BorderSide.none,
-          ),
-          color: Colors.transparent,
-          textColor: Colors.white,
-          onPressed: () {_handleSubmitted(_usernameController.text, _passwordController.text, context);},
-        ),
+          child: Center(
+            child: Text(
+              'Login',
+              style: new TextStyle(
+                fontSize: 19.0,
+                fontWeight: FontWeight.w300
+              )
+            )
+          )
+        )
       );
     }
 
@@ -247,91 +260,111 @@ class LoginScreenState extends State<LoginScreen> {
       child: new Scaffold(
         resizeToAvoidBottomPadding: true,
         body: new Container(
-          width: screenWidth,
-          padding: EdgeInsets.only(top: 150.0),
-          decoration: new BoxDecoration(
-            image: new DecorationImage(
-              image: new AssetImage('images/mainbackground.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: new Stack(
+          child: Stack(
             children: <Widget>[
-              new Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  new Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      titleSection
-                    ],
-                  ),
-                  new Column(
-                    children: <Widget>[
-                      new Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          new Container(
-                            child: new Column(
-                              children: <Widget>[
-                                new Container(
-                                  width: screenWidth * .9,
-                                  child: new Column(
-                                    children: <Widget>[
-                                      usernameTextField(),
-                                      passwordTextField
-                                    ],
-                                  )
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      buildLoginButton(),
-                    ],
-                  ),
-                  new Container(
-                    padding: const EdgeInsets.all(12.0),
-                    child: new Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        new GestureDetector(
-                          onTap: () {/*_resetPasswordTapped();*/},
-                          child: new Container(
-                            padding: const EdgeInsets.only(left: 12.0, bottom: 25.0),
-                            child: new Text("Forgot Password?",
-                              style: new TextStyle(
-                                fontSize: 13.0,
-                                color: Colors.white
-                              ),
-                            ),
-                          ),
-                        ),
-                        new GestureDetector(
-                          onTap: () {/*_registerUserTapped();*/},
-                          child: new Container(
-                            padding: const EdgeInsets.only(right: 12.0,
-                            bottom: 25.0),
-                            child: new Text("New User? Click Here",
-                              style: new TextStyle(
-                                fontSize: 13.0,
-                                color: Colors.white
-                              ),
-                            ),
-                          )
-                        )
-                      ],
-                    ),
-                  ),
-                ],
+              new ConstrainedBox(
+                constraints: const BoxConstraints.expand(),
+                child: new Image.asset(
+                  'images/barberBackground.png',
+                  fit: BoxFit.cover,
+                )
               ),
-              _progressHUD
-            ],
-          ),
-        ),
+              new Center(
+                child: new ClipRect(
+                  child: new BackdropFilter(
+                    filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                    child: new Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      decoration: new BoxDecoration(
+                        color: Colors.black.withOpacity(0.8)
+                      ),
+                      child: new Stack(
+                        children: <Widget>[
+                          new Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              new Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  titleSection
+                                ],
+                              ),
+                              new Column(
+                                children: <Widget>[
+                                  new Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      new Container(
+                                        child: new Column(
+                                          children: <Widget>[
+                                            new Container(
+                                              width: screenWidth * .9,
+                                              child: new Column(
+                                                children: <Widget>[
+                                                  usernameTextField(),
+                                                  passwordTextField
+                                                ],
+                                              )
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  buildLoginButton()
+                                ],
+                              ),
+                              new Container(
+                                padding: const EdgeInsets.all(12.0),
+                                child: new Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    new GestureDetector(
+                                      onTap: () {/*_resetPasswordTapped();*/},
+                                      child: new Container(
+                                        padding: const EdgeInsets.only(left: 12.0, bottom: 25.0),
+                                        child: new Text("Forgot Password?",
+                                          style: new TextStyle(
+                                            fontSize: 13.0,
+                                            color: Colors.white
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    new GestureDetector(
+                                      onTap: () {
+                                        final registerScreen = new RegisterScreen();
+                                        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => registerScreen));
+                                      },
+                                      child: new Container(
+                                        padding: const EdgeInsets.only(right: 12.0,
+                                        bottom: 25.0),
+                                        child: new Text("New User? Click Here",
+                                          style: new TextStyle(
+                                            fontSize: 13.0,
+                                            color: Colors.white
+                                          ),
+                                        ),
+                                      )
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          _progressHUD
+                      ]
+                    )
+                  ),
+                ),
+              ),
+            ),
+          ],
+        )
+        )
       )
     );
   }

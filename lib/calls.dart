@@ -19,9 +19,9 @@ import 'Model/Appointment.dart';
 
 Future<Map> loginPost(String url, Map jsonData, BuildContext context, ) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/x-www-form-urlencoded'
-    //'Content-type' : 'application/json', 
-    //'Accept': 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Content-type' : 'application/json', 
+    'Accept': 'application/json',
   };
   http.Response response;
   Map jsonResponse = {};
@@ -44,6 +44,49 @@ Future<Map> loginPost(String url, Map jsonData, BuildContext context, ) async {
   
   Map results = jsonResponse;
   return results;
+}
+
+Future<bool> registerUser(BuildContext context, String name, String username, String email, String accountType, String password) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Content-type' : 'application/json', 
+    'Accept': 'application/json',
+  };
+
+  Map jsonMap = {
+    'username': username,
+    'name': name,
+    'email': email,
+    'password': password,
+    'type': accountType
+  };
+
+  String url = "${globals.baseUrl}register/";
+
+  http.Response response;
+  Map jsonResponse = {};
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers);
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (001)", "Please try again later.");
+    return false;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (001)", "Please try again.");
+    return false;
+  }
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == false) {
+    return true;
+  }else {
+    return false;
+  }
 }
 
 Future<int> getDashType(int token, BuildContext context) async {

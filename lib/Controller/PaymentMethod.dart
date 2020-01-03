@@ -8,9 +8,11 @@ import '../globals.dart' as globals;
 import '../Model/ClientPaymentMethod.dart';
 import '../calls.dart';
 import '../TransactionService.dart';
+import 'HomeHubController.dart';
 
 class PaymentMethod extends StatefulWidget{
-  PaymentMethod();
+  final bool signup;
+  PaymentMethod({Key key, this.signup}) : super (key: key);
 
   @override
   HomeHubTabWidgetState  createState() => HomeHubTabWidgetState ();
@@ -51,7 +53,7 @@ class HomeHubTabWidgetState extends State<PaymentMethod> {
   buildBody() {
     return new Container(
       width: MediaQuery.of(context).size.width,
-      child: isCustomer ? FlatButton(
+      child: !isCustomer ? FlatButton(
         color: Colors.grey[800],
         onPressed: () {_onStartCardEntryFlow();},
         child: Text('Add Payment Method')
@@ -175,9 +177,27 @@ class HomeHubTabWidgetState extends State<PaymentMethod> {
       ),
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: widget.signup ? false : true,
           title: Text("Payment Method"),
+          actions: <Widget>[
+            widget.signup ? FlatButton(
+              onPressed: () {
+                final homeHubScreen = new HomeHubScreen();
+                Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => homeHubScreen));
+              },
+              child: Text('Skip')
+            ) : Container()
+          ],
         ),
-        body: buildBody(),
+        body: new WillPopScope(
+        onWillPop: () async {
+          return false;
+        }, child: Stack(
+            children: <Widget>[
+              buildBody()
+            ]
+          )
+        ),
       )
     );
   }
