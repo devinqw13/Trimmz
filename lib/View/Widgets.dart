@@ -11,6 +11,8 @@ import '../calls.dart';
 import '../Model/availability.dart';
 import 'package:intl/intl.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import '../Controller/AccountSettingsController.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 logout(BuildContext context) async {
   final loginScreen = new LoginScreen();
@@ -22,18 +24,26 @@ logout(BuildContext context) async {
 settingsWidget(BuildContext context) {
   CupertinoSettings settings = new CupertinoSettings(<Widget>[
     new CSHeader('Account'),
-    new CSLink('Account Settings', () {}),
-    new CSLink('Password', () {}),
+    new CSLink('Account Settings', () {final accountSettingsScreen = new AccountSettings(); Navigator.push(context, new MaterialPageRoute(builder: (context) => accountSettingsScreen));}),
 
     globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
     globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); final profileScreen = new BarberProfileScreen(token: globals.token, userInfo: res); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}) : Container(),
-    globals.userType == 2 ? CSLink('Mobile Transactions', () {final paymentMethodScreen = new PaymentMethod(); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}) : Container(),
+    globals.userType == 2 ? CSLink('Mobile Transactions', () {}) : Container(),
 
     new CSHeader('Payment'),
     new CSLink('Payment Method', () {final paymentMethodScreen = new PaymentMethod(signup: false); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}),
+
+    new CSHeader('Share'),
+    new CSLink('Recommend Trimmz', () {}),
+    new CSLink('Invite Barber', () {}),
+    new CSLink('Invite Friends', () {}),
+
+    new CSHeader('Contact Us'),
+    new CSLink('Feedback', () {}),
+    new CSLink('Support', () {}),
+
     new CSHeader('General'),
     new CSLink('About', () {final aboutScreen = new AboutController(); Navigator.push(context, new MaterialPageRoute(builder: (context) => aboutScreen));}),
-    new CSLink('Licensing', () {}),
     new CSLink('Logout', () {logout(context);}),
     new Container(
       margin: EdgeInsets.all(10),
@@ -59,7 +69,7 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
       bool isNull = false;
       String start;
       String end;
-      final df = new DateFormat('hh:mm');
+      final df = new DateFormat('ha');
       if(availability[i].start != null && availability[i].end != null) {
         if(availability[i].start == '00:00:00' && availability[i].end == '00:00:00') {
           isNull = true;
@@ -94,5 +104,23 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
         )
       );
       },
+    );
+  }
+
+  getRatingWidget(BuildContext context, double rating) {
+    return new Row(
+      children: <Widget>[
+        Text(rating.toString()),
+        RatingBarIndicator(
+          rating: rating,
+          itemBuilder: (context, index) => Icon(
+              Icons.star,
+              color: Colors.amber,
+          ),
+          itemCount: 5,
+          itemSize: 20.0,
+          direction: Axis.horizontal,
+        ),
+      ],
     );
   }

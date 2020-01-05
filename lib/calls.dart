@@ -46,20 +46,36 @@ Future<Map> loginPost(String url, Map jsonData, BuildContext context, ) async {
   return results;
 }
 
-Future<bool> registerUser(BuildContext context, String name, String username, String email, String accountType, String password) async {
+Future<bool> registerUser(BuildContext context, String name, String username, String email, String accountType, String password,[String address, String city, String state, String zipcode]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Content-type' : 'application/json', 
     'Accept': 'application/json',
   };
 
-  Map jsonMap = {
-    'username': username,
-    'name': name,
-    'email': email,
-    'password': password,
-    'type': accountType
-  };
+  Map jsonMap;
+
+  if(accountType == '1') {
+    jsonMap = {
+      'username': username,
+      'name': name,
+      'email': email,
+      'password': password,
+      'type': accountType
+    };
+  }else {
+    jsonMap = {
+      'username': username,
+      'name': name,
+      'email': email,
+      'password': password,
+      'type': accountType,
+      'address': address,
+      'city': city,
+      'state': state,
+      'zipcode': zipcode
+    };
+  }
 
   String url = "${globals.baseUrl}register/";
 
@@ -177,7 +193,7 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
       userDetails.city = item1['city'];
       userDetails.state = item1['state'];
       userDetails.zipcode = item1['zipcode'];
-      userDetails.rating = item1['rating'];
+      userDetails.rating = item1['rating'] ?? '0';
     }
 
     return userDetails;
@@ -297,6 +313,8 @@ Future<bool> createCustomerTS(BuildContext context) async {
     showErrorDialog(context, "An error has occurred (006)", "Please try again.");
     return false;
   }
+
+  print(jsonResponse);
 
   if (json.decode(response.body) is List) {
     var responseBody = response.body.substring(1, response.body.length - 1);
@@ -441,7 +459,7 @@ Future<bool> savePaymentMethod(BuildContext context, CardDetails card) async {
   return true;
 }
 
-Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, int type) async {
+Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, int type, [List location]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -450,10 +468,20 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
   Map jsonResponse = {};
   http.Response response;
 
-  var jsonMap = {
-    "userid" : userid,
-    "type" : type
-  };
+  var jsonMap;
+  if(location == null) {
+    jsonMap = {
+      "userid" : userid,
+      "type" : type
+    };
+  }else {
+    jsonMap = {
+      "userid" : userid,
+      "type" : type,
+      "city" : location[0],
+      "state" : location[1]
+    };
+  }
 
   String url = "${globals.baseUrl}suggestions/";
 
@@ -490,7 +518,7 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
         suggestedBarber.city = item['city'];
         suggestedBarber.state = item['state'];
         suggestedBarber.zipcode = item['zipcode'];
-        suggestedBarber.rating = item['rating'];
+        suggestedBarber.rating = item['rating'] ?? '0';
         List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
         for(var item2 in clientBarbers) {
           if(item2.id.contains(item['id'])){
@@ -959,7 +987,7 @@ Future<List<Availability>> getBarberAvailability(BuildContext context, int useri
 
 }
 
-Future<bool> setTimeAvailability(BuildContext context, int userid, String day, DateTime start, DateTime end, bool isClosed) async {
+Future<bool> setTimeAvailability(BuildContext context, int userid, String day, DateTime start, DateTime end, bool isClosed, bool setup) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -971,20 +999,32 @@ Future<bool> setTimeAvailability(BuildContext context, int userid, String day, D
   String startString;
   String endString;
 
-  if(isClosed){
-    startString = 'null';
-    endString = 'null';
-  }else {
-    startString = DateFormat.Hms().format(start);
-    endString = DateFormat.Hms().format(end);
+  if(!setup) {
+    if(isClosed){
+      startString = 'null';
+      endString = 'null';
+    }else {
+      startString = DateFormat.Hms().format(start);
+      endString = DateFormat.Hms().format(end);
+    }
   }
 
-  var jsonMap = {
-    "userid" : userid,
-    "day" : day,
-    "start" : startString,
-    "end" : endString
-  };
+  var jsonMap;
+  if(!setup) {
+    jsonMap = {
+      "userid" : userid,
+      "day" : day,
+      "start" : startString,
+      "end" : endString
+    };
+  }else {
+    jsonMap = {
+      "userid" : userid,
+      "day" : '',
+      "start" : '',
+      "end" : ''
+    };
+  }
 
   String url = "${globals.baseUrl}setTimeAvailability/";
 
@@ -1235,11 +1275,11 @@ Future<bool> markAppointment(BuildContext context, int id, int mark) async {
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (017)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (021)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (017)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (021)", "Please try again.");
     return false;
   }
 
@@ -1252,6 +1292,51 @@ Future<bool> markAppointment(BuildContext context, int id, int mark) async {
   
   if(jsonResponse['error'] == false){
     return true;
+  }else {
+    return false;
+  }
+}
+
+Future<bool> exists(BuildContext context, String string, int type) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+    "type" : type,
+    "string": string,
+  };
+
+  String url = "${globals.baseUrl}exists/";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (022)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (022)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == false){
+    if(jsonResponse['exist'] == true) {
+      return true;
+    }else {
+      return false;
+    }
   }else {
     return false;
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../globals.dart' as globals;
 import '../View/Widgets.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../Model/availability.dart';
 import '../calls.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -66,7 +65,7 @@ class BarberProfileScreenState extends State<BarberProfileScreen> {
                     Container(
                       width: 70,
                       height: 70,
-                      child: Center(child:Text('T', textAlign: TextAlign.center, style: TextStyle(fontSize: 40))),
+                      child: Center(child:Text(user.name.substring(0,1), textAlign: TextAlign.center, style: TextStyle(fontSize: 40))),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: new LinearGradient(
@@ -86,16 +85,7 @@ class BarberProfileScreenState extends State<BarberProfileScreen> {
                           user.shopName != null && user.shopName != '' ? Container(width: MediaQuery.of(context).size.width * .3, child: AutoSizeText.rich(TextSpan(text: user.shopName, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)), maxFontSize:16, minFontSize: 12, maxLines: 2)) : Container(),
                           Text(user.shopAddress),
                           Text(user.city + ', ' + user.state + ' ' + user.zipcode),
-                          RatingBarIndicator(
-                            rating: double.parse(user.rating),
-                            itemBuilder: (context, index) => Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                            ),
-                            itemCount: 5,
-                            itemSize: 20.0,
-                            direction: Axis.horizontal,
-                          ),
+                          getRatingWidget(context, double.parse(user.rating))
                         ]
                       )
                     ),

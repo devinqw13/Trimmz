@@ -36,6 +36,9 @@ dependencies:
   keyboard_visibility: ^0.5.6
   flutter_launcher_icons: ^0.7.4
   auto_size_text: ^2.1.0
+  image_picker: ^0.6.2+3
+  geolocator: ^5.1.5
+  stream_transform: ^1.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -65,9 +68,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/mainbackground.png
-    - images/trimmz_icon_r.png
     - images/trimmz_icon_w.png
+    - images/barberBackground.png
+    - images/trimmz_icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

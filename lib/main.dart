@@ -18,18 +18,21 @@ void main() async {
     user = new globals.LoginUser();
     user.token = prefs.getInt('userToken');
     user.username = prefs.getString('userUsername');
+    user.name = prefs.getString('userName');
     user.userEmail = prefs.getString('userUserEmail');
     user.userAdmin = prefs.getBool('userIsAdmin');
     user.userType = prefs.getInt('userType');
     globals.user = user;
     globals.token = user.token;
     globals.username = user.username;
+    globals.name = user.name;
+    globals.email = user.userEmail;
     globals.userAdmin = user.userAdmin == true ? true : false;
     globals.userType = user.userType;
     globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
     if (globals.darkModeEnabled) {
       globals.userBrightness = Brightness.dark;
-      globals.userColor = Color.fromARGB(255, 31, 31, 31);
+      globals.userColor = Color.fromARGB(255, 0, 0, 0);
     }
     else {
       globals.userBrightness = Brightness.light;

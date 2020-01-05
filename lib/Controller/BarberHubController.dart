@@ -18,10 +18,10 @@ import '../Model/Packages.dart';
 import 'package:intl/intl.dart';
 import '../View/ModalSheets.dart';
 import '../Model/availability.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
-import '../View/BottomSheetCheckBox.dart';
+import '../View/SetAvailabilityModal.dart';
 import 'BarberProfileController.dart';
 import '../Model/ClientBarbers.dart';
+import '../functions.dart';
 
 class BarberHubScreen extends StatefulWidget {
   BarberHubScreen({Key key}) : super (key: key);
@@ -56,7 +56,6 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   final df2 = new DateFormat('yyyy-MM-dd');
   Colors status;
   List<AppointmentRequest> appointmentReq = [];
-  //bool isClosedChecked = false;
 
   @override
   void initState() {
@@ -93,7 +92,9 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   }
 
   void initSuggestedBarbers() async {
-    var res = await getSuggestions(context, globals.token, 1);
+    var res1 = await getUserLocation();
+    print(res1);
+    var res = await getSuggestions(context, globals.token, 1, res1);
     setState(() {
       suggestedBarbers = res;
     });
@@ -260,16 +261,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   }
 
   showSetAvailableTime(BuildContext context, Availability aDay) async {
-    var start;
-    var end;
-    if(aDay.start == null && aDay.end == null){
-      start = DateTime.parse(DateFormat('Hms', 'en_US').parse('00:00:00').toString());
-      end = DateTime.parse(DateFormat('Hms', 'en_US').parse('12:00:00').toString());
-    }else {
-      start = DateTime.parse(DateFormat('Hms', 'en_US').parse(aDay.start).toString());
-      end = DateTime.parse(DateFormat('Hms', 'en_US').parse(aDay.end).toString());
-    }
-    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, builder: (builder) {
+    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: false, builder: (builder) {
       bool isClosedChecked;
       if(aDay.start == null && aDay.end == null){
         isClosedChecked = true;
@@ -280,117 +272,19 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
           isClosedChecked = false;
         }
       }
-      return Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: Container(
-          padding: EdgeInsets.all(10.0),
-          height: 355,
-          margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
-          decoration: BoxDecoration(
-              color: Colors.grey[900],
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              boxShadow: [
-                BoxShadow(
-                    blurRadius: 2, color: Colors.grey[300], spreadRadius: 0)
-              ]),
-          child: Column(
-            children: <Widget> [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Cancel'),
-                  ),
-                  Text(
-                    aDay.day,
-                    style: TextStyle(
-                      fontSize: 20.0
-                    )
-                  ),
-                  Container(width: 70.0)
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TimePickerSpinner(
-                    normalTextStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 20.0
-                    ),
-                    highlightedTextStyle: TextStyle(
-                      color: isClosedChecked ? Colors.grey : Colors.white,
-                      fontSize: 30.0
-                    ),
-                    spacing: 0.0,
-                    time: start,
-                    is24HourMode: false,
-                    isForce2Digits: true,
-                    onTimeChange: (dateTime) {
-                      start = dateTime;
-                    },
-                  ),
-                  Text(' to ', style: TextStyle(fontSize: 20.0, color: isClosedChecked ? Colors.grey : Colors.white)),
-                  TimePickerSpinner(
-                    normalTextStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 20.0
-                    ),
-                    highlightedTextStyle: TextStyle(
-                      color: isClosedChecked ? Colors.grey : Colors.white,
-                      fontSize: 30.0
-                    ),
-                    spacing: 0.0,
-                    time: end,
-                    is24HourMode: false,
-                    isForce2Digits: true,
-                    onTimeChange: (dateTime) {
-                      end = dateTime;
-                    },
-                  )
-                ]
-              ),
-              Row(
-                children: <Widget>[
-                  BottomSheetCheckBox(
-                    switchValue: isClosedChecked,
-                    valueChanged: (value) {
-                      setState(() {
-                        isClosedChecked = value;
-                      });
-                    }
-                  ),
-                  Text('Mark as closed', style: TextStyle(fontSize: 20.0))
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: FlatButton(
-                      color: Colors.blue,
-                      onPressed: () async {
-                        var res = await setTimeAvailability(context, globals.token, aDay.day, start, end, isClosedChecked);
-                        if(res){
-                          var res1 = await getBarberAvailability(context, globals.token);
-                          setState(() {
-                            availability = res1;
-                          });
-                          Navigator.pop(context);
-                        }else {
-                          return;
-                        }
-                      },
-                      child: Text('Confirm')
-                    )
-                  )
-                ],
-              )
-            ]
-          )
-        )
+      return AvailabilityBottomSheet(
+        switchValue: isClosedChecked,
+        avail: aDay,
+        valueChanged: (value) {
+          setState(() {
+            isClosedChecked = value;
+          });
+        },
+        getAvailability: (avail) {
+          setState(() {
+            availability = avail;
+          });
+        },
       );
     });
   }
@@ -605,7 +499,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             padding: EdgeInsets.all(5),
             decoration: BoxDecoration(
               gradient: new LinearGradient(
-                begin: Alignment(0.0, -2.0),//Alignment.center,
+                begin: Alignment(0.0, -2.0),
                 colors: [Colors.black, Colors.grey[850]]
               )
             ),
@@ -760,7 +654,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             padding: EdgeInsets.all(5),
             decoration: BoxDecoration(
               gradient: new LinearGradient(
-                begin: Alignment(0.0, -2.0),//Alignment.center,
+                begin: Alignment(0.0, -2.0),
                 colors: [Colors.black, Colors.grey[850]]
               )
             ),
@@ -1056,7 +950,8 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             bottom: _tabTitle == 'Search' ? TabBar(
               onTap: (index) async {
                 if(index == 0) {
-                  var res = await getSuggestions(context, globals.token, 1);
+                  var res1 = await getUserLocation();
+                  var res = await getSuggestions(context, globals.token, 1, res1);
                   setState(() {
                     suggestedBarbers = res;
                     searchTabIndex = 0;

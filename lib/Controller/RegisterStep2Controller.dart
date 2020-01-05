@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../calls.dart';
 import 'dart:ui';
 import 'LoginController.dart';
-import '../functions.dart';
-import '../globals.dart' as globals;
-import 'PaymentMethod.dart';
+import 'RegisterStep3Controller.dart';
+import '../View/StateBottomSheetPicker.dart';
+import '../states.dart' as states;
 
 class RegisterStep2Screen extends StatefulWidget {
   final String username;
@@ -19,15 +18,20 @@ class RegisterStep2Screen extends StatefulWidget {
 }
 
 class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBindingObserver {
-  TextEditingController _registerUserPasswordController = new TextEditingController();
-  TextEditingController _registerUserPassword2Controller = new TextEditingController();
+  TextEditingController _registerBarberAddressController = new TextEditingController();
+  TextEditingController _registerBarberZipcodeController = new TextEditingController();
+  TextEditingController _registerBarberCityController = new TextEditingController();
+  int stateValue;
+  String state = '';
+  String stateAbr = '';
+  bool stateSelected = false;
 
-  buildPasswordTextField(double size) {
+  buildAddressTextField(double size) {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget> [
         Text(
-          'Password',
+          'Shop Address',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.blue,
@@ -37,9 +41,8 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
         Container(
           width: size * .6,
           child: TextField(
-            controller: _registerUserPasswordController,
-            keyboardType: TextInputType.visiblePassword,
-            obscureText: true,
+            controller: _registerBarberAddressController,
+            keyboardType: TextInputType.text,
             autocorrect: false,
             onSubmitted: (value) {
 
@@ -49,7 +52,7 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
               color: Colors.white
             ),
             decoration: new InputDecoration(
-              hintText: 'Password',
+              hintText: 'Shop Address',
               hintStyle: TextStyle(color: Colors.white70),
             ),
           )
@@ -58,12 +61,12 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
     );
   }
 
-  buildPasswordConfirmTextField(double size) {
+  buildCityTextField(double size) {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget> [
         Text(
-          'Confirm Password',
+          'City',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.blue,
@@ -73,19 +76,96 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
         Container(
           width: size * .6,
           child: TextField(
-            controller: _registerUserPassword2Controller,
-            keyboardType: TextInputType.visiblePassword,
-            obscureText: true,
+            controller: _registerBarberCityController,
+            keyboardType: TextInputType.text,
             autocorrect: false,
-            onSubmitted: (value) {
-              _submitPassword(context, _registerUserPasswordController.text, _registerUserPassword2Controller.text);
-            },
             style: new TextStyle(
               fontSize: 15.0,
               color: Colors.white
             ),
             decoration: new InputDecoration(
-              hintText: 'Confirm Password',
+              hintText: 'City',
+              hintStyle: TextStyle(color: Colors.white70),
+            ),
+          )
+        )
+      ]
+    );
+  }
+
+  buildStatePicker(double size) {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget> [
+        Text(
+          'State',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+            fontSize: 16
+          )
+        ),
+        Padding(padding: EdgeInsets.all(5)),
+        GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+            showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+              return StateBottomSheet(
+                value: stateValue,
+                valueChanged: (value) {
+                  setState(() {
+                    stateValue = value;
+                    state = states.states[value];
+                    stateAbr = states.abr[value];
+                  });
+                }
+              );
+            });
+          },
+          child: Container(
+            color: Colors.transparent,
+            width: size * .6,
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(state == '' ? 'State' : state, style: TextStyle(color: state == '' ? Colors.grey[400] : Colors.white, fontSize: 15)),
+                    Icon(Icons.keyboard_arrow_down, color: state == '' ? Colors.grey[400] : Colors.white)
+                  ]
+                ),
+              ]
+            )
+          )
+        )
+      ]
+    );
+  }
+
+  buildZipcodeTextField(double size) {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget> [
+        Text(
+          'Zipcode',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+            fontSize: 16
+          )
+        ),
+        Container(
+          width: size * .6,
+          child: TextField(
+            controller: _registerBarberZipcodeController,
+            keyboardType: TextInputType.text,
+            autocorrect: false,
+            style: new TextStyle(
+              fontSize: 15.0,
+              color: Colors.white
+            ),
+            decoration: new InputDecoration(
+              hintText: 'Zipcode',
               hintStyle: TextStyle(color: Colors.white70),
             ),
           )
@@ -97,7 +177,7 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
   buildSubmitButton(double size) {
     return new GestureDetector(
       onTap: () {
-        _submitPassword(context, _registerUserPasswordController.text, _registerUserPassword2Controller.text);
+        _submitAddressInfo(context, _registerBarberAddressController.text, _registerBarberCityController.text, stateAbr, state, _registerBarberZipcodeController.text);
       },
       child: Container(
         padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
@@ -111,7 +191,7 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
         ),
         child: Center(
           child: Text(
-            'SIGN UP',
+            'NEXT',
             style: new TextStyle(
               fontSize: 19.0,
               fontWeight: FontWeight.w300
@@ -153,136 +233,19 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
     );
   }
 
-  void _submitPassword(BuildContext context, String password, String password2) async {
-    bool passwordIsValid = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,}').hasMatch(password);
-    // Valid password check and prompt
-    if (!passwordIsValid) {
-      showDialog(
-        context: context,
-        builder: (context) => new AlertDialog(
-          title: new Text("Password is not valid",
-            textAlign: TextAlign.center,
+  void _submitAddressInfo(BuildContext context, String address, String city, String stateAbr, String state, String zipcode) async {
+    if(address != '' && city != '' && state != '' && zipcode != ''){
+      final registerStep3Screen = new RegisterStep3Screen(username: widget.username, name: widget.name, email: widget.email, accountType: widget.accountType, shopAddress: address, city: city, state: state, stateAbr: stateAbr, zipcode: zipcode, stateValue: stateValue);
+      Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => registerStep3Screen));
+    }else {
+      AlertDialog dialog = new AlertDialog(
+        content: new SingleChildScrollView(
+          child: new Text('Incomplete Fields',
+          textAlign: TextAlign.center
           ),
-          content: new Container(
-            child: new Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                new Text("Password must contain at least 8 characters and contain an uppercase, numeric, and special character.",
-                  textAlign: TextAlign.center,
-                ),
-                new Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                ),
-                new Row(
-                  children: <Widget>[
-                    new Expanded(
-                      child: new RaisedButton(
-                        child: new Text("OK",
-                        textAlign: TextAlign.center),
-                        onPressed: () { 
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    )
-                  ],
-                )
-              ],
-            )
-          )
-        )
+        ),
       );
-      return;
-    }
-    // Empty entry check and prompt
-    if (password == "" || password2 == "") {
-      showDialog(
-        context: context,
-        builder: (context) => new AlertDialog(
-          title: new Text("A field is empty",
-            textAlign: TextAlign.center,
-          ),
-          content: new Container(
-            child: new Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                new Text("Please ensure all fields are entered and try again.",
-                  textAlign: TextAlign.center,
-                ),
-                new Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                ),
-                new Row(
-                  children: <Widget>[
-                    new Expanded(
-                      child: new RaisedButton(
-                        child: new Text("OK",
-                        textAlign: TextAlign.center),
-                        onPressed: () { 
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    )
-                  ],
-                )
-              ],
-            )
-          )
-        )
-      );
-      return;
-    }
-    // Passwords don't match check and prompt
-    if (password != password2) {
-      showDialog(
-        context: context,
-        builder: (context) => new AlertDialog(
-          title: new Text("Passwords do not match",
-            textAlign: TextAlign.center,
-          ),
-          content: new Container(
-            child: new Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                new Text("Please ensure both passwords are the same and try again.",
-                  textAlign: TextAlign.center,
-                ),
-                new Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                ),
-                new Row(
-                  children: <Widget>[
-                    new Expanded(
-                      child: new RaisedButton(
-                        child: new Text("OK",
-                        textAlign: TextAlign.center),
-                        onPressed: () { 
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    )
-                  ],
-                )
-              ],
-            )
-          )
-        )
-      );
-      return;
-    }
-
-    final bool result = await registerUser(context, widget.name, widget.username, widget.email, widget.accountType, password);
-    if (result) {
-
-      Map userInfo = await loginPost('${globals.baseUrl}login/', {'username': widget.username, 'password': password /*'device_id': deviceInfo[2]*/}, context);
-
-      setGlobals(userInfo);
-
-      if(widget.accountType == '1') {
-        final paymentMethod = new PaymentMethod(signup: true);
-        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => paymentMethod));
-      }else {
-        print('Barber / Sales');
-      }
+      showDialog(context: context, builder: (context) => dialog, barrierDismissible: true);
     }
   }
 
@@ -318,7 +281,7 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Text(
-                                  'Set Password',
+                                  'Set Address',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -336,12 +299,16 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
                                   child: Column(
                                     children: <Widget>[
                                       Padding(padding: EdgeInsets.all(10)),
-                                      buildPasswordTextField(screenWidth),
+                                      buildAddressTextField(screenWidth),
                                       Padding(padding: EdgeInsets.all(8)),
-                                      buildPasswordConfirmTextField(screenWidth),
+                                      buildCityTextField(screenWidth),
+                                      Padding(padding: EdgeInsets.all(8)),
+                                      buildStatePicker(screenWidth),
+                                      Padding(padding: EdgeInsets.all(8)),
+                                      buildZipcodeTextField(screenWidth),
                                       Padding(padding: EdgeInsets.all(8)),
                                       buildSubmitButton(screenWidth),
-                                      buildBackCancelButton(screenWidth)
+                                      buildBackCancelButton(screenWidth),
                                     ]
                                   )
                                 )

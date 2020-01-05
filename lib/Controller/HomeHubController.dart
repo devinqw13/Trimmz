@@ -11,6 +11,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flushbar/flushbar.dart';
 import '../Model/ClientBarbers.dart';
 import 'BarberProfileController.dart';
+import '../functions.dart';
 
 class HomeHubScreen extends StatefulWidget {
   final int dashType;
@@ -56,9 +57,10 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   }
 
   void initSuggestedBarbers() async {
-    var res = await getSuggestions(context, globals.token, 1);
+    var res1 = await getUserLocation();
+    var res2 = await getSuggestions(context, globals.token, 1, res1);
     setState(() {
-      suggestedBarbers = res;
+      suggestedBarbers = res2;
     });
   }
 
@@ -324,7 +326,8 @@ class HomeHubScreenState extends State<HomeHubScreen> {
             bottom: _tabTitle == 'Search' ? TabBar(
               onTap: (index) async {
                 if(index == 0) {
-                  var res = await getSuggestions(context, globals.token, 1);
+                  var res1 = await getUserLocation();
+                  var res = await getSuggestions(context, globals.token, 1, res1);
                   setState(() {
                     suggestedBarbers = res;
                     searchTabIndex = 0;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../globals.dart' as globals;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../calls.dart';
 import '../dialogs.dart';
 import 'HomeHubController.dart';
@@ -9,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'BarberHubController.dart';
 import 'RegisterController.dart';
 import 'dart:ui';
+import '../functions.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super (key: key);
@@ -67,36 +67,7 @@ class LoginScreenState extends State<LoginScreen> {
         showOkDialog(context, "Login failed. Please verify username and password are correct.");
         break;
       case false:
-        globals.LoginUser user = new globals.LoginUser();
-        user.token = results['user']['id'];
-        user.username = results['user']['username'];
-        user.userEmail = results['user']['email'];
-        user.userAdmin = results['user']['type'] == 3 ? true : false;
-        user.userType = results['user']['type'];
-
-        globals.user = user;
-        globals.token = user.token;
-        globals.username = user.username;
-        globals.userAdmin = user.userAdmin;
-        globals.userType = user.userType;
-        print(globals.userType);
-
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
-        if (globals.darkModeEnabled) {
-          globals.userBrightness = Brightness.dark;
-          globals.userColor = Color.fromARGB(255, 20, 20, 20); //31
-        }
-        else {
-          globals.userBrightness = Brightness.light;
-          globals.userColor = Color.fromARGB(255, 255, 255, 255);
-        }
-
-        prefs.setInt('userToken', globals.user.token);
-        prefs.setString('userUsername', globals.user.username);
-        prefs.setString('userUserEmail', globals.user.userEmail);
-        prefs.setBool('userIsAdmin', globals.user.userAdmin);
-        prefs.setInt('userType', globals.user.userType);
+        setGlobals(results);
 
         progressHUD();
         if(globals.userType == 1 || globals.userType == 3) {

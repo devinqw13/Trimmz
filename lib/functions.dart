@@ -1,6 +1,10 @@
 import 'globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
+
+final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
 setGlobals(Map results) async {
   globals.LoginUser user = new globals.LoginUser();
@@ -15,6 +19,7 @@ setGlobals(Map results) async {
   globals.token = user.token;
   globals.username = user.username;
   globals.name = user.name;
+  globals.email = user.userEmail;
   globals.userAdmin = user.userAdmin;
   globals.userType = user.userType;
 
@@ -22,7 +27,7 @@ setGlobals(Map results) async {
   globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
   if (globals.darkModeEnabled) {
     globals.userBrightness = Brightness.dark;
-    globals.userColor = Color.fromARGB(255, 20, 20, 20); //31
+    globals.userColor = Color.fromARGB(255, 0, 0, 0); //20
   }
   else {
     globals.userBrightness = Brightness.light;
@@ -35,4 +40,34 @@ setGlobals(Map results) async {
   prefs.setString('userUserEmail', globals.user.userEmail);
   prefs.setBool('userIsAdmin', globals.user.userAdmin);
   prefs.setInt('userType', globals.user.userType);
+}
+
+getUserLocation() async {
+  return await _getCurrentLocation();
+}
+
+_getCurrentLocation() async {
+  Position _currentPosition;
+  List location;
+  await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((Position position) async {
+    _currentPosition = position;
+    var result = await _getAddressFromLatLng(_currentPosition);
+    location = result;
+    return result;
+  }).catchError((e) {
+    print(e);
+  });
+  return location;
+}
+
+_getAddressFromLatLng(Position currentPosition) async {
+  List _currentAddress;
+  try {
+    List<Placemark> p = await geolocator.placemarkFromCoordinates(currentPosition.latitude, currentPosition.longitude);
+    Placemark place = p[0];
+    _currentAddress = [place.locality, place.administrativeArea, place.postalCode];
+    return _currentAddress;
+  } catch (e) {
+    print(e);
+  }
 }

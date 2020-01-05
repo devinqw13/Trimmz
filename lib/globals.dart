@@ -4,6 +4,7 @@ String baseUrl = "";
 int token;
 String username;
 String name;
+String email;
 bool userAdmin;
 int userType;
 
