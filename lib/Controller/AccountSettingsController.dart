@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/functions.dart';
 import '../globals.dart' as globals;
+import 'ChangePasswordController.dart';
+import 'package:flushbar/flushbar.dart';
+import '../calls.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountSettings extends StatefulWidget {
   AccountSettings({Key key}) : super (key: key);
@@ -9,13 +14,37 @@ class AccountSettings extends StatefulWidget {
 }
 
 class AccountSettingsState extends State<AccountSettings> {
+  TextEditingController _usernameController = new TextEditingController();
   TextEditingController _nameController = new TextEditingController();
   TextEditingController _emailController = new TextEditingController();
+  bool usernameEmpty;
   bool nameEmpty;
   bool emailEmpty;
 
   void initState() {
     super.initState();
+
+    _usernameController.text = globals.username;
+    if(_usernameController.text.length == 0) {
+      setState(() {
+        usernameEmpty = true;
+      });
+    }else {
+      setState(() {
+        usernameEmpty = false;
+      });
+    }
+    _usernameController.addListener(() {
+      if(_usernameController.text.length == 0) {
+        setState(() {
+          usernameEmpty = true;
+        });
+      }else {
+        setState(() {
+          usernameEmpty = false;
+        });
+      }
+    });
 
     _nameController.text = globals.name;
     if(_nameController.text.length == 0) {
@@ -84,6 +113,30 @@ class AccountSettingsState extends State<AccountSettings> {
     );
   }
 
+  username() {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        usernameEmpty ? Container() : Text('Username', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        TextField(
+          controller: _usernameController,
+          keyboardType: TextInputType.text,
+          readOnly: true,
+          autocorrect: false,
+          style: new TextStyle(
+            fontSize: 13.0,
+            color: Colors.grey
+          ),
+          decoration: new InputDecoration(
+            hintText: 'Username',
+            hintStyle: TextStyle(color: Colors.grey),
+            border: InputBorder.none
+          ),
+        )
+      ]
+    );
+  }
+
   name() {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,6 +201,11 @@ class AccountSettingsState extends State<AccountSettings> {
             height: 15,
             color: Colors.grey[700],
           ),
+          username(),
+          Divider(
+            height: 15,
+            color: Colors.grey[700],
+          ),
           name(),
           Divider(
             height: 15,
@@ -161,8 +219,19 @@ class AccountSettingsState extends State<AccountSettings> {
 
   password() {
     return GestureDetector(
-      onTap: () {
-
+      onTap: () async {
+        final passwordScreen = new ChangePassword();
+        var result = await Navigator.push(context, new MaterialPageRoute(builder: (context) => passwordScreen));
+        if(result != null) {
+          if(result){
+            Flushbar(
+              flushbarPosition: FlushbarPosition.BOTTOM,
+              title: "Password Changed",
+              message: "Your password was succesfully changed.",
+              duration: Duration(seconds: 5),
+            )..show(context);
+          }
+        }
       },
       child: Container(
         margin: EdgeInsets.all(5.0),
@@ -177,6 +246,29 @@ class AccountSettingsState extends State<AccountSettings> {
         child: Text('Password', style: TextStyle(fontWeight: FontWeight.bold))
       )
     );
+  }
+
+
+  submitUpdatedSettings() async {
+    var nameChanged = false;
+    var emailChanged = false;
+    if(_nameController.text != globals.name) {
+      nameChanged = true;
+    }
+    if(_emailController.text != globals.email){
+      emailChanged = true;
+    }
+
+    if(nameChanged || emailChanged){
+      Map result = await updateSettings(context, globals.token, 1, nameChanged ? _nameController.text : null, emailChanged ? _emailController.text : null);
+      if(result['error'] == false && result['user'].length > 0) {
+        setGlobals(result);
+        Navigator.pop(context, true);
+      }
+    }else {
+      Navigator.pop(context);
+    }
+
   }
 
   buildBody() {
@@ -198,7 +290,7 @@ class AccountSettingsState extends State<AccountSettings> {
               Expanded(
                 child: new GestureDetector(
                   onTap: () {
-                    
+                    submitUpdatedSettings();
                   },
                   child: Container(
                     margin: EdgeInsets.only(left: 10, right: 10, top: 10),

@@ -1297,7 +1297,7 @@ Future<bool> markAppointment(BuildContext context, int id, int mark) async {
   }
 }
 
-Future<bool> exists(BuildContext context, String string, int type) async {
+Future<bool> exists(BuildContext context, String string, int type, [var userid]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -1305,11 +1305,19 @@ Future<bool> exists(BuildContext context, String string, int type) async {
 
   Map jsonResponse = {};
   http.Response response;
-
-  var jsonMap = {
-    "type" : type,
-    "string": string,
-  };
+  var jsonMap;
+  if(type == 1){
+    jsonMap = {
+      "type" : type,
+      "string": string,
+    };
+  }else if(type == 2) {
+    jsonMap = {
+      "type" : type,
+      "string": string,
+      "userid": userid
+    };
+  }
 
   String url = "${globals.baseUrl}exists/";
 
@@ -1330,7 +1338,7 @@ Future<bool> exists(BuildContext context, String string, int type) async {
   } else {
     jsonResponse = json.decode(response.body);
   }
-  
+
   if(jsonResponse['error'] == false){
     if(jsonResponse['exist'] == true) {
       return true;
@@ -1339,5 +1347,89 @@ Future<bool> exists(BuildContext context, String string, int type) async {
     }
   }else {
     return false;
+  }
+}
+
+Future<bool> changePassword(BuildContext context, String newPassword, int userid) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+    "userid" : userid,
+    "password": newPassword,
+  };
+
+  String url = "${globals.baseUrl}changePassword/";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (023)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (023)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == false){
+    return true;
+  }else {
+    return false;
+  }
+}
+
+Future<Map> updateSettings(BuildContext context, int userid, int type, [String name, String email]) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+    "userid" : userid,
+    "type": type,
+    "name": name != null ? name : null,
+    "email": email != null ? email : null
+  };
+
+  String url = "${globals.baseUrl}updateSettings/";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (023)", "Please try again. If this error continues to occur, please contact support.");
+    return {};
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (023)", "Please try again.");
+    return {};
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == false && jsonResponse['message'] == 'Settings Updated'){
+    return jsonResponse;
+  }else {
+    return {};
   }
 }

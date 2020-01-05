@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../Controller/AccountSettingsController.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flushbar/flushbar.dart';
 
 logout(BuildContext context) async {
   final loginScreen = new LoginScreen();
@@ -24,7 +25,20 @@ logout(BuildContext context) async {
 settingsWidget(BuildContext context) {
   CupertinoSettings settings = new CupertinoSettings(<Widget>[
     new CSHeader('Account'),
-    new CSLink('Account Settings', () {final accountSettingsScreen = new AccountSettings(); Navigator.push(context, new MaterialPageRoute(builder: (context) => accountSettingsScreen));}),
+    new CSLink('Account Settings', () async {
+      final accountSettingsScreen = new AccountSettings();
+      var result = await Navigator.push(context, new MaterialPageRoute(builder: (context) => accountSettingsScreen));
+      if(result != null) {
+        if(result) {
+          Flushbar(
+            flushbarPosition: FlushbarPosition.BOTTOM,
+            title: "Account Updated",
+            message: "Your account has been updated.",
+            duration: Duration(seconds: 5),
+          )..show(context);
+        }
+      }
+    }),
 
     globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
     globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); final profileScreen = new BarberProfileScreen(token: globals.token, userInfo: res); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}) : Container(),
