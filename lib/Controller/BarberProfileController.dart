@@ -69,7 +69,7 @@ class BarberProfileScreenState extends State<BarberProfileScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: new LinearGradient(
-                          colors: [Colors.red, Colors.blue]
+                          colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
                         )
                       ),
                     ),
@@ -83,8 +83,8 @@ class BarberProfileScreenState extends State<BarberProfileScreen> {
                         children: <Widget>[
                           Text(user.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                           user.shopName != null && user.shopName != '' ? Container(width: MediaQuery.of(context).size.width * .3, child: AutoSizeText.rich(TextSpan(text: user.shopName, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)), maxFontSize:16, minFontSize: 12, maxLines: 2)) : Container(),
-                          Text(user.shopAddress),
-                          Text(user.city + ', ' + user.state + ' ' + user.zipcode),
+                          Container(width: MediaQuery.of(context).size.width * .3, child: AutoSizeText.rich(TextSpan(text: user.shopAddress), maxFontSize:16, minFontSize: 12, maxLines: 2)),
+                          Container(width: MediaQuery.of(context).size.width * .3, child: AutoSizeText.rich(TextSpan(text: user.city + ', ' + user.state + ' ' + user.zipcode), maxFontSize:16, minFontSize: 12, maxLines: 2)),
                           getRatingWidget(context, double.parse(user.rating))
                         ]
                       )

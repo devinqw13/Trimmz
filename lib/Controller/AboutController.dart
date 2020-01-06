@@ -42,20 +42,14 @@ class AboutControllerState extends State<AboutController> {
         children: <Widget>[
           new Column(
             children: <Widget>[
-              // new Center(
-              //   child: new Image.asset('images/move_logo.png',
-              //   height: 140.0,
-              //   )
-              // ),
+              new ClipRRect(
+                borderRadius: new BorderRadius.circular(10.0),
+                child: new Image.asset('images/trimmz_icon_g.png',
+                  height: 140.0,
+                )
+              ),
               new Padding(
                 padding: const EdgeInsets.only(top: 20.0),
-              ),
-              new Center(
-                child: new Text("Trimmz",
-                  style: new TextStyle(
-                    fontSize: 36.0
-                  ),
-                )
               ),
             ],
           ),

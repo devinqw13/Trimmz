@@ -113,24 +113,14 @@ class LoginScreenState extends State<LoginScreen> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     Widget titleSection = new Container(
-      padding: const EdgeInsets.only(top: 160.0, left: 32.0, right: 32.0),
-      margin: EdgeInsets.only(top: 50.0),
-      // width: 100.0,
-      // height: 100.0,
-      // decoration: new BoxDecoration(
-      //   image: new DecorationImage(
-      //     image: new AssetImage('images/trimmz_icon.png'),
-      //     fit: BoxFit.fill,
-      //   ),
-      // )
-      child: new Text(
-        'Trimmz',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 30.0,
-          fontWeight: FontWeight.w400
-        ),
-      )
+      padding: const EdgeInsets.only(top: 100.0, left: 32.0, right: 32.0),
+      margin: EdgeInsets.only(top: 0.0),
+      child: new ClipRRect(
+        borderRadius: new BorderRadius.circular(10.0),
+        child: new Image.asset('images/trimmz_icon_g.png',
+          height: 140.0,
+        )
+      ),
     );
 
     Widget usernameTextField() {
@@ -197,7 +187,7 @@ class LoginScreenState extends State<LoginScreen> {
         child: Container(
           padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
           constraints: const BoxConstraints(maxHeight: 45.0, minWidth: 200.0, minHeight: 45.0),
-          width: MediaQuery.of(context).size.width * .85,
+          width: MediaQuery.of(context).size.width * .75,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5.0),
             gradient: new LinearGradient(

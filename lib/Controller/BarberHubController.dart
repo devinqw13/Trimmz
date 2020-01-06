@@ -10,7 +10,6 @@ import 'package:line_icons/line_icons.dart';
 import 'NotificationController.dart';
 import 'package:badges/badges.dart';
 import '../calls.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'SelectBarberController.dart';
@@ -22,6 +21,8 @@ import '../View/SetAvailabilityModal.dart';
 import 'BarberProfileController.dart';
 import '../Model/ClientBarbers.dart';
 import '../functions.dart';
+import '../view/FullPackagesListModalSheet.dart';
+import '../View/Widgets.dart';
 
 class BarberHubScreen extends StatefulWidget {
   BarberHubScreen({Key key}) : super (key: key);
@@ -207,7 +208,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                       shape: BoxShape.circle,
                       color: Colors.purple,
                       gradient: new LinearGradient(
-                        colors: [Colors.red, Colors.blue],
+                        colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
                       )
                     ),
                     child: Center(child: Text(_selectedEvents[i]['name'].substring(0,1), style: TextStyle(fontSize: 20)))
@@ -536,15 +537,16 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                           padding: EdgeInsets.only(top: 5, right: 10.0),
                           child: GestureDetector(
                             onTap: () async {
-                              showFullPkgsListModalSheet(context, packages);
-                              // var res = await showAddPackageModalSheet(context);
-                              // if(res != null) {
-                              //   setState(() {
-                              //     packages = res;
-                              //   });
-                              // }else {
-                              //   return;
-                              // }
+                              showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                                return FullPackagesBottomSheet(
+                                  packages: packages,
+                                  valueChanged: (value) {
+                                    setState(() {
+                                      packages = value;
+                                    });
+                                  },
+                                );
+                              });
                             },
                             child: Icon(LineIcons.th_list, color: Colors.blue)
                           )
@@ -585,7 +587,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                     reverse: true,
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: 5 * 1,
+                    itemCount: packages.length > 3 ? 5 * 1 : packages.length * 2,
                     padding: const EdgeInsets.all(5.0),
                     itemBuilder: (context, index) {
                       if (index.isOdd) {
@@ -622,20 +624,6 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                                       shape: BoxShape.circle
                                     ),
                                   )
-                                  // Padding(padding: EdgeInsets.all(5),),
-                                  // GestureDetector(
-                                  //   onTap: () async {
-                                  //     var res = await showPackageOptionsModalSheet(context, packages[i].name, packages[i].price, packages[i].duration, packages[i].id);
-                                  //     if(res != null) {
-                                  //       setState(() {
-                                  //         packages = res;
-                                  //       });
-                                  //     }else {
-                                  //       return;
-                                  //     }
-                                  //   },
-                                  //   child: Icon(Icons.more_vert)
-                                  // )
                                 ],
                               )
                             ]
@@ -716,147 +704,154 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   }
 
   Widget suggestBarbers() {
-    return Scrollbar(
-      child: new ListView.builder(
-        itemCount: suggestedBarbers.length * 2,
-        padding: const EdgeInsets.all(5.0),
-        itemBuilder: (context, index) {
-          if (index.isOdd) {
-            return new Divider();
-          }
-          else {
-            final i = index ~/ 2;
-            return new GestureDetector(
-              onTap: () {
-                ClientBarbers barber = new ClientBarbers();
-                barber.id = suggestedBarbers[i].id;
-                barber.name = suggestedBarbers[i].name;
-                barber.username = suggestedBarbers[i].username;
-                barber.phone = suggestedBarbers[i].phone;
-                barber.email = suggestedBarbers[i].email;
-                barber.rating = suggestedBarbers[i].rating;
-                barber.shopAddress = suggestedBarbers[i].shopAddress;
-                barber.shopName = suggestedBarbers[i].shopName;
-                barber.city = suggestedBarbers[i].city;
-                barber.state = suggestedBarbers[i].state;
-                barber.zipcode = suggestedBarbers[i].zipcode;
-                // barber.created = suggestedBarbers[i].created;
-                final profileScreen = new BarberProfileScreen(token: globals.token, userInfo: barber);
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
-              },
-              child: Column(
-                children: <Widget> [ 
-                  ListTile(
-                    leading: new Container(
-                      width: 50.0,
-                      height: 50.0,
-                      decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.purple,
-                        gradient: new LinearGradient(
-                          colors: [Colors.red, Colors.blue]
-                        )
-                      ),
-                      child: Center(child:Text(suggestedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20),))
-                    ),
-                    subtitle: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        RatingBarIndicator(
-                          rating: double.parse(suggestedBarbers[i].rating),
-                          itemBuilder: (context, index) => Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                          ),
-                          itemCount: 5,
-                          itemSize: 20.0,
-                          direction: Axis.horizontal,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text(suggestedBarbers[i].city+', '+suggestedBarbers[i].state)
-                          ],
-                        )
-                      ],
-                    ),
-                    title: new Row(
-                      children: <Widget> [
-                        Flexible(
-                          child: Container(
-                            child: Row(
-                              children: <Widget> [
-                                Container(
-                                  constraints: BoxConstraints(maxWidth: 200),
-                                  child: GestureDetector(
-                                    onTap: () {},
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Text(
-                                          suggestedBarbers[i].name+' '
-                                        ),
-                                        Text(
-                                          '@'+suggestedBarbers[i].username,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey
-                                          )
-                                        )
-                                      ]
-                                    )
-                                  ),
-                                ),
-                              ]
-                            )
+    if(suggestedBarbers.length > 0){
+      return Scrollbar(
+        child: new ListView.builder(
+          itemCount: suggestedBarbers.length * 2,
+          padding: const EdgeInsets.all(5.0),
+          itemBuilder: (context, index) {
+            if (index.isOdd) {
+              return new Divider();
+            }
+            else {
+              final i = index ~/ 2;
+              return new GestureDetector(
+                onTap: () {
+                  ClientBarbers barber = new ClientBarbers();
+                  barber.id = suggestedBarbers[i].id;
+                  barber.name = suggestedBarbers[i].name;
+                  barber.username = suggestedBarbers[i].username;
+                  barber.phone = suggestedBarbers[i].phone;
+                  barber.email = suggestedBarbers[i].email;
+                  barber.rating = suggestedBarbers[i].rating;
+                  barber.shopAddress = suggestedBarbers[i].shopAddress;
+                  barber.shopName = suggestedBarbers[i].shopName;
+                  barber.city = suggestedBarbers[i].city;
+                  barber.state = suggestedBarbers[i].state;
+                  barber.zipcode = suggestedBarbers[i].zipcode;
+                  // barber.created = suggestedBarbers[i].created;
+                  final profileScreen = new BarberProfileScreen(token: globals.token, userInfo: barber);
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
+                },
+                child: Column(
+                  children: <Widget> [ 
+                    ListTile(
+                      leading: new Container(
+                        width: 50.0,
+                        height: 50.0,
+                        decoration: new BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.purple,
+                          gradient: new LinearGradient(
+                            colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
                           )
                         ),
-                      ]
+                        child: Center(child:Text(suggestedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20),))
+                      ),
+                      subtitle: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          getRatingWidget(context, double.parse(suggestedBarbers[i].rating)),
+                          Row(
+                            children: <Widget>[
+                              Text(suggestedBarbers[i].city+', '+suggestedBarbers[i].state)
+                            ],
+                          )
+                        ],
+                      ),
+                      title: new Row(
+                        children: <Widget> [
+                          Flexible(
+                            child: Container(
+                              child: Row(
+                                children: <Widget> [
+                                  Container(
+                                    constraints: BoxConstraints(maxWidth: 200),
+                                    child: GestureDetector(
+                                      onTap: () {},
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: <Widget>[
+                                          Text(
+                                            suggestedBarbers[i].name+' '
+                                          ),
+                                          Text(
+                                            '@'+suggestedBarbers[i].username,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey
+                                            )
+                                          )
+                                        ]
+                                      )
+                                    ),
+                                  ),
+                                ]
+                              )
+                            )
+                          ),
+                        ]
+                      ),
+                      trailing: !suggestedBarbers[i].hasAdded ? IconButton(
+                        onPressed: () async {
+                          bool res = await addBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
+                          if(res) {
+                            Flushbar(
+                              flushbarPosition: FlushbarPosition.BOTTOM,
+                              title: "Barber Added",
+                              message: "You can now book an appointment with this barber",
+                              duration: Duration(seconds: 2),
+                            )..show(context);
+                            setState(() {
+                              suggestedBarbers[i].hasAdded = true;
+                            });
+                          }
+                        },
+                        color: Colors.green,
+                        icon: Icon(LineIcons.plus),
+                      ) : 
+                      IconButton(
+                        onPressed: () async {
+                          bool res = await removeBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
+                          if(res) {
+                            Flushbar(
+                              flushbarPosition: FlushbarPosition.BOTTOM,
+                              title: "Barber Removed",
+                              message: "This babrber has been removed from your list",
+                              duration: Duration(seconds: 2),
+                            )..show(context);
+                            setState(() {
+                              suggestedBarbers[i].hasAdded = false;
+                            });
+                          }
+                        },
+                        color: Colors.red,
+                        icon: Icon(LineIcons.minus),
+                      ),
                     ),
-                    trailing: !suggestedBarbers[i].hasAdded ? IconButton(
-                      onPressed: () async {
-                        bool res = await addBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
-                        if(res) {
-                          Flushbar(
-                            flushbarPosition: FlushbarPosition.BOTTOM,
-                            title: "Barber Added",
-                            message: "You can now book an appointment with this barber",
-                            duration: Duration(seconds: 2),
-                          )..show(context);
-                          setState(() {
-                            suggestedBarbers[i].hasAdded = true;
-                          });
-                        }
-                      },
-                      color: Colors.green,
-                      icon: Icon(LineIcons.plus),
-                    ) : 
-                    IconButton(
-                      onPressed: () async {
-                        bool res = await removeBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
-                        if(res) {
-                          Flushbar(
-                            flushbarPosition: FlushbarPosition.BOTTOM,
-                            title: "Barber Removed",
-                            message: "This babrber has been removed from your list",
-                            duration: Duration(seconds: 2),
-                          )..show(context);
-                          setState(() {
-                            suggestedBarbers[i].hasAdded = false;
-                          });
-                        }
-                      },
-                      color: Colors.red,
-                      icon: Icon(LineIcons.minus),
-                    ),
-                  ),
-                ]
-              )
-            );
-          }
-        },
-      ),
-    );
+                  ]
+                )
+              );
+            }
+          },
+        ),
+      );
+    }else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            width: 50,
+            height:50,
+            child: CircularProgressIndicator(
+              valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+            )
+          )
+        ],
+      );
+    }
   }
 
   marketplaceTab() {

@@ -242,16 +242,20 @@ Future<List<Packages>> showPackageOptionsModalSheet(BuildContext context, String
               child: FlatButton(
                 color: Colors.blue,
                 onPressed: () async {
-                  // var res = await addBarberPackage(context, _pkgName.text, double.parse(_pkgPrice.text), int.parse(_pkgDuration.text));
-                  // if(res) {
-                  //   var res = await getBarberPkgs(context, globals.token);
-                  //   Navigator.pop(context);
-                  //   results = res;
-                  // }else {
-                  //   return;
-                  // }
+                  if(nameController.text != '' || priceController.text != '' || durationController.text != ''){
+                    var res = await updatePackage(context, globals.token, int.parse(packageid), nameController.text != '' ? nameController.text : null, priceController.text != '' ? int.parse(priceController.text) : null, durationController.text != '' ? int.parse(durationController.text) : null);
+                    if(res) {
+                      var res = await getBarberPkgs(context, globals.token);
+                      Navigator.pop(context);
+                      results = res;
+                    }else {
+                      return;
+                    }
+                  }else {
+                    Navigator.pop(context);
+                  }
                 },
-                child: Text('Add Package')
+                child: Text('Update Package')
               )
             )
           ]
@@ -530,129 +534,6 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment) async {
                             onPressed: () {
                               Navigator.pop(context);
                               showAptOptionModalSheet(context, appointment);
-                            },
-                            child: Text('Close')
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ]
-              ),
-            ),
-          ]
-        )
-      )
-    );
-  });
-}
-
-showFullPkgsListModalSheet(BuildContext context, List<Packages> packages) async {
-  showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, builder: (builder) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Container(
-        padding: EdgeInsets.all(10.0),
-        height: 600,
-        // constraints: BoxConstraints(
-        //   maxHeight: MediaQuery.of(context).size.height - 50
-        // ),
-        margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
-        decoration: BoxDecoration(
-          color: Colors.grey[900],
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 2,
-              color: Colors.grey[300],
-              spreadRadius: 0
-            )
-          ]
-        ),
-        child: Stack(
-          children: <Widget> [
-            Container(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: <Widget>[
-                        SingleChildScrollView(
-                          child: ListView.builder(
-                            //reverse: true,
-                            //physics: AlwaysScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: packages.length * 2,
-                            padding: const EdgeInsets.all(5.0),
-                            itemBuilder: (context, index) {
-                              if (index.isOdd) {
-                                return new Divider();
-                              }
-                              else {
-                                final i = index ~/ 2;
-                                return new ListTile(
-                                  title: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget> [
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: <Widget> [
-                                          Text(packages[i].name,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500
-                                            )
-                                          ),
-                                          Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
-                                            style: TextStyle(
-                                              color: Colors.grey
-                                            )
-                                          )
-                                        ]
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          Container(
-                                            padding: EdgeInsets.all(12),
-                                            child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey[900],
-                                              shape: BoxShape.circle
-                                            ),
-                                          )
-                                          // Padding(padding: EdgeInsets.all(5),),
-                                          // GestureDetector(
-                                          //   onTap: () async {
-                                          //     var res = await showPackageOptionsModalSheet(context, packages[i].name, packages[i].price, packages[i].duration, packages[i].id);
-                                          //     if(res != null) {
-                                          //       setState(() {
-                                          //         packages = res;
-                                          //       });
-                                          //     }else {
-                                          //       return;
-                                          //     }
-                                          //   },
-                                          //   child: Icon(Icons.more_vert)
-                                          // )
-                                        ],
-                                      )
-                                    ]
-                                  )
-                                );
-                              }
-                            }
-                          )
-                        )
-                      ],
-                    ),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: RaisedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
                             },
                             child: Text('Close')
                           ),

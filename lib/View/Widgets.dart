@@ -129,10 +129,10 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
           rating: rating,
           itemBuilder: (context, index) => Icon(
               Icons.star,
-              color: Colors.amber,
+              color: Color(0xFFD2AC47),
           ),
           itemCount: 5,
-          itemSize: 20.0,
+          itemSize: 17.0,
           direction: Axis.horizontal,
         ),
       ],
