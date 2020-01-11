@@ -216,7 +216,7 @@ class LoginScreenState extends State<LoginScreen> {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         hintColor: Colors.white70,
-        //brightness: Brightness.dark,
+        brightness: Brightness.dark,
       ),
       child: new Scaffold(
         resizeToAvoidBottomPadding: true,

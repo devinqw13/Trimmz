@@ -189,7 +189,7 @@ class RegisterScreenState extends State<RegisterScreen> with WidgetsBindingObser
             onChanged: (val) {
               emailStreamController.add(val);
             },
-            keyboardType: TextInputType.text,
+            keyboardType: TextInputType.emailAddress,
             autocorrect: false,
             style: new TextStyle(
               fontSize: 15.0,

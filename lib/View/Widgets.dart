@@ -14,6 +14,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import '../Controller/AccountSettingsController.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../functions.dart';
 
 logout(BuildContext context) async {
   final loginScreen = new LoginScreen();
@@ -42,19 +44,45 @@ settingsWidget(BuildContext context) {
 
     globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
     globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); final profileScreen = new BarberProfileScreen(token: globals.token, userInfo: res); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}) : Container(),
+    //globals.userType == 2 ? CSLink('Settings', () {}) : Container(),
     globals.userType == 2 ? CSLink('Mobile Transactions', () {}) : Container(),
 
     new CSHeader('Payment'),
     new CSLink('Payment Method', () {final paymentMethodScreen = new PaymentMethod(signup: false); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}),
 
     new CSHeader('Share'),
-    new CSLink('Recommend Trimmz', () {}),
-    new CSLink('Invite Barber', () {}),
-    new CSLink('Invite Friends', () {}),
+    new CSLink('Recommend Trimmz', () async {
+      if (await canLaunch("sms:")) {
+        await launch("sms:");
+      } else {
+        throw 'Could not launch';
+      }
+    }),
+    new CSLink('Invite Barber', () async {
+      if (await canLaunch("sms:")) {
+        await launch("sms:");
+      } else {
+        throw 'Could not launch';
+      }
+    }),
 
     new CSHeader('Contact Us'),
-    new CSLink('Feedback', () {}),
-    new CSLink('Support', () {}),
+    new CSLink('Feedback', () async {
+      String email = 'trimmzapp@gmail.com';
+      if (await canLaunch("mailto:$email")) {
+        await launch("mailto:$email");
+      } else {
+        throw 'Could not launch';
+      }
+    }),
+    new CSLink('Support', () async {
+      String email = 'trimmz@gmail.com';
+      if (await canLaunch("mailto:$email")) {
+        await launch("mailto:$email");
+      } else {
+        throw 'Could not launch';
+      }
+    }),
 
     new CSHeader('General'),
     new CSLink('About', () {final aboutScreen = new AboutController(); Navigator.push(context, new MaterialPageRoute(builder: (context) => aboutScreen));}),
@@ -124,7 +152,13 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
   getRatingWidget(BuildContext context, double rating) {
     return new Row(
       children: <Widget>[
-        Text(rating.toString()),
+        Text(
+          rating.toString(),
+          style: TextStyle(
+            color: Color(0xFFD2AC47),
+            fontSize: 14
+          )
+        ),
         RatingBarIndicator(
           rating: rating,
           itemBuilder: (context, index) => Icon(
@@ -136,5 +170,35 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
           direction: Axis.horizontal,
         ),
       ],
+    );
+  }
+
+  returnDistanceFutureBuilder(String shopLocation) {
+    return FutureBuilder(
+      future: getDistanceFromBarber(shopLocation),
+      builder: (context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.hasError) return Text('${snapshot.error}');
+        if (snapshot.hasData)
+          return Row(
+            children: <Widget> [
+              Icon(Icons.directions, color: Colors.grey, size: 19),
+              Text('${snapshot.data} mi')
+            ]
+          );
+        return Row(
+          children: <Widget>[
+            Icon(Icons.directions, color: Colors.grey, size: 19),
+            Padding(padding: EdgeInsets.all(5)),
+            Container(
+              height: 15,
+              width: 15,
+              child: CircularProgressIndicator(
+                strokeWidth: 1.5,
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey)
+              )
+            )
+          ]
+        );
+      },
     );
   }

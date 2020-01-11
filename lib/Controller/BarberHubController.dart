@@ -21,7 +21,8 @@ import '../View/SetAvailabilityModal.dart';
 import 'BarberProfileController.dart';
 import '../Model/ClientBarbers.dart';
 import '../functions.dart';
-import '../view/FullPackagesListModalSheet.dart';
+import '../View/FullPackagesListModalSheet.dart';
+import '../View/BarberAppointmentOptions.dart';
 import '../View/Widgets.dart';
 
 class BarberHubScreen extends StatefulWidget {
@@ -93,8 +94,10 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   }
 
   void initSuggestedBarbers() async {
-    var res1 = await getUserLocation();
-    print(res1);
+    var res1;
+    Future.delayed(const Duration(milliseconds: 2), () async {
+      res1 = await getUserLocation();
+    });
     var res = await getSuggestions(context, globals.token, 1, res1);
     setState(() {
       suggestedBarbers = res;
@@ -198,48 +201,92 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               }else if(_selectedEvents[i]['status'] == '2'){
                 statusColor = Colors.red;
               }
-              return  Container(
-                padding: EdgeInsets.only(top: 10, bottom: 10),
-                child: ListTile(
-                  leading: new Container(
-                    width: 50.0,
-                    height: 50.0,
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.purple,
-                      gradient: new LinearGradient(
-                        colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
-                      )
-                    ),
-                    child: Center(child: Text(_selectedEvents[i]['name'].substring(0,1), style: TextStyle(fontSize: 20)))
-                  ),
-                  title: Container(margin: EdgeInsets.only(bottom: 10.0), color: statusColor, width: MediaQuery.of(context).size.width, height: 2),
-                  subtitle: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget> [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget> [
-                          Text(_selectedEvents[i]['name'], style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-                          Text(_selectedEvents[i]['package']),
-                        ]
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 2.0, bottom: 2.0),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[700],
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.all(Radius.circular(20.0))
+              return GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                    return AppointmentOptionsBottomSheet(
+                      appointment: _selectedEvents[i],
+                      getAppointments: (value) {
+
+                      },
+                      showCancel: (val) async {
+                        if(val){
+                          print('val');
+                          print(val);
+                          var res = await showAptCancelOptionModalSheet(context, _selectedEvents[i]);
+                          if(res != null) {
+                            setState(() {
+                              _events = res;
+                              _selectedEvents = res;
+                            });
+                          }
+                        }
+                      },
+                    );
+                  });
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  child: Row(
+                    children: <Widget>[
+                      new Container(
+                        width: 50.0,
+                        height: 50.0,
+                        decoration: new BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.purple,
+                          gradient: new LinearGradient(
+                            colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
+                          )
                         ),
-                        child: Text(_selectedEvents[i]['time'], style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500))
+                        child: Center(child: Text(_selectedEvents[i]['name'].substring(0,1), style: TextStyle(fontSize: 20)))
+                      ),
+                      Padding(padding: EdgeInsets.all(5)),
+                      Container(
+                        width: MediaQuery.of(context).size.width * .8,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Text(_selectedEvents[i]['name'], style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                                    Padding(padding: EdgeInsets.all(5)),
+                                    Container(
+                                      padding: EdgeInsets.only(bottom: 1, top: 1, right: 6, left: 6),
+                                      decoration: BoxDecoration(
+                                        color: statusColor,
+                                        borderRadius: BorderRadius.circular(50.0),
+                                      ),
+                                      child: Text(
+                                        statusColor == Colors.grey ? 'Pending' : statusColor == Colors.blue ? 'Upcoming' : statusColor == Colors.green ? 'Completed' : 'Cancelled',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold
+                                        )
+                                      )
+                                    )
+                                  ]
+                                ),
+                                Text(_selectedEvents[i]['package']),
+                                Text('\$' + _selectedEvents[i]['price']),
+                              ]
+                            ),
+                            Container(
+                              padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 2.0, bottom: 2.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[700],
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.all(Radius.circular(20.0))
+                              ),
+                              child: Text(_selectedEvents[i]['time'], style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500))
+                            )
+                          ]
+                        )
                       )
                     ]
-                  ),
-                  trailing: GestureDetector(
-                    onTap: () {
-                      showAptOptionModalSheet(context, _selectedEvents[i]);
-                    },
-                    child: Icon(Icons.more_vert)
                   )
                 )
               );
@@ -338,13 +385,6 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                           ),
                         )
                       ),
-                      Padding(padding: EdgeInsets.all(5.0),),
-                      GestureDetector(
-                        onTap: () {
-
-                        },
-                        child: Icon(Icons.more_vert)
-                      )
                     ],
                   )
                 ],
@@ -356,337 +396,452 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     );
   }
 
+  barberPolicies() {
+    return Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Icon(LineIcons.times, color: Colors.blue),
+            Padding(padding: EdgeInsets.all(5)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Cancellation Policy',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                Text('Fee Amount: 50%'),
+                Text('Within: 1 Hour')
+              ]
+            )
+          ]
+        ),
+        Divider(
+          color: Colors.grey
+        ),
+        Row(
+          children: <Widget>[
+            Icon(LineIcons.minus, color: Colors.blue),
+            Padding(padding: EdgeInsets.all(5)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'No-Show Policy',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                Text('Fee Amount: 100%'),
+              ]
+            )
+          ]
+        ),
+      ]
+    );
+  }
+
   Widget dashboardTab() {
-    return SingleChildScrollView(
-      child: new Column(
-        children: <Widget>[
-          appointmentReq.length > 0 ? 
-          GestureDetector(
-            onTap: () async {
-              var res = await showAptRequestsModalSheet(context, appointmentReq);
-              if(res == 1) {
-                var res = await getBarberAppointmentRequests(context, globals.token);
-                setState(() {
-                  appointmentReq = res;
-                });
-                var res2 = await getBarberAppointments(context, globals.token);
-                setState(() {
-                  _events = res2;
-                });
-              }else {
-                var res = await getBarberAppointmentRequests(context, globals.token);
-                setState(() {
-                  appointmentReq = res;
-                });
-              }
-            },
-            child: Container(
-              padding: EdgeInsets.only(left: 5, right: 20, bottom: 5, top: 5),
+    return Container(
+      child: SingleChildScrollView(
+        child: new Column(
+          children: <Widget>[
+            appointmentReq.length > 0 ? 
+            GestureDetector(
+              onTap: () async {
+                var res = await showAptRequestsModalSheet(context, appointmentReq);
+                if(res == 1) {
+                  var res = await getBarberAppointmentRequests(context, globals.token);
+                  setState(() {
+                    appointmentReq = res;
+                  });
+                  var res2 = await getBarberAppointments(context, globals.token);
+                  setState(() {
+                    _events = res2;
+                  });
+                }else {
+                  var res = await getBarberAppointmentRequests(context, globals.token);
+                  setState(() {
+                    appointmentReq = res;
+                  });
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.only(left: 5, right: 20, bottom: 5, top: 5),
+                decoration: BoxDecoration(
+                  gradient: new LinearGradient(
+                    begin: Alignment(0.0, -2.0),//Alignment.center,
+                    colors: [Colors.black, Colors.grey[900]]
+                  )
+                ),
+                margin: EdgeInsets.all(5.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('Appointment Requests', style: TextStyle(fontWeight: FontWeight.w400)),
+                    Container(
+                      width: 30.0,
+                      height: 30.0,
+                      decoration: new BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey[900],
+                      ),
+                      child: Center(child:Text(appointmentReq.length.toString(), textAlign: TextAlign.center))
+                    )
+                  ],
+                )
+              )
+            ): Container(),
+            Container(
+              padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 gradient: new LinearGradient(
-                  begin: Alignment(0.0, -2.0),//Alignment.center,
-                  colors: [Colors.black, Colors.grey[850]]
+                  begin: Alignment(0.0, -2.0),
+                  colors: [Colors.black, Colors.grey[900]]
                 )
               ),
               margin: EdgeInsets.all(5.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                children: <Widget> [
+                  Stack(
+                    children: <Widget> [
+                      TableCalendar(
+                        locale: 'en_US',
+                        events: _events,
+                        onDaySelected: _onDaySelected,
+                        availableGestures: AvailableGestures.horizontalSwipe,
+                        daysOfWeekStyle: DaysOfWeekStyle(
+                          weekdayStyle: const TextStyle(color: const Color(0xFFf2f2f2)),
+                          weekendStyle: const TextStyle(color: const Color(0xFFf2f2f2))
+                        ),
+                        headerStyle: HeaderStyle(
+                          formatButtonVisible: false,
+                          leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.blue),
+                          rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.blue)
+                        ),
+                        calendarStyle: CalendarStyle(
+                          weekendStyle: const TextStyle(color: Colors.white)
+                        ),
+                        headerVisible: true,
+                        calendarController: _calendarController,
+                        initialCalendarFormat: CalendarFormat.week,
+                        builders: CalendarBuilders(
+                          selectedDayBuilder: (context, date, _) {
+                            return FadeTransition(
+                              opacity: Tween(begin: 0.0, end: 1.0).animate(_animationController),
+                              child: Container(
+                                margin: const EdgeInsets.all(6.0),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.blue[500]
+                                ),
+                                child: Center(
+                                  child: Text(
+                                  '${date.day}',
+                                  style: TextStyle().copyWith(fontSize: 16.0),
+                                ),
+                                )
+                              ),
+                            );
+                          },
+                          todayDayBuilder: (context, date, _) {
+                            return FadeTransition(
+                              opacity: Tween(begin: 0.0, end: 1.0).animate(_animationController),
+                              child: Container(
+                                margin: const EdgeInsets.all(6.0),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.grey[800]
+                                ),
+                                child: Center(
+                                  child: Text(
+                                  '${date.day}',
+                                  style: TextStyle().copyWith(fontSize: 16.0),
+                                ),
+                                )
+                              ),
+                            );
+                          },
+                          markersBuilder: (context, date, events, holidays) {
+                            final children = <Widget>[];
+
+                            if (events.isNotEmpty) {
+                              children.add(
+                                Positioned(
+                                  right: 1,
+                                  bottom: 1,
+                                  child: _buildEventsMarker(date, events),
+                                ),
+                              );
+                            }
+                            return children;
+                          },
+                        ),
+                      ),
+                      Positioned(
+                        right: MediaQuery.of(context).size.width * .15,
+                        top: MediaQuery.of(context).size.width * .043,
+                        child: GestureDetector(
+                          onTap: () {
+                            print('dkddkd');
+                          },
+                          child: Icon(Icons.menu, color: Colors.blue)
+                        )
+                      ),
+                    ]
+                  ),
+                  buildAppointmentList()
+                ]
+              )
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.all(5.0),
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                gradient: new LinearGradient(
+                  begin: Alignment(0.0, -2.0),
+                  colors: [Colors.black, Colors.grey[900]]
+                )
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('Appointment Requests', style: TextStyle(fontWeight: FontWeight.w400)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            'Packages',
+                            style: TextStyle(
+                              fontSize: 17.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          Padding(padding: EdgeInsets.all(2),),
+                          Container(
+                            margin: EdgeInsets.only(top: 4),
+                            padding: EdgeInsets.all(5),
+                            child: Center(child: Text(packages.length.toString(), textAlign: TextAlign.center)),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.grey[800]
+                            ),
+                          )
+                        ]
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.only(top: 5, right: 10.0),
+                            child: GestureDetector(
+                              onTap: () async {
+                                showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                                  return FullPackagesBottomSheet(
+                                    packages: packages,
+                                    valueChanged: (value) {
+                                      setState(() {
+                                        packages = value;
+                                      });
+                                    },
+                                  );
+                                });
+                              },
+                              child: Icon(LineIcons.th_list, color: Colors.blue)
+                            )
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(top: 5, right: 10.0),
+                            child: GestureDetector(
+                              onTap: () async {
+                                var res = await showAddPackageModalSheet(context);
+                                if(res != null) {
+                                  setState(() {
+                                    packages = res;
+                                  });
+                                }else {
+                                  return;
+                                }
+                              },
+                              child: Icon(LineIcons.plus, color: Colors.blue)
+                            )
+                          )
+                        ]
+                      )
+                    ],
+                  ),
+                  packages.length == 0 ?
                   Container(
-                    width: 30.0,
-                    height: 30.0,
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey[900],
-                    ),
-                    child: Center(child:Text(appointmentReq.length.toString(), textAlign: TextAlign.center))
+                    margin: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Text(
+                        'You don\'t have any packages',
+                        style: TextStyle(
+                          fontSize: 17.0
+                        )
+                      )
+                    )
+                  ): Container(
+                    child: ListView.builder(
+                      reverse: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: packages.length > 3 ? 5 * 1 : packages.length * 2,
+                      padding: const EdgeInsets.all(5.0),
+                      itemBuilder: (context, index) {
+                        if (index.isOdd) {
+                          return new Divider();
+                        }
+                        else {
+                          final i = index ~/ 2;
+                          return new ListTile(
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget> [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget> [
+                                    Text(packages[i].name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500
+                                      )
+                                    ),
+                                    Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
+                                      style: TextStyle(
+                                        color: Colors.grey
+                                      )
+                                    )
+                                  ]
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[900],
+                                        shape: BoxShape.circle
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ]
+                            )
+                          );
+                        }
+                      }
+                    )
+                  )
+                ],
+              )
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.all(5.0),
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                gradient: new LinearGradient(
+                  begin: Alignment(0.0, -2.0),
+                  colors: [Colors.black, Colors.grey[900]]
+                )
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Availability',
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      fontWeight: FontWeight.w400,
+                    )
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 10.0, left: 10.0, bottom: 10.0, right: 20.0),
+                    child: barberDBAvailability(context)
+                  )
+                ],
+              )
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.all(5.0),
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                gradient: new LinearGradient(
+                  begin: Alignment(0.0, -2.0),
+                  colors: [Colors.black, Colors.grey[900]]
+                )
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget> [
+                      Text(
+                        'Policies',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w400,
+                        )
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(top: 5, right: 10.0),
+                        child: GestureDetector(
+                          onTap: () async {
+                            showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                              // return FullPackagesBottomSheet(
+                              //   packages: packages,
+                              //   valueChanged: (value) {
+                              //     setState(() {
+                              //       packages = value;
+                              //     });
+                              //   },
+                              // );
+                            });
+                          },
+                          child: Icon(LineIcons.pencil, color: Colors.blue)
+                        )
+                      ),
+                    ]
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 10.0, left: 10.0, bottom: 10.0, right: 20.0),
+                    child: barberPolicies()
                   )
                 ],
               )
             )
-          ): Container(),
-          Container(
-            padding: EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              gradient: new LinearGradient(
-                begin: Alignment(0.0, -2.0),
-                colors: [Colors.black, Colors.grey[850]]
-              )
-            ),
-            margin: EdgeInsets.all(5.0),
-            child: Column(
-              children: <Widget> [
-                TableCalendar(
-                  locale: 'en_US',
-                  events: _events,
-                  onDaySelected: _onDaySelected,
-                  availableGestures: AvailableGestures.horizontalSwipe,
-                  daysOfWeekStyle: DaysOfWeekStyle(
-                    weekdayStyle: const TextStyle(color: const Color(0xFFf2f2f2)),
-                    weekendStyle: const TextStyle(color: const Color(0xFFf2f2f2))
-                  ),
-                  headerStyle: HeaderStyle(
-                    formatButtonVisible: false,
-                    leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.white),
-                    rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.white)
-                  ),
-                  calendarStyle: CalendarStyle(
-                    weekendStyle: const TextStyle(color: Colors.white)
-                  ),
-                  headerVisible: true,
-                  calendarController: _calendarController,
-                  initialCalendarFormat: CalendarFormat.week,
-                  builders: CalendarBuilders(
-                    selectedDayBuilder: (context, date, _) {
-                      return FadeTransition(
-                        opacity: Tween(begin: 0.0, end: 1.0).animate(_animationController),
-                        child: Container(
-                          margin: const EdgeInsets.all(6.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.blue[500]
-                          ),
-                          child: Center(
-                            child: Text(
-                            '${date.day}',
-                            style: TextStyle().copyWith(fontSize: 16.0),
-                          ),
-                          )
-                        ),
-                      );
-                    },
-                    todayDayBuilder: (context, date, _) {
-                      return FadeTransition(
-                        opacity: Tween(begin: 0.0, end: 1.0).animate(_animationController),
-                        child: Container(
-                          margin: const EdgeInsets.all(6.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey[800]
-                          ),
-                          child: Center(
-                            child: Text(
-                            '${date.day}',
-                            style: TextStyle().copyWith(fontSize: 16.0),
-                          ),
-                          )
-                        ),
-                      );
-                    },
-                    markersBuilder: (context, date, events, holidays) {
-                      final children = <Widget>[];
-
-                      if (events.isNotEmpty) {
-                        children.add(
-                          Positioned(
-                            right: 1,
-                            bottom: 1,
-                            child: _buildEventsMarker(date, events),
-                          ),
-                        );
-                      }
-                      return children;
-                    },
-                  ),
-                ),
-                buildAppointmentList()
-              ]
-            )
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.all(5.0),
-            padding: EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              gradient: new LinearGradient(
-                begin: Alignment(0.0, -2.0),
-                colors: [Colors.black, Colors.grey[850]]
-              )
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          'Packages',
-                          style: TextStyle(
-                            fontSize: 17.0,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        Padding(padding: EdgeInsets.all(2),),
-                        Container(
-                          margin: EdgeInsets.only(top: 4),
-                          padding: EdgeInsets.all(5),
-                          child: Center(child: Text(packages.length.toString(), textAlign: TextAlign.center)),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey[800]
-                          ),
-                        )
-                      ]
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.only(top: 5, right: 10.0),
-                          child: GestureDetector(
-                            onTap: () async {
-                              showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                                return FullPackagesBottomSheet(
-                                  packages: packages,
-                                  valueChanged: (value) {
-                                    setState(() {
-                                      packages = value;
-                                    });
-                                  },
-                                );
-                              });
-                            },
-                            child: Icon(LineIcons.th_list, color: Colors.blue)
-                          )
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(top: 5, right: 10.0),
-                          child: GestureDetector(
-                            onTap: () async {
-                              var res = await showAddPackageModalSheet(context);
-                              if(res != null) {
-                                setState(() {
-                                  packages = res;
-                                });
-                              }else {
-                                return;
-                              }
-                            },
-                            child: Icon(LineIcons.plus, color: Colors.blue)
-                          )
-                        )
-                      ]
-                    )
-                  ],
-                ),
-                packages.length == 0 ?
-                Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Center(
-                    child: Text(
-                      'You don\'t have any packages',
-                      style: TextStyle(
-                        fontSize: 17.0
-                      )
-                    )
-                  )
-                ): Container(
-                  child: ListView.builder(
-                    reverse: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: packages.length > 3 ? 5 * 1 : packages.length * 2,
-                    padding: const EdgeInsets.all(5.0),
-                    itemBuilder: (context, index) {
-                      if (index.isOdd) {
-                        return new Divider();
-                      }
-                      else {
-                        final i = index ~/ 2;
-                        return new ListTile(
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget> [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget> [
-                                  Text(packages[i].name,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500
-                                    )
-                                  ),
-                                  Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
-                                    style: TextStyle(
-                                      color: Colors.grey
-                                    )
-                                  )
-                                ]
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                    padding: EdgeInsets.all(12),
-                                    child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                      shape: BoxShape.circle
-                                    ),
-                                  )
-                                ],
-                              )
-                            ]
-                          )
-                        );
-                      }
-                    }
-                  )
-                )
-              ],
-            )
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.all(5.0),
-            padding: EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              gradient: new LinearGradient(
-                begin: Alignment(0.0, -2.0),
-                colors: [Colors.black, Colors.grey[850]]
-              )
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Availability',
-                  style: TextStyle(
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.w400,
-                  )
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 10.0, left: 10.0, bottom: 10.0, right: 20.0),
-                  child: barberDBAvailability(context)
-                )
-              ],
-            )
-          )
-        ]
+          ]
+        )
       )
     );
   }
 
   Widget feedTab() {
-    return new Column(
-      children: <Widget>[
-        new Container(
-          margin: EdgeInsets.all(0),
-          width: MediaQuery.of(context).size.width,
-          color: Colors.black45,
-          child: new FlatButton(
-            padding: EdgeInsets.all(0),
-            textColor: Colors.blue,
-            child: Text('Book Appointment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),),
-            onPressed: () async {
-              var barberList = await getUserBarbers(context, globals.token);
-              final selectBarberScreen = new SelectBarberScreen(clientBarbers: barberList); 
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => selectBarberScreen));
-            },
-          )
-        ),
-      ]
+    return new Container(
+      child: Column(
+        children: <Widget>[
+          new Container(
+            margin: EdgeInsets.all(5),
+            width: MediaQuery.of(context).size.width,
+            color: Colors.grey[900],
+            child: new FlatButton(
+              padding: EdgeInsets.all(0),
+              textColor: Colors.blue,
+              child: Text('Book Appointment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),),
+              onPressed: () async {
+                var barberList = await getUserBarbers(context, globals.token);
+                final selectBarberScreen = new SelectBarberScreen(clientBarbers: barberList); 
+                Navigator.push(context, new MaterialPageRoute(builder: (context) => selectBarberScreen));
+              },
+            )
+          ),
+        ]
+      )
     );
   }
 
@@ -735,100 +890,107 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                 },
                 child: Column(
                   children: <Widget> [ 
-                    ListTile(
-                      leading: new Container(
-                        width: 50.0,
-                        height: 50.0,
-                        decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.purple,
-                          gradient: new LinearGradient(
-                            colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-                          )
-                        ),
-                        child: Center(child:Text(suggestedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20),))
-                      ),
-                      subtitle: new Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          getRatingWidget(context, double.parse(suggestedBarbers[i].rating)),
-                          Row(
-                            children: <Widget>[
-                              Text(suggestedBarbers[i].city+', '+suggestedBarbers[i].state)
-                            ],
-                          )
-                        ],
-                      ),
-                      title: new Row(
-                        children: <Widget> [
-                          Flexible(
-                            child: Container(
-                              child: Row(
-                                children: <Widget> [
-                                  Container(
-                                    constraints: BoxConstraints(maxWidth: 200),
-                                    child: GestureDetector(
-                                      onTap: () {},
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Text(
-                                            suggestedBarbers[i].name+' '
-                                          ),
-                                          Text(
-                                            '@'+suggestedBarbers[i].username,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey
-                                            )
-                                          )
-                                        ]
-                                      )
-                                    ),
-                                  ),
-                                ]
-                              )
+                    Container(
+                      color: Colors.grey[900],
+                      child: ListTile(
+                        leading: new Container(
+                          width: 50.0,
+                          height: 50.0,
+                          decoration: new BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.purple,
+                            gradient: new LinearGradient(
+                              colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
                             )
                           ),
-                        ]
-                      ),
-                      trailing: !suggestedBarbers[i].hasAdded ? IconButton(
-                        onPressed: () async {
-                          bool res = await addBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
-                          if(res) {
-                            Flushbar(
-                              flushbarPosition: FlushbarPosition.BOTTOM,
-                              title: "Barber Added",
-                              message: "You can now book an appointment with this barber",
-                              duration: Duration(seconds: 2),
-                            )..show(context);
-                            setState(() {
-                              suggestedBarbers[i].hasAdded = true;
-                            });
-                          }
-                        },
-                        color: Colors.green,
-                        icon: Icon(LineIcons.plus),
-                      ) : 
-                      IconButton(
-                        onPressed: () async {
-                          bool res = await removeBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
-                          if(res) {
-                            Flushbar(
-                              flushbarPosition: FlushbarPosition.BOTTOM,
-                              title: "Barber Removed",
-                              message: "This babrber has been removed from your list",
-                              duration: Duration(seconds: 2),
-                            )..show(context);
-                            setState(() {
-                              suggestedBarbers[i].hasAdded = false;
-                            });
-                          }
-                        },
-                        color: Colors.red,
-                        icon: Icon(LineIcons.minus),
-                      ),
+                          child: Center(child:Text(suggestedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20),))
+                        ),
+                        subtitle: new Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            suggestedBarbers[i].shopName != null ?
+                            Text(
+                              suggestedBarbers[i].shopName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold
+                              )
+                            ) : Container(),
+                            Text(suggestedBarbers[i].shopAddress + ', ' + suggestedBarbers[i].city+', '+suggestedBarbers[i].state),
+                            returnDistanceFutureBuilder('${suggestedBarbers[i].shopAddress}, ${suggestedBarbers[i].city}, ${suggestedBarbers[i].state} ${suggestedBarbers[i].zipcode}'),
+                            getRatingWidget(context, double.parse(suggestedBarbers[i].rating)),
+                          ],
+                        ),
+                        title: new Row(
+                          children: <Widget> [
+                            Flexible(
+                              child: Container(
+                                child: Row(
+                                  children: <Widget> [
+                                    Container(
+                                      constraints: BoxConstraints(maxWidth: 200),
+                                      child: GestureDetector(
+                                        onTap: () {},
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Text(
+                                              suggestedBarbers[i].name+' '
+                                            ),
+                                            Text(
+                                              '@'+suggestedBarbers[i].username,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey
+                                              )
+                                            )
+                                          ]
+                                        )
+                                      ),
+                                    ),
+                                  ]
+                                )
+                              )
+                            ),
+                          ]
+                        ),
+                        trailing: !suggestedBarbers[i].hasAdded ? IconButton(
+                          onPressed: () async {
+                            bool res = await addBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
+                            if(res) {
+                              Flushbar(
+                                flushbarPosition: FlushbarPosition.BOTTOM,
+                                title: "Barber Added",
+                                message: "You can now book an appointment with this barber",
+                                duration: Duration(seconds: 2),
+                              )..show(context);
+                              setState(() {
+                                suggestedBarbers[i].hasAdded = true;
+                              });
+                            }
+                          },
+                          color: Colors.green,
+                          icon: Icon(LineIcons.plus),
+                        ) : 
+                        IconButton(
+                          onPressed: () async {
+                            bool res = await removeBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
+                            if(res) {
+                              Flushbar(
+                                flushbarPosition: FlushbarPosition.BOTTOM,
+                                title: "Barber Removed",
+                                message: "This babrber has been removed from your list",
+                                duration: Duration(seconds: 2),
+                              )..show(context);
+                              setState(() {
+                                suggestedBarbers[i].hasAdded = false;
+                              });
+                            }
+                          },
+                          color: Colors.red,
+                          icon: Icon(LineIcons.minus),
+                        ),
+                      )
                     ),
                   ]
                 )
@@ -844,7 +1006,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
         children: <Widget>[
           Container(
             width: 50,
-            height:50,
+            height: 50,
             child: CircularProgressIndicator(
               valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
             )
@@ -910,6 +1072,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
       child: DefaultTabController(
         length: 2,
         child: new Scaffold(
+          backgroundColor: Colors.black87,
           appBar: new AppBar(
             backgroundColor: globals.userColor,
             automaticallyImplyLeading: false,
@@ -920,8 +1083,8 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               textInputAction: TextInputAction.search, 
               decoration: new InputDecoration(
                 contentPadding: EdgeInsets.all(8.0),
-                hintText: searchTabIndex == 0 ? 'Search by username...' : 'Search by name...',
-                fillColor: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[100],
+                hintText: searchTabIndex == 0 ? 'Search by username' : 'Search by name',
+                fillColor: globals.darkModeEnabled ? Colors.grey[900] : Colors.grey[100],
                 filled: true,
                 hintStyle: TextStyle(
                   color: globals.darkModeEnabled ? Colors.white : Colors.black
@@ -1002,7 +1165,6 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             ]
           ),
           body: Container(
-            color: globals.userBrightness == Brightness.light ? lightBackgroundGrey : darkBackgroundGrey,
             child: new WillPopScope(
               onWillPop: () async {
                 return false;
@@ -1043,7 +1205,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             onTap: onNavTapTapped,
             currentIndex: _currentIndex,
             unselectedItemColor: globals.darkModeEnabled ? Colors.white : Colors.black,
-            selectedItemColor: Colors.blue,//Color(0xFF66BB6A), - Green
+            selectedItemColor: Colors.blue,
             items: [
               new BottomNavigationBarItem(
                 icon: Icon(LineIcons.home, size: 29),

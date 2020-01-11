@@ -54,7 +54,7 @@ class BarberProfileScreenState extends State<BarberProfileScreen> {
       child: Column(
         children: <Widget>[
           Container(
-            color: Colors.black12,
+            color: Colors.grey[900],
             padding: EdgeInsets.all(10),
             child: Column(
               children: <Widget> [
@@ -240,6 +240,7 @@ class BarberProfileScreenState extends State<BarberProfileScreen> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
+        backgroundColor: Colors.black87,
         appBar: new AppBar(
           title: new Text('@'+user.username)
         ),

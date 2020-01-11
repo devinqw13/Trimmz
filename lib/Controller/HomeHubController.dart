@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/View/Widgets.dart';
 import '../Model/SuggestedBarbers.dart';
 import '../globals.dart' as globals;
 import '../palette.dart';
@@ -57,7 +58,10 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   }
 
   void initSuggestedBarbers() async {
-    var res1 = await getUserLocation();
+    var res1;
+    Future.delayed(const Duration(milliseconds: 2), () async {
+      res1 = await getUserLocation();
+    });
     var res2 = await getSuggestions(context, globals.token, 1, res1);
     setState(() {
       suggestedBarbers = res2;
@@ -93,6 +97,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   }
 
   Widget suggestBarbers() {
+    if(suggestedBarbers.length > 0){
     return Scrollbar(
       child: new ListView.builder(
         itemCount: suggestedBarbers.length * 2,
@@ -139,21 +144,16 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                     subtitle: new Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        RatingBarIndicator(
-                          rating: double.parse(suggestedBarbers[i].rating),
-                          itemBuilder: (context, index) => Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                          ),
-                          itemCount: 5,
-                          itemSize: 20.0,
-                          direction: Axis.horizontal,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text(suggestedBarbers[i].city+', '+suggestedBarbers[i].state)
-                          ],
-                        )
+                        suggestedBarbers[i].shopName != null ?
+                        Text(
+                          suggestedBarbers[i].shopName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold
+                          )
+                        ) : Container(),
+                        Text(suggestedBarbers[i].shopAddress + ', ' + suggestedBarbers[i].city+', '+suggestedBarbers[i].state),
+                        returnDistanceFutureBuilder('${suggestedBarbers[i].shopAddress}, ${suggestedBarbers[i].city}, ${suggestedBarbers[i].state} ${suggestedBarbers[i].zipcode}'),
+                        getRatingWidget(context, double.parse(suggestedBarbers[i].rating)),
                       ],
                     ),
                     title: new Row(
@@ -234,6 +234,21 @@ class HomeHubScreenState extends State<HomeHubScreen> {
         },
       ),
     );
+    }else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            width: 50,
+            height:50,
+            child: CircularProgressIndicator(
+              valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+            )
+          )
+        ],
+      );
+    }
   }
 
   marketplaceTab() {
@@ -292,6 +307,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
       child: DefaultTabController(
         length: 2,
         child: new Scaffold(
+          backgroundColor: Colors.black87,
           appBar: new AppBar(
             automaticallyImplyLeading: false,
             centerTitle: true,
@@ -376,7 +392,6 @@ class HomeHubScreenState extends State<HomeHubScreen> {
             ]
           ),
           body: Container(
-            color: globals.userBrightness == Brightness.light ? lightBackgroundGrey : darkBackgroundGrey,
             child: new WillPopScope(
               onWillPop: () async {
                 return false;

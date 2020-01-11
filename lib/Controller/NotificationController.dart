@@ -13,8 +13,6 @@ class NotificationScreenState extends State<NotificationScreen> {
 
   buildBody() {
     return Container(
-      //height: 200.0,
-      color: Colors.red,
       child: Container()
     );
   }
@@ -29,6 +27,7 @@ class NotificationScreenState extends State<NotificationScreen> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
+        backgroundColor: Colors.black87,
         appBar: new AppBar(
           title: new Text('Notifications')
         ),

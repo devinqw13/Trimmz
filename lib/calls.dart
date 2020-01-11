@@ -815,9 +815,9 @@ Future<Map<DateTime, List<dynamic>>> getBarberAppointments(BuildContext context,
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(!apt.containsKey(date)) {
-        apt[date] = [{'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status']}];
+        apt[date] = [{'id': item['id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration']}];
       }else {
-        apt[date].add({'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status']});
+        apt[date].add({'id': item['id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration']});
       }
     }
 
@@ -1053,7 +1053,7 @@ Future<bool> setTimeAvailability(BuildContext context, int userid, String day, D
   }
 }
 
-Future<bool> bookAppointment(BuildContext context, int userId, String barberId, int price, DateTime time, String packageId) async {
+Future<bool> bookAppointment(BuildContext context, int userId, String barberId, int price, DateTime time, String packageId, int tip) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -1067,7 +1067,8 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
     "barberid": barberId,
     "price": price,
     "time": time.toString(),
-    "packageid" : packageId
+    "packageid" : packageId,
+    "tip": tip
   };
 
   String url = "${globals.baseUrl}bookAppointment/";
@@ -1082,6 +1083,8 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
     showErrorDialog(context, "An error has occurred (017)", "Please try again.");
     return false;
   }
+
+  print(response.body);
 
   if (json.decode(response.body) is List) {
     var responseBody = response.body.substring(1, response.body.length - 1);
@@ -1452,6 +1455,47 @@ Future<bool> updatePackage(BuildContext context, int userid, int type, [String n
   };
 
   String url = "${globals.baseUrl}updatePackage/";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (024)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (024)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == false){
+    return true;
+  }else {
+    return false;
+  }
+}
+
+Future<bool> updateAppointmentStatus(BuildContext context, int appointmentId, int status) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+    "id" : appointmentId,
+    "status": status,
+  };
+
+  String url = "${globals.baseUrl}updateAppointmentStatus/";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));

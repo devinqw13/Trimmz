@@ -295,6 +295,7 @@ class ChangePasswordState extends State<ChangePassword> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
+        backgroundColor: Colors.black87,
         appBar: new AppBar(
           title: new Text('Change Password')
         ),

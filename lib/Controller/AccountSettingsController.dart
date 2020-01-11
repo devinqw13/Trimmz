@@ -167,7 +167,7 @@ class AccountSettingsState extends State<AccountSettings> {
         emailEmpty ? Container() : Text('Email', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         TextField(
           controller: _emailController,
-          keyboardType: TextInputType.text,
+          keyboardType: TextInputType.emailAddress,
           autocorrect: false,
           style: new TextStyle(
             fontSize: 13.0,
@@ -237,12 +237,13 @@ class AccountSettingsState extends State<AccountSettings> {
         margin: EdgeInsets.all(5.0),
         padding: EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          gradient: new LinearGradient(
-            begin: Alignment(0.0, -2.0),
-            colors: [Colors.black, Colors.grey[850]]
-          )
-        ),
+        color: Colors.grey[850],
+        // decoration: BoxDecoration(
+        //   gradient: new LinearGradient(
+        //     begin: Alignment(0.0, -2.0),
+        //     colors: [Colors.black, Colors.grey[850]]
+        //   )
+        // ),
         child: Text('Password', style: TextStyle(fontWeight: FontWeight.bold))
       )
     );
@@ -331,6 +332,7 @@ class AccountSettingsState extends State<AccountSettings> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
+        backgroundColor: Colors.black87,
         appBar: new AppBar(
           title: new Text('Account Settings')
         ),

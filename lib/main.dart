@@ -50,11 +50,8 @@ void main() async {
       },
       theme: new ThemeData(
         primaryColor: Colors.blue,
-        //accentColor: Colors.white,
-        //unselectedWidgetColor: Colors.white,
         brightness: Brightness.dark,
-        //primaryColorBrightness: Brightness.dark,
-        //accentColorBrightness: Brightness.light
+        scaffoldBackgroundColor: Colors.black87
       )
     )
   );

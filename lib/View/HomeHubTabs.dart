@@ -151,7 +151,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
             new Container(
               padding: EdgeInsets.only(left: 10, right: 10),
               child: new Text(
-                "You don't have any feeds. Add a barber to start viewing some cuts!",
+                "Add a barber to start viewing some cuts!",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: MediaQuery.of(context).size.height * .018,

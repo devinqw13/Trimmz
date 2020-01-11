@@ -341,7 +341,8 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         hintColor: Colors.white70,
-        unselectedWidgetColor: Colors.white
+        unselectedWidgetColor: Colors.white,
+        brightness: Brightness.dark
       ),
       child: new Scaffold(
         resizeToAvoidBottomPadding: false,

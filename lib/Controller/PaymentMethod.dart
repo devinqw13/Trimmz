@@ -52,9 +52,10 @@ class HomeHubTabWidgetState extends State<PaymentMethod> {
 
   buildBody() {
     return new Container(
+      margin: EdgeInsets.all(5),
       width: MediaQuery.of(context).size.width,
       child: !isCustomer ? FlatButton(
-        color: Colors.grey[800],
+        color: Colors.grey[850],
         onPressed: () {_onStartCardEntryFlow();},
         child: Text('Add Payment Method')
       ) : new Container(child: Text('Change card'))
@@ -147,7 +148,7 @@ class HomeHubTabWidgetState extends State<PaymentMethod> {
     try {
 
       //bool res = savePaymentMethod(context, card)
-      //await chargeCardTS(context, 100, result.nonce);
+      //await chargeCardTS(context, 100, result.nonce); USE THIS ONE FOR CHARGING
       //await createCustomerTS(context);
 
       InAppPayments.completeCardEntry(
@@ -176,6 +177,7 @@ class HomeHubTabWidgetState extends State<PaymentMethod> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
+        backgroundColor: Colors.black87,
         appBar: AppBar(
           automaticallyImplyLeading: widget.signup ? false : true,
           title: Text("Payment Method"),
@@ -189,7 +191,7 @@ class HomeHubTabWidgetState extends State<PaymentMethod> {
             ) : Container()
           ],
         ),
-        body: new WillPopScope(
+        body: widget.signup ? new WillPopScope(
         onWillPop: () async {
           return false;
         }, child: Stack(
@@ -197,7 +199,7 @@ class HomeHubTabWidgetState extends State<PaymentMethod> {
               buildBody()
             ]
           )
-        ),
+        ) : buildBody(),
       )
     );
   }

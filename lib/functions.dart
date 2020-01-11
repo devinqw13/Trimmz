@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter/material.dart';
 
 final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
@@ -70,4 +71,32 @@ _getAddressFromLatLng(Position currentPosition) async {
   } catch (e) {
     print(e);
   }
+}
+
+Future<String> getDistanceFromBarber(String shopLocation) async {
+  var currentPosition = await getStartLocation();
+  var endPosition = await getEndLocation(shopLocation);
+  var meters = await geolocator.distanceBetween(currentPosition.latitude, currentPosition.longitude, endPosition.latitude, endPosition.longitude);
+
+  var distance = (meters * 0.000621).toStringAsFixed(1);
+  return distance;
+}
+
+getStartLocation() async {
+  Position _currentPosition;
+  await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((Position position) async {
+    _currentPosition = position;
+  }).catchError((e) {
+    print(e);
+  });
+  return _currentPosition;
+}
+
+getEndLocation(String shopLocation) async {
+  Position endDistance;
+  List<Placemark> p = await geolocator.placemarkFromAddress(shopLocation);
+  for(var item in p) {
+    endDistance = item.position;
+  }
+  return endDistance;
 }

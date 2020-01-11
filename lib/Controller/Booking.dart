@@ -94,6 +94,7 @@ class BookingScreenState extends State<BookingScreen> with TickerProviderStateMi
 
   calculateTime(List<Availability> list, DateTime day) {
     final df = new DateFormat('hh:mm a');
+    final df2 = new DateFormat('HH:mm');
     var weekday = DateFormat.EEEE().format(day).toString();
     List<RadioModel> timesList = new List<RadioModel>();
     for(var item in list){
@@ -181,7 +182,7 @@ class BookingScreenState extends State<BookingScreen> with TickerProviderStateMi
               child: new GestureDetector(
                 onTap: () {
                   var date = DateFormat('yyyy-MM-dd').format(DateTime.parse(selectedDate.toString()));
-                  var time = DateFormat('hh:mm:ss').format(DateFormat('hh:mm a').parse(_availableTimes[i].buttonText));
+                  var time = DateFormat('HH:mm:ss').format(DateFormat('hh:mm a').parse(_availableTimes[i].buttonText));
                   setState(() {
                     _availableTimes.forEach((element) => element.isSelected = false);
                     _availableTimes[i].isSelected = true;
@@ -530,13 +531,16 @@ class BookingScreenState extends State<BookingScreen> with TickerProviderStateMi
     );
   }
 
-  bookingAppointment(int userId, String barberId, int price, DateTime time, String packageId) async {
-    if(userId == null || barberId == null || price == null || time == null || packageId == null) {
+  bookingAppointment(int userId, String barberId, int price, DateTime time, String packageId, int tip) async {
+    if(userId == null || barberId == null || price == null || time == null || packageId == null || tip == null) {
       showErrorDialog(context, 'Missing Information', 'Enter/Select all required information');
       return;
     }
 
-    var res = await bookAppointment(context, userId, barberId, price, time, packageId);
+    print('tip');
+    print(tip);
+
+    var res = await bookAppointment(context, userId, barberId, price, time, packageId, tip);
     if(res) {
       if(globals.userType == 1 || globals.userType == 3){
         final homeScreen = new HomeHubScreen(); 
@@ -613,8 +617,7 @@ class BookingScreenState extends State<BookingScreen> with TickerProviderStateMi
             child: RaisedButton(
               color: Colors.blue,
               onPressed: () {
-                int finalPrice = finalTip + finalPackagePrice;
-                bookingAppointment(globals.token, barberInfo.id, finalPrice, finalDateTime, _packageId);
+                bookingAppointment(globals.token, barberInfo.id, finalPackagePrice, finalDateTime, _packageId, finalTip);
               },
               child: Text('Book Appointment')
             ),
@@ -634,6 +637,7 @@ class BookingScreenState extends State<BookingScreen> with TickerProviderStateMi
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
+        backgroundColor: Colors.black87,
         appBar: AppBar(
           title: Text("Booking Appointment"),
           automaticallyImplyLeading: false,

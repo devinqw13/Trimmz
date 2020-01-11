@@ -127,6 +127,7 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
+        backgroundColor: Colors.black87,
         appBar: AppBar(
           title: Text("Select Barber"),
         ),

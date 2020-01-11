@@ -5,6 +5,7 @@ import '../dialogs.dart';
 import '../Model/Packages.dart';
 import '../Model/AppointmentRequests.dart';
 import 'package:intl/intl.dart';
+import '../View/BarberAppointmentOptions.dart';
 
 addBarberPackage(BuildContext context, String name, double price, int duration) async {
   if(name == "" || price.toString() == "" || duration.toString() == "") {
@@ -394,91 +395,9 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
   return results;
 }
 
-showAptOptionModalSheet(BuildContext context, var appointment) async {
-  showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, builder: (builder) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Container(
-        padding: EdgeInsets.all(10.0),
-        height: 355,
-        margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
-        decoration: BoxDecoration(
-          color: Colors.grey[900],
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 2,
-              color: Colors.grey[300],
-              spreadRadius: 0
-            )
-          ]
-        ),
-        child: Stack(
-          children: <Widget> [
-            Container(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: RaisedButton(
-                            onPressed: () {
-
-                            },
-                            child: Text('Complete Appointment'),
-                          )
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: RaisedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              showAptCancelOptionModalSheet(context, appointment);
-                            },
-                            child: Text('Cancel Appointment'),
-                          )
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: RaisedButton(
-                            onPressed: () {
-
-                            },
-                            child: Text('Mark as no-show appointment'),
-                          )
-                        )
-                      ],
-                    ),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: RaisedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('Close')
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ]
-              ),
-            ),
-          ]
-        )
-      )
-    );
-  });
-}
-
 showAptCancelOptionModalSheet(BuildContext context, var appointment) async {
-  showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, builder: (builder) {
+  var appointments;
+  await showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, builder: (builder) {
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
@@ -507,8 +426,13 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment) async {
                         Container(
                           width: MediaQuery.of(context).size.width,
                           child: RaisedButton(
-                            onPressed: () {
-
+                            onPressed: () async {
+                              var res1 = await updateAppointmentStatus(context, int.parse(appointment['id']), 2);
+                              if(res1) {
+                                var res2 = await getBarberAppointments(context, globals.token);
+                                appointments = res2;
+                                Navigator.pop(context);
+                              }
                             },
                             child: Text('Cancel with payment'),
                           )
@@ -533,7 +457,22 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment) async {
                           child: RaisedButton(
                             onPressed: () {
                               Navigator.pop(context);
-                              showAptOptionModalSheet(context, appointment);
+                              showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                                return AppointmentOptionsBottomSheet(
+                                  appointment: appointment,
+                                  getAppointments: (value) {
+
+                                  },
+                                  showCancel: (val) async {
+                                    if(val){
+                                      var res = await showAptCancelOptionModalSheet(context, appointment);
+                                      if(res != null) {
+                                        appointments = res;
+                                      }
+                                    }
+                                  },
+                                );
+                              });
                             },
                             child: Text('Close')
                           ),
@@ -549,4 +488,5 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment) async {
       )
     );
   });
+  return appointments;
 }
