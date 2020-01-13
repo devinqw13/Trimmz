@@ -3,14 +3,13 @@ library flutter_cupertino_settings;
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'globals.dart' as globals;
-import 'palette.dart';
 
 const CS_ITEM_HEIGHT = 50.0;
 var csHeaderColor = globals.darkModeEnabled ? Colors.black87 : const Color(0xFFEEEEF3);
 var csBorderColor = globals.darkModeEnabled ? Colors.white12 : Colors.black12;
 var csTextColor = globals.darkModeEnabled ? Colors.white : Colors.black;
 var csHeaderTextColor = globals.darkModeEnabled ? Colors.white70 : Colors.black54;
-var csRowColor = globals.darkModeEnabled ? Colors.grey[850] : Colors.white;
+var csRowColor = globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Colors.white;
 var csArrowColor = globals.darkModeEnabled ? Colors.white30 : Colors.black26;
 const CS_ITEM_PADDING = const EdgeInsets.only(left: 10.0, right: 10.0);
 const CS_HEADER_FONT_SIZE = 14.0;
@@ -37,7 +36,7 @@ class CupertinoSettings extends StatelessWidget {
     csBorderColor = Colors.white12;
     csTextColor = Colors.white;
     csHeaderTextColor = Colors.white70;
-    csRowColor = Colors.grey[850];
+    csRowColor = Color.fromARGB(255, 21, 21, 21);
     csArrowColor = Colors.white70;
   }
 

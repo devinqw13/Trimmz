@@ -54,7 +54,7 @@ class BarberProfileScreenState extends State<BarberProfileScreen> {
       child: Column(
         children: <Widget>[
           Container(
-            color: Colors.grey[900],
+            color: Color.fromARGB(255, 21, 21, 21),
             padding: EdgeInsets.all(10),
             child: Column(
               children: <Widget> [

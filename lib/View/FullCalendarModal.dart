@@ -71,6 +71,95 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
     );
   }
 
+  buildList() {
+    if(_selectedEvents.length > 0){
+      return Expanded(
+        child: new ListView.builder(
+          shrinkWrap: true,
+          itemCount: _selectedEvents.length,
+          itemBuilder: (context, i) {
+            Color statusColor;
+            if(_selectedEvents[i]['status'] == '0'){
+              var time = _selectedEvents[i]['full_time'];
+              if(DateTime.now().isAfter(DateTime.parse(time))) {
+                statusColor = Colors.grey;
+              }else {
+                statusColor = Colors.blue;
+              }
+            }else if(_selectedEvents[i]['status'] == '1'){
+              statusColor = Colors.green;
+            }else if(_selectedEvents[i]['status'] == '2'){
+              statusColor = Colors.red;
+            }
+            return new Container(
+              margin: EdgeInsets.only(bottom: 1),
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                gradient: new LinearGradient(
+                  begin: Alignment(1.0, .5),
+                  colors: [Colors.black, Colors.black26]
+                )
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        _selectedEvents[i]['name'],
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        )
+                      ),
+                      Text(_selectedEvents[i]['package']),
+                      Text('\$'+(int.parse(_selectedEvents[i]['price']) + int.parse(_selectedEvents[i]['tip'])).toString())
+                    ]
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Text(_selectedEvents[i]['time']),
+                      Text(
+                        statusColor == Colors.grey ? 'Pending' : statusColor == Colors.blue ? 'Upcoming' : statusColor == Colors.green ? 'Completed' : 'Cancelled',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: statusColor == Colors.grey ? Colors.grey : statusColor == Colors.blue ? Colors.blue : statusColor == Colors.green ? Colors.green : Colors.red
+                        )
+                      )
+                    ]
+                  )
+                ]
+              )
+            );
+          },
+        )
+      );
+    }else {
+      return new Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(LineIcons.frown_o, size: MediaQuery.of(context).size.height * .2, color: Colors.grey[600]),
+            new Container(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: new Text(
+                "No Appointments",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: MediaQuery.of(context).size.height * .018,
+                  color: Colors.grey[600]
+                )
+              ),
+            ),
+          ],
+        )
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -80,7 +169,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
         height: MediaQuery.of(context).size.height * .9,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
-          color: Colors.grey[900],
+          color: Color.fromARGB(255, 21, 21, 21),
           borderRadius: BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
@@ -169,69 +258,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
               ],
             ),
             Padding(padding: EdgeInsets.all(5)),
-            Expanded(
-              child: new ListView.builder(
-                shrinkWrap: true,
-                itemCount: _selectedEvents.length,
-                itemBuilder: (context, i) {
-                  Color statusColor;
-                  if(_selectedEvents[i]['status'] == '0'){
-                    var time = _selectedEvents[i]['full_time'];
-                    if(DateTime.now().isAfter(DateTime.parse(time))) {
-                      statusColor = Colors.grey;
-                    }else {
-                      statusColor = Colors.blue;
-                    }
-                  }else if(_selectedEvents[i]['status'] == '1'){
-                    statusColor = Colors.green;
-                  }else if(_selectedEvents[i]['status'] == '2'){
-                    statusColor = Colors.red;
-                  }
-                  return new Container(
-                    margin: EdgeInsets.only(bottom: 1),
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      gradient: new LinearGradient(
-                        begin: Alignment(1.0, .5),
-                        colors: [Colors.black, Colors.black26]
-                      )
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              _selectedEvents[i]['name'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                            Text(_selectedEvents[i]['package']),
-                            Text('\$'+_selectedEvents[i]['price'])
-                          ]
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: <Widget>[
-                            Text(_selectedEvents[i]['time']),
-                            Text(
-                              statusColor == Colors.grey ? 'Pending' : statusColor == Colors.blue ? 'Upcoming' : statusColor == Colors.green ? 'Completed' : 'Cancelled',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: statusColor == Colors.grey ? Colors.grey : statusColor == Colors.blue ? Colors.blue : statusColor == Colors.green ? Colors.green : Colors.red
-                              )
-                            )
-                          ]
-                        )
-                      ]
-                    )
-                  );
-                },
-              )
-            ),
+            buildList(),
             Row(
               children: <Widget>[
                 Expanded(

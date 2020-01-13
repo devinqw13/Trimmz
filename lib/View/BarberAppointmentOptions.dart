@@ -31,7 +31,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
         height: 655,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
-          color: Colors.grey[900],
+          color: Color.fromARGB(255, 21, 21, 21),
           borderRadius: BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
