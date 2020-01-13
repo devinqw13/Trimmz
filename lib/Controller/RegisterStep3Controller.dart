@@ -58,6 +58,9 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
             decoration: new InputDecoration(
               hintText: 'Password',
               hintStyle: TextStyle(color: Colors.white70),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)
+              )
             ),
           )
         )
@@ -94,6 +97,9 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
             decoration: new InputDecoration(
               hintText: 'Confirm Password',
               hintStyle: TextStyle(color: Colors.white70),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)
+              )
             ),
           )
         )
@@ -392,7 +398,8 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
         brightness: Brightness.dark
       ),
       child: new Scaffold(
-        resizeToAvoidBottomPadding: false,
+        backgroundColor: Colors.black,
+        resizeToAvoidBottomPadding: true,
         body: new WillPopScope(
         onWillPop: () async {
           return false;

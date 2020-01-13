@@ -191,7 +191,7 @@ class AccountSettingsState extends State<AccountSettings> {
       decoration: BoxDecoration(
         gradient: new LinearGradient(
           begin: Alignment(0.0, -2.0),
-          colors: [Colors.black, Colors.grey[850]]
+          colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
         )
       ),
       child: Column(
@@ -332,7 +332,7 @@ class AccountSettingsState extends State<AccountSettings> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         appBar: new AppBar(
           title: new Text('Account Settings')
         ),

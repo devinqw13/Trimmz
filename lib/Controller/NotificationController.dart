@@ -27,7 +27,7 @@ class NotificationScreenState extends State<NotificationScreen> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         appBar: new AppBar(
           title: new Text('Notifications')
         ),

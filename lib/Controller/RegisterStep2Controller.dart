@@ -54,6 +54,9 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
             decoration: new InputDecoration(
               hintText: 'Shop Address',
               hintStyle: TextStyle(color: Colors.white70),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)
+              )
             ),
           )
         )
@@ -86,6 +89,9 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
             decoration: new InputDecoration(
               hintText: 'City',
               hintStyle: TextStyle(color: Colors.white70),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)
+              )
             ),
           )
         )
@@ -167,6 +173,9 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
             decoration: new InputDecoration(
               hintText: 'Zipcode',
               hintStyle: TextStyle(color: Colors.white70),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)
+              )
             ),
           )
         )
@@ -345,7 +354,8 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
         brightness: Brightness.dark
       ),
       child: new Scaffold(
-        resizeToAvoidBottomPadding: false,
+        backgroundColor: Colors.black,
+        resizeToAvoidBottomPadding: true,
         body: new WillPopScope(
         onWillPop: () async {
           return false;

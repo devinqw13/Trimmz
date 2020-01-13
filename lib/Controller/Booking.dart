@@ -637,7 +637,7 @@ class BookingScreenState extends State<BookingScreen> with TickerProviderStateMi
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         appBar: AppBar(
           title: Text("Booking Appointment"),
           automaticallyImplyLeading: false,

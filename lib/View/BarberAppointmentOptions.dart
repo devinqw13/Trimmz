@@ -36,7 +36,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
           boxShadow: [
             BoxShadow(
               blurRadius: 2,
-              color: Colors.grey[300],
+              color: Colors.grey[400],
               spreadRadius: 0
             )
           ]

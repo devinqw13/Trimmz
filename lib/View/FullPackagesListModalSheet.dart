@@ -36,7 +36,7 @@ class _FullPackagesBottomSheet extends State<FullPackagesBottomSheet> {
           borderRadius: BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
-              blurRadius: 2, color: Colors.grey[300], spreadRadius: 0
+              blurRadius: 2, color: Colors.grey[400], spreadRadius: 0
             )
           ]
         ),

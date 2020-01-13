@@ -52,26 +52,19 @@ class _AvailabilityBottomSheet extends State<AvailabilityBottomSheet> {
             borderRadius: BorderRadius.all(Radius.circular(15)),
             boxShadow: [
               BoxShadow(
-                  blurRadius: 2, color: Colors.grey[300], spreadRadius: 0)
+                  blurRadius: 2, color: Colors.grey[400], spreadRadius: 0)
             ]),
         child: Column(
           children: <Widget> [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Cancel'),
-                ),
                 Text(
                   aDay.day,
                   style: TextStyle(
                     fontSize: 20.0
                   )
                 ),
-                Container(width: 70.0)
               ],
             ),
             Row(
@@ -131,37 +124,39 @@ class _AvailabilityBottomSheet extends State<AvailabilityBottomSheet> {
                 Text('Mark as closed', style: TextStyle(fontSize: 20.0))
               ],
             ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: FlatButton(
-                    color: Colors.blue,
-                    onPressed: () async {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Cancel')
-                  )
-                ),
-                Padding(padding: EdgeInsets.all(5)),
-                Expanded(
-                  child: FlatButton(
-                    color: Colors.blue,
-                    onPressed: () async {
-                      var res = await setTimeAvailability(context, globals.token, aDay.day, start, end, _switchValue, false);
-                      if(res){
-                        var res1 = await getBarberAvailability(context, globals.token);
-                        setState(() {
-                          widget.getAvailability(res1);
-                        });
+            Expanded(
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: FlatButton(
+                      color: Colors.blue,
+                      onPressed: () async {
                         Navigator.pop(context);
-                      }else {
-                        return;
-                      }
-                    },
-                    child: Text('Confirm')
+                      },
+                      child: Text('Cancel')
+                    )
+                  ),
+                  Padding(padding: EdgeInsets.all(5)),
+                  Expanded(
+                    child: FlatButton(
+                      color: Colors.blue,
+                      onPressed: () async {
+                        var res = await setTimeAvailability(context, globals.token, aDay.day, start, end, _switchValue, false);
+                        if(res){
+                          var res1 = await getBarberAvailability(context, globals.token);
+                          setState(() {
+                            widget.getAvailability(res1);
+                          });
+                          Navigator.pop(context);
+                        }else {
+                          return;
+                        }
+                      },
+                      child: Text('Confirm')
+                    )
                   )
-                )
-              ],
+                ],
+              )
             )
           ]
         )

@@ -116,7 +116,7 @@ class AboutControllerState extends State<AboutController> {
         // accentColorBrightness: Brightness.light
       ),
       child: new Scaffold(
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         appBar: new AppBar(
           centerTitle: true,
           title: new Text("About"),

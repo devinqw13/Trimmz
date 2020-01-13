@@ -16,6 +16,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../functions.dart';
+import '../Model/FeedItems.dart';
+import 'package:line_icons/line_icons.dart';
 
 logout(BuildContext context) async {
   final loginScreen = new LoginScreen();
@@ -201,4 +203,135 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
         );
       },
     );
+  }
+
+  Future<Null> refreshHomeList() async {
+  //  Completer<Null> completer = new Completer<Null>();
+  //   refreshKey.currentState.show();
+  //   //var results = await getTimeline(context);
+  //   var results = await getUserMoves(context);
+  //   completer.complete();
+  //   setState(() {
+  //     userMoves = results;    
+  //   });
+  //   _buildTabBarViewContainer();
+  //   return completer.future;
+  }
+
+  List<Image> _buildImageList(List<FeedItem> timelineItems,double scale) {
+    var imageList = new List<Image>();
+    for (var item in timelineItems) {
+      if (item.userId.toString().length > 0) {
+        imageList.add(new Image.network("", 
+          scale: scale)
+        );
+      } else {
+        imageList.add(new Image.network("https://ocelli.erpsuites.com/ocelli/dist/icons/missing.png", 
+          scale: scale)
+        );
+      }
+    }
+    return imageList;
+  }
+
+  buildFeed(BuildContext context, ) {
+    List<FeedItem> feedItems = [];
+    Radius cardEdgeRadius;
+    List<Image> imageList = new List<Image>();
+    Orientation orientation = MediaQuery.of(context).orientation;
+    double screenHeight =MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+    double textScale = 1.0;
+    double listImageScale;
+    final GlobalKey<RefreshIndicatorState> refreshKey = new GlobalKey<RefreshIndicatorState>();
+
+    // iPad 9.7
+    if (orientation == Orientation.portrait) {
+      if (screenHeight >= 960 &&  screenHeight < 1366) {
+        textScale = 1.2;
+        listImageScale = 2.75;
+        cardEdgeRadius = Radius.circular(8.0);
+      }
+      else if (screenHeight >= 1366) {
+        textScale = 1.55;
+        listImageScale = 2.75;
+        cardEdgeRadius = Radius.circular(8.0);
+      }
+      // Phone
+      else {
+        textScale = 1.1;
+        listImageScale = 3.0;
+        cardEdgeRadius = Radius.circular(8.0);
+      }
+    }
+    else if (orientation == Orientation.landscape) {
+      if (screenWidth >= 812 &&  screenWidth < 1366) {
+        textScale = 1.2;
+        listImageScale = 2.75;
+        cardEdgeRadius = Radius.circular(8.0);
+      } 
+      // iPad 12.9
+      else if (screenWidth >= 1366) {
+        textScale = 1.55;
+        listImageScale = 2.75;
+        cardEdgeRadius = Radius.circular(8.0);
+      }
+      // Phone
+      else {
+        textScale = 1.1;
+        listImageScale = 3.0;
+        cardEdgeRadius = Radius.circular(8.0);
+      }
+    }
+
+    imageList = _buildImageList(feedItems, listImageScale);
+    if (feedItems.length > 0) {
+      return new RefreshIndicator(
+        onRefresh: refreshHomeList,
+        key: refreshKey,
+        child: new ListView.builder(
+          itemCount: feedItems.length * 2,
+          padding: const EdgeInsets.all(5.0),
+          itemBuilder: (context, index) {
+            if (index.isOdd) {
+              return new Divider();
+            }
+            else {
+              final i = index ~/ 2;
+              return new ListTile(
+                leading: imageList[i],
+                title: new Text(feedItems[i].userId.toString(),
+                  style: new TextStyle(
+                    fontSize: 12.0 * textScale
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+      );
+    }else {
+      return new RefreshIndicator(
+        color: globals.darkModeEnabled ? Colors.white : globals.userColor,
+        onRefresh: refreshHomeList,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(LineIcons.frown_o, size: MediaQuery.of(context).size.height * .2, color: Colors.grey[600]),
+            new Container(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: new Text(
+                "Follow a barber to start viewing cuts",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: MediaQuery.of(context).size.height * .018,
+                  color: Colors.grey[600]
+                )
+              ),
+            ),
+          ],
+        )
+      );
+    }
   }

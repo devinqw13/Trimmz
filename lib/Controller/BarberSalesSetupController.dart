@@ -505,7 +505,7 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: Text("Additional Setup"),

@@ -127,6 +127,9 @@ class RegisterScreenState extends State<RegisterScreen> with WidgetsBindingObser
               hintText: 'Name',
               hintStyle: TextStyle(color: Colors.white70),
               suffix: showNameIndicator ? (!nameValid ? Icon(LineIcons.times, color: Colors.red) : Icon(LineIcons.check, color: Colors.green)) : null,
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)
+              )
             ),
           )
         )
@@ -163,6 +166,9 @@ class RegisterScreenState extends State<RegisterScreen> with WidgetsBindingObser
               hintText: 'Username',
               hintStyle: TextStyle(color: Colors.white70),
               suffix: showUsernameIndicator ? (usernameTaken ? Text('Taken', style: TextStyle(color: Colors.red, fontSize: 14)) : Icon(LineIcons.check, color: Colors.green)) : null,
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)
+              )
             ),
           )
         )
@@ -199,6 +205,9 @@ class RegisterScreenState extends State<RegisterScreen> with WidgetsBindingObser
               hintText: 'Email',
               hintStyle: TextStyle(color: Colors.white70),
               suffix: showEmailIndicator ? (!emailValid ? Icon(LineIcons.times, color: Colors.red) : Icon(LineIcons.check, color: Colors.green)) : null,
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)
+              )
             ),
           )
         )
@@ -433,7 +442,8 @@ class RegisterScreenState extends State<RegisterScreen> with WidgetsBindingObser
         unselectedWidgetColor: Colors.white
       ),
       child: new Scaffold(
-        resizeToAvoidBottomPadding: false,
+        backgroundColor: Colors.black,
+        resizeToAvoidBottomPadding: true,
         body: new WillPopScope(
         onWillPop: () async {
           return false;

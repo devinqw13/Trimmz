@@ -34,7 +34,7 @@ Future<List<Packages>> showAddPackageModalSheet(BuildContext context) async {
             borderRadius: BorderRadius.all(Radius.circular(15)),
             boxShadow: [
               BoxShadow(
-                  blurRadius: 2, color: Colors.grey[300], spreadRadius: 0)
+                  blurRadius: 2, color: Colors.grey[400], spreadRadius: 0)
             ]),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,6 +74,9 @@ Future<List<Packages>> showAddPackageModalSheet(BuildContext context) async {
                       borderSide: new BorderSide(
                         color: Colors.white
                       )
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue)
                     )
                   ),
                 ),
@@ -101,6 +104,9 @@ Future<List<Packages>> showAddPackageModalSheet(BuildContext context) async {
                       borderSide: new BorderSide(
                         color: Colors.white
                       )
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue)
                     )
                   ),
                 ),
@@ -128,6 +134,9 @@ Future<List<Packages>> showAddPackageModalSheet(BuildContext context) async {
                       borderSide: new BorderSide(
                         color: Colors.white
                       )
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue)
                     )
                   ),
                 ),
@@ -180,7 +189,7 @@ Future<List<Packages>> showPackageOptionsModalSheet(BuildContext context, String
             borderRadius: BorderRadius.all(Radius.circular(15)),
             boxShadow: [
               BoxShadow(
-                  blurRadius: 2, color: Colors.grey[300], spreadRadius: 0)
+                  blurRadius: 2, color: Colors.grey[400], spreadRadius: 0)
             ]),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -193,7 +202,10 @@ Future<List<Packages>> showPackageOptionsModalSheet(BuildContext context, String
                 new TextField(
                   controller: nameController,
                   decoration: InputDecoration(
-                    hintText: name
+                    hintText: name,
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue)
+                    )
                   ),
                 ),
                 new Padding(
@@ -203,7 +215,10 @@ Future<List<Packages>> showPackageOptionsModalSheet(BuildContext context, String
                 new TextField(
                   controller: priceController,
                   decoration: InputDecoration(
-                    hintText: price
+                    hintText: price,
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue)
+                    )
                   ),
                 ),
                 new Padding(
@@ -213,7 +228,10 @@ Future<List<Packages>> showPackageOptionsModalSheet(BuildContext context, String
                 new TextField(
                   controller: durationController,
                   decoration: InputDecoration(
-                    hintText: duration
+                    hintText: duration,
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue)
+                    )
                   ),
                 ),
                 new Padding(
@@ -282,7 +300,7 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
           boxShadow: [
             BoxShadow(
               blurRadius: 2,
-              color: Colors.grey[300],
+              color: Colors.grey[400],
               spreadRadius: 0
             )
           ]
@@ -410,7 +428,7 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment) async {
           boxShadow: [
             BoxShadow(
               blurRadius: 2,
-              color: Colors.grey[300],
+              color: Colors.grey[400],
               spreadRadius: 0
             )
           ]

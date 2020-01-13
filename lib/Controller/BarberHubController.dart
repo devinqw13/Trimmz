@@ -4,7 +4,6 @@ import 'package:trimmz/Model/availability.dart';
 import 'package:trimmz/dialogs.dart';
 import '../Model/SuggestedBarbers.dart';
 import '../globals.dart' as globals;
-import '../palette.dart';
 import '../View/BarberHubTabs.dart';
 import 'package:line_icons/line_icons.dart';
 import 'NotificationController.dart';
@@ -24,6 +23,7 @@ import '../functions.dart';
 import '../View/FullPackagesListModalSheet.dart';
 import '../View/BarberAppointmentOptions.dart';
 import '../View/Widgets.dart';
+import '../View/FullCalendarModal.dart';
 
 class BarberHubScreen extends StatefulWidget {
   BarberHubScreen({Key key}) : super (key: key);
@@ -211,8 +211,6 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                       },
                       showCancel: (val) async {
                         if(val){
-                          print('val');
-                          print(val);
                           var res = await showAptCancelOptionModalSheet(context, _selectedEvents[i]);
                           if(res != null) {
                             setState(() {
@@ -309,7 +307,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   }
 
   showSetAvailableTime(BuildContext context, Availability aDay) async {
-    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: false, builder: (builder) {
+    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
       bool isClosedChecked;
       if(aDay.start == null && aDay.end == null){
         isClosedChecked = true;
@@ -472,7 +470,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                 padding: EdgeInsets.only(left: 5, right: 20, bottom: 5, top: 5),
                 decoration: BoxDecoration(
                   gradient: new LinearGradient(
-                    begin: Alignment(0.0, -2.0),//Alignment.center,
+                    begin: Alignment(0.0, -2.0),
                     colors: [Colors.black, Colors.grey[900]]
                   )
                 ),
@@ -585,7 +583,11 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                         top: MediaQuery.of(context).size.width * .043,
                         child: GestureDetector(
                           onTap: () {
-                            print('dkddkd');
+                            showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                              return FullCalendarModal(
+                                appointments: _events,
+                              );
+                            });
                           },
                           child: Icon(Icons.menu, color: Colors.blue)
                         )
@@ -828,7 +830,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
           new Container(
             margin: EdgeInsets.all(5),
             width: MediaQuery.of(context).size.width,
-            color: Colors.grey[900],
+            color: Colors.black45,
             child: new FlatButton(
               padding: EdgeInsets.all(0),
               textColor: Colors.blue,
@@ -840,6 +842,9 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               },
             )
           ),
+          Expanded(
+            child: buildFeed(context) 
+          )
         ]
       )
     );
@@ -891,7 +896,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                 child: Column(
                   children: <Widget> [ 
                     Container(
-                      color: Colors.grey[900],
+                      color: Colors.black87,
                       child: ListTile(
                         leading: new Container(
                           width: 50.0,
@@ -1072,7 +1077,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
       child: DefaultTabController(
         length: 2,
         child: new Scaffold(
-          backgroundColor: Colors.black87,
+          backgroundColor: Colors.black,
           appBar: new AppBar(
             backgroundColor: globals.userColor,
             automaticallyImplyLeading: false,

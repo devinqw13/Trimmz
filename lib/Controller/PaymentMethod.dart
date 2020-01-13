@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:square_in_app_payments/models.dart';
 import 'package:square_in_app_payments/in_app_payments.dart';
 import 'package:square_in_app_payments/google_pay_constants.dart' as google_pay_constants;
@@ -24,51 +25,55 @@ class HomeHubTabWidgetState extends State<PaymentMethod> {
   bool googlePayEnabled = false;
   List<ClientPaymentMethod> paymentMethod = [];
   bool isCustomer = false;
+  Brand cardBrand;
+  String customerId = '';
+  String ccof = '';
 
   @override
   void initState() {
     super.initState();
-
-    //getPaymentMethod();
-
     checkExistingCustomer();
-
     _initSquarePayment();
-    //_onStartCardEntryFlow();
   }
 
   checkExistingCustomer() async {
     var customers = await getCustomerTS(context);
-    print(customers);
-
-    for(var item in customers) {
-      if(item['reference_id'] == globals.token) {
-        setState(() {
-          isCustomer = true;
-        });
+    if(customers != null) {
+      for(var item in customers) {
+        if(item['reference_id'] == globals.token) {
+          setState(() {
+            isCustomer = true;
+          });
+        }
       }
     }
   }
 
-  buildBody() {
-    return new Container(
-      margin: EdgeInsets.all(5),
-      width: MediaQuery.of(context).size.width,
-      child: !isCustomer ? FlatButton(
-        color: Colors.grey[850],
-        onPressed: () {_onStartCardEntryFlow();},
-        child: Text('Add Payment Method')
-      ) : new Container(child: Text('Change card'))
-    );
+  setSquareGlobals() {
+    setState(() {
+      globals.sqccof = ccof;
+      globals.sqCustomerId = customerId;
+    });
+    print('globals');
+    print(globals.sqccof);
+    print(globals.sqCustomerId);
   }
 
-  // void getPaymentMethod() async {
-  //   var paymentMethodList = await getPaymentMethodItems(context);
-
-  //   setState(() {
-  //     paymentMethod = paymentMethodList;  
-  //   });
-  // }
+  buildBody() {
+    return new Column(
+      children: <Widget> [
+        Container(
+          margin: EdgeInsets.all(5),
+          width: MediaQuery.of(context).size.width,
+          child: !isCustomer ? FlatButton(
+            color: Colors.grey[850],
+            onPressed: () {_onStartCardEntryFlow();},
+            child: Text('Add Payment Method')
+          ) : Container(child: Text(cardBrand.name))
+        )
+      ]
+    );
+  }
 
   Future<void> _initSquarePayment() async {
     await InAppPayments.setSquareApplicationId(squareApplicationId);
@@ -144,12 +149,24 @@ class HomeHubTabWidgetState extends State<PaymentMethod> {
   * card entry is still open and waiting for processing card nonce details
   */
   void _onCardEntryCardNonceRequestSuccess(CardDetails result) async {
-    print(result);
     try {
+      setState(() {
+        cardBrand = result.card.brand;
+      });
 
-      //bool res = savePaymentMethod(context, card)
-      //await chargeCardTS(context, 100, result.nonce); USE THIS ONE FOR CHARGING
-      //await createCustomerTS(context);
+      var res = await createCustomerTS(context);
+      var res2 = await createCustomerCardTS(context, res['id'], result.nonce);
+      print(res2);
+      if(res2.length > 0) {
+        setState(() {
+          customerId = res['id'];
+          ccof = res2['id'];
+        });
+        setSquareGlobals();
+        await chargeCardV2TS(context, 100, ccof, customerId);
+      }
+
+      //await chargeCardV2TS(context, 100, result.nonce);
 
       InAppPayments.completeCardEntry(
           onCardEntryComplete: _onCardEntryComplete);
@@ -177,7 +194,7 @@ class HomeHubTabWidgetState extends State<PaymentMethod> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         appBar: AppBar(
           automaticallyImplyLeading: widget.signup ? false : true,
           title: Text("Payment Method"),

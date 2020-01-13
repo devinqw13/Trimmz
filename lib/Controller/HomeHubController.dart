@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:trimmz/View/Widgets.dart';
 import '../Model/SuggestedBarbers.dart';
 import '../globals.dart' as globals;
-import '../palette.dart';
 import '../View/HomeHubTabs.dart';
 import 'package:line_icons/line_icons.dart';
 import 'NotificationController.dart';
 import 'package:badges/badges.dart';
 import '../calls.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flushbar/flushbar.dart';
 import '../Model/ClientBarbers.dart';
 import 'BarberProfileController.dart';
@@ -128,105 +126,108 @@ class HomeHubScreenState extends State<HomeHubScreen> {
               },
               child: Column(
                 children: <Widget> [ 
-                  ListTile(
-                    leading: new Container(
-                      width: 50.0,
-                      height: 50.0,
-                      decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.purple,
-                        gradient: new LinearGradient(
-                          colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-                        )
-                      ),
-                      child: Center(child:Text(suggestedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20),))
-                    ),
-                    subtitle: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        suggestedBarbers[i].shopName != null ?
-                        Text(
-                          suggestedBarbers[i].shopName,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold
-                          )
-                        ) : Container(),
-                        Text(suggestedBarbers[i].shopAddress + ', ' + suggestedBarbers[i].city+', '+suggestedBarbers[i].state),
-                        returnDistanceFutureBuilder('${suggestedBarbers[i].shopAddress}, ${suggestedBarbers[i].city}, ${suggestedBarbers[i].state} ${suggestedBarbers[i].zipcode}'),
-                        getRatingWidget(context, double.parse(suggestedBarbers[i].rating)),
-                      ],
-                    ),
-                    title: new Row(
-                      children: <Widget> [
-                        Flexible(
-                          child: Container(
-                            child: Row(
-                              children: <Widget> [
-                                Container(
-                                  constraints: BoxConstraints(maxWidth: 200),
-                                  child: GestureDetector(
-                                    onTap: () {},
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Text(
-                                          suggestedBarbers[i].name+' '
-                                        ),
-                                        Text(
-                                          '@'+suggestedBarbers[i].username,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey
-                                          )
-                                        )
-                                      ]
-                                    )
-                                  ),
-                                ),
-                              ]
-                            )
+                  Container(
+                    color: Colors.black87,
+                    child: ListTile(
+                      leading: new Container(
+                        width: 50.0,
+                        height: 50.0,
+                        decoration: new BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.purple,
+                          gradient: new LinearGradient(
+                            colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
                           )
                         ),
-                      ]
-                    ),
-                    trailing: !suggestedBarbers[i].hasAdded ? IconButton(
-                      onPressed: () async {
-                        bool res = await addBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
-                        if(res) {
-                          Flushbar(
-                            flushbarPosition: FlushbarPosition.BOTTOM,
-                            title: "Barber Added",
-                            message: "You can now book an appointment with this barber",
-                            duration: Duration(seconds: 2),
-                          )..show(context);
-                          setState(() {
-                            suggestedBarbers[i].hasAdded = true;
-                          });
-                        }
-                      },
-                      color: Colors.green,
-                      icon: Icon(LineIcons.plus),
-                    ) : 
-                    IconButton(
-                      onPressed: () async {
-                        bool res = await removeBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
-                        if(res) {
-                          Flushbar(
-                            flushbarPosition: FlushbarPosition.BOTTOM,
-                            title: "Barber Removed",
-                            message: "This babrber has been removed from your list",
-                            duration: Duration(seconds: 2),
-                          )..show(context);
-                          setState(() {
-                            suggestedBarbers[i].hasAdded = false;
-                          });
-                        }
-                      },
-                      color: Colors.red,
-                      icon: Icon(LineIcons.minus),
-                    ),
-                  ),
+                        child: Center(child:Text(suggestedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20),))
+                      ),
+                      subtitle: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          suggestedBarbers[i].shopName != null ?
+                          Text(
+                            suggestedBarbers[i].shopName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold
+                            )
+                          ) : Container(),
+                          Text(suggestedBarbers[i].shopAddress + ', ' + suggestedBarbers[i].city+', '+suggestedBarbers[i].state),
+                          returnDistanceFutureBuilder('${suggestedBarbers[i].shopAddress}, ${suggestedBarbers[i].city}, ${suggestedBarbers[i].state} ${suggestedBarbers[i].zipcode}'),
+                          getRatingWidget(context, double.parse(suggestedBarbers[i].rating)),
+                        ],
+                      ),
+                      title: new Row(
+                        children: <Widget> [
+                          Flexible(
+                            child: Container(
+                              child: Row(
+                                children: <Widget> [
+                                  Container(
+                                    constraints: BoxConstraints(maxWidth: 200),
+                                    child: GestureDetector(
+                                      onTap: () {},
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: <Widget>[
+                                          Text(
+                                            suggestedBarbers[i].name+' '
+                                          ),
+                                          Text(
+                                            '@'+suggestedBarbers[i].username,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey
+                                            )
+                                          )
+                                        ]
+                                      )
+                                    ),
+                                  ),
+                                ]
+                              )
+                            )
+                          ),
+                        ]
+                      ),
+                      trailing: !suggestedBarbers[i].hasAdded ? IconButton(
+                        onPressed: () async {
+                          bool res = await addBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
+                          if(res) {
+                            Flushbar(
+                              flushbarPosition: FlushbarPosition.BOTTOM,
+                              title: "Barber Added",
+                              message: "You can now book an appointment with this barber",
+                              duration: Duration(seconds: 2),
+                            )..show(context);
+                            setState(() {
+                              suggestedBarbers[i].hasAdded = true;
+                            });
+                          }
+                        },
+                        color: Colors.green,
+                        icon: Icon(LineIcons.plus),
+                      ) : 
+                      IconButton(
+                        onPressed: () async {
+                          bool res = await removeBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
+                          if(res) {
+                            Flushbar(
+                              flushbarPosition: FlushbarPosition.BOTTOM,
+                              title: "Barber Removed",
+                              message: "This babrber has been removed from your list",
+                              duration: Duration(seconds: 2),
+                            )..show(context);
+                            setState(() {
+                              suggestedBarbers[i].hasAdded = false;
+                            });
+                          }
+                        },
+                        color: Colors.red,
+                        icon: Icon(LineIcons.minus),
+                      ),
+                    )
+                  )
                 ]
               )
             );
@@ -307,7 +308,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
       child: DefaultTabController(
         length: 2,
         child: new Scaffold(
-          backgroundColor: Colors.black87,
+          backgroundColor: Colors.black,
           appBar: new AppBar(
             automaticallyImplyLeading: false,
             centerTitle: true,
@@ -317,8 +318,8 @@ class HomeHubScreenState extends State<HomeHubScreen> {
               textInputAction: TextInputAction.search, 
               decoration: new InputDecoration(
                 contentPadding: EdgeInsets.all(8.0),
-                hintText: searchTabIndex == 0 ? 'Search by username...' : 'Search by name...',
-                fillColor: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[100],
+                hintText: searchTabIndex == 0 ? 'Search by username' : 'Search by name',
+                fillColor: globals.darkModeEnabled ? Colors.grey[900] : Colors.grey[100],
                 filled: true,
                 hintStyle: TextStyle(
                   color: globals.darkModeEnabled ? Colors.white : Colors.black

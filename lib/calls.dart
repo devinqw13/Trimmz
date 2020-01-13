@@ -286,7 +286,7 @@ Future<List> getCustomerTS(BuildContext context) async {
   return jsonResponse['customers'];
 }
 
-Future<bool> createCustomerTS(BuildContext context) async {
+Future<Map> createCustomerTS(BuildContext context) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Authorization' : 'Bearer $squareAccessToken', 
@@ -307,14 +307,12 @@ Future<bool> createCustomerTS(BuildContext context) async {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (006)", "Please try again. If this error continues to occur, please contact support.");
-    return false;
+    return {};
   } 
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (006)", "Please try again.");
-    return false;
+    return {};
   }
-
-  print(jsonResponse);
 
   if (json.decode(response.body) is List) {
     var responseBody = response.body.substring(1, response.body.length - 1);
@@ -323,10 +321,10 @@ Future<bool> createCustomerTS(BuildContext context) async {
     jsonResponse = json.decode(response.body);
   }
 
-  return true;
+  return jsonResponse['customer'];
 }
 
-Future<bool> createCustomerCardTS(BuildContext context, String id, String nonce) async {
+Future<Map> createCustomerCardTS(BuildContext context, String id, String nonce) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Authorization' : 'Bearer $squareAccessToken', 
@@ -346,11 +344,11 @@ Future<bool> createCustomerCardTS(BuildContext context, String id, String nonce)
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (007)", "Please try again. If this error continues to occur, please contact support.");
-    return false;
+    return {};
   } 
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (007)", "Please try again.");
-    return false;
+    return {};
   }
 
   if (json.decode(response.body) is List) {
@@ -360,9 +358,11 @@ Future<bool> createCustomerCardTS(BuildContext context, String id, String nonce)
     jsonResponse = json.decode(response.body);
   }
 
-  print(jsonResponse);
-
-  return true;
+  if(jsonResponse.length > 0) {
+    return jsonResponse['card'];
+  }else {
+    return {};
+  }
 }
 
 Future<bool> chargeCardTS(BuildContext context, int amount, String nonce) async {
@@ -406,7 +406,51 @@ Future<bool> chargeCardTS(BuildContext context, int amount, String nonce) async 
     jsonResponse = json.decode(response.body);
   }
 
-  print(jsonResponse);
+  return true;
+}
+
+Future<bool> chargeCardV2TS(BuildContext context, int amount, String ccof, String customerId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Authorization' : 'Bearer $squareAccessToken', 
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var uuid = Uuid().v4();
+
+  var jsonMap = {
+    "idempotency_key": "$uuid", 
+    "amount_money" : {
+      "amount" : amount,
+      "currency" : "USD"
+    },
+    "source_id" : "$ccof",
+    "customer_id": "$customerId"
+  };
+
+  String url = "$squareURL/v2/payments";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (008)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  } 
+
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (008)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
 
   return true;
 }

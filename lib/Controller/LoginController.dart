@@ -126,6 +126,7 @@ class LoginScreenState extends State<LoginScreen> {
     Widget usernameTextField() {
       return new Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        width: MediaQuery.of(context).size.width * .80,
         child: new Row(
           children: <Widget>[
             new Expanded(
@@ -140,7 +141,10 @@ class LoginScreenState extends State<LoginScreen> {
                 decoration: new InputDecoration(
                   prefixIcon: Icon(Icons.person, color: Colors.white),
                   hintText: 'Username',
-                  hintStyle: TextStyle(color: Colors.white70)
+                  hintStyle: TextStyle(color: Colors.white70),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue)
+                  )
                 ),
                 onSubmitted: (newValue) {
                   FocusScope.of(context).requestFocus(_passwordController ?? new FocusNode());
@@ -154,6 +158,7 @@ class LoginScreenState extends State<LoginScreen> {
 
     Widget passwordTextField = new Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+      width: MediaQuery.of(context).size.width * .80,
       child: new TextField(
         controller: _passwordController,
         obscureText: true,
@@ -174,6 +179,9 @@ class LoginScreenState extends State<LoginScreen> {
             borderSide: new BorderSide(
               color: Colors.white
             )
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue)
           )
         ),
       ),
@@ -219,6 +227,7 @@ class LoginScreenState extends State<LoginScreen> {
         brightness: Brightness.dark,
       ),
       child: new Scaffold(
+        backgroundColor: Colors.black,
         resizeToAvoidBottomPadding: true,
         body: new Container(
           child: Stack(
