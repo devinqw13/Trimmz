@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:square_in_app_payments/models.dart';
 import 'package:square_in_app_payments/in_app_payments.dart';
 import 'package:square_in_app_payments/google_pay_constants.dart' as google_pay_constants;
 import 'dart:io' show Platform;
-import '../Model/PaymentMethodConfig.dart';
+import '../Model/SqPaymentMethodConfig.dart';
 import '../globals.dart' as globals;
 import '../Model/ClientPaymentMethod.dart';
-import '../calls.dart';
 import '../TransactionService.dart';
 import 'HomeHubController.dart';
 

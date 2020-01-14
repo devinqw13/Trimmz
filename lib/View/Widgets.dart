@@ -6,7 +6,7 @@ import '../Controller/PaymentMethod.dart';
 import '../Controller/LoginController.dart';
 import '../globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../Controller/BarberProfileController.dart';
+import '../Controller/BarberProfileV2Controller.dart';
 import '../calls.dart';
 import '../Model/availability.dart';
 import 'package:intl/intl.dart';
@@ -45,7 +45,7 @@ settingsWidget(BuildContext context) {
     }),
 
     globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
-    globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); final profileScreen = new BarberProfileScreen(token: globals.token, userInfo: res); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}) : Container(),
+    globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}) : Container(),
     //globals.userType == 2 ? CSLink('Settings', () {}) : Container(),
     globals.userType == 2 ? CSLink('Mobile Transactions', () {}) : Container(),
 

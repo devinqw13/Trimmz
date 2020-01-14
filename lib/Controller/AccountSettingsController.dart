@@ -103,7 +103,7 @@ class AccountSettingsState extends State<AccountSettings> {
               shape: BoxShape.circle,
               color: Colors.purple,
               gradient: new LinearGradient(
-                colors: [Colors.red, Colors.blue]
+                colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
               )
             ),
             child: Center(child:Text(globals.name.substring(0,1), style: TextStyle(fontSize: 20)))

@@ -17,7 +17,7 @@ import 'package:intl/intl.dart';
 import '../View/ModalSheets.dart';
 import '../Model/availability.dart';
 import '../View/SetAvailabilityModal.dart';
-import 'BarberProfileController.dart';
+import 'BarberProfileV2Controller.dart';
 import '../Model/ClientBarbers.dart';
 import '../functions.dart';
 import '../View/FullPackagesListModalSheet.dart';
@@ -890,7 +890,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                   barber.state = suggestedBarbers[i].state;
                   barber.zipcode = suggestedBarbers[i].zipcode;
                   // barber.created = suggestedBarbers[i].created;
-                  final profileScreen = new BarberProfileScreen(token: globals.token, userInfo: barber);
+                  final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber);
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                 },
                 child: Column(
