@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'LoginController.dart';
 import '../functions.dart';
 import '../globals.dart' as globals;
-import 'PaymentMethod.dart';
+import 'PaymentMethodController.dart';
 import 'BarberSalesSetupController.dart';
 
 class RegisterStep3Screen extends StatefulWidget {
@@ -296,7 +296,7 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
       setGlobals(userInfo);
 
       if(widget.accountType == '1') {
-        final paymentMethod = new PaymentMethod(signup: true);
+        final paymentMethod = new PaymentMethodScreen(signup: true);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => paymentMethod));
       }else {
         await setTimeAvailability(context, globals.token, '', null, null, null, true);

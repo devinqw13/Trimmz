@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../CustomCupertinoSettings.dart';
 import '../Controller/AboutController.dart';
-import '../Controller/PaymentMethod.dart';
+import '../Controller/PaymentMethodController.dart';
 import '../Controller/LoginController.dart';
 import '../globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,7 +50,7 @@ settingsWidget(BuildContext context) {
     globals.userType == 2 ? CSLink('Mobile Transactions', () {}) : Container(),
 
     new CSHeader('Payment'),
-    new CSLink('Payment Method', () {final paymentMethodScreen = new PaymentMethod(signup: false); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}),
+    new CSLink('Payment Method', () {final paymentMethodScreen = new PaymentMethodScreen(signup: false); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}),
 
     new CSHeader('Share'),
     new CSLink('Recommend Trimmz', () async {

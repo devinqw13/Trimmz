@@ -44,8 +44,8 @@ class AboutControllerState extends State<AboutController> {
             children: <Widget>[
               new ClipRRect(
                 borderRadius: new BorderRadius.circular(10.0),
-                child: new Image.asset('images/trimmz_icon_g.png',
-                  height: 140.0,
+                child: new Image.asset('images/trimmz_icon_t.png',
+                  height: 200.0,
                 )
               ),
               new Padding(

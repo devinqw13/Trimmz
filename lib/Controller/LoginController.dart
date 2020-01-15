@@ -117,8 +117,8 @@ class LoginScreenState extends State<LoginScreen> {
       margin: EdgeInsets.only(top: 0.0),
       child: new ClipRRect(
         borderRadius: new BorderRadius.circular(10.0),
-        child: new Image.asset('images/trimmz_icon_g.png',
-          height: 140.0,
+        child: new Image.asset('images/trimmz_icon_t.png',
+          height: 200.0,
         )
       ),
     );
