@@ -8,7 +8,7 @@ String email;
 bool userAdmin;
 int userType;
 String sqccof;
-String sqCustomerId;
+String spCustomerId;
 
 LoginUser user;
 
@@ -26,5 +26,5 @@ class LoginUser {
   bool userAdmin;
   int userType;
   String ccof;
-  String sqCustomerId;
+  String spCustomerId;
 }

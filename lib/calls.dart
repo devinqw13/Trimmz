@@ -199,57 +199,6 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
   }
 }
 
-Future<List<ClientPaymentMethod>> getPaymentMethodItems(BuildContext context) async {
-  Map<String, String> headers = {
-    'Content-Type' : 'application/x-www-form-urlencoded',
-    'Content-type' : 'application/json', 
-    'Accept': 'application/json',
-  };
-
-  Map jsonResponse = {};
-  http.Response response;
-
-  var jsonMap = {"userid": globals.token};
-
-  String url = "${globals.baseUrl}getPaymentMethod/";
-
-  try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
-  } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (004)", "Please try again. If this error continues to occur, please contact support.");
-    return new List();
-  } 
-  if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (004)", "Please try again.");
-    return new List();
-  }
-
-  if (json.decode(response.body) is List) {
-    var responseBody = response.body.substring(1, response.body.length - 1);
-    jsonResponse = json.decode(responseBody);
-  } else {
-    jsonResponse = json.decode(response.body);
-  }
-
-  if (jsonResponse['error'] == false) {
-    List<ClientPaymentMethod> paymentMethodItems = [];
-    var paymentMethodItem = new ClientPaymentMethod();
-    paymentMethodItem.cardNonce = "";
-    paymentMethodItem.brand = "";
-    paymentMethodItem.lastFour = 0;
-    paymentMethodItem.expMonth = 0;
-    paymentMethodItem.expYear = 0;
-    paymentMethodItem.type = "";
-    paymentMethodItem.prepaidType = "";
-    paymentMethodItem.zipcode = 0;
-    paymentMethodItems.add(paymentMethodItem);
-    return paymentMethodItems;
-  }else {
-    return [];
-  }
-
-}
-
 Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, int type, [List location]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
@@ -1185,7 +1134,7 @@ Future<bool> changePassword(BuildContext context, String newPassword, int userid
   }
 }
 
-Future<Map> updateSettings(BuildContext context, int userid, int type, [String name, String email]) async {
+Future<Map> updateSettings(BuildContext context, int userid, int type, [String name, String email, String spCustomerId]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -1198,7 +1147,8 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
     "userid" : userid,
     "type": type,
     "name": name != null ? name : null,
-    "email": email != null ? email : null
+    "email": email != null ? email : null,
+    "sp_customerid": spCustomerId != null ? spCustomerId : null
   };
 
   String url = "${globals.baseUrl}updateSettings/";
@@ -1209,6 +1159,7 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
     showErrorDialog(context, "The Server is not responding (023)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
+  
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (023)", "Please try again.");
     return {};

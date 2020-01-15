@@ -46,7 +46,6 @@ settingsWidget(BuildContext context) {
 
     globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
     globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}) : Container(),
-    //globals.userType == 2 ? CSLink('Settings', () {}) : Container(),
     globals.userType == 2 ? CSLink('Mobile Transactions', () {}) : Container(),
 
     new CSHeader('Payment'),

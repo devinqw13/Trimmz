@@ -1,10 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
+
 class ClientPaymentMethod {
-  String cardNonce;
+  String id;
   String brand;
-  int lastFour;
-  int expMonth;
-  int expYear;
-  String type;
-  String prepaidType;
-  int zipcode;
+  String lastFour;
+  String fingerprint;
+  Icon icon = Icon(LineIcons.cc);
 }

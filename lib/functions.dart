@@ -15,6 +15,7 @@ setGlobals(Map results) async {
   user.userEmail = results['user']['email'];
   user.userAdmin = results['user']['type'] == 3 ? true : false;
   user.userType = results['user']['type'];
+  user.spCustomerId = results['user']['sp_customerid'];
 
   globals.user = user;
   globals.token = user.token;
@@ -23,6 +24,7 @@ setGlobals(Map results) async {
   globals.email = user.userEmail;
   globals.userAdmin = user.userAdmin;
   globals.userType = user.userType;
+  globals.spCustomerId = user.spCustomerId;
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
@@ -41,6 +43,7 @@ setGlobals(Map results) async {
   prefs.setString('userUserEmail', globals.user.userEmail);
   prefs.setBool('userIsAdmin', globals.user.userAdmin);
   prefs.setInt('userType', globals.user.userType);
+  prefs.setString('spCustomerId', globals.user.spCustomerId);
 }
 
 getUserLocation() async {
