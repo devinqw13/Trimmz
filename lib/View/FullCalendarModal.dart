@@ -28,7 +28,6 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
     final _selectedDay = DateTime.parse(df.format(DateTime.parse(DateTime.now().toString())));
     _events = widget.appointments;
 
-    print(widget.selectDate);
     if(widget.selectDate != null){
       DateTime previousDateSelected = DateTime.parse(df.format(DateTime.parse(widget.selectDate.toString())));
       _selectedEvents = _events[previousDateSelected];
@@ -209,7 +208,8 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
                 rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.blue)
               ),
               calendarStyle: CalendarStyle(
-                weekendStyle: const TextStyle(color: Colors.white)
+                weekendStyle: const TextStyle(color: Colors.white),
+                outsideWeekendStyle: TextStyle(color: Color(0xFF9E9E9E)),
               ),
               headerVisible: true,
               calendarController: _calendarController,

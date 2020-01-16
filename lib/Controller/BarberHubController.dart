@@ -58,6 +58,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   final df2 = new DateFormat('yyyy-MM-dd');
   Colors status;
   List<AppointmentRequest> appointmentReq = [];
+  DateTime _calendarSelectDay = DateTime.now();
 
   @override
   void initState() {
@@ -303,6 +304,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
 
   void _onDaySelected(DateTime day, List events) {
     setState(() {
+      _calendarSelectDay = day;
       _selectedEvents = events;
     });
   }
@@ -548,6 +550,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                         locale: 'en_US',
                         events: _events,
                         onDaySelected: _onDaySelected,
+                        initialSelectedDay: _calendarSelectDay,
                         availableGestures: AvailableGestures.horizontalSwipe,
                         daysOfWeekStyle: DaysOfWeekStyle(
                           weekdayStyle: const TextStyle(color: const Color(0xFFf2f2f2)),
@@ -559,7 +562,8 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                           rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.blue)
                         ),
                         calendarStyle: CalendarStyle(
-                          weekendStyle: const TextStyle(color: Colors.white)
+                          weekendStyle: const TextStyle(color: Colors.white),
+                          outsideWeekendStyle: TextStyle(color: Color(0xFF9E9E9E))
                         ),
                         headerVisible: true,
                         calendarController: _calendarController,
