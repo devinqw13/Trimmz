@@ -3,8 +3,6 @@ import 'package:trimmz/Model/availability.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
-import 'BarberAppointmentOptions.dart';
-import '../View/ModalSheets.dart';
 
 class FullCalendarModal extends StatefulWidget {
   FullCalendarModal({@required this.appointments, this.showAppointmentOptions});

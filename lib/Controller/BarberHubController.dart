@@ -206,6 +206,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                   showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
                     return AppointmentOptionsBottomSheet(
                       appointment: _selectedEvents[i],
+                      fullListReturn: false,
                       getAppointments: (value) {
 
                       },
@@ -591,6 +592,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                                     showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
                                       return AppointmentOptionsBottomSheet(
                                         appointment: value,
+                                        fullListReturn: true,
                                         getAppointments: (value) {
 
                                         },

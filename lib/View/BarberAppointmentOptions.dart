@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AppointmentOptionsBottomSheet extends StatefulWidget {
-  AppointmentOptionsBottomSheet({@required this.appointment, @required this.getAppointments, this.showCancel});
+  AppointmentOptionsBottomSheet({@required this.appointment, @required this.getAppointments, @required this.showCancel, this.fullListReturn});
   final appointment;
+  final bool fullListReturn;
   final ValueChanged getAppointments;
   final ValueChanged showCancel;
 
@@ -255,7 +256,11 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: RaisedButton(
                             onPressed: () {
-                              Navigator.pop(context);
+                              if(!widget.fullListReturn){
+                                Navigator.pop(context);
+                              }else {
+                                
+                              }
                             },
                             child: Text('Close')
                           ),
