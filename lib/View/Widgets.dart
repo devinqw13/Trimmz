@@ -18,6 +18,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../functions.dart';
 import '../Model/FeedItems.dart';
 import 'package:line_icons/line_icons.dart';
+import '../Controller/MobileTransactionsController.dart';
 
 logout(BuildContext context) async {
   final loginScreen = new LoginScreen();
@@ -46,7 +47,7 @@ settingsWidget(BuildContext context) {
 
     globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
     globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}) : Container(),
-    globals.userType == 2 ? CSLink('Mobile Transactions', () {}) : Container(),
+    globals.userType == 2 ? CSLink('Mobile Transactions', () {final mobileTransaction = new MobileTransactionScreen(); Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));}) : Container(),
 
     new CSHeader('Payment'),
     new CSLink('Payment Method', () {final paymentMethodScreen = new PaymentMethodScreen(signup: false); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}),

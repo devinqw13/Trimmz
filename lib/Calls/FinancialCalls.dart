@@ -59,11 +59,19 @@ Future<dynamic> spGetClientPaymentMethod(BuildContext context, String customerId
         paymentMethod.icon = Icon(FontAwesomeIcons.ccApplePay);
       }
 
-
-
-
-
       return paymentMethod;
+    } else {
+      List<ClientPaymentMethod> paymentList = [];
+      for(var item in jsonResponse['data']) {
+        ClientPaymentMethod payment = new ClientPaymentMethod();
+        payment.id = item['id'];
+        payment.brand = item['card']['brand'];
+        payment.lastFour = item['card']['last4'];
+        payment.fingerprint = item['card']['fingerprint'];
+
+        paymentList.add(payment);
+      }
+      return paymentList;
     }
   }else {
     return {};

@@ -9,6 +9,7 @@ bool userAdmin;
 int userType;
 String sqccof;
 String spCustomerId;
+String payoutMethod = 'instant';
 
 LoginUser user;
 
