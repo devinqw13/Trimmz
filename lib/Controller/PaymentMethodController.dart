@@ -7,6 +7,7 @@ import 'HomeHubController.dart';
 import '../Calls/FinancialCalls.dart';
 import '../Calls/StripeConfig.dart';
 import 'package:stripe_payment/stripe_payment.dart';
+import 'package:progress_hud/progress_hud.dart';
 
 class PaymentMethodScreen extends StatefulWidget{
   final bool signup;
@@ -18,11 +19,32 @@ class PaymentMethodScreen extends StatefulWidget{
 
 class PaymentMethodScreenState extends State<PaymentMethodScreen> {
   ClientPaymentMethod clientPaymentMethod;
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
   void initState() {
     super.initState();
     stripeInit();
     initChecks();
+
+    _progressHUD = new ProgressHUD(
+      backgroundColor: Colors.transparent,
+      color: Colors.blue,
+      containerColor: Colors.transparent,
+      borderRadius: 8.0,
+      loading: false,
+    );
+  }
+
+  void progressHUD() {
+    setState(() {
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
+    });
   }
 
   void initChecks() async {
@@ -46,6 +68,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
     await StripePayment.paymentRequestWithCardForm(
       CardFormPaymentRequest(),
     ).then((PaymentMethod paymentMethod) async {
+        progressHUD();
         var res1 = await spCreateCustomer(context, paymentMethod.id);
         if(res1.length > 0) {
           String spCustomerId = res1['id'];
@@ -55,11 +78,42 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
             if(res3.length > 0) {
               setGlobals(res3);
 
+              var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 1);
+              if(res != null) {
+                setState(() {
+                  clientPaymentMethod = res;
+                });
+              }
             }
           }else {
             // payment wasn't able to be authorized
           }
         }
+        progressHUD();
+    }).catchError(setError);
+  }
+
+  changePaymentMethod() async {
+    await StripePayment.paymentRequestWithCardForm(
+      CardFormPaymentRequest(),
+    ).then((PaymentMethod paymentMethod) async {
+      progressHUD();
+      var res1 = await spDetachCustomerFromPM(context, clientPaymentMethod.id);
+      if(res1.length > 0) {
+        var res2 = await spAttachCustomerToPM(context, paymentMethod.id, globals.spCustomerId);
+        if(res2.length > 0) {
+          var res3 = await spCreatePaymentIntent(context, paymentMethod.id, globals.spCustomerId, "100");
+          if(res3.length > 0){
+            var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 1);
+            if(res4 != null) {
+              setState(() {
+                clientPaymentMethod = res4;
+              });
+            }
+          }
+        }
+      }
+      progressHUD();
     }).catchError(setError);
   }
 
@@ -71,7 +125,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
             margin: EdgeInsets.all(5),
             width: MediaQuery.of(context).size.width,
             child: FlatButton(
-              color: Colors.grey[850],
+              color: Color.fromARGB(255, 21, 21, 21),
               onPressed: () {
                 addPaymentMethod();
               },
@@ -85,7 +139,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
         children: <Widget>[
           Container(
             padding: EdgeInsets.only(left: 10),
-            color: Colors.grey[850],
+            color: Color.fromARGB(255, 21, 21, 21),
             margin: EdgeInsets.all(5),
             width: MediaQuery.of(context).size.width,
             child: Row(
@@ -116,7 +170,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 FlatButton(
                   textColor: Colors.blue,
                   onPressed: () {
-
+                    changePaymentMethod();
                   },
                   child: Text('Change')
                 )
@@ -157,10 +211,16 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
           return false;
         }, child: Stack(
             children: <Widget>[
-              buildBody()
+              buildBody(),
+              _progressHUD
             ]
           )
-        ) : buildBody(),
+        ) : Stack(
+          children: <Widget> [
+            buildBody(),
+            _progressHUD
+          ]
+        )
       )
     );
   }

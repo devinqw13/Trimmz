@@ -113,7 +113,7 @@ class LoginScreenState extends State<LoginScreen> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     Widget titleSection = new Container(
-      padding: const EdgeInsets.only(top: 100.0, left: 32.0, right: 32.0),
+      padding: const EdgeInsets.only(top: 80.0, left: 32.0, right: 32.0),
       margin: EdgeInsets.only(top: 0.0),
       child: new ClipRRect(
         borderRadius: new BorderRadius.circular(10.0),
