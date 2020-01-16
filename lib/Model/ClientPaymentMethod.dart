@@ -6,5 +6,5 @@ class ClientPaymentMethod {
   String brand;
   String lastFour;
   String fingerprint;
-  Icon icon = Icon(LineIcons.cc);
+  Tab icon;
 }

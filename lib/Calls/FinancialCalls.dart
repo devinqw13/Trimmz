@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'StripeConfig.dart';
 import '../Model/ClientPaymentMethod.dart';
 import '../globals.dart' as globals;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 Future<dynamic> spGetClientPaymentMethod(BuildContext context, String customerId, int type) async {
   Map<String, String> headers = {
@@ -46,17 +45,13 @@ Future<dynamic> spGetClientPaymentMethod(BuildContext context, String customerId
       paymentMethod.fingerprint = jsonResponse['data'][0]['card']['fingerprint'];
 
       if(paymentMethod.brand == 'visa') {
-        paymentMethod.icon = Icon(FontAwesomeIcons.ccVisa, color: Colors.blue);
+        paymentMethod.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/visa1.png'),fit: BoxFit.cover),height: 25));
       }else if(paymentMethod.brand == 'discover'){
-        paymentMethod.icon = Icon(FontAwesomeIcons.ccDiscover, color: Colors.orange);
+        paymentMethod.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/discover1.png'),fit: BoxFit.cover),height: 25));
       }else if(paymentMethod.brand == 'amex'){
-        paymentMethod.icon = Icon(FontAwesomeIcons.ccAmex);
+        paymentMethod.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/amex1.png'),fit: BoxFit.cover),height: 25));
       }else if(paymentMethod.brand == 'mastercard'){
-        paymentMethod.icon = Icon(FontAwesomeIcons.ccMastercard);
-      }else if(paymentMethod.brand == 'stripe'){
-        paymentMethod.icon = Icon(FontAwesomeIcons.ccStripe);
-      }else if(paymentMethod.brand == 'apple pay'){
-        paymentMethod.icon = Icon(FontAwesomeIcons.ccApplePay);
+        paymentMethod.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/mastercard1.png'),fit: BoxFit.cover),height: 25));
       }
 
       return paymentMethod;

@@ -73,6 +73,10 @@ flutter:
     - images/barberBackground.png
     - images/trimmz_icon_g.png
     - images/trimmz_icon_t.png
+    - ccimages/visa1.png
+    - ccimages/mastercard1.png
+    - ccimages/discover1.png
+    - ccimages/amex1.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
