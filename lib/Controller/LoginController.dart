@@ -52,7 +52,6 @@ class LoginScreenState extends State<LoginScreen> {
   callLoginPost(String url, Map jsonData, bool retry, BuildContext context) async {
     Map results = await loginPost(url, jsonData, context);
     if (results.length == 0) {
-      progressHUD();
       return;
     }
     processLogin(results, jsonData, retry);
@@ -63,13 +62,11 @@ class LoginScreenState extends State<LoginScreen> {
 
     switch (status) {
       case true:
-        progressHUD();
         showOkDialog(context, "Login failed. Please verify username and password are correct.");
         break;
       case false:
         setGlobals(results);
 
-        progressHUD();
         if(globals.userType == 1 || globals.userType == 3) {
           final homeHubScreen = new HomeHubScreen();
           Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => homeHubScreen));
@@ -83,11 +80,9 @@ class LoginScreenState extends State<LoginScreen> {
 
   void normalLogin(String user, String pass) async {
     if (pass != "") {
-      progressHUD();
       currentContext = context;
       //var deviceInfo = await getDeviceDetails();
       callLoginPost('${globals.baseUrl}login/', {'username': user, 'password': pass, /*'device_id': deviceInfo[2]*/}, false, context);
-      progressHUD();
     } else {
       _openTextDialog("Please enter a valid password");
     }
@@ -113,8 +108,8 @@ class LoginScreenState extends State<LoginScreen> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     Widget titleSection = new Container(
-      padding: const EdgeInsets.only(top: 80.0, left: 32.0, right: 32.0),
-      margin: EdgeInsets.only(top: 0.0),
+      padding: const EdgeInsets.only(top: 0, left: 32.0, right: 32.0),
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * .08),
       child: new ClipRRect(
         borderRadius: new BorderRadius.circular(10.0),
         child: new Image.asset('images/trimmz_icon_t.png',
@@ -165,7 +160,9 @@ class LoginScreenState extends State<LoginScreen> {
         autocorrect: false,
         keyboardType: TextInputType.visiblePassword,
         onSubmitted: (value) {
-          _handleSubmitted(_usernameController.text, _passwordController.text, context);
+          if(_passwordController.text.length > 0){
+            _handleSubmitted(_usernameController.text, _passwordController.text, context);
+          }
         },
         style: new TextStyle(
           fontSize: 18.0,

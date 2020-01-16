@@ -9,7 +9,7 @@ import 'package:badges/badges.dart';
 import '../calls.dart';
 import 'package:flushbar/flushbar.dart';
 import '../Model/ClientBarbers.dart';
-import 'BarberProfileController.dart';
+import 'BarberProfileV2Controller.dart';
 import '../functions.dart';
 
 class HomeHubScreen extends StatefulWidget {
@@ -121,7 +121,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                 barber.state = suggestedBarbers[i].state;
                 barber.zipcode = suggestedBarbers[i].zipcode;
                 // barber.created = suggestedBarbers[i].created;
-                final profileScreen = new BarberProfileScreen(token: globals.token, userInfo: barber);
+                final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber);
                 Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
               },
               child: Column(
