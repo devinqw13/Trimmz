@@ -3,10 +3,13 @@ import 'package:trimmz/Model/availability.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
+import 'BarberAppointmentOptions.dart';
+import '../View/ModalSheets.dart';
 
 class FullCalendarModal extends StatefulWidget {
-  FullCalendarModal({@required this.appointments});
+  FullCalendarModal({@required this.appointments, this.showAppointmentOptions});
   final appointments;
+  final ValueChanged showAppointmentOptions;
 
   @override
   _FullCalendarModal createState() => _FullCalendarModal();
@@ -91,46 +94,52 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
             }else if(_selectedEvents[i]['status'] == '2'){
               statusColor = Colors.red;
             }
-            return new Container(
-              margin: EdgeInsets.only(bottom: 1),
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                gradient: new LinearGradient(
-                  begin: Alignment(1.0, .5),
-                  colors: [Colors.black, Colors.black26]
-                )
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        _selectedEvents[i]['name'],
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold
-                        )
-                      ),
-                      Text(_selectedEvents[i]['package']),
-                      Text('\$'+(int.parse(_selectedEvents[i]['price']) + int.parse(_selectedEvents[i]['tip'])).toString())
-                    ]
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Text(_selectedEvents[i]['time']),
-                      Text(
-                        statusColor == Colors.grey ? 'Pending' : statusColor == Colors.blue ? 'Upcoming' : statusColor == Colors.green ? 'Completed' : 'Cancelled',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: statusColor == Colors.grey ? Colors.grey : statusColor == Colors.blue ? Colors.blue : statusColor == Colors.green ? Colors.green : Colors.red
-                        )
-                      )
-                    ]
+            return new GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                widget.showAppointmentOptions(_selectedEvents[i]);
+              },
+              child: Container(
+                margin: EdgeInsets.only(bottom: 1),
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  gradient: new LinearGradient(
+                    begin: Alignment(1.0, .5),
+                    colors: [Colors.black, Colors.black26]
                   )
-                ]
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          _selectedEvents[i]['name'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold
+                          )
+                        ),
+                        Text(_selectedEvents[i]['package']),
+                        Text('\$'+(int.parse(_selectedEvents[i]['price']) + int.parse(_selectedEvents[i]['tip'])).toString())
+                      ]
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(_selectedEvents[i]['time']),
+                        Text(
+                          statusColor == Colors.grey ? 'Pending' : statusColor == Colors.blue ? 'Upcoming' : statusColor == Colors.green ? 'Completed' : 'Cancelled',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: statusColor == Colors.grey ? Colors.grey : statusColor == Colors.blue ? Colors.blue : statusColor == Colors.green ? Colors.green : Colors.red
+                          )
+                        )
+                      ]
+                    )
+                  ]
+                )
               )
             );
           },

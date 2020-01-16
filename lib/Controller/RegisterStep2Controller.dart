@@ -272,12 +272,12 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
         new Center(
           child: new ClipRect(
             child: new BackdropFilter(
-              filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+              filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: new Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
                 decoration: new BoxDecoration(
-                  color: Colors.black.withOpacity(0.8)
+                  color: Colors.black.withOpacity(0.85)
                 ),
                 child: new Center(
                   child: new Column (

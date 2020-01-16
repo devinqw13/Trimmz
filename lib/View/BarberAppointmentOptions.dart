@@ -219,7 +219,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                         children: <Widget> [
                                           Expanded(
                                             child: Container(
-                                              //width: MediaQuery.of(context).size.width,
                                               child: RaisedButton(
                                                 onPressed: () {
 

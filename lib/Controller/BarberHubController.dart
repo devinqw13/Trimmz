@@ -211,7 +211,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                       },
                       showCancel: (val) async {
                         if(val){
-                          var res = await showAptCancelOptionModalSheet(context, _selectedEvents[i]);
+                          var res = await showAptCancelOptionModalSheet(context, _selectedEvents[i], 1);
                           if(res != null) {
                             setState(() {
                               _events = res;
@@ -586,6 +586,29 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                             showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
                               return FullCalendarModal(
                                 appointments: _events,
+                                showAppointmentOptions: (value) {
+                                  if(value != null){
+                                    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                                      return AppointmentOptionsBottomSheet(
+                                        appointment: value,
+                                        getAppointments: (value) {
+
+                                        },
+                                        showCancel: (val) async {
+                                          if(val){
+                                            var res = await showAptCancelOptionModalSheet(context, value, 2, _events);
+                                            if(res != null) {
+                                              setState(() {
+                                                _events = res;
+                                                _selectedEvents = res;
+                                              });
+                                            }
+                                          }
+                                        },
+                                      );
+                                    });
+                                  }
+                                },
                               );
                             });
                           },

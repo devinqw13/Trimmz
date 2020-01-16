@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/View/FullCalendarModal.dart';
 import '../globals.dart' as globals;
 import '../calls.dart';
 import '../dialogs.dart';
@@ -413,7 +414,7 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
   return results;
 }
 
-showAptCancelOptionModalSheet(BuildContext context, var appointment) async {
+showAptCancelOptionModalSheet(BuildContext context, var appointment, int previous, [var _events]) async {
   var appointments;
   await showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, builder: (builder) {
     return Padding(
@@ -476,20 +477,48 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment) async {
                             onPressed: () {
                               Navigator.pop(context);
                               showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                                return AppointmentOptionsBottomSheet(
-                                  appointment: appointment,
-                                  getAppointments: (value) {
+                                if(previous == 1) {
+                                  return AppointmentOptionsBottomSheet(
+                                    appointment: appointment,
+                                    getAppointments: (value) {
 
-                                  },
-                                  showCancel: (val) async {
-                                    if(val){
-                                      var res = await showAptCancelOptionModalSheet(context, appointment);
-                                      if(res != null) {
-                                        appointments = res;
+                                    },
+                                    showCancel: (val) async {
+                                      if(val){
+                                        var res = await showAptCancelOptionModalSheet(context, appointment, previous);
+                                        if(res != null) {
+                                          appointments = res;
+                                        }
                                       }
-                                    }
-                                  },
-                                );
+                                    },
+                                  );
+                                }else {
+                                  return FullCalendarModal(
+                                    appointments: _events,
+                                    showAppointmentOptions: (value) {
+                                      if(value != null){
+                                        showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                                          return AppointmentOptionsBottomSheet(
+                                            appointment: value,
+                                            getAppointments: (value) {
+
+                                            },
+                                            showCancel: (val) async {
+                                              if(val){
+                                                if(val){
+                                                  var res = await showAptCancelOptionModalSheet(context, appointment, previous, _events);
+                                                  if(res != null) {
+                                                    appointments = res;
+                                                  }
+                                                }
+                                              }
+                                            },
+                                          );
+                                        });
+                                      }
+                                    },
+                                  );
+                                }
                               });
                             },
                             child: Text('Close')
