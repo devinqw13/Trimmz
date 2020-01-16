@@ -442,6 +442,44 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     );
   }
 
+  showFullList([DateTime currentDate]) {
+    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+      return FullCalendarModal(
+        appointments: _events,
+        selectDate: currentDate,
+        showAppointmentOptions: (value) {
+          if(value != null){
+            showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+              return AppointmentOptionsBottomSheet(
+                appointment: value,
+                fullListReturn: true,
+                showFullList: (value) {
+                  if(value != null) {
+                    showFullList(value);
+                  }
+                },
+                getAppointments: (value) {
+
+                },
+                showCancel: (val) async {
+                  if(val){
+                    var res = await showAptCancelOptionModalSheet(context, value, 2, _events);
+                    if(res != null) {
+                      setState(() {
+                        _events = res;
+                        _selectedEvents = res;
+                      });
+                    }
+                  }
+                },
+              );
+            });
+          }
+        },
+      );
+    });
+  }
+
   Widget dashboardTab() {
     return Container(
       child: SingleChildScrollView(
@@ -584,35 +622,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                         top: MediaQuery.of(context).size.width * .043,
                         child: GestureDetector(
                           onTap: () {
-                            showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                              return FullCalendarModal(
-                                appointments: _events,
-                                showAppointmentOptions: (value) {
-                                  if(value != null){
-                                    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                                      return AppointmentOptionsBottomSheet(
-                                        appointment: value,
-                                        fullListReturn: true,
-                                        getAppointments: (value) {
-
-                                        },
-                                        showCancel: (val) async {
-                                          if(val){
-                                            var res = await showAptCancelOptionModalSheet(context, value, 2, _events);
-                                            if(res != null) {
-                                              setState(() {
-                                                _events = res;
-                                                _selectedEvents = res;
-                                              });
-                                            }
-                                          }
-                                        },
-                                      );
-                                    });
-                                  }
-                                },
-                              );
-                            });
+                            showFullList();
                           },
                           child: Icon(Icons.menu, color: Colors.blue)
                         )
@@ -820,14 +830,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                         child: GestureDetector(
                           onTap: () async {
                             showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                              // return FullPackagesBottomSheet(
-                              //   packages: packages,
-                              //   valueChanged: (value) {
-                              //     setState(() {
-                              //       packages = value;
-                              //     });
-                              //   },
-                              // );
+                              return Container();
                             });
                           },
                           child: Icon(LineIcons.pencil, color: Colors.blue)

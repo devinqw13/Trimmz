@@ -480,6 +480,7 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment, int previou
                                 if(previous == 1) {
                                   return AppointmentOptionsBottomSheet(
                                     appointment: appointment,
+                                    fullListReturn: false,
                                     getAppointments: (value) {
 
                                     },
@@ -500,6 +501,7 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment, int previou
                                         showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
                                           return AppointmentOptionsBottomSheet(
                                             appointment: value,
+                                            fullListReturn: true,
                                             getAppointments: (value) {
 
                                             },

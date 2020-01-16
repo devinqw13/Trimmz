@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 
 class FullCalendarModal extends StatefulWidget {
-  FullCalendarModal({@required this.appointments, this.showAppointmentOptions});
+  FullCalendarModal({@required this.appointments, this.showAppointmentOptions, this.selectDate});
   final appointments;
+  final DateTime selectDate;
   final ValueChanged showAppointmentOptions;
 
   @override
@@ -20,12 +21,20 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
   Map<DateTime, List> _events;
   Availability aDay;
   final df = new DateFormat('yyyy-MM-dd');
+  DateTime selectedDate;
 
   @override
   void initState() {
     final _selectedDay = DateTime.parse(df.format(DateTime.parse(DateTime.now().toString())));
     _events = widget.appointments;
-    _selectedEvents = _events[_selectedDay] ?? [];
+
+    print(widget.selectDate);
+    if(widget.selectDate != null){
+      DateTime previousDateSelected = DateTime.parse(df.format(DateTime.parse(widget.selectDate.toString())));
+      _selectedEvents = _events[previousDateSelected];
+    }else {
+      _selectedEvents = _events[_selectedDay] ?? [];
+    }
 
     _calendarController = CalendarController();
 
@@ -47,6 +56,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
 
   void _onDaySelected(DateTime day, List events) {
     setState(() {
+      selectedDate = day;
       _selectedEvents = events;
     });
   }
@@ -203,6 +213,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
               ),
               headerVisible: true,
               calendarController: _calendarController,
+              initialSelectedDay: widget.selectDate != null ? widget.selectDate : DateTime.now(),
               initialCalendarFormat: CalendarFormat.month,
               builders: CalendarBuilders(
                 selectedDayBuilder: (context, date, _) {
