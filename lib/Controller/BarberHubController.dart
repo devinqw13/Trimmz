@@ -24,6 +24,7 @@ import '../View/FullPackagesListModalSheet.dart';
 import '../View/BarberAppointmentOptions.dart';
 import '../View/Widgets.dart';
 import '../View/FullCalendarModal.dart';
+import '../View/AppointmentCancelOptions.dart';
 
 class BarberHubScreen extends StatefulWidget {
   BarberHubScreen({Key key}) : super (key: key);
@@ -176,6 +177,33 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     );
   }
 
+  showAppointmentOptions(var appointment) {
+    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+      return AppointmentOptionsBottomSheet(
+        appointment: appointment,
+        showCancel: (val) async {
+          if(val){
+            showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+              return CancelOptionsBottomSheet(
+                appointment: appointment,
+                setAppointmentList: (value) {
+                  DateTime date = DateTime.parse(df2.format(DateTime.parse(_calendarSelectDay.toString())));
+                  setState(() {
+                    _events = value;
+                    _selectedEvents = _events[date];
+                  });
+                },
+                showAppointmentDetails: (value) {
+                  showAppointmentOptions(value);
+                },
+              );
+            });
+          }
+        },
+      );
+    });
+  }
+
   buildAppointmentList() {
     if(_selectedEvents.length > 0) {
       return Container(
@@ -204,26 +232,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               }
               return GestureDetector(
                 onTap: () {
-                  showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                    return AppointmentOptionsBottomSheet(
-                      appointment: _selectedEvents[i],
-                      fullListReturn: false,
-                      getAppointments: (value) {
-
-                      },
-                      showCancel: (val) async {
-                        if(val){
-                          var res = await showAptCancelOptionModalSheet(context, _selectedEvents[i], 1);
-                          if(res != null) {
-                            setState(() {
-                              _events = res;
-                              _selectedEvents = res;
-                            });
-                          }
-                        }
-                      },
-                    );
-                  });
+                  showAppointmentOptions(_selectedEvents[i]);
                 },
                 child: Container(
                   color: Colors.transparent,
@@ -454,14 +463,10 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
               return AppointmentOptionsBottomSheet(
                 appointment: value,
-                fullListReturn: true,
                 showFullList: (value) {
                   if(value != null) {
                     showFullList(value);
                   }
-                },
-                getAppointments: (value) {
-
                 },
                 showCancel: (val) async {
                   if(val){

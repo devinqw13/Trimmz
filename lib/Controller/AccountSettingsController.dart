@@ -4,7 +4,6 @@ import '../globals.dart' as globals;
 import 'ChangePasswordController.dart';
 import 'package:flushbar/flushbar.dart';
 import '../calls.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountSettings extends StatefulWidget {
   AccountSettings({Key key}) : super (key: key);

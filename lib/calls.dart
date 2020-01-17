@@ -6,7 +6,6 @@ import 'package:trimmz/Model/AppointmentRequests.dart';
 import 'globals.dart' as globals;
 import 'dialogs.dart';
 import 'Model/availability.dart';
-import 'Model/ClientPaymentMethod.dart';
 import 'Model/SuggestedBarbers.dart';
 import 'Model/ClientBarbers.dart';
 import 'Model/Packages.dart';

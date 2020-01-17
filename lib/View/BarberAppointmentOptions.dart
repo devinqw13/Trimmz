@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AppointmentOptionsBottomSheet extends StatefulWidget {
-  AppointmentOptionsBottomSheet({@required this.appointment, @required this.getAppointments, @required this.showCancel, this.fullListReturn, this.showFullList});
+  AppointmentOptionsBottomSheet({@required this.appointment, @required this.showCancel, this.showFullList});
   final appointment;
-  final bool fullListReturn;
-  final ValueChanged getAppointments;
   final ValueChanged showCancel;
   final ValueChanged showFullList;
 
@@ -204,7 +202,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                         children: <Widget> [
                                           Expanded(
                                             child: Container(
-                                              //width: MediaQuery.of(context).size.width,
                                               child: RaisedButton(
                                                 onPressed: () {
                                                   Navigator.pop(context);
@@ -257,7 +254,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: RaisedButton(
                             onPressed: () {
-                              if(!widget.fullListReturn){
+                              if(widget.showFullList == null){
                                 Navigator.pop(context);
                               }else {
                                 Navigator.pop(context);

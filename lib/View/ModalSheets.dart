@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:trimmz/View/FullCalendarModal.dart';
 import '../globals.dart' as globals;
 import '../calls.dart';
 import '../dialogs.dart';
@@ -446,12 +445,7 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment, int previou
                           width: MediaQuery.of(context).size.width,
                           child: RaisedButton(
                             onPressed: () async {
-                              var res1 = await updateAppointmentStatus(context, int.parse(appointment['id']), 2);
-                              if(res1) {
-                                var res2 = await getBarberAppointments(context, globals.token);
-                                appointments = res2;
-                                Navigator.pop(context);
-                              }
+                              
                             },
                             child: Text('Cancel with payment'),
                           )
@@ -459,8 +453,13 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment, int previou
                         Container(
                           width: MediaQuery.of(context).size.width,
                           child: RaisedButton(
-                            onPressed: () {
-
+                            onPressed: () async {
+                              var res1 = await updateAppointmentStatus(context, int.parse(appointment['id']), 2);
+                              if(res1) {
+                                var res2 = await getBarberAppointments(context, globals.token);
+                                appointments = res2;
+                                Navigator.pop(context);
+                              }
                             },
                             child: Text('Cancel without payment'),
                           )
@@ -480,10 +479,6 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment, int previou
                                 if(previous == 1) {
                                   return AppointmentOptionsBottomSheet(
                                     appointment: appointment,
-                                    fullListReturn: false,
-                                    getAppointments: (value) {
-
-                                    },
                                     showCancel: (val) async {
                                       if(val){
                                         var res = await showAptCancelOptionModalSheet(context, appointment, previous);
@@ -494,29 +489,19 @@ showAptCancelOptionModalSheet(BuildContext context, var appointment, int previou
                                     },
                                   );
                                 }else {
-                                  return FullCalendarModal(
-                                    appointments: _events,
-                                    showAppointmentOptions: (value) {
-                                      if(value != null){
-                                        showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                                          return AppointmentOptionsBottomSheet(
-                                            appointment: value,
-                                            fullListReturn: true,
-                                            getAppointments: (value) {
-
-                                            },
-                                            showCancel: (val) async {
-                                              if(val){
-                                                if(val){
-                                                  var res = await showAptCancelOptionModalSheet(context, appointment, previous, _events);
-                                                  if(res != null) {
-                                                    appointments = res;
-                                                  }
-                                                }
-                                              }
-                                            },
-                                          );
-                                        });
+                                  return AppointmentOptionsBottomSheet(
+                                    appointment: appointment,
+                                    showFullList: (value) {
+                                      if(value != null) {
+                                        //showFullList(value);
+                                      }
+                                    },
+                                    showCancel: (val) async {
+                                      if(val){
+                                        var res = await showAptCancelOptionModalSheet(context, appointment, previous);
+                                        if(res != null) {
+                                          appointments = res;
+                                        }
                                       }
                                     },
                                   );

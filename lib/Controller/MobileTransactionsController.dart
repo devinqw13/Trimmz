@@ -24,6 +24,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
   String _payoutMethod = globals.payoutMethod ?? '';
+  String _payoutCard = globals.payoutCard ?? '';
 
   void initState() {
     super.initState();
@@ -118,17 +119,63 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
           children: <Widget>[
             Text('Direct Deposit', style: TextStyle(fontWeight: FontWeight.bold)),
             ListView.builder(
+              padding: EdgeInsets.all(0),
               shrinkWrap: true,
               itemCount: payoutCards.length,
               itemBuilder: (context, i) {
                 return new GestureDetector(
                   onTap: () {
-
+                    setState(() {
+                      _payoutCard = payoutCards[i].id;
+                    });
                   },
                   child: Container(
                     color: Colors.transparent,
                     padding: EdgeInsets.all(10),
-                    child: Text(payoutCards[i].id)
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Radio(
+                              activeColor: Colors.blue,
+                              groupValue: _payoutCard,
+                              value: payoutCards[i].id,
+                              onChanged: (value) {
+                                setState(() {
+                                  _payoutCard = value;
+                                });
+                              },
+                            ),
+                            payoutCards[i].icon,
+                            Padding(padding: EdgeInsets.all(10)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Padding(padding: EdgeInsets.all(3)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Padding(padding: EdgeInsets.all(3)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                            Padding(padding: EdgeInsets.all(3)),
+                            Text(payoutCards[i].lastFour)
+                          ]
+                        ),
+                        FlatButton(
+                          textColor: Colors.red,
+                          onPressed: () {
+                            //changePaymentMethod();
+                          },
+                          child: Text('Remove')
+                        )
+                      ]
+                    )
                   )
                 );
               },
