@@ -9,7 +9,8 @@ bool userAdmin;
 int userType;
 String sqccof;
 String spCustomerId;
-String payoutMethod = 'instant';
+String payoutMethod;
+String payoutCard;
 
 LoginUser user;
 
@@ -28,4 +29,6 @@ class LoginUser {
   int userType;
   String ccof;
   String spCustomerId;
+  String payoutMethod;
+  String payoutCard;
 }

@@ -35,7 +35,7 @@ Future<dynamic> spGetClientPaymentMethod(BuildContext context, String customerId
   } else {
     jsonResponse = json.decode(response.body);
   }
-  print(jsonResponse);
+
   if(!jsonResponse.containsKey('error')) {
     if(type == 1) {
       ClientPaymentMethod paymentMethod = new ClientPaymentMethod();
@@ -63,6 +63,16 @@ Future<dynamic> spGetClientPaymentMethod(BuildContext context, String customerId
         payment.brand = item['card']['brand'];
         payment.lastFour = item['card']['last4'];
         payment.fingerprint = item['card']['fingerprint'];
+
+        if(payment.brand == 'visa') {
+          payment.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/visa1.png'),fit: BoxFit.cover),height: 25));
+        }else if(payment.brand == 'discover'){
+          payment.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/discover1.png'),fit: BoxFit.cover),height: 25));
+        }else if(payment.brand == 'amex'){
+          payment.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/amex1.png'),fit: BoxFit.cover),height: 25));
+        }else if(payment.brand == 'mastercard'){
+          payment.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/mastercard1.png'),fit: BoxFit.cover),height: 25));
+        }
 
         paymentList.add(payment);
       }
