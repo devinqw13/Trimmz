@@ -25,6 +25,7 @@ import '../View/BarberAppointmentOptions.dart';
 import '../View/Widgets.dart';
 import '../View/FullCalendarModal.dart';
 import '../View/AppointmentCancelOptions.dart';
+import 'MarketplaceCartController.dart';
 
 class BarberHubScreen extends StatefulWidget {
   BarberHubScreen({Key key}) : super (key: key);
@@ -1200,7 +1201,10 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                 animationType: BadgeAnimationType.scale,
                 animationDuration: const Duration(milliseconds: 300),
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    final marketplaceCartScreen = new MarketplaceCart();
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => marketplaceCartScreen));
+                  },
                   icon: Icon(LineIcons.shopping_cart, size: 30.0),
                 )
               ) : Text(''),

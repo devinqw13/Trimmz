@@ -237,55 +237,13 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
     return imageList;
   }
 
-  buildFeed(BuildContext context, ) {
+  buildFeed(BuildContext context) {
     List<FeedItem> feedItems = [];
-    Radius cardEdgeRadius;
     List<Image> imageList = new List<Image>();
-    Orientation orientation = MediaQuery.of(context).orientation;
-    double screenHeight =MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
     double textScale = 1.0;
     double listImageScale;
     final GlobalKey<RefreshIndicatorState> refreshKey = new GlobalKey<RefreshIndicatorState>();
 
-    // iPad 9.7
-    if (orientation == Orientation.portrait) {
-      if (screenHeight >= 960 &&  screenHeight < 1366) {
-        textScale = 1.2;
-        listImageScale = 2.75;
-        cardEdgeRadius = Radius.circular(8.0);
-      }
-      else if (screenHeight >= 1366) {
-        textScale = 1.55;
-        listImageScale = 2.75;
-        cardEdgeRadius = Radius.circular(8.0);
-      }
-      // Phone
-      else {
-        textScale = 1.1;
-        listImageScale = 3.0;
-        cardEdgeRadius = Radius.circular(8.0);
-      }
-    }
-    else if (orientation == Orientation.landscape) {
-      if (screenWidth >= 812 &&  screenWidth < 1366) {
-        textScale = 1.2;
-        listImageScale = 2.75;
-        cardEdgeRadius = Radius.circular(8.0);
-      } 
-      // iPad 12.9
-      else if (screenWidth >= 1366) {
-        textScale = 1.55;
-        listImageScale = 2.75;
-        cardEdgeRadius = Radius.circular(8.0);
-      }
-      // Phone
-      else {
-        textScale = 1.1;
-        listImageScale = 3.0;
-        cardEdgeRadius = Radius.circular(8.0);
-      }
-    }
 
     imageList = _buildImageList(feedItems, listImageScale);
     if (feedItems.length > 0) {

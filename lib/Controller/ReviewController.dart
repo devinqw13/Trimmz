@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../globals.dart' as globals;
-import '../Model/ClientBarbers.dart';
 import '../Model/Reviews.dart';
 import 'package:line_icons/line_icons.dart';
 

@@ -82,6 +82,7 @@ Future<String> getDistanceFromBarber(String shopLocation) async {
   var meters = await geolocator.distanceBetween(currentPosition.latitude, currentPosition.longitude, endPosition.latitude, endPosition.longitude);
 
   var distance = (meters * 0.000621).toStringAsFixed(1);
+  print(distance);
   return distance;
 }
 

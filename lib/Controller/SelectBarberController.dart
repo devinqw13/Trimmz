@@ -56,7 +56,7 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
                   ),
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.grey[900],
+                  color: Color.fromARGB(255, 21, 21, 21),
                   shape: BoxShape.rectangle,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(2.0), topRight: Radius.circular(2.0))
                 ),

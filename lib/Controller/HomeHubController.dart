@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/Controller/MarketplaceCartController.dart';
 import 'package:trimmz/View/Widgets.dart';
 import '../Model/SuggestedBarbers.dart';
 import '../globals.dart' as globals;
@@ -387,7 +388,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                     // final appointmentHistoryScreen = new AppointmentHistoryScreen();
                     // Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentHistoryScreen));
                   },
-                  icon: Icon(LineIcons.book, size: 25.0),
+                  icon: Icon(Icons.calendar_today, size: 21.0),
                 )
               ): Text(''),
               _tabTitle == "Marketplace" ?
@@ -398,7 +399,10 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                 animationType: BadgeAnimationType.scale,
                 animationDuration: const Duration(milliseconds: 300),
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    final marketplaceCartScreen = new MarketplaceCart();
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => marketplaceCartScreen));
+                  },
                   icon: Icon(LineIcons.shopping_cart, size: 30.0),
                 )
               ) : Text(''),

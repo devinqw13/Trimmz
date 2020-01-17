@@ -94,7 +94,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
 
   calculateTime(List<Availability> list, DateTime day) {
     final df = new DateFormat('hh:mm a');
-    final df2 = new DateFormat('HH:mm');
+    //final df2 = new DateFormat('HH:mm');
     var weekday = DateFormat.EEEE().format(day).toString();
     List<RadioModel> timesList = new List<RadioModel>();
     for(var item in list){
