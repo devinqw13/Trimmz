@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:trimmz/Controller/ReviewController.dart';
 import '../CustomCupertinoSettings.dart';
 import '../Controller/AboutController.dart';
 import '../Controller/PaymentMethodController.dart';
@@ -43,14 +44,16 @@ settingsWidget(BuildContext context) {
           )..show(context);
         }
       }
-    }),
+    }, style: CSWidgetStyle(icon: Icon(LineIcons.cog))),
 
     globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
-    globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}) : Container(),
-    globals.userType == 2 ? CSLink('Mobile Transactions', () {final mobileTransaction = new MobileTransactionScreen(); Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));}) : Container(),
+    globals.userType == 2 ? CSLink('Client Book', () {}, style: CSWidgetStyle(icon: Icon(LineIcons.book))) : Container(),
+    globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}, style: CSWidgetStyle(icon: Icon(LineIcons.user))) : Container(),
+    globals.userType == 2 ? CSLink('Mobile Transactions', () {final mobileTransaction = new MobileTransactionScreen(); Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));}, style: CSWidgetStyle(icon: Icon(LineIcons.money))) : Container(),
+    globals.userType == 2 ? CSLink('Reviews', () {final reviewController = new ReviewController(userId: globals.token, username: globals.username); Navigator.push(context, new MaterialPageRoute(builder: (context) => reviewController));}, style: CSWidgetStyle(icon: Icon(Icons.chat_bubble_outline))) : Container(),
 
     new CSHeader('Payment'),
-    new CSLink('Payment Method', () {final paymentMethodScreen = new PaymentMethodScreen(signup: false); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}),
+    new CSLink('Payment Method', () {final paymentMethodScreen = new PaymentMethodScreen(signup: false); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}, style: CSWidgetStyle(icon: Icon(Icons.credit_card))),
 
     new CSHeader('Share'),
     new CSLink('Recommend Trimmz', () async {
@@ -59,14 +62,14 @@ settingsWidget(BuildContext context) {
       } else {
         throw 'Could not launch';
       }
-    }),
+    }, style: CSWidgetStyle(icon: Icon(LineIcons.lightbulb_o))),
     new CSLink('Invite Barber', () async {
       if (await canLaunch("sms:")) {
         await launch("sms:");
       } else {
         throw 'Could not launch';
       }
-    }),
+    }, style: CSWidgetStyle(icon: Icon(LineIcons.share))),
 
     new CSHeader('Contact Us'),
     new CSLink('Feedback', () async {
@@ -76,7 +79,7 @@ settingsWidget(BuildContext context) {
       } else {
         throw 'Could not launch';
       }
-    }),
+    }, style: CSWidgetStyle(icon: Icon(LineIcons.envelope))),
     new CSLink('Support', () async {
       String email = 'trimmz@gmail.com';
       if (await canLaunch("mailto:$email")) {
@@ -84,11 +87,11 @@ settingsWidget(BuildContext context) {
       } else {
         throw 'Could not launch';
       }
-    }),
+    }, style: CSWidgetStyle(icon: Icon(Icons.help_outline))),
 
     new CSHeader('General'),
-    new CSLink('About', () {final aboutScreen = new AboutController(); Navigator.push(context, new MaterialPageRoute(builder: (context) => aboutScreen));}),
-    new CSLink('Logout', () {logout(context);}),
+    new CSLink('About', () {final aboutScreen = new AboutController(); Navigator.push(context, new MaterialPageRoute(builder: (context) => aboutScreen));}, style: CSWidgetStyle(icon: Icon(Icons.brightness_auto))),
+    new CSLink('Logout', () {logout(context);}, style: CSWidgetStyle(icon: Icon(Icons.exit_to_app))),
     new Container(
       margin: EdgeInsets.all(10),
       child: Center(

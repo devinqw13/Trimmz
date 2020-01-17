@@ -322,6 +322,7 @@ class AccountSettingsState extends State<AccountSettings> {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return new Theme(
       data: new ThemeData(

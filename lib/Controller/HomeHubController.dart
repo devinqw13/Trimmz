@@ -388,7 +388,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                     // Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentHistoryScreen));
                   },
                   icon: Icon(LineIcons.book, size: 25.0),
-                ) 
+                )
               ): Text(''),
               _tabTitle == "Marketplace" ?
               Badge(

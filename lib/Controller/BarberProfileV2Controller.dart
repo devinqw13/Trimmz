@@ -12,6 +12,7 @@ import 'package:flushbar/flushbar.dart';
 import 'dart:ui';
 import 'package:url_launcher/url_launcher.dart';
 import '../Model/Packages.dart';
+import 'ReviewController.dart';
 
 class BarberProfileV2Screen extends StatefulWidget {
   final token;
@@ -242,7 +243,8 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                   ),
                   GestureDetector(
                     onTap: () {
-
+                      final reviewScreen = new ReviewController(userId: int.parse(user.id), username: user.username); 
+                      Navigator.push(context, new MaterialPageRoute(builder: (context) => reviewScreen));
                     },
                     child: Container(
                       padding: EdgeInsets.all(5),
@@ -250,7 +252,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                         children: <Widget>[
                           Icon(Icons.rate_review, size: 18),
                           Padding(padding: EdgeInsets.all(2)),
-                          Text('Review')
+                          Text('Reviews')
                         ],
                       ),
                     ),
