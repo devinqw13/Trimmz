@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../Model/ClientBarbers.dart';
 import '../globals.dart' as globals;
-import 'Booking.dart';
+import 'BookingController.dart';
 
 class SelectBarberScreen extends StatefulWidget {
   final List<ClientBarbers> clientBarbers;
@@ -69,7 +69,7 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
                 child: new Center(
                   child: new FlatButton(
                     onPressed: () {
-                      final bookingScreen = new BookingScreen(barberInfo: barber); 
+                      final bookingScreen = new BookingController(barberInfo: barber); 
                       Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
                     },
                     child: Text('Book Appointment', 
