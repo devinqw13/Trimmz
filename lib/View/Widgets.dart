@@ -72,7 +72,7 @@ settingsWidget(BuildContext context) {
     new CSLink('Feedback', () async {
       String email = 'trimmzapp@gmail.com';
       if (await canLaunch("mailto:$email")) {
-        await launch("mailto:$email");
+        await launch("mailto:$email?subject=Trimmz Feedback");
       } else {
         throw 'Could not launch';
       }
@@ -80,7 +80,7 @@ settingsWidget(BuildContext context) {
     new CSLink('Support', () async {
       String email = 'trimmz@gmail.com';
       if (await canLaunch("mailto:$email")) {
-        await launch("mailto:$email");
+        await launch("mailto:$email?subject=Trimmz Support");
       } else {
         throw 'Could not launch';
       }

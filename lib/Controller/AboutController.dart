@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../globals.dart' as globals;
 //import 'package:package_info/package_info.dart';
-//import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutController extends StatefulWidget {
   AboutController({Key key}) : super (key: key);
@@ -83,7 +83,14 @@ class AboutControllerState extends State<AboutController> {
               new Center(
                 child: new GestureDetector(
                   child: new Text("trimmzapp@gmail.com"),
-                  //onTap: () => _launchURL("mailto:support@theemove.com?subject=The Move Support")
+                  onTap: () async {
+                    String email = 'trimmzapp@gmail.com';
+                    if (await canLaunch("mailto:$email")) {
+                      await launch("mailto:$email?subject=Trimmz Support");
+                    } else {
+                      throw 'Could not launch';
+                    }
+                  }
                 )
               )
             ],

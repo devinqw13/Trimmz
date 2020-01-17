@@ -378,6 +378,18 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                   icon: Icon(LineIcons.bell, size: 25.0),
                 ) 
               ): Text(''),
+              _tabTitle == "Home" ?
+              Badge(
+                showBadge: false,
+                child: IconButton(
+                  onPressed: () {
+                    //TODO: Create Appointment History / Upcoming Appointments Tabs Controller
+                    // final appointmentHistoryScreen = new AppointmentHistoryScreen();
+                    // Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentHistoryScreen));
+                  },
+                  icon: Icon(LineIcons.book, size: 25.0),
+                ) 
+              ): Text(''),
               _tabTitle == "Marketplace" ?
               Badge(
                 showBadge: badgeCart == 0 ? false : true,
@@ -427,7 +439,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
             onTap: onNavTapTapped,
             currentIndex: _currentIndex,
             unselectedItemColor: globals.darkModeEnabled ? Colors.white : Colors.black,
-            selectedItemColor: Colors.blue,//Color(0xFF66BB6A), - Green
+            selectedItemColor: Colors.blue,
             items: [
               new BottomNavigationBarItem(
                 icon: Icon(LineIcons.home, size: 29),
