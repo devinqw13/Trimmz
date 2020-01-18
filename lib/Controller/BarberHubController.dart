@@ -454,35 +454,42 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     );
   }
 
-  showFullList([DateTime currentDate]) {
+  showFullCalendarAptOptions(var appointment) {
     showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-      return FullCalendarModal(
-        appointments: _events,
-        selectDate: currentDate,
-        showAppointmentOptions: (value) {
-          if(value != null){
+      return AppointmentOptionsBottomSheet(
+        appointment: appointment,
+        showCancel: (val) async {
+          if(val){
             showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-              return AppointmentOptionsBottomSheet(
-                appointment: value,
-                showFullList: (value) {
-                  if(value != null) {
-                    showFullList(value);
-                  }
+              return CancelOptionsBottomSheet(
+                appointment: appointment,
+                setAppointmentList: (value) {
+                  setState(() {
+                    _events = value;
+                  });
                 },
-                showCancel: (val) async {
-                  if(val){
-                    var res = await showAptCancelOptionModalSheet(context, value, 2, _events);
-                    if(res != null) {
-                      setState(() {
-                        _events = res;
-                        _selectedEvents = res;
-                      });
-                    }
-                  }
+                showAppointmentDetails: (value) {
+                  showFullCalendarAptOptions(value);
                 },
               );
             });
           }
+        },
+        showFull: true,
+        showFullCalendar: (value) {
+          showFullCalendar(value);
+        }
+      );
+    });
+  }
+
+  showFullCalendar([DateTime selectDate]) {
+    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+      return FullCalendarModal(
+        appointments: _events,
+        selectDate: selectDate,
+        showAppointmentOptions: (value) {
+          showFullCalendarAptOptions(value);
         },
       );
     });
@@ -632,7 +639,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                         top: MediaQuery.of(context).size.width * .043,
                         child: GestureDetector(
                           onTap: () {
-                            showFullList();
+                            showFullCalendar();
                           },
                           child: Icon(Icons.menu, color: Colors.blue)
                         )

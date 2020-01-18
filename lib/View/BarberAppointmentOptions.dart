@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AppointmentOptionsBottomSheet extends StatefulWidget {
-  AppointmentOptionsBottomSheet({@required this.appointment, @required this.showCancel, this.showFullList});
+  AppointmentOptionsBottomSheet({@required this.appointment, @required this.showCancel, this.showFullCalendar, this.showFull});
   final appointment;
   final ValueChanged showCancel;
-  final ValueChanged showFullList;
+  final bool showFull;
+  final ValueChanged showFullCalendar;
 
   @override
   _AppointmentOptionsBottomSheet createState() => _AppointmentOptionsBottomSheet();
@@ -273,11 +274,11 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: RaisedButton(
                             onPressed: () {
-                              if(widget.showFullList == null){
+                              if(widget.showFull == null){
                                 Navigator.pop(context);
                               }else {
                                 Navigator.pop(context);
-                                widget.showFullList(DateTime.parse(appointment['full_time']));
+                                widget.showFullCalendar(DateTime.parse(appointment['full_time']));
                               }
                             },
                             child: Text('Close')

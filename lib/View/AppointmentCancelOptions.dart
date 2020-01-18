@@ -52,7 +52,7 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                           width: MediaQuery.of(context).size.width,
                           child: RaisedButton(
                             onPressed: () async {
-                              
+                              //TODO: Cancel appointment and charge customer the price amount
                             },
                             child: Text('Cancel with payment'),
                           )
@@ -64,11 +64,13 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                               var res1 = await updateAppointmentStatus(context, int.parse(appointment['id']), 2);
                               if(res1) {
                                 var res2 = await getBarberAppointments(context, globals.token);
-                                // Navigator.pop(context);
-                                // widget.setAppointmentList(res2);
-                                
-                                // TODO: return full list and then iterate through list of current appointment
-                                //widget.showAppointmentDetails(appointment);
+                                Navigator.pop(context);
+                                widget.setAppointmentList(res2);
+                                setState(() {
+                                  appointment['status'] = '2';
+                                  appointment['updated'] = DateTime.now().toString();
+                                });
+                                widget.showAppointmentDetails(appointment);
                               }
                             },
                             child: Text('Cancel without payment'),
