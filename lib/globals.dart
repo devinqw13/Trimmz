@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 String baseUrl = "";
 int token;
@@ -11,6 +12,7 @@ String sqccof;
 String spCustomerId;
 String payoutMethod;
 String payoutCard;
+Position currentLocation;
 
 LoginUser user;
 

@@ -6,4 +6,5 @@ class AppointmentRequest {
   int packageId;
   String packageName;
   int price;
+  int tip;
 }

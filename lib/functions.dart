@@ -64,6 +64,17 @@ _getCurrentLocation() async {
   return location;
 }
 
+getCurrentLocation() async {
+  Position _currentPosition;
+  await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((Position position) async {
+    _currentPosition = position;
+    return _currentPosition;
+  }).catchError((e) {
+    print(e);
+  });
+  return _currentPosition;
+}
+
 _getAddressFromLatLng(Position currentPosition) async {
   List _currentAddress;
   try {
@@ -77,12 +88,12 @@ _getAddressFromLatLng(Position currentPosition) async {
 }
 
 Future<String> getDistanceFromBarber(String shopLocation) async {
-  var currentPosition = await getStartLocation();
+  //var currentPosition = await getStartLocation();
   var endPosition = await getEndLocation(shopLocation);
-  var meters = await geolocator.distanceBetween(currentPosition.latitude, currentPosition.longitude, endPosition.latitude, endPosition.longitude);
+  var meters = await geolocator.distanceBetween(globals.currentLocation.latitude, globals.currentLocation.longitude, endPosition.latitude, endPosition.longitude);
+  //var meters = await geolocator.distanceBetween(currentPosition.latitude, currentPosition.longitude, endPosition.latitude, endPosition.longitude);
 
   var distance = (meters * 0.000621).toStringAsFixed(1);
-  print(distance);
   return distance;
 }
 
