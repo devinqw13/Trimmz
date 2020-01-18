@@ -161,6 +161,7 @@ class LoginScreenState extends State<LoginScreen> {
         keyboardType: TextInputType.visiblePassword,
         onSubmitted: (value) {
           if(_passwordController.text.length > 0){
+            FocusScope.of(context).requestFocus(new FocusNode());
             _handleSubmitted(_usernameController.text, _passwordController.text, context);
           }
         },

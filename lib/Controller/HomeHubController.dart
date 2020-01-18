@@ -57,13 +57,22 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   }
 
   void initSuggestedBarbers() async {
-    var res1;
-    Future.delayed(const Duration(milliseconds: 2), () async {
-      res1 = await getUserLocation();
-    });
-    var res2 = await getSuggestions(context, globals.token, 1, res1);
+    // var res1;
+    // Future.delayed(const Duration(milliseconds: 2), () async {
+    //   res1 = await getUserLocation();
+    // });
+    // var res2 = await getSuggestions(context, globals.token, 1, res1);
+    // setState(() {
+    //   suggestedBarbers = res2;
+    // });
+    var res2 = await getCurrentLocation();
     setState(() {
-      suggestedBarbers = res2;
+      globals.currentLocation = res2;
+    });
+    var res1 = await getUserLocation();
+    var res = await getSuggestions(context, globals.token, 1, res1);
+    setState(() {
+      suggestedBarbers = res;
     });
   }
 

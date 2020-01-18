@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:trimmz/Model/AppointmentRequests.dart';
 import 'package:trimmz/Model/availability.dart';
 import 'package:trimmz/dialogs.dart';
@@ -97,10 +98,11 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   }
 
   void initSuggestedBarbers() async {
-    var res1;
-    Future.delayed(const Duration(milliseconds: 2), () async {
-      res1 = await getUserLocation();
+    var res2 = await getCurrentLocation();
+    setState(() {
+      globals.currentLocation = res2;
     });
+    var res1 = await getUserLocation();
     var res = await getSuggestions(context, globals.token, 1, res1);
     setState(() {
       suggestedBarbers = res;
