@@ -10,4 +10,5 @@ class Appointment{
   String locationAddress;
   String geoAddress;
   int price;
+  String updated;
 }

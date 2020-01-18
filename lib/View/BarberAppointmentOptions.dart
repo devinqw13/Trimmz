@@ -181,53 +181,72 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                         width: MediaQuery.of(context).size.width * .7,
                                         height: 1
                                       ),
-                                      (DateTime.now().isAfter(DateTime.parse(appointment['full_time'])) && appointment['status'] == '0') ?
-                                      Row(
-                                        children: <Widget> [
-                                          Expanded(
-                                            child: Container(
-                                              //width: MediaQuery.of(context).size.width,
-                                              child: RaisedButton(
-                                                onPressed: () {
+                                      appointment['status'] == '0' ? Container(
+                                        child: Column(
+                                          children: <Widget>[
+                                            Row(
+                                              children: <Widget> [
+                                                Expanded(
+                                                  child: Container(
+                                                    //width: MediaQuery.of(context).size.width,
+                                                    child: RaisedButton(
+                                                      onPressed: () {
 
-                                                },
-                                                child: Text('Complete Appointment'),
-                                              )
-                                            ) 
-                                          )
-                                        ]
-                                      ): Container(),
-                                      (DateTime.now().isAfter(DateTime.parse(appointment['full_time'])) && appointment['status'] != '0') ?
-                                      Container() : Row(
-                                        children: <Widget> [
-                                          Expanded(
-                                            child: Container(
-                                              child: RaisedButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  widget.showCancel(true);
-                                                },
-                                                child: Text('Cancel Appointment'),
-                                              )
+                                                      },
+                                                      child: Text('Complete Appointment'),
+                                                    )
+                                                  ) 
+                                                )
+                                              ]
+                                            ),
+                                            Row(
+                                              children: <Widget> [
+                                                Expanded(
+                                                  child: Container(
+                                                    child: RaisedButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                        widget.showCancel(true);
+                                                      },
+                                                      child: Text('Cancel Appointment'),
+                                                    )
+                                                  )
+                                                )
+                                              ]
+                                            ),
+                                            Row(
+                                              children: <Widget> [
+                                                Expanded(
+                                                  child: Container(
+                                                    child: RaisedButton(
+                                                      onPressed: () {
+
+                                                      },
+                                                      child: Text('Mark as no-show appointment'),
+                                                    )
+                                                  ) 
+                                                )
+                                              ]
                                             )
-                                          )
-                                        ]
-                                      ),
-                                      (DateTime.now().isAfter(DateTime.parse(appointment['full_time'])) && appointment['status'] == '0') ?
-                                      Row(
-                                        children: <Widget> [
-                                          Expanded(
-                                            child: Container(
-                                              child: RaisedButton(
-                                                onPressed: () {
-
-                                                },
-                                                child: Text('Mark as no-show appointment'),
-                                              )
-                                            ) 
-                                          )
-                                        ]
-                                      ) : Container()
+                                          ]
+                                        )
+                                      ): Container(
+                                        child: //Text(df.format(DateTime.parse(appointment['updated'])))
+                                        RichText(
+                                          softWrap: true,
+                                          text: new TextSpan(
+                                            children: <TextSpan>[
+                                              new TextSpan(text: 'Marked ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                                              appointment['status'] == '2' ?
+                                              new TextSpan(text: 'cancelled on: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)):
+                                              appointment['status'] == '1' ?
+                                              new TextSpan(text: 'completed on: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)) :
+                                              new TextSpan(text: 'no-show on: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                                              new TextSpan(text: df.format(DateTime.parse(appointment['updated'])), style: TextStyle(fontStyle: FontStyle.italic)),
+                                            ],
+                                          ),
+                                        ),
+                                      )
                                     ]
                                   )
                                 ),
