@@ -178,7 +178,7 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
     );
   }
 
-  returnDistanceFutureBuilder(String shopLocation) {
+  returnDistanceFutureBuilder(String shopLocation, Color iconColor) {
     return FutureBuilder(
       future: getDistanceFromBarber(shopLocation),
       builder: (context, AsyncSnapshot<String> snapshot) {
@@ -186,7 +186,8 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
         if (snapshot.hasData)
           return Row(
             children: <Widget> [
-              Icon(Icons.directions, color: Colors.grey, size: 19),
+              Icon(Icons.directions, color: iconColor, size: 17),
+              Padding(padding: EdgeInsets.all(2)),
               Text('${snapshot.data} mi')
             ]
           );

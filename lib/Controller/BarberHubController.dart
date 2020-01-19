@@ -968,7 +968,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                               )
                             ) : Container(),
                             Text(suggestedBarbers[i].shopAddress + ', ' + suggestedBarbers[i].city+', '+suggestedBarbers[i].state),
-                            returnDistanceFutureBuilder('${suggestedBarbers[i].shopAddress}, ${suggestedBarbers[i].city}, ${suggestedBarbers[i].state} ${suggestedBarbers[i].zipcode}'),
+                            returnDistanceFutureBuilder('${suggestedBarbers[i].shopAddress}, ${suggestedBarbers[i].city}, ${suggestedBarbers[i].state} ${suggestedBarbers[i].zipcode}', Colors.grey),
                             getRatingWidget(context, double.parse(suggestedBarbers[i].rating)),
                           ],
                         ),

@@ -150,7 +150,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                 ]
               ),
               Padding(padding: EdgeInsets.all(2)),
-              returnDistanceFutureBuilder('${user.shopAddress}, ${user.city}, ${user.state} ${user.zipcode}'),
+              returnDistanceFutureBuilder('${user.shopAddress}, ${user.city}, ${user.state} ${user.zipcode}', Colors.white),
               Padding(padding: EdgeInsets.all(2)),
               getRatingWidget(context, double.parse(user.rating))
             ]

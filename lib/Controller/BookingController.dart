@@ -424,7 +424,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                             rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.white)
                           ),
                           calendarStyle: CalendarStyle(
-                            weekendStyle: const TextStyle(color: Colors.white)
+                            weekendStyle: const TextStyle(color: Colors.white),
+                            outsideWeekendStyle: TextStyle(color: Color(0xFF9E9E9E))
                           ),
                           headerVisible: true,
                           calendarController: _calendarController,
