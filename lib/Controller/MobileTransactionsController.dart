@@ -356,16 +356,16 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
         width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.all(5.0),
         padding: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          gradient: new LinearGradient(
-            begin: Alignment(0.0, -2.0),
-            colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
-          )
-        ),
+        // decoration: BoxDecoration(
+        //   gradient: new LinearGradient(
+        //     begin: Alignment(0.0, -2.0),
+        //     colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+        //   )
+        // ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget> [
-            Text('Transfer History', style: TextStyle(fontWeight: FontWeight.bold)),
             Center(
               child: Container(
                 child: Column(
@@ -393,18 +393,26 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
   buildBody() {
     return new Container(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
+          Container(
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
                   payoutOptions(),
                   payoutMethod(),
-                  transactionHistory()
                 ],
               ),
             )
           ),
+          Container(
+            margin: EdgeInsets.all(5),
+            padding: EdgeInsets.all(5),
+            child: Text('Transfer History', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Expanded(
+            child: transactionHistory()
+          )
         ]
       )
     );

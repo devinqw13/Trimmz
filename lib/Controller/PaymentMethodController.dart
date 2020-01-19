@@ -48,7 +48,6 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
   }
 
   void initChecks() async {
-    print(globals.spPaymentId);
     if(globals.spCustomerId != null && globals.spPaymentId != null) {
       if(globals.spCustomerId != '') {
         var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
@@ -59,7 +58,6 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 setState(() {
                   clientPaymentMethod = item;
                 });
-                print(clientPaymentMethod.id);
               }
             }
           }
