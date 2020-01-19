@@ -1136,7 +1136,7 @@ Future<bool> changePassword(BuildContext context, String newPassword, int userid
   }
 }
 
-Future<Map> updateSettings(BuildContext context, int userid, int type, [String name, String email, String spCustomerId]) async {
+Future<Map> updateSettings(BuildContext context, int userid, int type, [String name, String email, String spCustomerId, String spPaymentId]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -1150,7 +1150,8 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
     "type": type,
     "name": name != null ? name : null,
     "email": email != null ? email : null,
-    "sp_customerid": spCustomerId != null ? spCustomerId : null
+    "sp_customerid": spCustomerId != null ? spCustomerId : null,
+    "sp_paymentid": spPaymentId != null ? spPaymentId : null
   };
 
   String url = "${globals.baseUrl}updateSettings/";

@@ -24,6 +24,7 @@ void main() async {
     user.userType = prefs.getInt('userType');
     user.spCustomerId = prefs.getString('spCustomerId');
     user.spPayoutId = prefs.getString('spPayoutId');
+    user.spPaymentId = prefs.getString('spPaymentId');
     user.spPayoutMethod= prefs.getString('spPayoutMethod');
     globals.user = user;
     globals.token = user.token;
@@ -34,6 +35,7 @@ void main() async {
     globals.userType = user.userType;
     globals.spCustomerId = user.spCustomerId;
     globals.spPayoutId = user.spPayoutId;
+    globals.spPaymentId = user.spPaymentId;
     globals.spPayoutMethod = user.spPayoutMethod;
     globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
     if (globals.darkModeEnabled) {

@@ -17,6 +17,7 @@ setGlobals(Map results) async {
   user.userType = results['user']['type'];
   user.spCustomerId = results['user']['sp_customerid'];
   user.spPayoutId = results['user']['payoutId'];
+  user.spPaymentId = results['user']['sp_paymentid'];
   user.spPayoutMethod = results['user']['payoutMethod'] ?? 'standard';
 
   globals.user = user;
@@ -28,6 +29,7 @@ setGlobals(Map results) async {
   globals.userType = user.userType;
   globals.spCustomerId = user.spCustomerId;
   globals.spPayoutId = user.spPayoutId;
+  globals.spPaymentId = user.spPaymentId;
   globals.spPayoutMethod = user.spPayoutMethod;
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -49,6 +51,7 @@ setGlobals(Map results) async {
   prefs.setInt('userType', globals.user.userType);
   prefs.setString('spCustomerId', globals.user.spCustomerId);
   prefs.setString('spPayoutId', globals.user.spPayoutId);
+  prefs.setString('spPaymentId', globals.user.spPaymentId);
   prefs.setString('spPayoutMethod', globals.user.spPayoutMethod);
 }
 

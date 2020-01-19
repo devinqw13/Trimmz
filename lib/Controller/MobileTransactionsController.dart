@@ -104,7 +104,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
                 }
               }
             }
-          } 
+          }
         }else {
           var res1 = await spCreateCustomer(context, paymentMethod.id);
           if(res1.length > 0) {

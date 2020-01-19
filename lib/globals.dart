@@ -11,6 +11,7 @@ int userType;
 String spCustomerId;
 String spPayoutMethod;
 String spPayoutId;
+String spPaymentId;
 Position currentLocation;
 
 LoginUser user;
@@ -31,4 +32,5 @@ class LoginUser {
   String spCustomerId;
   String spPayoutMethod;
   String spPayoutId;
+  String spPaymentId;
 }

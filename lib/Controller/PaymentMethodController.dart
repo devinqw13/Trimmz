@@ -48,13 +48,21 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
   }
 
   void initChecks() async {
-    if(globals.spCustomerId != null) {
+    print(globals.spPaymentId);
+    if(globals.spCustomerId != null && globals.spPaymentId != null) {
       if(globals.spCustomerId != '') {
-        var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 1);
+        var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
         if(res != null) {
-          setState(() {
-            clientPaymentMethod = res;
-          });
+          if(res != null) {
+            for(var item in res) {
+              if(item.id == globals.spPaymentId) {
+                setState(() {
+                  clientPaymentMethod = item;
+                });
+                print(clientPaymentMethod.id);
+              }
+            }
+          }
         }
       }
     }
@@ -69,24 +77,44 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
       CardFormPaymentRequest(),
     ).then((PaymentMethod paymentMethod) async {
         progressHUD();
-        var res1 = await spCreateCustomer(context, paymentMethod.id);
-        if(res1.length > 0) {
-          String spCustomerId = res1['id'];
-          var res2 = await spCreatePaymentIntent(context, paymentMethod.id, spCustomerId, '100');
+        if(globals.spCustomerId != null) {
+          var res2 = await spAttachCustomerToPM(context, paymentMethod.id, globals.spCustomerId);
           if(res2.length > 0) {
-            var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId);
-            if(res3.length > 0) {
-              setGlobals(res3);
-
-              var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 1);
-              if(res != null) {
-                setState(() {
-                  clientPaymentMethod = res;
-                });
+            var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2); // return list of cards
+            if(res4 != null) {
+              for(var item in res4) {
+                if(item.id == paymentMethod.id) {
+                  var res = await updateSettings(context, globals.token, 1, '', '', '', item.id);
+                  if(res.length > 0) {
+                    setGlobals(res);
+                    setState(() {
+                      clientPaymentMethod = item;
+                    });
+                  }
+                }
               }
             }
-          }else {
-            // payment wasn't able to be authorized
+          }
+        }else {
+          var res1 = await spCreateCustomer(context, paymentMethod.id);
+          if(res1.length > 0) {
+            String spCustomerId = res1['id'];
+            var res2 = await spCreatePaymentIntent(context, paymentMethod.id, spCustomerId, '100');
+            if(res2.length > 0) {
+              var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId);
+              if(res3.length > 0) {
+                setGlobals(res3);
+
+                var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 1);
+                if(res != null) {
+                  setState(() {
+                    clientPaymentMethod = res;
+                  });
+                }
+              }
+            }else {
+              // payment wasn't able to be authorized
+            }
           }
         }
         progressHUD();
