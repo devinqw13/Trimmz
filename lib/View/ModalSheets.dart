@@ -356,6 +356,29 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                     ),
                                   ],
                                 ),
+                                DateTime.now().isAfter(requests[i].dateTime) ?
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Expired',
+                                      style: TextStyle(
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.grey
+                                      )
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(10),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        var result = await aptRequestDecision(context, globals.token, requests[i].requestId, 0);
+                                        Navigator.pop(context);
+                                        results = result;
+                                      },
+                                      child: Text('Dismiss', style: TextStyle(color: Colors.blue)),
+                                    ),
+                                  ]
+                                ) :
                                 Row(
                                   children: <Widget>[
                                     GestureDetector(
