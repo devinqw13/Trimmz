@@ -10,6 +10,7 @@ import '../functions.dart';
 import '../calls.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../Model/PayoutDetails.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MobileTransactionScreen extends StatefulWidget {
   MobileTransactionScreen({Key key}) : super (key: key);
@@ -20,11 +21,11 @@ class MobileTransactionScreen extends StatefulWidget {
 
 class MobileTransactionScreenState extends State<MobileTransactionScreen> {
   List<ClientPaymentMethod> payoutCards = [];
+  ClientPaymentMethod payoutCard;
   List<PayoutDetails> payoutDetails = [];
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
-  String _payoutMethod = globals.payoutMethod ?? '';
-  String _payoutCard = globals.payoutCard ?? '';
+  String _payoutMethod = globals.spPayoutMethod;
 
   void initState() {
     super.initState();
@@ -53,20 +54,26 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
   }
 
   getPayoutOptions() async {
-    if(globals.spCustomerId != null) {
+    if(globals.spCustomerId != null && (globals.spPayoutId != null && globals.spPayoutId != '')) {
       if(globals.spCustomerId != '') {
-        var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
+        var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2); // return list of cards
         if(res != null) {
-          setState(() {
-            payoutCards = res;
-          });
+          for(var item in res) {
+            if(item.id == globals.spPayoutId) {
+              setState(() {
+                payoutCard = item;
+              });
+            }
+          }
         }
       }
     }
   }
 
   getPayoutHistory() {
-    
+    if(globals.spCustomerId != null) {
+
+    }
   }
 
   void setError() {
@@ -78,32 +85,94 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
       CardFormPaymentRequest(),
     ).then((PaymentMethod paymentMethod) async {
         progressHUD();
-        var res1 = await spCreateCustomer(context, paymentMethod.id);
-        if(res1.length > 0) {
-          String spCustomerId = res1['id'];
-          var res2 = await spCreatePaymentIntent(context, paymentMethod.id, spCustomerId, '100');
+        if(globals.spCustomerId != null){
+          var res2 = await spAttachCustomerToPM(context, paymentMethod.id, globals.spCustomerId);
           if(res2.length > 0) {
-            var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId);
-            if(res3.length > 0) {
-              setGlobals(res3);
-
-              var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
-              if(res != null) {
-                setState(() {
-                  payoutCards = res;
-                });
+            var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2); // return list of cards
+            if(res4 != null) {
+              for(var item in res4) {
+                if(item.id == paymentMethod.id) {
+                  var res = await updatePayoutSettings(context, globals.token, item.id, null);
+                  if(res) {
+                    setState(() {
+                      globals.spPayoutId = paymentMethod.id;
+                      payoutCard = item;
+                    });
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.setString('spPayoutId', paymentMethod.id);
+                  }
+                }
               }
             }
-          }else {
-            // payment wasn't able to be authorized
+          } 
+        }else {
+          var res1 = await spCreateCustomer(context, paymentMethod.id);
+          if(res1.length > 0) {
+            String spCustomerId = res1['id'];
+            var res2 = await spCreatePaymentIntent(context, paymentMethod.id, spCustomerId, '100');
+            if(res2.length > 0) {
+              var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId);
+              if(res3.length > 0) {
+                setGlobals(res3);
+                var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
+                if(res != null) {
+                  for(var item in res) {
+                    if(item.id == paymentMethod.id) {
+                      var res = await updatePayoutSettings(context, globals.token, item.id, null);
+                      if(res) {
+                        setState(() {
+                          globals.spPayoutId = paymentMethod.id;
+                          payoutCard = item;
+                        });
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        prefs.setString('spPayoutId', paymentMethod.id);
+                      }
+                    }
+                  }
+                }
+              }
+            }else {
+              // payment wasn't able to be authorized
+            }
           }
         }
         progressHUD();
     }).catchError(setError);
   }
 
+  changePayoutCard() async {
+    await StripePayment.paymentRequestWithCardForm(
+      CardFormPaymentRequest(),
+    ).then((PaymentMethod paymentMethod) async {
+      progressHUD();
+      var res1 = await spDetachCustomerFromPM(context, payoutCard.id);
+      if(res1.length > 0) {
+        var res2 = await spAttachCustomerToPM(context, paymentMethod.id, globals.spCustomerId);
+        if(res2.length > 0) {
+          var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2); // return list of cards
+          if(res4 != null) {
+            for(var item in res4) {
+              var res3 = await updatePayoutSettings(context, globals.token, paymentMethod.id, null);
+              if(res3){
+                if(item.id == paymentMethod.id) {
+                  setState(() {
+                    globals.spPayoutId = paymentMethod.id;
+                    payoutCard = item;
+                  });
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setString('spPayoutId', paymentMethod.id);
+                }
+              }
+            }
+          }
+        }
+      }
+      progressHUD();
+    }).catchError(setError);
+  }
+
   payoutOptions() {
-    if(payoutCards.length > 0) {
+    if(payoutCard != null) {
       return new Container(
         width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.all(5.0),
@@ -118,68 +187,40 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text('Direct Deposit', style: TextStyle(fontWeight: FontWeight.bold)),
-            ListView.builder(
-              padding: EdgeInsets.all(0),
-              shrinkWrap: true,
-              itemCount: payoutCards.length,
-              itemBuilder: (context, i) {
-                return new GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _payoutCard = payoutCards[i].id;
-                    });
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    payoutCard.icon,
+                    Padding(padding: EdgeInsets.all(10)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Padding(padding: EdgeInsets.all(3)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Padding(padding: EdgeInsets.all(3)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Padding(padding: EdgeInsets.all(3)),
+                    Text(payoutCard.lastFour)
+                  ]
+                ),
+                FlatButton(
+                  textColor: Colors.blue,
+                  onPressed: () {
+                    changePayoutCard();
                   },
-                  child: Container(
-                    color: Colors.transparent,
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Radio(
-                              activeColor: Colors.blue,
-                              groupValue: _payoutCard,
-                              value: payoutCards[i].id,
-                              onChanged: (value) {
-                                setState(() {
-                                  _payoutCard = value;
-                                });
-                              },
-                            ),
-                            payoutCards[i].icon,
-                            Padding(padding: EdgeInsets.all(10)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Padding(padding: EdgeInsets.all(3)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Padding(padding: EdgeInsets.all(3)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                            Padding(padding: EdgeInsets.all(3)),
-                            Text(payoutCards[i].lastFour)
-                          ]
-                        ),
-                        FlatButton(
-                          textColor: Colors.red,
-                          onPressed: () {
-                            //changePaymentMethod();
-                          },
-                          child: Text('Remove')
-                        )
-                      ]
-                    )
-                  )
-                );
-              },
-            )
+                  child: Text('Change')
+                )
+              ]
+            ),
           ]
         )
       );
@@ -219,7 +260,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
   }
 
   payoutMethod() {
-    if(payoutCards.length > 0){
+    if(payoutCard != null){
       return Container(
         width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.all(5.0),
@@ -384,9 +425,16 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
           title: Text("Mobile Transactions"),
           actions: <Widget>[
             FlatButton(
-              textColor: _payoutMethod != globals.payoutMethod ? Colors.white : Colors.grey,
-              onPressed: () {
-
+              textColor: _payoutMethod != globals.spPayoutMethod ? Colors.white : Colors.grey,
+              onPressed: () async {
+                var res = await updatePayoutSettings(context, globals.token, null, _payoutMethod);
+                if(res) {
+                  setState(() {
+                    globals.spPayoutMethod = _payoutMethod;
+                  });
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setString('spPayoutMethod', _payoutMethod);
+                }
               },
               child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
             )

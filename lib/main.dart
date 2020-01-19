@@ -22,7 +22,9 @@ void main() async {
     user.userEmail = prefs.getString('userUserEmail');
     user.userAdmin = prefs.getBool('userIsAdmin');
     user.userType = prefs.getInt('userType');
-    user.spCustomerId= prefs.getString('spCustomerId');
+    user.spCustomerId = prefs.getString('spCustomerId');
+    user.spPayoutId = prefs.getString('spPayoutId');
+    user.spPayoutMethod= prefs.getString('spPayoutMethod');
     globals.user = user;
     globals.token = user.token;
     globals.username = user.username;
@@ -31,6 +33,8 @@ void main() async {
     globals.userAdmin = user.userAdmin == true ? true : false;
     globals.userType = user.userType;
     globals.spCustomerId = user.spCustomerId;
+    globals.spPayoutId = user.spPayoutId;
+    globals.spPayoutMethod = user.spPayoutMethod;
     globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
     if (globals.darkModeEnabled) {
       globals.userBrightness = Brightness.dark;

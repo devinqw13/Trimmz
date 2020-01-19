@@ -24,10 +24,11 @@ class ReviewControllerState extends State<ReviewController> {
   }
 
   initCalls() {
-    if(widget.userId != globals.token){
+    if(widget.userId == globals.token){
       //TODO: call to check if user had an appointment w/ barber then set canReview
+    }else {
+      //TODO: call to get all reviews
     }
-    //TODO: call to get all reviews
   }
 
   createReview() {

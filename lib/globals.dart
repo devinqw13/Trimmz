@@ -8,10 +8,9 @@ String name;
 String email;
 bool userAdmin;
 int userType;
-String sqccof;
 String spCustomerId;
-String payoutMethod;
-String payoutCard;
+String spPayoutMethod;
+String spPayoutId;
 Position currentLocation;
 
 LoginUser user;
@@ -29,8 +28,7 @@ class LoginUser {
   String userEmail;
   bool userAdmin;
   int userType;
-  String ccof;
   String spCustomerId;
-  String payoutMethod;
-  String payoutCard;
+  String spPayoutMethod;
+  String spPayoutId;
 }
