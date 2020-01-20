@@ -5,7 +5,6 @@ import '../dialogs.dart';
 import '../Model/Packages.dart';
 import '../Model/AppointmentRequests.dart';
 import 'package:intl/intl.dart';
-import '../View/BarberAppointmentOptions.dart';
 
 addBarberPackage(BuildContext context, String name, double price, int duration) async {
   if(name == "" || price.toString() == "" || duration.toString() == "") {
@@ -27,7 +26,7 @@ Future<List<Packages>> showAddPackageModalSheet(BuildContext context) async {
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         padding: EdgeInsets.all(10.0),
-        height: 335,
+        height: 380,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
             color: Color.fromARGB(255, 21, 21, 21),
@@ -44,6 +43,7 @@ Future<List<Packages>> showAddPackageModalSheet(BuildContext context) async {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   margin: EdgeInsets.only(bottom: 10),
                   child: Text(
                     'New Package',
@@ -53,91 +53,135 @@ Future<List<Packages>> showAddPackageModalSheet(BuildContext context) async {
                     )
                   )
                 ),
-                Text(
-                  'Name',
-                  style: TextStyle(
-                    fontSize: 18.0
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Name',
+                    style: TextStyle(
+                      fontSize: 18.0
+                    )
                   )
                 ),
-                TextField(
-                  controller: _pkgName,
-                  keyboardType: TextInputType.text,
-                  autocorrect: false,
-                  style: new TextStyle(
-                    fontSize: 18.0,
-                    color: Colors.white
-                  ),
-                  decoration: new InputDecoration(
-                    hintText: 'Enter package name',
-                    hintStyle: TextStyle(color: Colors.white70),
-                    border: new UnderlineInputBorder(
-                      borderSide: new BorderSide(
-                        color: Colors.white
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: TextField(
+                    controller: _pkgName,
+                    keyboardType: TextInputType.text,
+                    autocorrect: false,
+                    style: new TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white
+                    ),
+                    decoration: new InputDecoration(
+                      hintText: 'Enter package name',
+                      hintStyle: TextStyle(color: Colors.white70),
+                      border: new UnderlineInputBorder(
+                        borderSide: new BorderSide(
+                          color: Colors.white
+                        )
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue)
                       )
                     ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue)
-                    )
-                  ),
+                  )
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
                 ),
-                Text(
-                  'Price',
-                  style: TextStyle(
-                    fontSize: 18.0
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Price',
+                    style: TextStyle(
+                      fontSize: 18.0
+                    )
                   )
                 ),
-                TextField(
-                  controller: _pkgPrice,
-                  keyboardType: TextInputType.number,
-                  autocorrect: false,
-                  style: new TextStyle(
-                    fontSize: 18.0,
-                    color: Colors.white
-                  ),
-                  decoration: new InputDecoration(
-                    hintText: 'Enter price',
-                    hintStyle: TextStyle(color: Colors.white70),
-                    border: new UnderlineInputBorder(
-                      borderSide: new BorderSide(
-                        color: Colors.white
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: TextField(
+                    controller: _pkgPrice,
+                    keyboardType: TextInputType.number,
+                    autocorrect: false,
+                    style: new TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white
+                    ),
+                    decoration: new InputDecoration(
+                      hintText: 'Enter price',
+                      hintStyle: TextStyle(color: Colors.white70),
+                      border: new UnderlineInputBorder(
+                        borderSide: new BorderSide(
+                          color: Colors.white
+                        )
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue)
                       )
                     ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue)
-                    )
-                  ),
+                  )
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
                 ),
-                Text(
-                  'Duration (Mins)',
-                  style: TextStyle(
-                    fontSize: 18.0
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Duration (Mins)',
+                    style: TextStyle(
+                      fontSize: 18.0
+                    )
                   )
                 ),
-                TextField(
-                  controller: _pkgDuration,
-                  keyboardType: TextInputType.number,
-                  autocorrect: false,
-                  style: new TextStyle(
-                    fontSize: 18.0,
-                    color: Colors.white
-                  ),
-                  decoration: new InputDecoration(
-                    hintText: 'Enter Duration',
-                    hintStyle: TextStyle(color: Colors.white70),
-                    border: new UnderlineInputBorder(
-                      borderSide: new BorderSide(
-                        color: Colors.white
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: TextField(
+                    controller: _pkgDuration,
+                    keyboardType: TextInputType.number,
+                    autocorrect: false,
+                    style: new TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white
+                    ),
+                    decoration: new InputDecoration(
+                      hintText: 'Enter Duration',
+                      hintStyle: TextStyle(color: Colors.white70),
+                      border: new UnderlineInputBorder(
+                        borderSide: new BorderSide(
+                          color: Colors.white
+                        )
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue)
                       )
                     ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue)
-                    )
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: RaisedButton(
+                      onPressed: () async {
+                        if(_pkgPrice.text != '' && _pkgDuration.text != '' && _pkgName.text != ''){
+                          var res = await addBarberPackage(context, _pkgName.text, double.parse(_pkgPrice.text), int.parse(_pkgDuration.text));
+                          if(res) {
+                            var res = await getBarberPkgs(context, globals.token);
+                            Navigator.pop(context);
+                            results = res;
+                          }else {
+                            return;
+                          }
+                        }else {
+                          showErrorDialog(context, 'Missing Fields', 'Enter all fields to submit a new package');
+                        }
+                      },
+                      child: Text('Add Package')
+                    ),
                   ),
                 ),
               ],
@@ -149,16 +193,9 @@ Future<List<Packages>> showAddPackageModalSheet(BuildContext context) async {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: RaisedButton(
                       onPressed: () async {
-                        var res = await addBarberPackage(context, _pkgName.text, double.parse(_pkgPrice.text), int.parse(_pkgDuration.text));
-                        if(res) {
-                          var res = await getBarberPkgs(context, globals.token);
-                          Navigator.pop(context);
-                          results = res;
-                        }else {
-                          return;
-                        }
+                        Navigator.pop(context);
                       },
-                      child: Text('Add Package')
+                      child: Text('Cancel')
                     ),
                   ),
                 ),

@@ -142,12 +142,23 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
               Padding(padding: EdgeInsets.all(2)),
               user.shopName != null && user.shopName != '' ? Container(width: MediaQuery.of(context).size.width * .33, child: AutoSizeText.rich(TextSpan(text: user.shopName, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)), maxFontSize:16, minFontSize: 13, maxLines: 1, overflow: TextOverflow.ellipsis)) : Container(),
               Padding(padding: EdgeInsets.all(2)),
-              Row(
-                children: <Widget> [
-                  Icon(LineIcons.map_marker, size: 17),
-                  Padding(padding: EdgeInsets.all(2)),
-                  Container(width: MediaQuery.of(context).size.width * .33, child: AutoSizeText.rich(TextSpan(text: user.shopAddress + ', ' + user.city + ', ' + user.state + ' ' + user.zipcode), maxFontSize:16, minFontSize: 13, maxLines: 1, overflow: TextOverflow.ellipsis))
-                ]
+              GestureDetector(
+                onTap: () async {
+                  //TODO: click to open maps ***THROWS AN ERROR****
+                  // String url = "http://maps.apple.com/?address=${user.shopAddress}+${user.city}+${user.state}";
+                  // if (await canLaunch(url)) {
+                  //   await launch(url);
+                  // } else {
+                  //   throw 'Could not launch $url';
+                  // }
+                },
+                child: Row(
+                  children: <Widget> [
+                    Icon(LineIcons.map_marker, size: 17),
+                    Padding(padding: EdgeInsets.all(2)),
+                    Container(width: MediaQuery.of(context).size.width * .33, child: AutoSizeText.rich(TextSpan(text: user.shopAddress + ', ' + user.city + ', ' + user.state + ' ' + user.zipcode), maxFontSize:16, minFontSize: 13, maxLines: 1, overflow: TextOverflow.ellipsis))
+                  ]
+                )
               ),
               Padding(padding: EdgeInsets.all(2)),
               returnDistanceFutureBuilder('${user.shopAddress}, ${user.city}, ${user.state} ${user.zipcode}', Colors.white),

@@ -149,16 +149,6 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
    });
   }
 
-  addBarberPackage(String name, double price, int duration) async {
-    if(name == "" || price.toString() == "" || duration.toString() == "") {
-      showErrorDialog(context, "Field Left Empty", "A field was left empty. Please enter all fields required.");
-      return false;
-    }else {
-      var res = await addPackage(context, globals.token, name, duration, price);
-      return res;
-    }
-  }
-
   Widget _buildEventsMarker(DateTime date, List events) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
