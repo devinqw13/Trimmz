@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:trimmz/Model/ClientPaymentMethod.dart';
 import 'package:trimmz/dialogs.dart';
 import '../Model/ClientBarbers.dart';
 import '../globals.dart' as globals;
@@ -13,6 +15,9 @@ import 'package:intl/intl.dart';
 import '../Model/availability.dart';
 import '../View/BookingTimeRadioButton.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:stripe_payment/stripe_payment.dart';
+import '../Calls/StripeConfig.dart';
+import '../Calls/FinancialCalls.dart';
 
 class BookingController extends StatefulWidget {
   final ClientBarbers barberInfo;
@@ -40,6 +45,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   int finalPackagePrice = 0;
   DateTime selectedDate;
   DateTime finalDateTime;
+  ClientPaymentMethod paymentCard;
 
    @override
   void initState() {
@@ -48,6 +54,9 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     _calendarController = CalendarController();
 
     getBarberPackages(int.parse(barberInfo.id));
+    stripeInit();
+
+    getClientPaymentCard();
 
     getInitDate();
 
@@ -58,16 +67,6 @@ class BookingControllerState extends State<BookingController> with TickerProvide
 
     _animationController.forward();
 
-    // tipFocusNode.addListener(() {
-    //   if(MediaQuery.of(context).viewInsets.bottom == 0.0){
-    //     print('here');
-    //     scrollToBottom();
-    //   }
-    //   bool hasFocus = tipFocusNode.hasFocus;
-    //   if(hasFocus){
-    //     scrollToBottom();
-    //   }
-    // });
     KeyboardVisibilityNotification().addNewListener(
       onShow: () {
         bool hasFocus = tipFocusNode.hasFocus;
@@ -83,6 +82,25 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     _calendarController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  getClientPaymentCard() async {
+    if(globals.spCustomerId != null && globals.spPaymentId != null) {
+      if(globals.spCustomerId != '') {
+        var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
+        if(res != null) {
+          if(res != null) {
+            for(var item in res) {
+              if(item.id == globals.spPaymentId) {
+                setState(() {
+                  paymentCard = item;
+                });
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   getBarberPackages(int barberId) async {
@@ -501,18 +519,58 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget> [
-                              Row(
+                              paymentCard != null ? Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Text('CARD INFO HERE'),
+                                  Row(
+                                    children: <Widget>[
+                                      paymentCard.icon,
+                                      Padding(padding: EdgeInsets.all(10)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Padding(padding: EdgeInsets.all(3)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Padding(padding: EdgeInsets.all(3)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Padding(padding: EdgeInsets.all(3)),
+                                      Text(paymentCard.lastFour)
+                                    ]
+                                  ),
                                   FlatButton(
                                     textColor: Colors.blue,
                                     onPressed: () {
-
+                                      // TODO: add ability to change card
                                     },
                                     child: Text('Change')
                                   )
                                 ],
+                              ) : 
+                              Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    // TODO: add ability to add card
+                                  },
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(LineIcons.plus, color: Colors.blue, size: 18),
+                                      Text(
+                                        'Add Card',
+                                        style: TextStyle(
+                                          color: Colors.blue
+                                        )
+                                      )
+                                    ]
+                                  )
+                                )
                               ),
                               Container(
                                 child: Column(
