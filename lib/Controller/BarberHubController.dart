@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:trimmz/Model/AppointmentRequests.dart';
 import 'package:trimmz/Model/availability.dart';
-import 'package:trimmz/dialogs.dart';
 import '../Model/SuggestedBarbers.dart';
 import '../globals.dart' as globals;
 import '../View/BarberHubTabs.dart';
@@ -27,6 +26,7 @@ import '../View/Widgets.dart';
 import '../View/FullCalendarModal.dart';
 import '../View/AppointmentCancelOptions.dart';
 import 'MarketplaceCartController.dart';
+import '../View/PackageOptionsModal.dart';
 
 class BarberHubScreen extends StatefulWidget {
   BarberHubScreen({Key key}) : super (key: key);
@@ -446,6 +446,34 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     );
   }
 
+  showFullPackageList(var packagesList) {
+    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+      return FullPackagesBottomSheet(
+        packages: packagesList,
+        showPackageOptions: (value) {
+          if(value != null){
+            showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+              return PackageOptionsBottomSheet(
+                package: value,
+                updatePackages: (value) {
+                  setState(() {
+                    packages = value;
+                  });
+                  showFullCalendar();
+                },
+                showPackagesList: (value) {
+                  if(value){
+                    showFullPackageList(packages);
+                  }
+                }
+              );
+            });
+          }
+        },
+      );
+    });
+  }
+
   showFullCalendarAptOptions(var appointment) {
     showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
       return AppointmentOptionsBottomSheet(
@@ -685,18 +713,9 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                             padding: EdgeInsets.only(top: 5, right: 10.0),
                             child: GestureDetector(
                               onTap: () async {
-                                showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                                  return FullPackagesBottomSheet(
-                                    packages: packages,
-                                    valueChanged: (value) {
-                                      setState(() {
-                                        packages = value;
-                                      });
-                                    },
-                                  );
-                                });
+                                showFullPackageList(packages);
                               },
-                              child: Icon(LineIcons.th_list, color: Colors.blue)
+                              child: Icon(Icons.menu, color: Colors.blue)
                             )
                           ),
                           Container(

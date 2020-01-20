@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Model/Packages.dart';
-import '../View/ModalSheets.dart';
 
 class FullPackagesBottomSheet extends StatefulWidget {
-  FullPackagesBottomSheet({@required this.packages, @required this.valueChanged});
+  FullPackagesBottomSheet({@required this.packages, this.showPackageOptions});
   final List<Packages> packages;
-  final ValueChanged valueChanged;
+  final ValueChanged showPackageOptions;
 
   @override
   _FullPackagesBottomSheet createState() => _FullPackagesBottomSheet();
@@ -90,19 +89,8 @@ class _FullPackagesBottomSheet extends State<FullPackagesBottomSheet> {
                                       Padding(padding: EdgeInsets.all(5),),
                                       GestureDetector(
                                         onTap: () async {
-                                          var res = await showPackageOptionsModalSheet(context, packages[i].name, packages[i].price, packages[i].duration, packages[i].id);
-                                          if(res != null) {
-                                            setState(() {
-                                              if(res.length >= 1){
-                                                packages = res;
-                                              }else {
-                                                Navigator.pop(context);
-                                              }
-                                              widget.valueChanged(res);
-                                            });
-                                          }else {
-                                            return;
-                                          }
+                                          Navigator.pop(context);
+                                          widget.showPackageOptions(packages[i]);
                                         },
                                         child: Icon(Icons.more_vert)
                                       )
