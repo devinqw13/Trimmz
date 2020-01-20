@@ -18,6 +18,8 @@ import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import '../Calls/StripeConfig.dart';
 import '../Calls/FinancialCalls.dart';
+import 'package:progress_hud/progress_hud.dart';
+import '../functions.dart';
 
 class BookingController extends StatefulWidget {
   final ClientBarbers barberInfo;
@@ -46,6 +48,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   DateTime selectedDate;
   DateTime finalDateTime;
   ClientPaymentMethod paymentCard;
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
    @override
   void initState() {
@@ -75,6 +79,14 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         }
       }
     );
+
+    _progressHUD = new ProgressHUD(
+      backgroundColor: Colors.transparent,
+      color: Colors.blue,
+      containerColor: Colors.transparent,
+      borderRadius: 8.0,
+      loading: false,
+    );
   }
 
   @override
@@ -82,6 +94,17 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     _calendarController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void progressHUD() {
+    setState(() {
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
+    });
   }
 
   getClientPaymentCard() async {
@@ -101,6 +124,91 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         }
       }
     }
+  }
+
+  void setError() {
+
+  }
+
+  addPaymentMethod() async {
+    await StripePayment.paymentRequestWithCardForm(
+      CardFormPaymentRequest(),
+    ).then((PaymentMethod paymentMethod) async {
+        progressHUD();
+        if(globals.spCustomerId != null) {
+          var res2 = await spAttachCustomerToPM(context, paymentMethod.id, globals.spCustomerId);
+          if(res2.length > 0) {
+            var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2); // return list of cards
+            if(res4 != null) {
+              for(var item in res4) {
+                if(item.id == paymentMethod.id) {
+                  var res = await updateSettings(context, globals.token, 1, '', '', '', item.id);
+                  if(res.length > 0) {
+                    setGlobals(res);
+                    setState(() {
+                      paymentCard = item;
+                    });
+                  }
+                }
+              }
+            }
+          }
+        }else {
+          var res1 = await spCreateCustomer(context, paymentMethod.id);
+          if(res1.length > 0) {
+            String spCustomerId = res1['id'];
+            var res2 = await spCreatePaymentIntent(context, paymentMethod.id, spCustomerId, '100');
+            if(res2.length > 0) {
+              var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId);
+              if(res3.length > 0) {
+                setGlobals(res3);
+
+                var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 1);
+                if(res != null) {
+                  setState(() {
+                    paymentCard = res;
+                  });
+                }
+              }
+            }else {
+              // payment wasn't able to be authorized
+            }
+          }
+        }
+        progressHUD();
+    }).catchError(setError);
+  }
+
+  changePaymentMethod() async {
+    await StripePayment.paymentRequestWithCardForm(
+      CardFormPaymentRequest(),
+    ).then((PaymentMethod paymentMethod) async {
+      progressHUD();
+      var res1 = await spDetachCustomerFromPM(context, paymentCard.id);
+      if(res1.length > 0) {
+        var res2 = await spAttachCustomerToPM(context, paymentMethod.id, globals.spCustomerId);
+        if(res2.length > 0) {
+          var res3 = await spCreatePaymentIntent(context, paymentMethod.id, globals.spCustomerId, "100");
+          if(res3.length > 0){
+            var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
+            if(res4 != null) {
+              for(var item in res4) {
+                if(item.id == paymentMethod.id) {
+                  var res = await updateSettings(context, globals.token, 1, '', '', '', item.id);
+                  if(res.length > 0) {
+                    setGlobals(res);
+                    setState(() {
+                      paymentCard = item;
+                    });
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      progressHUD();
+    }).catchError(setError);
   }
 
   getBarberPackages(int barberId) async {
@@ -547,7 +655,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                   FlatButton(
                                     textColor: Colors.blue,
                                     onPressed: () {
-                                      // TODO: add ability to change card
+                                      changePaymentMethod();
                                     },
                                     child: Text('Change')
                                   )
@@ -557,7 +665,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                 margin: EdgeInsets.only(top: 10),
                                 child: GestureDetector(
                                   onTap: () {
-                                    // TODO: add ability to add card
+                                    addPaymentMethod();
                                   },
                                   child: Row(
                                     children: <Widget>[
@@ -708,7 +816,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         ),
         body: new Stack(
           children: <Widget> [
-            buildBody(barberInfo)
+            buildBody(barberInfo),
+            _progressHUD
           ]
         )
       )

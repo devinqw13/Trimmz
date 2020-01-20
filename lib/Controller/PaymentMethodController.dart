@@ -99,15 +99,23 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
             String spCustomerId = res1['id'];
             var res2 = await spCreatePaymentIntent(context, paymentMethod.id, spCustomerId, '100');
             if(res2.length > 0) {
-              var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId);
+              var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId, '');
               if(res3.length > 0) {
                 setGlobals(res3);
 
-                var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 1);
+                var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
                 if(res != null) {
-                  setState(() {
-                    clientPaymentMethod = res;
-                  });
+                  for(var item in res) {
+                    if(item.id == paymentMethod.id) {
+                      var res = await updateSettings(context, globals.token, 1, '', '', '', item.id);
+                      if(res.length > 0) {
+                        setGlobals(res);
+                        setState(() {
+                          clientPaymentMethod = item;
+                        });
+                      }
+                    }
+                  }
                 }
               }
             }else {
@@ -130,11 +138,19 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
         if(res2.length > 0) {
           var res3 = await spCreatePaymentIntent(context, paymentMethod.id, globals.spCustomerId, "100");
           if(res3.length > 0){
-            var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 1);
+            var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
             if(res4 != null) {
-              setState(() {
-                clientPaymentMethod = res4;
-              });
+              for(var item in res4) {
+                if(item.id == paymentMethod.id) {
+                  var res = await updateSettings(context, globals.token, 1, '', '', '', item.id);
+                  if(res.length > 0) {
+                    setGlobals(res);
+                    setState(() {
+                      clientPaymentMethod = item;
+                    });
+                  }
+                }
+              }
             }
           }
         }
