@@ -27,6 +27,8 @@ import '../View/FullCalendarModal.dart';
 import '../View/AppointmentCancelOptions.dart';
 import 'MarketplaceCartController.dart';
 import '../View/PackageOptionsModal.dart';
+import '../Model/BarberPolicies.dart';
+import '../View/BarberPoliciesModal.dart';
 
 class BarberHubScreen extends StatefulWidget {
   BarberHubScreen({Key key}) : super (key: key);
@@ -54,6 +56,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   CalendarController _calendarController;
   List<Packages> packages = [];
   List<Availability> availability = [];
+  BarberPolicies policies;
   AnimationController _animationController;
   Map<DateTime, List> _events;
   List _selectedEvents = [];
@@ -86,8 +89,8 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
 
     _animationController.forward();
 
-    initBarberInfo();
     initSuggestedBarbers();
+    initBarberInfo();
   }
 
   @override
@@ -116,7 +119,6 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     });
 
     final _selectedDay = DateTime.parse(df2.format(DateTime.parse(DateTime.now().toString())));
-
     var res1 = await getBarberAppointments(context, globals.token);
     setState(() {
       _events = res1;
@@ -132,6 +134,11 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     setState(() {
       appointmentReq = res3;
     });
+    //TODO: FINISH THIS CALL
+    // var res4 = await getBarberPolicies(context, globals.token);
+    // setState(() {
+    //   policies = res4;
+    // });
   }
 
   void onNavTapTapped(int index) {
@@ -858,7 +865,9 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                         child: GestureDetector(
                           onTap: () async {
                             showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                              return Container();
+                              return BarberPoliciesModal(
+                                policies: policies
+                              );
                             });
                           },
                           child: Icon(LineIcons.pencil, color: Colors.blue)
@@ -1169,14 +1178,16 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             bottom: _tabTitle == 'Search' ? TabBar(
               onTap: (index) async {
                 if(index == 0) {
-                  var res1 = await getUserLocation();
-                  var res = await getSuggestions(context, globals.token, 1, res1);
+                  // var res1 = await getUserLocation();
+                  // var res = await getSuggestions(context, globals.token, 1, res1);
+                  // setState(() {
+                  //   suggestedBarbers = res;
+                  //   searchTabIndex = 0;
+                  // });
                   setState(() {
-                    suggestedBarbers = res;
                     searchTabIndex = 0;
                   });
                 }else {
-                  //getSuggestions(context, globals.token, 2);
                   setState(() {
                     searchTabIndex = 1;
                   });

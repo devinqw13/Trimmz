@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trimmz/Model/AppointmentRequests.dart';
+import 'package:trimmz/Model/BarberPolicies.dart';
 import 'globals.dart' as globals;
 import 'dialogs.dart';
 import 'Model/availability.dart';
@@ -1159,12 +1160,12 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (023)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (024)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
   
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (023)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (024)", "Please try again.");
     return {};
   }
 
@@ -1204,11 +1205,11 @@ Future<bool> updatePackage(BuildContext context, int userid, int type, [String n
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (024)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (025)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (024)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (025)", "Please try again.");
     return false;
   }
 
@@ -1245,11 +1246,11 @@ Future<bool> updateAppointmentStatus(BuildContext context, int appointmentId, in
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (023)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (026)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (023)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (026)", "Please try again.");
     return false;
   }
 
@@ -1287,12 +1288,12 @@ Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payo
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (023)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (027)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   }
   
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (023)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (027)", "Please try again.");
     return false;
   }
 
@@ -1308,4 +1309,45 @@ Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payo
   }else {
     return false;
   }
+}
+
+Future<BarberPolicies> getBarberPolicies(BuildContext context, int userid) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}getBarberPolicies/?token=$userid";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (028)", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (028)", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    BarberPolicies policies = new BarberPolicies();
+    for(var item in jsonResponse['policies']){
+      policies.hasNoShow = item['noShow'] ?? false;
+    }
+    return policies;
+  }else {
+    return null;
+  }
+
 }

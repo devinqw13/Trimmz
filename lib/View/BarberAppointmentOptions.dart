@@ -185,11 +185,10 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                       appointment['status'] == '0' ? Container(
                                         child: Column(
                                           children: <Widget>[
-                                            Row(
+                                            DateTime.now().isAfter(DateTime.parse(appointment['full_time'])) ? Row(
                                               children: <Widget> [
                                                 Expanded(
                                                   child: Container(
-                                                    //width: MediaQuery.of(context).size.width,
                                                     child: RaisedButton(
                                                       onPressed: () {
 
@@ -199,7 +198,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                   ) 
                                                 )
                                               ]
-                                            ),
+                                            ) : Container(),
                                             Row(
                                               children: <Widget> [
                                                 Expanded(
@@ -215,7 +214,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                 )
                                               ]
                                             ),
-                                            Row(
+                                            DateTime.now().isAfter(DateTime.parse(appointment['full_time'])) ? Row(
                                               children: <Widget> [
                                                 Expanded(
                                                   child: Container(
@@ -228,11 +227,11 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                   ) 
                                                 )
                                               ]
-                                            )
+                                            ) : Container()
                                           ]
                                         )
                                       ): Container(
-                                        child: //Text(df.format(DateTime.parse(appointment['updated'])))
+                                        child:
                                         RichText(
                                           softWrap: true,
                                           text: new TextSpan(

@@ -173,7 +173,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                             return;
                           }
                         }else {
-                          showErrorDialog(context, 'Missing Fields', 'Enter all fields to add a new package');
+                          showErrorDialog(context, 'Missing Fields', 'Enter all fields to add a new package (FIX)');
                         }
                       },
                       child: Text('Update Package')

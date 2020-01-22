@@ -34,7 +34,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
     getPayoutHistory();
 
     _progressHUD = new ProgressHUD(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Color.fromARGB(255, 21, 21, 21),
       color: Colors.blue,
       containerColor: Colors.transparent,
       borderRadius: 8.0,
@@ -356,12 +356,6 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
         width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.all(5.0),
         padding: EdgeInsets.all(5),
-        // decoration: BoxDecoration(
-        //   gradient: new LinearGradient(
-        //     begin: Alignment(0.0, -2.0),
-        //     colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
-        //   )
-        // ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,

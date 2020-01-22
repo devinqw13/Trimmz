@@ -81,7 +81,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     );
 
     _progressHUD = new ProgressHUD(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Color.fromARGB(255, 21, 21, 21),
       color: Colors.blue,
       containerColor: Colors.transparent,
       borderRadius: 8.0,
@@ -161,13 +161,19 @@ class BookingControllerState extends State<BookingController> with TickerProvide
             if(res2.length > 0) {
               var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId);
               if(res3.length > 0) {
-                setGlobals(res3);
-
-                var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 1);
-                if(res != null) {
-                  setState(() {
-                    paymentCard = res;
-                  });
+                var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
+                if(res4 != null) {
+                  for(var item in res4) {
+                    if(item.id == paymentMethod.id) {
+                      var res = await updateSettings(context, globals.token, 1, '', '', '', item.id);
+                      if(res.length > 0) {
+                        setGlobals(res);
+                        setState(() {
+                          paymentCard = item;
+                        });
+                      }
+                    }
+                  }
                 }
               }
             }else {

@@ -28,7 +28,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
     initChecks();
 
     _progressHUD = new ProgressHUD(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Color.fromARGB(255, 21, 21, 21),
       color: Colors.blue,
       containerColor: Colors.transparent,
       borderRadius: 8.0,
