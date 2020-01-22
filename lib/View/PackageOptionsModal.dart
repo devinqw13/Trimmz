@@ -162,7 +162,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                     child: FlatButton(
                       color: Colors.blue,
                       onPressed: () async {
-                        if(nameController.text != '' || priceController.text != '' || durationController.text != ''){
+                        if(nameController.text != '' && priceController.text != '' && durationController.text != ''){
                           var res = await updatePackage(context, globals.token, int.parse(package.id), nameController.text != '' ? nameController.text : null, priceController.text != '' ? int.parse(priceController.text) : null, durationController.text != '' ? int.parse(durationController.text) : null);
                           if(res) {
                             var res = await getBarberPkgs(context, globals.token);
@@ -173,7 +173,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                             return;
                           }
                         }else {
-                          showErrorDialog(context, 'Missing Fields', 'Enter all fields to add a new package (FIX)');
+                          showErrorDialog(context, 'Empty Fields', 'Enter one or more fields to update the package');
                         }
                       },
                       child: Text('Update Package')
