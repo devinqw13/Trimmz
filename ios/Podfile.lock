@@ -17,11 +17,7 @@ PODS:
   - Reachability (3.2)
   - shared_preferences (0.0.1):
     - Flutter
-  - square_in_app_payments (1.2.0):
-    - Flutter
-    - SquareInAppPaymentsSDK (= 1.2.0)
-  - SquareInAppPaymentsSDK (1.2.0)
-  - Stripe (18.0.0)
+  - Stripe (18.4.0)
   - stripe_payment (1.0.0):
     - Flutter
     - Stripe (>= 18.0.0)
@@ -34,14 +30,13 @@ PODS:
 
 DEPENDENCIES:
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
-  - Flutter (from `.symlinks/flutter/ios`)
+  - Flutter (from `Flutter`)
   - geolocator (from `.symlinks/plugins/geolocator/ios`)
   - google_api_availability (from `.symlinks/plugins/google_api_availability/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - keyboard_visibility (from `.symlinks/plugins/keyboard_visibility/ios`)
   - location_permissions (from `.symlinks/plugins/location_permissions/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
-  - square_in_app_payments (from `.symlinks/plugins/square_in_app_payments/ios`)
   - stripe_payment (from `.symlinks/plugins/stripe_payment/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
@@ -50,14 +45,13 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Reachability
-    - SquareInAppPaymentsSDK
     - Stripe
 
 EXTERNAL SOURCES:
   connectivity:
     :path: ".symlinks/plugins/connectivity/ios"
   Flutter:
-    :path: ".symlinks/flutter/ios"
+    :path: Flutter
   geolocator:
     :path: ".symlinks/plugins/geolocator/ios"
   google_api_availability:
@@ -70,8 +64,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/location_permissions/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
-  square_in_app_payments:
-    :path: ".symlinks/plugins/square_in_app_payments/ios"
   stripe_payment:
     :path: ".symlinks/plugins/stripe_payment/ios"
   url_launcher:
@@ -91,14 +83,12 @@ SPEC CHECKSUMS:
   location_permissions: 195ff2a1182fa9029ef3f2653156961ee5a1e40b
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
-  square_in_app_payments: 5147612bdab7ae2861e4281853ea0b1fc50823bb
-  SquareInAppPaymentsSDK: 4cd8143cfb21f2050cc6252596a1b8c910ad2fb9
-  Stripe: 8c9ac6b717a38ed4f373d4db9204cfe8c4120d65
+  Stripe: fa837c60f0644b488c994024ce7d9b001ea4e97c
   stripe_payment: 1baf1bbf556f7a35c210dc9e2eccf2075947b6be
   url_launcher: a1c0cc845906122c4784c542523d8cacbded5626
   url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
   url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c
 
-PODFILE CHECKSUM: cc7a0c2aea97a1e5f32709cfd0e88186b68a165f
+PODFILE CHECKSUM: 3dbe063e9c90a5d7c9e4e76e70a821b9e2c1d271
 
 COCOAPODS: 1.6.1
