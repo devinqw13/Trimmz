@@ -12,6 +12,8 @@ import 'package:flushbar/flushbar.dart';
 import '../Model/ClientBarbers.dart';
 import 'BarberProfileV2Controller.dart';
 import '../functions.dart';
+import 'package:stream_transform/stream_transform.dart';
+import 'dart:async';
 
 class HomeHubScreen extends StatefulWidget {
   final int dashType;
@@ -23,6 +25,7 @@ class HomeHubScreen extends StatefulWidget {
 
 class HomeHubScreenState extends State<HomeHubScreen> {
   final TextEditingController _search = new TextEditingController();
+  StreamController<String> searchStreamController = StreamController();
   FocusNode _searchFocus = new FocusNode();
   int _currentIndex = 0;
   String _tabTitle = 'Home';
@@ -35,6 +38,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   int badgeCart = 0;
   int badgeNotifications = 0;
   List<SuggestedBarbers> suggestedBarbers = [];
+  List<SuggestedBarbers> searchedBarbers = [];
   bool isSearching = false;
   int searchTabIndex = 0;
 
@@ -42,29 +46,33 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   void initState() {
     super.initState();
 
-    _search.addListener(() {
-      if(_search.text.length > 0) {
-        setState(() {
-          
-          isSearching = true;
-        });
-      }else {
-        isSearching = false;
-      }
-    });
+    searchStreamController.stream
+    .debounce(Duration(milliseconds: 500))
+    .listen((s) => _searchValue(s, searchTabIndex));
 
     initSuggestedBarbers();
   }
 
+  _searchValue(String string, int type) async {
+    if(type == 0) {
+      if(_search.text.length > 2) {
+        var res = await getSearchUsers(context, _search.text);
+        setState(() {
+          searchedBarbers = res;
+          isSearching = true;
+        });
+      }
+      if(_search.text.length <= 2) {
+        setState(() {
+          isSearching = false;
+        });
+      }
+    }else {
+
+    }
+  }
+
   void initSuggestedBarbers() async {
-    // var res1;
-    // Future.delayed(const Duration(milliseconds: 2), () async {
-    //   res1 = await getUserLocation();
-    // });
-    // var res2 = await getSuggestions(context, globals.token, 1, res1);
-    // setState(() {
-    //   suggestedBarbers = res2;
-    // });
     var res2 = await getCurrentLocation();
     setState(() {
       globals.currentLocation = res2;
@@ -101,7 +109,161 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   }
 
   Widget searchBarbers() {
-    return Container(child: Text('IS SEARCHING'));
+    if(searchedBarbers.length > 0){
+      return Scrollbar(
+        child: new ListView.builder(
+          itemCount: searchedBarbers.length * 2,
+          padding: const EdgeInsets.all(5.0),
+          itemBuilder: (context, index) {
+            if (index.isOdd) {
+              return new Divider();
+            }
+            else {
+              final i = index ~/ 2;
+              return new GestureDetector(
+                onTap: () {
+                  ClientBarbers barber = new ClientBarbers();
+                  barber.id = searchedBarbers[i].id;
+                  barber.name = searchedBarbers[i].name;
+                  barber.username = searchedBarbers[i].username;
+                  barber.phone = searchedBarbers[i].phone;
+                  barber.email = searchedBarbers[i].email;
+                  barber.rating = searchedBarbers[i].rating;
+                  barber.shopAddress = searchedBarbers[i].shopAddress;
+                  barber.shopName = searchedBarbers[i].shopName;
+                  barber.city = searchedBarbers[i].city;
+                  barber.state = searchedBarbers[i].state;
+                  barber.zipcode = searchedBarbers[i].zipcode;
+                  // barber.created = suggestedBarbers[i].created;
+                  final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber);
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
+                },
+                child: Column(
+                  children: <Widget> [ 
+                    Container(
+                      color: Colors.black87,
+                      child: ListTile(
+                        leading: new Container(
+                          width: 50.0,
+                          height: 50.0,
+                          decoration: new BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.purple,
+                            gradient: new LinearGradient(
+                              colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
+                            )
+                          ),
+                          child: Center(child:Text(searchedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20),))
+                        ),
+                        subtitle: new Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            searchedBarbers[i].shopName != null ?
+                            Text(
+                              searchedBarbers[i].shopName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold
+                              )
+                            ) : Container(),
+                            Text(searchedBarbers[i].shopAddress + ', ' + searchedBarbers[i].city+', '+searchedBarbers[i].state),
+                            returnDistanceFutureBuilder('${searchedBarbers[i].shopAddress}, ${searchedBarbers[i].city}, ${searchedBarbers[i].state} ${searchedBarbers[i].zipcode}', Colors.grey),
+                            getRatingWidget(context, double.parse(searchedBarbers[i].rating)),
+                          ],
+                        ),
+                        title: new Row(
+                          children: <Widget> [
+                            Flexible(
+                              child: Container(
+                                child: Row(
+                                  children: <Widget> [
+                                    Container(
+                                      constraints: BoxConstraints(maxWidth: 200),
+                                      child: GestureDetector(
+                                        onTap: () {},
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Text(
+                                              searchedBarbers[i].name+' '
+                                            ),
+                                            Text(
+                                              '@'+searchedBarbers[i].username,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey
+                                              )
+                                            )
+                                          ]
+                                        )
+                                      ),
+                                    ),
+                                  ]
+                                )
+                              )
+                            ),
+                          ]
+                        ),
+                        trailing: !searchedBarbers[i].hasAdded ? IconButton(
+                          onPressed: () async {
+                            bool res = await addBarber(context, globals.token, int.parse(searchedBarbers[i].id));
+                            if(res) {
+                              Flushbar(
+                                flushbarPosition: FlushbarPosition.BOTTOM,
+                                title: "Barber Added",
+                                message: "You can now book an appointment with this barber",
+                                duration: Duration(seconds: 2),
+                              )..show(context);
+                              setState(() {
+                                searchedBarbers[i].hasAdded = true;
+                              });
+                            }
+                          },
+                          color: Colors.green,
+                          icon: Icon(LineIcons.plus),
+                        ) : 
+                        IconButton(
+                          onPressed: () async {
+                            bool res = await removeBarber(context, globals.token, int.parse(searchedBarbers[i].id));
+                            if(res) {
+                              Flushbar(
+                                flushbarPosition: FlushbarPosition.BOTTOM,
+                                title: "Barber Removed",
+                                message: "This babrber has been removed from your list",
+                                duration: Duration(seconds: 2),
+                              )..show(context);
+                              setState(() {
+                                searchedBarbers[i].hasAdded = false;
+                              });
+                            }
+                          },
+                          color: Colors.red,
+                          icon: Icon(LineIcons.minus),
+                        ),
+                      )
+                    ),
+                  ]
+                )
+              );
+            }
+          },
+        ),
+      );
+    }else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            width: 50,
+            height: 50,
+            child: CircularProgressIndicator(
+              valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+            )
+          )
+        ],
+      );
+    }
   }
 
   Widget suggestBarbers() {
@@ -325,6 +487,9 @@ class HomeHubScreenState extends State<HomeHubScreen> {
             title: _tabTitle == 'Search' ? TextField(
               focusNode: _searchFocus,
               controller: _search,
+              onChanged: (val) {
+                searchStreamController.add(val);
+              },
               textInputAction: TextInputAction.search, 
               decoration: new InputDecoration(
                 contentPadding: EdgeInsets.all(8.0),

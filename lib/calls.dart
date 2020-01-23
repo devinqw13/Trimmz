@@ -1367,7 +1367,7 @@ Future<List<SuggestedBarbers>> getSearchUsers(BuildContext context, String usern
     showErrorDialog(context, "The Server is not responding (029)", "Please try again. If this error continues to occur, please contact support.");
     return [];
   } 
-  print(response.body);
+  
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (029)", "Please try again.");
     return [];
