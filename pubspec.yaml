@@ -32,7 +32,6 @@ dependencies:
   flushbar: ^1.9.0
   table_calendar: ^2.1.0
   flutter_time_picker_spinner: ^1.0.6
-  keyboard_visibility: ^0.5.6
   flutter_launcher_icons: ^0.7.4
   auto_size_text: ^2.1.0
   image_picker: ^0.6.2+3
@@ -40,6 +39,7 @@ dependencies:
   stream_transform: ^1.1.0
   url_launcher: ^5.4.1
   stripe_payment: ^1.0.6
+  keyboard_actions: ^3.1.2
 
 
   # The following adds the Cupertino Icons font to your application.
