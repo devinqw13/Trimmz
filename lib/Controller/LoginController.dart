@@ -9,6 +9,7 @@ import 'BarberHubController.dart';
 import 'RegisterController.dart';
 import 'dart:ui';
 import '../functions.dart';
+import 'package:line_icons/line_icons.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super (key: key);
@@ -23,6 +24,7 @@ class LoginScreenState extends State<LoginScreen> {
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
   BuildContext currentContext;
+  bool showPassword = false;
 
    @override
   void initState() {
@@ -156,7 +158,7 @@ class LoginScreenState extends State<LoginScreen> {
       width: MediaQuery.of(context).size.width * .80,
       child: new TextField(
         controller: _passwordController,
-        obscureText: true,
+        obscureText: showPassword ? false : true,
         autocorrect: false,
         keyboardType: TextInputType.visiblePassword,
         onSubmitted: (value) {
@@ -171,6 +173,14 @@ class LoginScreenState extends State<LoginScreen> {
         ),
         decoration: new InputDecoration(
           prefixIcon: Icon(Icons.lock, color: Colors.white),
+          suffixIcon: GestureDetector(
+            onTap: () {
+              setState(() {
+                showPassword = !showPassword;
+              });
+            },
+            child: Icon(showPassword ? LineIcons.eye_slash : LineIcons.eye, color: Colors.white),
+          ),
           hintText: 'Password',
           hintStyle: TextStyle(color: Colors.white70),
           border: new UnderlineInputBorder(

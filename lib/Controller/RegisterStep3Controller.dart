@@ -7,6 +7,7 @@ import '../functions.dart';
 import '../globals.dart' as globals;
 import 'PaymentMethodController.dart';
 import 'BarberSalesSetupController.dart';
+import 'package:line_icons/line_icons.dart';
 
 class RegisterStep3Screen extends StatefulWidget {
   final String username;
@@ -28,6 +29,7 @@ class RegisterStep3Screen extends StatefulWidget {
 class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBindingObserver {
   TextEditingController _registerUserPasswordController = new TextEditingController();
   TextEditingController _registerUserPassword2Controller = new TextEditingController();
+  bool showPassword = false;
 
   buildPasswordTextField(double size) {
     return new Column(
@@ -46,7 +48,7 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
           child: TextField(
             controller: _registerUserPasswordController,
             keyboardType: TextInputType.visiblePassword,
-            obscureText: true,
+            obscureText: showPassword ? false : true,
             autocorrect: false,
             onSubmitted: (value) {
 
@@ -56,6 +58,14 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
               color: Colors.white
             ),
             decoration: new InputDecoration(
+              suffixIcon: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    showPassword = !showPassword;
+                  });
+                },
+                child: Icon(showPassword ? LineIcons.eye_slash : LineIcons.eye, color: Colors.white),
+              ),
               hintText: 'Password',
               hintStyle: TextStyle(color: Colors.white70),
               focusedBorder: UnderlineInputBorder(

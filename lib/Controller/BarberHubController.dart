@@ -953,22 +953,28 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             else {
               final i = index ~/ 2;
               return new GestureDetector(
-                onTap: () {
-                  ClientBarbers barber = new ClientBarbers();
-                  barber.id = searchedBarbers[i].id;
-                  barber.name = searchedBarbers[i].name;
-                  barber.username = searchedBarbers[i].username;
-                  barber.phone = searchedBarbers[i].phone;
-                  barber.email = searchedBarbers[i].email;
-                  barber.rating = searchedBarbers[i].rating;
-                  barber.shopAddress = searchedBarbers[i].shopAddress;
-                  barber.shopName = searchedBarbers[i].shopName;
-                  barber.city = searchedBarbers[i].city;
-                  barber.state = searchedBarbers[i].state;
-                  barber.zipcode = searchedBarbers[i].zipcode;
-                  // barber.created = suggestedBarbers[i].created;
-                  final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber);
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
+                onTap: () async {
+                  if(globals.token == int.parse(searchedBarbers[i].id)) {
+                    var res = await getUserDetailsPost(globals.token, context);
+                    final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res);
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
+                  }else {
+                    ClientBarbers barber = new ClientBarbers();
+                    barber.id = searchedBarbers[i].id;
+                    barber.name = searchedBarbers[i].name;
+                    barber.username = searchedBarbers[i].username;
+                    barber.phone = searchedBarbers[i].phone;
+                    barber.email = searchedBarbers[i].email;
+                    barber.rating = searchedBarbers[i].rating;
+                    barber.shopAddress = searchedBarbers[i].shopAddress;
+                    barber.shopName = searchedBarbers[i].shopName;
+                    barber.city = searchedBarbers[i].city;
+                    barber.state = searchedBarbers[i].state;
+                    barber.zipcode = searchedBarbers[i].zipcode;
+                    // barber.created = suggestedBarbers[i].created;
+                    final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber);
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
+                  }
                 },
                 child: Column(
                   children: <Widget> [ 
@@ -1036,7 +1042,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                             ),
                           ]
                         ),
-                        trailing: !searchedBarbers[i].hasAdded ? IconButton(
+                        trailing: globals.token == int.parse(searchedBarbers[i].id) ? Container(child:Text('')) : !searchedBarbers[i].hasAdded ? IconButton(
                           onPressed: () async {
                             bool res = await addBarber(context, globals.token, int.parse(searchedBarbers[i].id));
                             if(res) {

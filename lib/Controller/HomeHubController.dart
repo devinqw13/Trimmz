@@ -100,7 +100,6 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   }
 
   barberTab() {
-    //initSuggestedBarbers();
     if(isSearching){
       return searchBarbers();
     }else {
