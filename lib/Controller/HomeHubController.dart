@@ -489,6 +489,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
               onChanged: (val) {
                 searchStreamController.add(val);
               },
+              autocorrect: false,
               textInputAction: TextInputAction.search, 
               decoration: new InputDecoration(
                 contentPadding: EdgeInsets.all(8.0),

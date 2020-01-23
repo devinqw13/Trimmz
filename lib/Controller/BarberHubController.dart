@@ -1329,6 +1329,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               onChanged: (val) {
                 searchStreamController.add(val);
               },
+              autocorrect: false,
               textInputAction: TextInputAction.search, 
               decoration: new InputDecoration(
                 contentPadding: EdgeInsets.all(8.0),
