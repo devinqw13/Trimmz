@@ -826,8 +826,6 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
     return false;
   }
 
-  print(response.body);
-
   if (json.decode(response.body) is List) {
     var responseBody = response.body.substring(1, response.body.length - 1);
     jsonResponse = json.decode(responseBody);
@@ -1350,4 +1348,68 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userid) async
     return null;
   }
 
+}
+
+Future<List<SuggestedBarbers>> getSearchUsers(BuildContext context, String username) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}?key=search_user&username=$username";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (029)", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  } 
+  print(response.body);
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (029)", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    if(jsonResponse['users'].length > 0){
+      List<SuggestedBarbers> suggestedBarbers = [];
+      for(var item in jsonResponse['users']){
+        var suggestedBarber = new SuggestedBarbers();
+        suggestedBarber.id = item['id'];
+        suggestedBarber.name = item['name'];
+        suggestedBarber.username = item['username'];
+        suggestedBarber.email = item['email'];
+        suggestedBarber.phone = item['phone'];
+        suggestedBarber.shopName = item['shop_name'];
+        suggestedBarber.shopAddress = item['shop_address'];
+        suggestedBarber.city = item['city'];
+        suggestedBarber.state = item['state'];
+        suggestedBarber.zipcode = item['zipcode'];
+        suggestedBarber.rating = item['rating'] ?? '0';
+        List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
+        for(var item2 in clientBarbers) {
+          if(item2.id.contains(item['id'])){
+            suggestedBarber.hasAdded = true;
+          }
+        }
+        suggestedBarbers.add(suggestedBarber);
+      }
+
+      return suggestedBarbers;
+    }else {
+      return [];
+    }
+  }else {
+    return [];
+  }
 }
