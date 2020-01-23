@@ -14,12 +14,12 @@ import '../Model/Packages.dart';
 import 'package:intl/intl.dart';
 import '../Model/availability.dart';
 import '../View/BookingTimeRadioButton.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import '../Calls/StripeConfig.dart';
 import '../Calls/FinancialCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../functions.dart';
+import  'package:keyboard_actions/keyboard_actions.dart';
 
 class BookingController extends StatefulWidget {
   final ClientBarbers barberInfo;
@@ -41,7 +41,6 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   AnimationController _animationController;
   String currentDate = '';
   String currentTime = '';
-  FocusNode tipFocusNode = new FocusNode(); 
   TextEditingController _tipController = new TextEditingController();
   int finalTip = 0;
   int finalPackagePrice = 0;
@@ -50,8 +49,9 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   ClientPaymentMethod paymentCard;
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
+  final FocusNode _numberFocus = FocusNode();
 
-   @override
+  @override
   void initState() {
     super.initState();
     barberInfo = widget.barberInfo;
@@ -71,14 +71,11 @@ class BookingControllerState extends State<BookingController> with TickerProvide
 
     _animationController.forward();
 
-    KeyboardVisibilityNotification().addNewListener(
-      onShow: () {
-        bool hasFocus = tipFocusNode.hasFocus;
-        if(hasFocus){
-          scrollToBottom();
-        }
+    _numberFocus.addListener((){
+      if(_numberFocus.hasFocus) {
+        scrollToBottom();
       }
-    );
+    });
 
     _progressHUD = new ProgressHUD(
       backgroundColor: Color.fromARGB(255, 21, 21, 21),
@@ -94,6 +91,30 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     _calendarController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  KeyboardActionsConfig _buildConfig(BuildContext context) {
+    return KeyboardActionsConfig(
+      keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+      keyboardBarColor: Color.fromARGB(255, 21, 21, 21),
+      nextFocus: true,
+      actions: [
+        KeyboardAction(
+          onTapAction: () {
+            if(_tipController.text != ''){
+              setState(() {
+                finalTip = int.parse(_tipController.text);
+              });
+            }
+          },
+          focusNode: _numberFocus,
+          closeWidget: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('Done'),
+          ),
+        ),
+      ],
+    );
   }
 
   void progressHUD() {
@@ -138,7 +159,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         if(globals.spCustomerId != null) {
           var res2 = await spAttachCustomerToPM(context, paymentMethod.id, globals.spCustomerId);
           if(res2.length > 0) {
-            var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2); // return list of cards
+            var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
             if(res4 != null) {
               for(var item in res4) {
                 if(item.id == paymentMethod.id) {
@@ -364,6 +385,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
 
   buildBody(ClientBarbers barber) {
     return new Container(
+      height: MediaQuery.of(context).size.height,
       child: Column(
         children: [
           Expanded(
@@ -693,9 +715,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                     _tipController.text.length > 0 ? Text('Tip', style: TextStyle(color: Colors.grey)) : Container(),
                                     TextField(
                                       controller: _tipController,
-                                      focusNode: tipFocusNode,
+                                      focusNode: _numberFocus,
                                       keyboardType: TextInputType.number,
-                                      textInputAction: TextInputAction.done,
                                       decoration: InputDecoration(
                                         hintText: 'Tip',
                                         border: InputBorder.none
@@ -776,7 +797,6 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                       },
                       child: Container(
                         margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-                        // padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
                         constraints: const BoxConstraints(maxHeight: 35.0, minWidth: 200.0, minHeight: 35.0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5.0),
@@ -820,11 +840,15 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         appBar: new AppBar(
           title: new Text('Booking Appointment')
         ),
-        body: new Stack(
-          children: <Widget> [
-            buildBody(barberInfo),
-            _progressHUD
-          ]
+        body: KeyboardActions(
+          autoScroll: false,
+          config: _buildConfig(context),
+          child: Stack(
+            children: <Widget> [
+              buildBody(barberInfo),
+              _progressHUD
+            ]
+          )
         )
       )
     );
