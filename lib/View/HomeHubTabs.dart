@@ -53,14 +53,16 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
           ]
         ),
         child: ExpandablePanel(
+          headerAlignment: ExpandablePanelHeaderAlignment.center,
           collapsed: Container(
-            padding: EdgeInsets.only(top: 10.0, left: 15.0),
+           padding: EdgeInsets.only(left: 15.0),
             child: Row(
               children: <Widget>[
                 Text(
                   'Upcoming Appointment: ',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.bold,
+                    fontSize: MediaQuery.of(context).size.height * .017
                   )
                 ),
                 Text(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../globals.dart' as globals;
 
 class AppointmentOptionsBottomSheet extends StatefulWidget {
   AppointmentOptionsBottomSheet({@required this.appointment, @required this.showCancel, this.showFullCalendar, this.showFull});
@@ -182,7 +183,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                         width: MediaQuery.of(context).size.width * .7,
                                         height: 1
                                       ),
-                                      appointment['status'] == '0' ? Container(
+                                      appointment['status'] == '0' && globals.userType == 2 ? Container(
                                         child: Column(
                                           children: <Widget>[
                                             DateTime.now().isAfter(DateTime.parse(appointment['full_time'])) ? Row(
@@ -230,7 +231,41 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             ) : Container()
                                           ]
                                         )
-                                      ): Container(
+                                      ): (globals.userType != 2 && appointment['status'] == '0' && DateTime.now().isAfter(DateTime.parse(appointment['full_time']))) ? Container(
+                                        child: RichText(
+                                          softWrap: true,
+                                          text: new TextSpan(
+                                            children: <TextSpan> [
+                                              new TextSpan(text: 'Pending: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                                              new TextSpan(text: 'waiting for barber to update appointment', style: TextStyle(fontStyle: FontStyle.italic)),
+                                            ]
+                                          )
+                                        )
+                                      ) : (globals.userType != 2 && appointment['status'] == '0' && DateTime.now().isBefore(DateTime.parse(appointment['full_time']))) ? Container(
+                                        child: RichText(
+                                          softWrap: true,
+                                          text: new TextSpan(
+                                            children: <TextSpan> [
+                                              new TextSpan(text: 'Appointment coming soon', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                                            ]
+                                          )
+                                        )
+                                      ) : (globals.userType != 2 && appointment['status'] == '3') ? Container(
+                                        child: RichText(
+                                          softWrap: true,
+                                          text: new TextSpan(
+                                            children: <TextSpan> [
+                                              DateTime.now().isBefore(DateTime.parse(appointment['full_time'])) ?
+                                              new TextSpan(text: 'Pending: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)) :
+                                              new TextSpan(text: 'Expired: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+
+                                              DateTime.now().isBefore(DateTime.parse(appointment['full_time'])) ?
+                                              new TextSpan(text: 'waiting for barber to accept or decline appointment', style: TextStyle(fontStyle: FontStyle.italic)) :
+                                              new TextSpan(text: 'barber didn\'t respond to request in time', style: TextStyle(fontStyle: FontStyle.italic)),
+                                            ]
+                                          )
+                                        )
+                                      ) : Container(
                                         child:
                                         RichText(
                                           softWrap: true,

@@ -14,6 +14,7 @@ import 'BarberProfileV2Controller.dart';
 import '../functions.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'dart:async';
+import 'AppointmentListController.dart';
 
 class HomeHubScreen extends StatefulWidget {
   final int dashType;
@@ -558,9 +559,8 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                 showBadge: false,
                 child: IconButton(
                   onPressed: () {
-                    //TODO: Create Appointment History / Upcoming Appointments Tabs Controller
-                    // final appointmentHistoryScreen = new AppointmentHistoryScreen();
-                    // Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentHistoryScreen));
+                    final appointmentHistoryScreen = new AppointmentList();
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentHistoryScreen));
                   },
                   icon: Icon(Icons.calendar_today, size: 21.0),
                 )

@@ -1550,3 +1550,55 @@ Future<bool> submitReview(BuildContext context, String comment, int barberId, in
     return false;
   }
 }
+
+Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, int userid) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}?key=user_appointments&token=$userid";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (017)", "Please try again. If this error continues to occur, please contact support.");
+    return {};
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (017)", "Please try again.");
+    return {};
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    Map<DateTime, List<dynamic>> apt = {};
+    final df = new DateFormat('yyyy-MM-dd');
+    final df2 = new DateFormat('hh:mm a');
+
+    for(var item in jsonResponse['appointments']) {
+      var dateString = item['date'];
+      DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
+
+      if(!apt.containsKey(date)) {
+        apt[date] = [{'id': item['id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']}];
+      }else {
+        apt[date].add({'id': item['id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']});
+      }
+    }
+
+    return apt;
+  }else {
+    return {};
+  }
+
+}

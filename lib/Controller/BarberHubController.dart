@@ -547,6 +547,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             appointmentReq.length > 0 ? 
             GestureDetector(
               onTap: () async {
+                //TODO: SHOW AND UPDATE LIST AFTER EXCEPT APPOINTMENT
                 var res = await showAptRequestsModalSheet(context, appointmentReq);
                 if(res == 1) {
                   var res = await getBarberAppointmentRequests(context, globals.token);
