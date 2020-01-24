@@ -52,7 +52,6 @@ class AppointmentListState extends State<AppointmentList> {
 
   showAppointmentDetails(var appointment) {
     showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-      //TODO: Make sure customer doesnt see appointment options to change status
       return AppointmentOptionsBottomSheet(
         appointment: appointment,
         showCancel: (val) async {
