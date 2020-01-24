@@ -483,7 +483,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                   setState(() {
                     packages = value;
                   });
-                  showFullCalendar();
+                  showFullPackageList(value);
                 },
                 showPackagesList: (value) {
                   if(value){
