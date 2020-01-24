@@ -158,7 +158,7 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
     return new Row(
       children: <Widget>[
         Text(
-          rating.toString(),
+          rating.toStringAsFixed(1),
           style: TextStyle(
             color: Color(0xFFD2AC47),
             fontSize: 14

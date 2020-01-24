@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import '../globals.dart' as globals;
 import '../Model/Reviews.dart';
 import 'package:line_icons/line_icons.dart';
+import '../calls.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
+import 'package:stream_transform/stream_transform.dart';
+import 'dart:async';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class ReviewController extends StatefulWidget {
   final int userId;
@@ -13,22 +19,49 @@ class ReviewController extends StatefulWidget {
 }
 
 class ReviewControllerState extends State<ReviewController> {
+  final TextEditingController _commentController = new TextEditingController();
+  StreamController<String> commentStreamController = StreamController();
   bool canReview = false;
   List<BarberReviews> reviews = [];
+  double rating = 1;
+  bool showSubmit = false;
 
 
   void initState() {
     super.initState();
 
+    commentStreamController.stream
+    .debounce(Duration(milliseconds: 0))
+    .listen((s) => _setChanges());
+
     initCalls();
   }
 
-  initCalls() {
-    if(widget.userId == globals.token){
-      //TODO: call to check if user had an appointment w/ barber then set canReview
-    }else {
-      //TODO: call to get all reviews
+  _setChanges() async {
+    if(_commentController.text.length > 0) {
+      setState(() {
+        showSubmit = true;
+      });
+    }else if(_commentController.text.length == 0) {
+      setState(() {
+        showSubmit = false;
+      });
     }
+  }
+
+  initCalls() async {
+    if(widget.userId != globals.token) {
+      var res1 = await getNumUserReviews(context, globals.token, widget.userId);
+      if(res1 > 0) {
+        setState(() {
+          canReview = true;
+        });
+      }
+    }
+    var res = await getUserReviews(context, widget.userId);
+    setState(() {
+      reviews = res;
+    });
   }
 
   createReview() {
@@ -43,10 +76,85 @@ class ReviewControllerState extends State<ReviewController> {
             colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
           )
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-          
+            Text('Select Rating', style: TextStyle(fontWeight: FontWeight.bold)),
+            Padding(padding: EdgeInsets.all(5)),
+            RatingBar(
+              initialRating: rating,
+              itemSize: 24,
+              itemCount: 5,
+              itemBuilder: (context, index) => Icon(
+                Icons.star,
+                color: Color(0xFFD2AC47),
+              ),
+              onRatingUpdate: (rate) {
+                setState(() {
+                  rating = rate;
+                });
+              },
+            ),
+            Padding(padding: EdgeInsets.all(5)),
+            Text('Comment', style: TextStyle(fontWeight: FontWeight.bold)),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: TextField(
+                    controller: _commentController,
+                    onChanged: (val) {
+                      commentStreamController.add(val);
+                    },
+                    autocorrect: false,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Comment'
+                    ),
+                  )
+                )
+              ]
+            ),
+            showSubmit ? Row(
+              children: <Widget>[
+                Expanded(
+                  child: new GestureDetector(
+                    onTap: () async {
+                      var res = await submitReview(context, _commentController.text, widget.userId, globals.token, rating);
+                      if(res) {
+                        FocusScope.of(context).requestFocus(new FocusNode());
+                        var res = await getUserReviews(context, widget.userId);
+                        setState(() {
+                          _commentController.text = '';
+                          showSubmit = false;
+                          rating = 1;
+                          reviews = res;
+                        });
+                      }
+                    },
+                    child: Container(
+                      constraints: const BoxConstraints(maxHeight: 35.0, minWidth: 200.0, minHeight: 35.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        gradient: new LinearGradient(
+                          colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
+                        )
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Submit',
+                          style: new TextStyle(
+                            fontSize: 19.0,
+                            fontWeight: FontWeight.w300
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              ]
+            ) : Container(),
           ]
         )
       );
@@ -76,10 +184,63 @@ class ReviewControllerState extends State<ReviewController> {
   buildReviews() {
     if(reviews.length > 0) {
       return ListView.builder(
+        padding: EdgeInsets.all(0),
+        physics: NeverScrollableScrollPhysics(),
         itemCount: reviews.length,
+        shrinkWrap: true,
         itemBuilder: (context, i) {
           return Container(
-            child: Text(reviews[i].id.toString())
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          width: 50.0,
+                          height: 50.0,
+                          decoration: new BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.purple,
+                            gradient: new LinearGradient(
+                              colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
+                            )
+                          ),
+                          child: Center(child: Text(reviews[i].clientName.substring(0,1), style: TextStyle(fontSize: 20)))
+                        ),
+                        Padding(padding: EdgeInsets.all(5)),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(reviews[i].clientName, style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                              DateFormat('EEEE, MMMM d, y').format(DateTime.parse(reviews[i].created.toString())),
+                              style: TextStyle(
+                                color: Colors.grey
+                              )
+                            ),
+                            Container(width: MediaQuery.of(context).size.width * .55, child: AutoSizeText.rich(TextSpan(text: reviews[i].comment), maxFontSize:16, minFontSize: 13, maxLines: null))
+                          ]
+                        )
+                      ]
+                    ),
+                    RatingBarIndicator(
+                      rating: reviews[i].rating,
+                      itemBuilder: (context, index) => Icon(
+                          Icons.star,
+                          color: Color(0xFFD2AC47),
+                      ),
+                      itemCount: 5,
+                      itemSize: 17.0,
+                      direction: Axis.horizontal,
+                    ),
+                  ]
+                )
+              ]
+            )
           );
         },
       );
@@ -122,7 +283,7 @@ class ReviewControllerState extends State<ReviewController> {
             text: new TextSpan(
               children: <TextSpan>[
                 new TextSpan(text: 'Reviews ', style: new TextStyle(fontWeight: FontWeight.bold)),
-                new TextSpan(text: '(0)'),
+                new TextSpan(text: '(${reviews.length.toString()})'),
               ],
             ),
           ),
