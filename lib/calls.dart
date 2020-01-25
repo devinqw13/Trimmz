@@ -1310,7 +1310,7 @@ Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payo
   }
 }
 
-Future<BarberPolicies> getBarberPolicies(BuildContext context, int userid) async {
+Future<BarberPolicies> getBarberPolicies(BuildContext context, int userId) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -1319,7 +1319,7 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userid) async
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getBarberPolicies/?token=$userid";
+  String url = "${globals.baseUrl}?key=policies&token=$userId";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1341,10 +1341,16 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userid) async
 
   if(jsonResponse['error'] == false){
     BarberPolicies policies = new BarberPolicies();
-    for(var item in jsonResponse['policies']){
-      policies.hasNoShow = item['noShow'] ?? false;
+    if(jsonResponse['policies'].length > 0){
+      for(var item in jsonResponse['policies']){
+        policies.cancelEnabled = item['cancel_enabled'] == '0' ? false : true;
+        policies.noShowEnabled = item['noshow_enabled'] == '0' ? false : true;
+        policies.cancelFee = item['cancel_fee'];
+        policies.cancelWithinTime = int.parse(item['cancel_time']);
+        policies.noShowFee = item['noshow_fee'];
+      }
+      return policies;
     }
-    return policies;
   }else {
     return null;
   }

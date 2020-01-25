@@ -60,7 +60,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   CalendarController _calendarController;
   List<Packages> packages = [];
   List<Availability> availability = [];
-  BarberPolicies policies;
+  BarberPolicies policies = new BarberPolicies();
   AnimationController _animationController;
   Map<DateTime, List> _events;
   List _selectedEvents = [];
@@ -151,11 +151,11 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     setState(() {
       appointmentReq = res3;
     });
-    //TODO: FINISH THIS CALL
-    // var res4 = await getBarberPolicies(context, globals.token);
-    // setState(() {
-    //   policies = res4;
-    // });
+
+    var res4 = await getBarberPolicies(context, globals.token);
+    setState(() {
+      policies = res4;
+    });
   }
 
   void onNavTapTapped(int index) {
@@ -430,7 +430,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
           children: <Widget>[
             Icon(LineIcons.times, color: Colors.white),
             Padding(padding: EdgeInsets.all(5)),
-            Column(
+            policies.cancelEnabled ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
@@ -439,10 +439,11 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                     fontWeight: FontWeight.bold
                   )
                 ),
-                Text('Fee Amount: 50%'),
-                Text('Within: 1 Hour')
+                Text('Fee Amount: ${policies.cancelFee}'),
+                Text('Within: ${policies.cancelWithinTime} Hour')
               ]
-            )
+            ) :
+            Text('No Cancellation Policy', style: TextStyle(fontWeight: FontWeight.bold))
           ]
         ),
         Divider(
@@ -452,7 +453,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
           children: <Widget>[
             Icon(LineIcons.minus, color: Colors.white),
             Padding(padding: EdgeInsets.all(5)),
-            Column(
+            policies.noShowEnabled ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
@@ -461,9 +462,10 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                     fontWeight: FontWeight.bold
                   )
                 ),
-                Text('Fee Amount: 100%'),
+                Text('Fee Amount: ${policies.noShowFee}'),
               ]
-            )
+            ) :
+            Text('No Cancellation Policy', style: TextStyle(fontWeight: FontWeight.bold))
           ]
         ),
       ]

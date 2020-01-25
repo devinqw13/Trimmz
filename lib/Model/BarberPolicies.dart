@@ -1,6 +1,7 @@
 class BarberPolicies {
-  bool hasNoShow;
-  bool hasCancellation;
-  String noShowRate;
-  String cancellationRate;
+  bool noShowEnabled = false;
+  bool cancelEnabled = false;
+  String noShowFee;
+  String cancelFee;
+  int cancelWithinTime;
 }

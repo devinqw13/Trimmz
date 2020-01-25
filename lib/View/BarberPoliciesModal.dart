@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../Model/BarberPolicies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
-//TODO: FINISH POLICES (DATABASE, INSERT, EDIT)
+
 class BarberPoliciesModal extends StatefulWidget {
   BarberPoliciesModal({@required this.policies, this.updatePolicies,});
   final BarberPolicies policies;
@@ -33,6 +33,13 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
   void initState() {
     setState(() {
       policies = widget.policies;
+      _cancelFeeAmount.text = policies.cancelFee.replaceAll(new RegExp('[\$\\%]'), '');
+      _isCancelPercent = policies.cancelFee.contains('\$') ? false : true;
+      _cancelChargeTime.text = policies.cancelWithinTime.toString();
+      _noShowFeeAmount.text = policies.noShowFee.replaceAll(new RegExp('[\$\\%]'), '');
+      _isNoShowPercent = policies.noShowFee.contains('\$') ? false : true;
+      _cancellationEnabled = policies.cancelEnabled;
+      _noshowEnabled = policies.noShowEnabled;
     });
     super.initState();
   }
@@ -163,6 +170,11 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
                                         child: TextField(
                                           controller: _cancelChargeTime,
                                           focusNode: _number2Focus,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _cancelChargeTime.text = value;
+                                            });
+                                          },
                                           keyboardType: TextInputType.number,
                                           decoration: InputDecoration(
                                             hintText: 'Hours',
@@ -242,20 +254,42 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
                   ),
                 ],
               ),
-              Row(
+              Column(
                 children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: FlatButton(
-                        color: Colors.blue,
-                        onPressed: () async {
-                          Navigator.pop(context);
-                          //widget.updatePolicies(true);
-                        },
-                        child: Text('Cancel')
+                  (_cancellationEnabled != policies.cancelEnabled || _noshowEnabled != policies.noShowEnabled || _cancelChargeTime.text != policies.cancelWithinTime.toString() || _isCancelPercent != policies.cancelFee.contains('\%') || _isNoShowPercent != policies.noShowFee.contains('\%')) ? Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: FlatButton(
+                            color: Colors.blue,
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              //widget.updatePolicies(true);
+                            },
+                            child: Text('Save')
+                          )
+                        )
                       )
-                    )
+                    ]
+                  ) : Container(),
+
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: FlatButton(
+                            color: Colors.blue,
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              //widget.updatePolicies(true);
+                            },
+                            child: Text('Cancel')
+                          )
+                        )
+                      )
+                    ]
                   )
                 ]
               )
