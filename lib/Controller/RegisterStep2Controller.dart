@@ -186,6 +186,7 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
   buildSubmitButton(double size) {
     return new GestureDetector(
       onTap: () {
+        FocusScope.of(context).requestFocus(new FocusNode());
         _submitAddressInfo(context, _registerBarberAddressController.text, _registerBarberCityController.text, stateAbr, state, _registerBarberZipcodeController.text);
       },
       child: Container(

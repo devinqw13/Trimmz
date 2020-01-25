@@ -287,6 +287,7 @@ class RegisterScreenState extends State<RegisterScreen> with WidgetsBindingObser
   buildSubmitButton(double size) {
     return new GestureDetector(
       onTap: () {
+        FocusScope.of(context).requestFocus(new FocusNode());
         _submitRegisterUser(context, _registerUserEmailController.text, _registerUserNameController.text, _registerNameController.text, _accountType);
       },
       child: Container(

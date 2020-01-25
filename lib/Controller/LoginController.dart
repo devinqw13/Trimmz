@@ -162,8 +162,8 @@ class LoginScreenState extends State<LoginScreen> {
         autocorrect: false,
         keyboardType: TextInputType.visiblePassword,
         onSubmitted: (value) {
+          FocusScope.of(context).requestFocus(new FocusNode());
           if(_passwordController.text.length > 0){
-            FocusScope.of(context).requestFocus(new FocusNode());
             _handleSubmitted(_usernameController.text, _passwordController.text, context);
           }
         },
@@ -198,6 +198,7 @@ class LoginScreenState extends State<LoginScreen> {
     Widget buildLoginButton() {
       return new GestureDetector(
         onTap: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
           _handleSubmitted(_usernameController.text, _passwordController.text, context);
         },
         child: Container(

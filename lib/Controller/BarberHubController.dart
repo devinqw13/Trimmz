@@ -428,7 +428,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
       children: <Widget>[
         Row(
           children: <Widget>[
-            Icon(LineIcons.times, color: Colors.blue),
+            Icon(LineIcons.times, color: Colors.white),
             Padding(padding: EdgeInsets.all(5)),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -450,7 +450,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
         ),
         Row(
           children: <Widget>[
-            Icon(LineIcons.minus, color: Colors.blue),
+            Icon(LineIcons.minus, color: Colors.white),
             Padding(padding: EdgeInsets.all(5)),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -547,7 +547,6 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             appointmentReq.length > 0 ? 
             GestureDetector(
               onTap: () async {
-                //TODO: SHOW AND UPDATE LIST AFTER EXCEPT APPOINTMENT
                 var res = await showAptRequestsModalSheet(context, appointmentReq);
                 if(res == 1) {
                   var res = await getBarberAppointmentRequests(context, globals.token);
@@ -955,6 +954,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               final i = index ~/ 2;
               return new GestureDetector(
                 onTap: () async {
+                  FocusScope.of(context).requestFocus(new FocusNode());
                   if(globals.token == int.parse(searchedBarbers[i].id)) {
                     var res = await getUserDetailsPost(globals.token, context);
                     final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res);
@@ -1119,6 +1119,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               final i = index ~/ 2;
               return new GestureDetector(
                 onTap: () {
+                  FocusScope.of(context).requestFocus(new FocusNode());
                   ClientBarbers barber = new ClientBarbers();
                   barber.id = suggestedBarbers[i].id;
                   barber.name = suggestedBarbers[i].name;
@@ -1326,6 +1327,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             centerTitle: true,
             title: _tabTitle == 'Search' ? TextField(
               focusNode: _searchFocus,
+              autofocus: false,
               controller: _search,
               onChanged: (val) {
                 searchStreamController.add(val);

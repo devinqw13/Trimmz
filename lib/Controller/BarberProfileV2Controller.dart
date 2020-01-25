@@ -86,22 +86,115 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
               ),
             ),
           ),
-          Positioned(
-            right: 0,
-            child: GestureDetector(
-              onTap: () async  {
-                if (await canLaunch("sms:")) {
-                  await launch("sms:");
-                } else {
-                  throw 'Could not launch';
-                }
-              },
-              child: Container(
-                margin: EdgeInsets.all(15),
-                child: Icon(Icons.share, size: 25)
-              )
+          int.parse(user.id) != globals.token ? Container(
+            padding: EdgeInsets.all(5),
+            color: Color.fromRGBO(0, 0, 0, 0.2),
+            child: Column(
+              children: <Widget> [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () async {
+                        if(!hasAdded){
+                          bool res = await addBarber(context, globals.token, int.parse(user.id));
+                          if(res) {
+                            Flushbar(
+                              flushbarPosition: FlushbarPosition.BOTTOM,
+                              title: "Barber Added",
+                              message: "You can now book an appointment with this barber",
+                              duration: Duration(seconds: 2),
+                            )..show(context);
+                            setState(() {
+                              hasAdded = true;
+                            });
+                          }
+                        }else {
+                          bool res = await removeBarber(context, globals.token, int.parse(user.id));
+                          if(res) {
+                            Flushbar(
+                              flushbarPosition: FlushbarPosition.BOTTOM,
+                              title: "Barber Removed",
+                              message: "This barber has been removed from your list",
+                              duration: Duration(seconds: 2),
+                            )..show(context);
+                            setState(() {
+                              hasAdded = false;
+                            });
+                          }
+                        }
+                      },
+                      child: Container( 
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: <Widget>[
+                            !hasAdded ? Icon(Icons.add, size: 18) : Icon(LineIcons.minus, size: 18),
+                            !hasAdded ? Text('Add') : Text('Remove')
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+
+                      },
+                      child: Container( 
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.person_add, size: 18),
+                            Padding(padding: EdgeInsets.all(2)),
+                            Text('Follow')
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final reviewScreen = new ReviewController(userId: int.parse(user.id), username: user.username); 
+                        Navigator.push(context, new MaterialPageRoute(builder: (context) => reviewScreen));
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.rate_review, size: 18),
+                            Padding(padding: EdgeInsets.all(2)),
+                            Text('Reviews')
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final bookingScreen = new BookingController(barberInfo: user); 
+                        Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
+                      },
+                      child: Container( 
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.calendar_today, size: 18),
+                            Padding(padding: EdgeInsets.all(2)),
+                            Text('Book')
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ]
             )
-          )
+          ): Container(),
         ],
       )
     );
@@ -186,114 +279,6 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          int.parse(user.id) != globals.token ? Column(
-            children: <Widget> [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  GestureDetector(
-                    onTap: () async {
-                      if(!hasAdded){
-                        bool res = await addBarber(context, globals.token, int.parse(user.id));
-                        if(res) {
-                          Flushbar(
-                            flushbarPosition: FlushbarPosition.BOTTOM,
-                            title: "Barber Added",
-                            message: "You can now book an appointment with this barber",
-                            duration: Duration(seconds: 2),
-                          )..show(context);
-                          setState(() {
-                            hasAdded = true;
-                          });
-                        }
-                      }else {
-                        bool res = await removeBarber(context, globals.token, int.parse(user.id));
-                        if(res) {
-                          Flushbar(
-                            flushbarPosition: FlushbarPosition.BOTTOM,
-                            title: "Barber Removed",
-                            message: "This barber has been removed from your list",
-                            duration: Duration(seconds: 2),
-                          )..show(context);
-                          setState(() {
-                            hasAdded = false;
-                          });
-                        }
-                      }
-                    },
-                    child: Container( 
-                      padding: EdgeInsets.all(5),
-                      child: Row(
-                        children: <Widget>[
-                          !hasAdded ? Icon(Icons.add, size: 18) : Icon(LineIcons.minus, size: 18),
-                          !hasAdded ? Text('Add') : Text('Remove')
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-
-                    },
-                    child: Container( 
-                      padding: EdgeInsets.all(5),
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.person_add, size: 18),
-                          Padding(padding: EdgeInsets.all(2)),
-                          Text('Follow')
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      final reviewScreen = new ReviewController(userId: int.parse(user.id), username: user.username); 
-                      Navigator.push(context, new MaterialPageRoute(builder: (context) => reviewScreen));
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.rate_review, size: 18),
-                          Padding(padding: EdgeInsets.all(2)),
-                          Text('Reviews')
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      final bookingScreen = new BookingController(barberInfo: user); 
-                      Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
-                    },
-                    child: Container( 
-                      padding: EdgeInsets.all(5),
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.calendar_today, size: 18),
-                          Padding(padding: EdgeInsets.all(2)),
-                          Text('Book')
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Divider(
-                color: Colors.grey,
-              )
-            ]
-          ): Container(),
           Text('Services', style: TextStyle(fontWeight: FontWeight.bold)),
           Padding(padding: EdgeInsets.all(5)),
           packages.length > 0 ? Container(

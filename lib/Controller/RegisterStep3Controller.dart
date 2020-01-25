@@ -120,6 +120,7 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
   buildSubmitButton(double size) {
     return new GestureDetector(
       onTap: () {
+        FocusScope.of(context).requestFocus(new FocusNode());
         _submitPassword(context, _registerUserPasswordController.text, _registerUserPassword2Controller.text);
       },
       child: Container(

@@ -173,6 +173,7 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
           itemCount: 5,
           itemSize: 17.0,
           direction: Axis.horizontal,
+          unratedColor: Colors.white54,
         ),
       ],
     );
