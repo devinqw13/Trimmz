@@ -164,7 +164,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                         padding: EdgeInsets.all(5),
                         child: Row(
                           children: <Widget>[
-                            Icon(Icons.rate_review, size: 18),
+                            Icon(Icons.chat_bubble_outline, size: 18),
                             Padding(padding: EdgeInsets.all(2)),
                             Text('Reviews')
                           ],
