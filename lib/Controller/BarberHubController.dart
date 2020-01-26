@@ -77,7 +77,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     _calendarController = CalendarController();
 
     searchStreamController.stream
-    .debounce(Duration(milliseconds: 500))
+    .debounce(Duration(milliseconds: 100))
     .listen((s) => _searchValue(s, searchTabIndex));
 
     _animationController = AnimationController(
@@ -1343,7 +1343,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                 searchStreamController.add(val);
               },
               autocorrect: false,
-              textInputAction: TextInputAction.search, 
+              textInputAction: TextInputAction.done, 
               decoration: new InputDecoration(
                 contentPadding: EdgeInsets.all(8.0),
                 hintText: searchTabIndex == 0 ? 'Search by username' : 'Search by name',

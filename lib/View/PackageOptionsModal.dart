@@ -20,6 +20,9 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
   final TextEditingController priceController = new TextEditingController();
   final TextEditingController durationController = new TextEditingController();
   Packages package;
+  String _name = '';
+  String _price = '';
+  String _duration = '';
 
   @override
   void initState() {
@@ -75,6 +78,11 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: TextField(
                     controller: nameController,
+                    onChanged: (value) {
+                      setState(() {
+                        _name = value;
+                      });
+                    },
                     decoration: InputDecoration(
                       hintText: package.name,
                       focusedBorder: UnderlineInputBorder(
@@ -99,6 +107,11 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: TextField(
                     controller: priceController,
+                    onChanged: (value) {
+                      setState(() {
+                        _price = value;
+                      });
+                    },
                     decoration: InputDecoration(
                       hintText: package.price,
                       focusedBorder: UnderlineInputBorder(
@@ -123,6 +136,11 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: TextField(
                     controller: durationController,
+                    onChanged: (value) {
+                      setState(() {
+                        _duration = value;
+                      });
+                    },
                     decoration: InputDecoration(
                       hintText: package.duration,
                       focusedBorder: UnderlineInputBorder(
@@ -154,6 +172,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                 ),
               ],
             ),
+            (_name != '' || _price != '' || _duration != '') ?
             Row(
               children: <Widget>[
                 Expanded(
@@ -162,18 +181,14 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                     child: FlatButton(
                       color: Colors.blue,
                       onPressed: () async {
-                        if(nameController.text != '' && priceController.text != '' && durationController.text != ''){
-                          var res = await updatePackage(context, globals.token, int.parse(package.id), nameController.text != '' ? nameController.text : null, priceController.text != '' ? int.parse(priceController.text) : null, durationController.text != '' ? int.parse(durationController.text) : null);
-                          if(res) {
-                            var res = await getBarberPkgs(context, globals.token);
-                            Navigator.pop(context);
-                            widget.updatePackages(res);
-                            //results = res;
-                          }else {
-                            return;
-                          }
+                        var res = await updatePackage(context, globals.token, int.parse(package.id), nameController.text != '' ? nameController.text : null, priceController.text != '' ? int.parse(priceController.text) : null, durationController.text != '' ? int.parse(durationController.text) : null);
+                        if(res) {
+                          var res = await getBarberPkgs(context, globals.token);
+                          Navigator.pop(context);
+                          widget.updatePackages(res);
+                          //results = res;
                         }else {
-                          showErrorDialog(context, 'Empty Fields', 'Enter one or more fields to update the package');
+                          return;
                         }
                       },
                       child: Text('Update Package')
@@ -181,7 +196,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                   )
                 )
               ]
-            ),
+            ) : Container(),
             Row(
               children: <Widget>[
                 Expanded(
