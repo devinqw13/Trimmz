@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:trimmz/Controller/BookingController.dart';
+import '../Model/BarberPolicies.dart';
 import '../globals.dart' as globals;
 import '../View/Widgets.dart';
 import '../Model/availability.dart';
@@ -17,13 +18,15 @@ import 'ReviewController.dart';
 class BarberProfileV2Screen extends StatefulWidget {
   final token;
   final ClientBarbers userInfo;
-  BarberProfileV2Screen({Key key, this.token, this.userInfo}) : super (key: key);
+  final BarberPolicies barberPolicies;
+  BarberProfileV2Screen({Key key, this.token, this.userInfo, this.barberPolicies}) : super (key: key);
 
   @override
   BarberProfileV2ScreenState createState() => new BarberProfileV2ScreenState();
 }
 
 class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
+  BarberPolicies policies = new BarberPolicies();
   ClientBarbers user;
   List<Availability> availability = [];
   List<Packages> packages = [];
@@ -32,6 +35,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
   void initState() {
     super.initState();
     user = widget.userInfo;
+    policies = widget.barberPolicies ?? new BarberPolicies();
     setUserInfo();
   }
 
@@ -272,10 +276,8 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
     );
   }
 
-  subBody() {
+  services() {
     return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * .15, left: 10, right: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -290,8 +292,6 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
               itemBuilder: (context, i) {
                 return Container(
                   padding: EdgeInsets.all(5),
-                  //color: Colors.grey[900],
-                  //margin: EdgeInsets.all(4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
@@ -311,6 +311,75 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
               },
             )
           ) : Container(child: Center(child: Text('Barber has no Packages', textAlign: TextAlign.center, style: TextStyle(fontStyle: FontStyle.italic)))),
+        ]
+      )
+    );
+  }
+
+  policiesWidget() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+          children: <Widget>[
+            Icon(LineIcons.times, color: Colors.white),
+            Padding(padding: EdgeInsets.all(5)),
+            policies.cancelEnabled ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Cancellation Policy',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                Text('Fee Amount: ${policies.cancelFee}'),
+                Text('Within: ${policies.cancelWithinTime} Hour')
+              ]
+            ) :
+            Text('No Cancellation Policy', style: TextStyle(fontWeight: FontWeight.bold))
+          ]
+        ),
+        Padding(
+          padding: EdgeInsets.all(5)
+        ),
+        Row(
+          children: <Widget>[
+            Icon(LineIcons.minus, color: Colors.white),
+            Padding(padding: EdgeInsets.all(5)),
+            policies.noShowEnabled ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'No-Show Policy',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                Text('Fee Amount: ${policies.noShowFee}'),
+              ]
+            ) :
+            Text('No No-Show Policy', style: TextStyle(fontWeight: FontWeight.bold))
+          ]
+        ),
+        ]
+      )
+    );
+  }
+
+  subBody() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * .15, left: 10, right: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          services(),
+          Divider(
+            color: Colors.grey
+          ),
+          policiesWidget(),
           Divider(
             color: Colors.grey
           )
@@ -321,6 +390,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
 
   postBody() {
     return new Container(
+      margin: EdgeInsets.only(bottom: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[

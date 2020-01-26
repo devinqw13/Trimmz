@@ -154,7 +154,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
 
     var res4 = await getBarberPolicies(context, globals.token);
     setState(() {
-      policies = res4;
+      policies = res4 ?? new BarberPolicies();
     });
   }
 
@@ -858,7 +858,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                           onTap: () async {
                             showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
                               return BarberPoliciesModal(
-                                policies: policies,
+                                policies: policies ?? new BarberPolicies(),
                                 setPolicies: (value) {
                                   setState(() {
                                     policies = value;
@@ -964,9 +964,11 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                   FocusScope.of(context).requestFocus(new FocusNode());
                   if(globals.token == int.parse(searchedBarbers[i].id)) {
                     var res = await getUserDetailsPost(globals.token, context);
-                    final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res);
+                    var res2 = await getBarberPolicies(context, globals.token);
+                    final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res, barberPolicies: res2);
                     Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                   }else {
+                    var res = await getBarberPolicies(context, int.parse(searchedBarbers[i].id));
                     ClientBarbers barber = new ClientBarbers();
                     barber.id = searchedBarbers[i].id;
                     barber.name = searchedBarbers[i].name;
@@ -980,7 +982,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                     barber.state = searchedBarbers[i].state;
                     barber.zipcode = searchedBarbers[i].zipcode;
                     // barber.created = suggestedBarbers[i].created;
-                    final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber);
+                    final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                     Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                   }
                 },
@@ -1125,8 +1127,9 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             else {
               final i = index ~/ 2;
               return new GestureDetector(
-                onTap: () {
+                onTap: () async {
                   FocusScope.of(context).requestFocus(new FocusNode());
+                  var res = await getBarberPolicies(context, int.parse(suggestedBarbers[i].id));
                   ClientBarbers barber = new ClientBarbers();
                   barber.id = suggestedBarbers[i].id;
                   barber.name = suggestedBarbers[i].name;
@@ -1140,7 +1143,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                   barber.state = suggestedBarbers[i].state;
                   barber.zipcode = suggestedBarbers[i].zipcode;
                   // barber.created = suggestedBarbers[i].created;
-                  final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber);
+                  final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                 },
                 child: Column(

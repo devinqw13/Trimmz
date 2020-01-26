@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 class BarberPoliciesModal extends StatefulWidget {
-  BarberPoliciesModal({@required this.policies, this.setPolicies,});
+  BarberPoliciesModal({@required this.policies, this.setPolicies});
   final BarberPolicies policies;
   final ValueChanged setPolicies;
 
@@ -16,7 +16,7 @@ class BarberPoliciesModal extends StatefulWidget {
 }
 
 class _BarberPoliciesModal extends State<BarberPoliciesModal> {
-  BarberPolicies policies;
+  BarberPolicies policy = new BarberPolicies();
   bool _isCancelPercent = false;
   bool _isNoShowPercent = false;
   bool _cancellationEnabled = false;
@@ -71,22 +71,23 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
   updatePolicies([BarberPolicies policiesInfo]) async {
     if(policiesInfo != null) {
       setState(() {
-        policies = policiesInfo;
-        _cancelFeeAmount.text = policies.cancelFee.replaceAll(new RegExp('[\$\\%]'), '');
-        _isCancelPercent = policies.cancelFee.contains('\$') ? false : true;
-        _cancelChargeTime.text = policies.cancelWithinTime.toString();
-        _noShowFeeAmount.text = policies.noShowFee.replaceAll(new RegExp('[\$\\%]'), '');
-        _isNoShowPercent = policies.noShowFee.contains('\$') ? false : true;
-        _cancellationEnabled = policies.cancelEnabled;
-        _noshowEnabled = policies.noShowEnabled;
+        policy = policiesInfo;
+        _cancelFeeAmount.text = policy.cancelFee.replaceAll(new RegExp('[\$\\%]'), '');
+        _isCancelPercent = policy.cancelFee.contains('\$') ? false : true;
+        _cancelChargeTime.text = policy.cancelWithinTime.toString();
+        _noShowFeeAmount.text = policy.noShowFee.replaceAll(new RegExp('[\$\\%]'), '');
+        _isNoShowPercent = policy.noShowFee.contains('\$') ? false : true;
+        _cancellationEnabled = policy.cancelEnabled;
+        _noshowEnabled = policy.noShowEnabled;
       });
     }else {
-      var res = await updateBarberPolicies(context, globals.token, _cancelFeeAmount.text != policies.cancelFee.replaceAll(new RegExp('[\$\\%]'), '') ? _cancelFeeAmount.text : null, _isCancelPercent != policies.cancelFee.contains('\%') ? _isCancelPercent : null, _cancelChargeTime.text != policies.cancelWithinTime.toString() ? int.parse(_cancelChargeTime.text) : null, _noShowFeeAmount.text != policies.noShowFee.replaceAll(new RegExp('[\$\\%]'), '') ? _noShowFeeAmount.text : null, _isNoShowPercent != policies.noShowFee.contains('\%') ? _isNoShowPercent : null, _cancellationEnabled != policies.cancelEnabled ? _cancellationEnabled : null, _noshowEnabled != policies.noShowEnabled ? _noshowEnabled : null);
+      //TODO: error when submitting only the percent/dollar change
+      var res = await updateBarberPolicies(context, globals.token, _cancelFeeAmount.text != policy.cancelFee.replaceAll(new RegExp('[\$\\%]'), '') ? _cancelFeeAmount.text : null, _isCancelPercent != policy.cancelFee.contains('\%') ? _isCancelPercent : null, _cancelChargeTime.text != policy.cancelWithinTime.toString() ? int.parse(_cancelChargeTime.text) : null, _noShowFeeAmount.text != policy.noShowFee.replaceAll(new RegExp('[\$\\%]'), '') ? _noShowFeeAmount.text : null, _isNoShowPercent != policy.noShowFee.contains('\%') ? _isNoShowPercent : null, _cancellationEnabled != policy.cancelEnabled ? _cancellationEnabled : null, _noshowEnabled != policy.noShowEnabled ? _noshowEnabled : null);
 
       setState(() {
-        policies = res;
+        policy = res;
       });
-      updatePolicies(policies);
+      updatePolicies(res);
       widget.setPolicies(res);
     }
   }
@@ -282,14 +283,14 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
               ),
               Column(
                 children: <Widget>[
-                  (_cancellationEnabled != policies.cancelEnabled || _noshowEnabled != policies.noShowEnabled || _cancelChargeTime.text != policies.cancelWithinTime.toString() || _isCancelPercent != policies.cancelFee.contains('\%') || _isNoShowPercent != policies.noShowFee.contains('\%') || _cancelFeeAmount.text != policies.cancelFee.replaceAll(new RegExp('[\$\\%]'), '') || _noShowFeeAmount.text != policies.noShowFee.replaceAll(new RegExp('[\$\\%]'), '')) ? Row(
+                  (_cancellationEnabled != policy.cancelEnabled || _noshowEnabled != policy.noShowEnabled || _cancelChargeTime.text != policy.cancelWithinTime.toString() || _isCancelPercent != policy.cancelFee.contains('\%') || _isNoShowPercent != policy.noShowFee.contains('\%') || _cancelFeeAmount.text != policy.cancelFee.replaceAll(new RegExp('[\$\\%]'), '') || _noShowFeeAmount.text != policy.noShowFee.replaceAll(new RegExp('[\$\\%]'), '')) ? Row(
                     children: <Widget>[
                       Expanded(
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: FlatButton(
                             color: Colors.blue,
-                            onPressed: () async {
+                            onPressed: () {
                               FocusScope.of(context).requestFocus(new FocusNode());
                               updatePolicies();
                             },
@@ -308,7 +309,6 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
                             color: Colors.blue,
                             onPressed: () async {
                               Navigator.pop(context);
-                              //widget.updatePolicies(true);
                             },
                             child: Text('Cancel')
                           )

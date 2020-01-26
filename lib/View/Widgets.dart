@@ -48,7 +48,7 @@ settingsWidget(BuildContext context) {
 
     globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
     //globals.userType == 2 ? CSLink('Client Book', () {}, style: CSWidgetStyle(icon: Icon(LineIcons.book))) : Container(),
-    globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}, style: CSWidgetStyle(icon: Icon(LineIcons.user))) : Container(),
+    globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); var res2 = await getBarberPolicies(context, globals.token); final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res, barberPolicies: res2); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}, style: CSWidgetStyle(icon: Icon(LineIcons.user))) : Container(),
     globals.userType == 2 ? CSLink('Mobile Transactions', () {final mobileTransaction = new MobileTransactionScreen(); Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));}, style: CSWidgetStyle(icon: Icon(LineIcons.money))) : Container(),
     globals.userType == 2 ? CSLink('Reviews', () {final reviewController = new ReviewController(userId: globals.token, username: globals.username); Navigator.push(context, new MaterialPageRoute(builder: (context) => reviewController));}, style: CSWidgetStyle(icon: Icon(Icons.chat_bubble_outline))) : Container(),
 
