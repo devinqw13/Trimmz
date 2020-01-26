@@ -1629,8 +1629,6 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
     "noShowEnabled": noShowEnabled != null ? noShowEnabled ? 1 : 0 : null,
   };
 
-  print(jsonMap);
-
   String url = "${globals.baseUrl}";
 
   try {
@@ -1639,7 +1637,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
     showErrorDialog(context, "The Server is not responding (033)", "Please try again. If this error continues to occur, please contact support.");
     return null;
   } 
-  print(response.body);
+  
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (033)", "Please try again.");
     return null;

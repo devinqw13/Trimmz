@@ -68,7 +68,7 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
     );
   }
 
-  updatePolicies([BarberPolicies policiesInfo]) {
+  updatePolicies([BarberPolicies policiesInfo]) async {
     if(policiesInfo != null) {
       setState(() {
         policies = policiesInfo;
@@ -81,7 +81,13 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
         _noshowEnabled = policies.noShowEnabled;
       });
     }else {
-      updateBarberPolicies(context, globals.token, _cancelFeeAmount.text != policies.cancelFee.replaceAll(new RegExp('[\$\\%]'), '') ? _cancelFeeAmount.text : null, _isCancelPercent != policies.cancelFee.contains('\%') ? _isCancelPercent : null, _cancelChargeTime.text != policies.cancelWithinTime.toString() ? int.parse(_cancelChargeTime.text) : null, _noShowFeeAmount.text != policies.noShowFee.replaceAll(new RegExp('[\$\\%]'), '') ? _noShowFeeAmount.text : null, _isNoShowPercent != policies.noShowFee.contains('\%') ? _isNoShowPercent : null, _cancellationEnabled != policies.cancelEnabled ? _cancellationEnabled : null, _noshowEnabled != policies.noShowEnabled ? _noshowEnabled : null);
+      var res = await updateBarberPolicies(context, globals.token, _cancelFeeAmount.text != policies.cancelFee.replaceAll(new RegExp('[\$\\%]'), '') ? _cancelFeeAmount.text : null, _isCancelPercent != policies.cancelFee.contains('\%') ? _isCancelPercent : null, _cancelChargeTime.text != policies.cancelWithinTime.toString() ? int.parse(_cancelChargeTime.text) : null, _noShowFeeAmount.text != policies.noShowFee.replaceAll(new RegExp('[\$\\%]'), '') ? _noShowFeeAmount.text : null, _isNoShowPercent != policies.noShowFee.contains('\%') ? _isNoShowPercent : null, _cancellationEnabled != policies.cancelEnabled ? _cancellationEnabled : null, _noshowEnabled != policies.noShowEnabled ? _noshowEnabled : null);
+
+      setState(() {
+        policies = res;
+      });
+      updatePolicies(policies);
+      widget.setPolicies(res);
     }
   }
 
@@ -284,9 +290,8 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
                           child: FlatButton(
                             color: Colors.blue,
                             onPressed: () async {
-                              //Navigator.pop(context);
+                              FocusScope.of(context).requestFocus(new FocusNode());
                               updatePolicies();
-                              //widget.setPolicies(true);
                             },
                             child: Text('Save')
                           )

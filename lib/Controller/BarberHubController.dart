@@ -465,7 +465,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                 Text('Fee Amount: ${policies.noShowFee}'),
               ]
             ) :
-            Text('No Cancellation Policy', style: TextStyle(fontWeight: FontWeight.bold))
+            Text('No No-Show Policy', style: TextStyle(fontWeight: FontWeight.bold))
           ]
         ),
       ]
@@ -858,7 +858,12 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                           onTap: () async {
                             showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
                               return BarberPoliciesModal(
-                                policies: policies
+                                policies: policies,
+                                setPolicies: (value) {
+                                  setState(() {
+                                    policies = value;
+                                  });
+                                },
                               );
                             });
                           },
