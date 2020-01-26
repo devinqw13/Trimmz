@@ -1,13 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../calls.dart';
+import '../globals.dart' as globals;
 import '../Model/BarberPolicies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 class BarberPoliciesModal extends StatefulWidget {
-  BarberPoliciesModal({@required this.policies, this.updatePolicies,});
+  BarberPoliciesModal({@required this.policies, this.setPolicies,});
   final BarberPolicies policies;
-  final ValueChanged updatePolicies;
+  final ValueChanged setPolicies;
 
   @override
   _BarberPoliciesModal createState() => _BarberPoliciesModal();
@@ -31,16 +33,7 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
 
   @override
   void initState() {
-    setState(() {
-      policies = widget.policies;
-      _cancelFeeAmount.text = policies.cancelFee.replaceAll(new RegExp('[\$\\%]'), '');
-      _isCancelPercent = policies.cancelFee.contains('\$') ? false : true;
-      _cancelChargeTime.text = policies.cancelWithinTime.toString();
-      _noShowFeeAmount.text = policies.noShowFee.replaceAll(new RegExp('[\$\\%]'), '');
-      _isNoShowPercent = policies.noShowFee.contains('\$') ? false : true;
-      _cancellationEnabled = policies.cancelEnabled;
-      _noshowEnabled = policies.noShowEnabled;
-    });
+    updatePolicies(widget.policies);
     super.initState();
   }
 
@@ -73,6 +66,23 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
         ),
       ],
     );
+  }
+
+  updatePolicies([BarberPolicies policiesInfo]) {
+    if(policiesInfo != null) {
+      setState(() {
+        policies = policiesInfo;
+        _cancelFeeAmount.text = policies.cancelFee.replaceAll(new RegExp('[\$\\%]'), '');
+        _isCancelPercent = policies.cancelFee.contains('\$') ? false : true;
+        _cancelChargeTime.text = policies.cancelWithinTime.toString();
+        _noShowFeeAmount.text = policies.noShowFee.replaceAll(new RegExp('[\$\\%]'), '');
+        _isNoShowPercent = policies.noShowFee.contains('\$') ? false : true;
+        _cancellationEnabled = policies.cancelEnabled;
+        _noshowEnabled = policies.noShowEnabled;
+      });
+    }else {
+      updateBarberPolicies(context, globals.token, _cancelFeeAmount.text != policies.cancelFee.replaceAll(new RegExp('[\$\\%]'), '') ? _cancelFeeAmount.text : null, _isCancelPercent != policies.cancelFee.contains('\%') ? _isCancelPercent : null, _cancelChargeTime.text != policies.cancelWithinTime.toString() ? int.parse(_cancelChargeTime.text) : null, _noShowFeeAmount.text != policies.noShowFee.replaceAll(new RegExp('[\$\\%]'), '') ? _noShowFeeAmount.text : null, _isNoShowPercent != policies.noShowFee.contains('\%') ? _isNoShowPercent : null, _cancellationEnabled != policies.cancelEnabled ? _cancellationEnabled : null, _noshowEnabled != policies.noShowEnabled ? _noshowEnabled : null);
+    }
   }
 
   @override
@@ -132,6 +142,11 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
                                         child: TextField(
                                           controller: _cancelFeeAmount,
                                           focusNode: _number1Focus,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _cancelFeeAmount.text = value;
+                                            });
+                                          },
                                           keyboardType: TextInputType.number,
                                           decoration: InputDecoration(
                                             hintText: _isCancelPercent ? '1 - 100%' : 'Dollar Amount',
@@ -225,6 +240,11 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
                                         child: TextField(
                                           controller: _noShowFeeAmount,
                                           focusNode: _number3Focus,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _noShowFeeAmount.text = value;
+                                            });
+                                          },
                                           keyboardType: TextInputType.number,
                                           decoration: InputDecoration(
                                             hintText: _isNoShowPercent ? 'Percent Amoung (1 - 100)' : 'Dollar Amount',
@@ -256,7 +276,7 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
               ),
               Column(
                 children: <Widget>[
-                  (_cancellationEnabled != policies.cancelEnabled || _noshowEnabled != policies.noShowEnabled || _cancelChargeTime.text != policies.cancelWithinTime.toString() || _isCancelPercent != policies.cancelFee.contains('\%') || _isNoShowPercent != policies.noShowFee.contains('\%')) ? Row(
+                  (_cancellationEnabled != policies.cancelEnabled || _noshowEnabled != policies.noShowEnabled || _cancelChargeTime.text != policies.cancelWithinTime.toString() || _isCancelPercent != policies.cancelFee.contains('\%') || _isNoShowPercent != policies.noShowFee.contains('\%') || _cancelFeeAmount.text != policies.cancelFee.replaceAll(new RegExp('[\$\\%]'), '') || _noShowFeeAmount.text != policies.noShowFee.replaceAll(new RegExp('[\$\\%]'), '')) ? Row(
                     children: <Widget>[
                       Expanded(
                         child: Container(
@@ -264,8 +284,9 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
                           child: FlatButton(
                             color: Colors.blue,
                             onPressed: () async {
-                              Navigator.pop(context);
-                              //widget.updatePolicies(true);
+                              //Navigator.pop(context);
+                              updatePolicies();
+                              //widget.setPolicies(true);
                             },
                             child: Text('Save')
                           )
@@ -273,7 +294,6 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
                       )
                     ]
                   ) : Container(),
-
                   Row(
                     children: <Widget>[
                       Expanded(

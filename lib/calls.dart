@@ -1350,6 +1350,8 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userId) async
         policies.noShowFee = item['noshow_fee'];
       }
       return policies;
+    } else {
+      return null;
     }
   }else {
     return null;
@@ -1571,11 +1573,11 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (017)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (032)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (017)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (032)", "Please try again.");
     return {};
   }
 
@@ -1606,5 +1608,65 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
   }else {
     return {};
   }
+}
 
+Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [String cancelFee, bool isCancelPercent, int cancelTime, String noShowFee, bool isNoShowPercent, bool cancelEnabled, bool noShowEnabled]) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  Map jsonMap = {
+    "key": "policies",
+    "token": userId,
+    "cancelFee": cancelFee != null ? '${isCancelPercent ? '' : '\$'}$cancelFee${isCancelPercent ? '%' : ''}' : null,
+    "cancelTime": cancelTime != null ? cancelTime : null,
+    "noShowFee": noShowFee != null ? '${isNoShowPercent ? '' : '\$'}$noShowFee${isNoShowPercent ? '%' : ''}' : null,
+    "cancelEnabled": cancelEnabled != null ? cancelEnabled ? 1 : 0 : null,
+    "noShowEnabled": noShowEnabled != null ? noShowEnabled ? 1 : 0 : null,
+  };
+
+  print(jsonMap);
+
+  String url = "${globals.baseUrl}";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (033)", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  } 
+  print(response.body);
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (033)", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    BarberPolicies policies = new BarberPolicies();
+    if(jsonResponse['policies'].length > 0){
+      for(var item in jsonResponse['policies']){
+        policies.cancelEnabled = item['cancel_enabled'] == '0' ? false : true;
+        policies.noShowEnabled = item['noshow_enabled'] == '0' ? false : true;
+        policies.cancelFee = item['cancel_fee'];
+        policies.cancelWithinTime = int.parse(item['cancel_time']);
+        policies.noShowFee = item['noshow_fee'];
+      }
+      return policies;
+    } else {
+      return null;
+    }
+  }else {
+    return null;
+  }
 }
