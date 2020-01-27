@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:trimmz/dialogs.dart';
 import '../Model/Packages.dart';
 import '../globals.dart' as globals;
 import '../calls.dart';

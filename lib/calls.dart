@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trimmz/Model/AppointmentRequests.dart';
 import 'package:trimmz/Model/BarberPolicies.dart';
 import 'globals.dart' as globals;
@@ -103,48 +102,6 @@ Future<bool> registerUser(BuildContext context, String name, String username, St
     return true;
   }else {
     return false;
-  }
-}
-
-Future<int> getDashType(int token, BuildContext context) async {
-  Map<String, String> headers = {
-    'Content-Type' : 'application/x-www-form-urlencoded',
-    'Content-type' : 'application/json', 
-    'Accept': 'application/json',
-  };
-
-  Map jsonResponse = {};
-  http.Response response;
-
-  var jsonMap = {"userid": token};
-
-  String url = "${globals.baseUrl}getDashType/";
-
-  try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
-  } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (002)", "Please try again. If this error continues to occur, please contact support.");
-    return null;
-  } 
-  if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (002)", "Please try again.");
-    return null;
-  }
-
-  if (json.decode(response.body) is List) {
-    var responseBody = response.body.substring(1, response.body.length - 1);
-    jsonResponse = json.decode(responseBody);
-  } else {
-    jsonResponse = json.decode(response.body);
-  }
-
-  if (jsonResponse['error'] == false) {
-    var dashType = jsonResponse['timeline']['token'];
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt('dashType', dashType);
-    return dashType;
-  }else {
-    return null;
   }
 }
 
