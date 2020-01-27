@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trimmz/Controller/MarketplaceCartController.dart';
 import 'package:trimmz/View/Widgets.dart';
+import 'package:trimmz/dialogs.dart';
 import '../Model/SuggestedBarbers.dart';
 import '../globals.dart' as globals;
 import '../View/HomeHubTabs.dart';
@@ -15,6 +16,8 @@ import '../functions.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'dart:async';
 import 'AppointmentListController.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:io';
 
 class HomeHubScreen extends StatefulWidget {
   final int dashType;
@@ -25,6 +28,7 @@ class HomeHubScreen extends StatefulWidget {
 }
 
 class HomeHubScreenState extends State<HomeHubScreen> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final TextEditingController _search = new TextEditingController();
   StreamController<String> searchStreamController = StreamController();
   FocusNode _searchFocus = new FocusNode();
@@ -52,7 +56,42 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     .listen((s) => _searchValue(s, searchTabIndex));
 
     initSuggestedBarbers();
+    firebaseCloudMessagingListeners();
   }
+
+  void firebaseCloudMessagingListeners() {
+    if (Platform.isIOS) iOSPermission();
+
+    _firebaseMessaging.getToken().then((token){
+      //setFirebaseToken(context, token);
+      print('Firebase APNs Token: ' + token);
+    });
+
+    //SHOW AND UPDATE NOTIFICATION BADGE
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print('on message $message');
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print('on resume $message');
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print('on launch $message');
+      },
+    );
+  }
+
+  void iOSPermission() {
+    _firebaseMessaging.requestNotificationPermissions(
+        IosNotificationSettings(sound: true, badge: true, alert: true)
+    );
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings)
+    {
+      print("Settings registered: $settings");
+    });
+  }
+
 
   _searchValue(String string, int type) async {
     if(type == 0) {
