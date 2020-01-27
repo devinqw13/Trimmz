@@ -1609,7 +1609,7 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
     return {};
   }
 }
-
+//TODO: Add ability to create a new policy row in database when editing policy but doesn't exists
 Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [String cancelFee, bool isCancelPercent, int cancelTime, String noShowFee, bool isNoShowPercent, bool cancelEnabled, bool noShowEnabled]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
@@ -1667,4 +1667,53 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
   }else {
     return null;
   }
+}
+
+Future<bool> sendPushNotification(BuildContext context, String title, String body) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Authorization': 'key=AAAAU6aHEg0:APA91bGeJLiMB3qRqmbAKzEfg9M3d-I6Ear-WQ8l7PmVJMA8xcCLklLVfzOp8zZOTCbZ1WzrJbq1pLG7aAxE_aXke6WThoejom1QREterliWuN0k7fDdbw9gCwanXKWzxR2WlJW5O-pv'
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+  
+  Map<String, dynamic> jsonMap = {
+    'notification': {
+      'body': '$title',
+      'title': '$body'
+    },
+    'priority': 'high',
+    'data': {
+      'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+      'id': '1',
+      'status': 'done'
+    },
+    'to': 'epKxPeTKpEnWnUMq82g95q:APA91bGaHZCbyT4dR5-6klbfmjckVt1nvvNdKlEbKKf5bn6TtKqGKn2FGJAB9EmXV_SWvKzjE2LY8Wt3chnsoSc6B-_dwArp9vl4Q3S_RMMFCZb0a2DXbhnRxmqLSN24EyubcV8pPHnn'//await getUserFirebaseToken(context, userid),
+  };
+
+  String url = "https://fcm.googleapis.com/fcm/send";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (034)", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (033)", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  print(jsonResponse);
+
+  return true;
 }
