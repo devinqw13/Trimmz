@@ -53,6 +53,8 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                           child: RaisedButton(
                             onPressed: () async {
                               //TODO: Cancel appointment and charge customer the price amount
+
+                              await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment with a cancellation fee', int.parse(appointment['clientid']));
                             },
                             child: Text('Cancel with payment'),
                           )
@@ -63,6 +65,7 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                             onPressed: () async {
                               var res1 = await updateAppointmentStatus(context, int.parse(appointment['id']), 2);
                               if(res1) {
+                                await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', int.parse(appointment['clientid']));
                                 var res2 = await getBarberAppointments(context, globals.token);
                                 Navigator.pop(context);
                                 widget.setAppointmentList(res2);

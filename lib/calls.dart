@@ -558,9 +558,9 @@ Future<Map<DateTime, List<dynamic>>> getBarberAppointments(BuildContext context,
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(!apt.containsKey(date)) {
-        apt[date] = [{'id': item['id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']}];
+        apt[date] = [{'id': item['id'], 'clientid': item['client_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']}];
       }else {
-        apt[date].add({'id': item['id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']});
+        apt[date].add({'id': item['id'], 'clientid': item['client_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']});
       }
     }
 
@@ -1669,7 +1669,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
   }
 }
 
-Future<bool> sendPushNotification(BuildContext context, String title, String body) async {
+Future<Map> sendPushNotification(BuildContext context, String title, String body, int toUserId) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Authorization': 'key=AAAAU6aHEg0:APA91bGeJLiMB3qRqmbAKzEfg9M3d-I6Ear-WQ8l7PmVJMA8xcCLklLVfzOp8zZOTCbZ1WzrJbq1pLG7aAxE_aXke6WThoejom1QREterliWuN0k7fDdbw9gCwanXKWzxR2WlJW5O-pv'
@@ -1680,8 +1680,8 @@ Future<bool> sendPushNotification(BuildContext context, String title, String bod
   
   Map<String, dynamic> jsonMap = {
     'notification': {
-      'body': '$title',
-      'title': '$body'
+      'body': '$body',
+      'title': '$title'
     },
     'priority': 'high',
     'data': {
@@ -1689,7 +1689,7 @@ Future<bool> sendPushNotification(BuildContext context, String title, String bod
       'id': '1',
       'status': 'done'
     },
-    'to': 'epKxPeTKpEnWnUMq82g95q:APA91bGaHZCbyT4dR5-6klbfmjckVt1nvvNdKlEbKKf5bn6TtKqGKn2FGJAB9EmXV_SWvKzjE2LY8Wt3chnsoSc6B-_dwArp9vl4Q3S_RMMFCZb0a2DXbhnRxmqLSN24EyubcV8pPHnn'//await getUserFirebaseToken(context, userid),
+    'to': 'epKxPeTKpEnWnUMq82g95q:APA91bGaHZCbyT4dR5-6klbfmjckVt1nvvNdKlEbKKf5bn6TtKqGKn2FGJAB9EmXV_SWvKzjE2LY8Wt3chnsoSc6B-_dwArp9vl4Q3S_RMMFCZb0a2DXbhnRxmqLSN24EyubcV8pPHnn'//await getUserFirebaseToken(context, toUserId),
   };
 
   String url = "https://fcm.googleapis.com/fcm/send";
@@ -1698,12 +1698,12 @@ Future<bool> sendPushNotification(BuildContext context, String title, String bod
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (034)", "Please try again. If this error continues to occur, please contact support.");
-    return null;
+    return {};
   }
 
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (033)", "Please try again.");
-    return null;
+    return {};
   }
 
   if (json.decode(response.body) is List) {
@@ -1713,7 +1713,5 @@ Future<bool> sendPushNotification(BuildContext context, String title, String bod
     jsonResponse = json.decode(response.body);
   }
 
-  print(jsonResponse);
-
-  return true;
+  return jsonResponse;
 }

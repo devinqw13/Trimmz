@@ -296,6 +296,7 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                     GestureDetector(
                                       onTap: () async {
                                         var result = await aptRequestDecision(context, globals.token, requests[i].requestId, 0);
+                                        await sendPushNotification(context, 'Appointment Request Expired', '${globals.username} has dismissed your appointment request because it has expired.', requests[i].clientId);
                                         Navigator.pop(context);
                                         results = result;
                                       },
@@ -308,6 +309,7 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                     GestureDetector(
                                       onTap: () async {
                                         var result = await aptRequestDecision(context, globals.token, requests[i].requestId, 0);
+                                        await sendPushNotification(context, 'Appointment Declined', '${globals.username} has declined your appointment request.', requests[i].clientId);
                                         Navigator.pop(context);
                                         results = result;
                                       },
@@ -319,6 +321,7 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                     GestureDetector(
                                       onTap: () async {
                                         var result = await aptRequestDecision(context, globals.token, requests[i].requestId, 1);
+                                        await sendPushNotification(context, 'Appointment Confirmed', '${globals.username} has confirmed your appointment request.', requests[i].clientId);
                                         Navigator.pop(context);
                                         results = result;
                                       },
