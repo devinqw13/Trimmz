@@ -452,7 +452,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget> [
                         Text(
-                          'Package',
+                          'Services',
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.w400,
@@ -477,64 +477,67 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                             itemCount: packages.length,
                             padding: const EdgeInsets.all(0),
                             itemBuilder: (context, i) {
-                              return new GestureDetector(
-                                onTap: () {
-                                  var calculatedTip = (int.parse(packages[i].price) * .2).round();
-                                  setState(() {
-                                    finalPackagePrice = int.parse(packages[i].price);
-                                    finalTip = calculatedTip;
-                                    _tipController.text = calculatedTip.toString();
-                                    _packageId = packages[i].id;
-                                    packageName = packages[i].name;
-                                  });
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Row(
-                                      children: <Widget>[
-                                        Radio(
-                                          activeColor: Colors.blue,
-                                          groupValue: _packageId,
-                                          value: packages[i].id,
-                                          onChanged: (value) {
-                                            var calculatedTip = (int.parse(packages[i].price) * .2).round();
-                                            setState(() {
-                                              finalPackagePrice = int.parse(packages[i].price);
-                                              finalTip = calculatedTip;
-                                              _tipController.text = calculatedTip.toString();
-                                              _packageId = value;
-                                              packageName = packages[i].name;
-                                            });
-                                          },
-                                        ),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget> [
-                                            Text(packages[i].name,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w500
+                              return new Container(
+                                color: Colors.transparent,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    var calculatedTip = (int.parse(packages[i].price) * .2).round();
+                                    setState(() {
+                                      finalPackagePrice = int.parse(packages[i].price);
+                                      finalTip = calculatedTip;
+                                      _tipController.text = calculatedTip.toString();
+                                      _packageId = packages[i].id;
+                                      packageName = packages[i].name;
+                                    });
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Row(
+                                        children: <Widget>[
+                                          Radio(
+                                            activeColor: Colors.blue,
+                                            groupValue: _packageId,
+                                            value: packages[i].id,
+                                            onChanged: (value) {
+                                              var calculatedTip = (int.parse(packages[i].price) * .2).round();
+                                              setState(() {
+                                                finalPackagePrice = int.parse(packages[i].price);
+                                                finalTip = calculatedTip;
+                                                _tipController.text = calculatedTip.toString();
+                                                _packageId = value;
+                                                packageName = packages[i].name;
+                                              });
+                                            },
+                                          ),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget> [
+                                              Text(packages[i].name,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w500
+                                                )
+                                              ),
+                                              Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
+                                                style: TextStyle(
+                                                  color: Colors.grey
+                                                )
                                               )
-                                            ),
-                                            Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
-                                              style: TextStyle(
-                                                color: Colors.grey
-                                              )
-                                            )
-                                          ]
-                                        ),
-                                      ]
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.all(10),
-                                      child: Center(child: Text('\$' + packages[i].price, textAlign: TextAlign.center,)),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.grey[800]
+                                            ]
+                                          ),
+                                        ]
                                       ),
-                                    )
-                                  ]
-                                ),
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        child: Center(child: Text('\$' + packages[i].price, textAlign: TextAlign.center,)),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.grey[800]
+                                        ),
+                                      )
+                                    ]
+                                  ),
+                                )
                               );
                             }
                           )

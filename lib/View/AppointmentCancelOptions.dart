@@ -56,6 +56,8 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                               Map<String, dynamic> dataMap =  {
                                 'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                                 'action': 'APPOINTMENT',
+                                'sender': '${globals.token}',
+                                'recipient': appointment['clientid'],
                                 'appointment': appointment,
                               };
                               await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment with a cancellation fee', int.parse(appointment['clientid']), dataMap);
@@ -72,6 +74,8 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                                 Map<String, dynamic> dataMap =  {
                                   'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                                   'action': 'APPOINTMENT',
+                                  'sender': '${globals.token}',
+                                  'recipient': '${appointment['clientid']}',
                                   'appointment': appointment,
                                 };
                                 await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', int.parse(appointment['clientid']), dataMap);

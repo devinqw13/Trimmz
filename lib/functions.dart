@@ -116,3 +116,39 @@ getEndLocation(String shopLocation) async {
   }
   return endDistance;
 }
+
+buildTimeAgo(String dateString, {bool numericDates = true}) {
+  DateTime date = DateTime.parse(dateString);
+  final date2 = DateTime.now();
+  final difference = date2.difference(date);
+
+  if ((difference.inDays / 365).floor() >= 2) {
+    return Text('${(difference.inDays / 365).floor()}yr', style: TextStyle(fontSize: 13));
+  } else if ((difference.inDays / 365).floor() >= 1) {
+    return (numericDates) ? Text('1yr', style: TextStyle(fontSize: 13)) : Text('Last year', style: TextStyle(fontSize: 13));
+  } else if ((difference.inDays / 30).floor() >= 2) {
+    return Text('${((difference.inDays / 365) * 10).floor()}mo', style: TextStyle(fontSize: 13));
+  } else if ((difference.inDays / 30).floor() >= 1) {
+    return (numericDates) ? Text('1mo', style: TextStyle(fontSize: 13)) : Text('Last month', style: TextStyle(fontSize: 13));
+  } else if ((difference.inDays / 7).floor() >= 2) {
+    return Text('${(difference.inDays / 7).floor()}w', style: TextStyle(fontSize: 13));
+  } else if ((difference.inDays / 7).floor() >= 1) {
+    return (numericDates) ? Text('1w', style: TextStyle(fontSize: 13)) : Text('Last week', style: TextStyle(fontSize: 13));
+  } else if (difference.inDays >= 2) {
+    return Text('${difference.inDays}d', style: TextStyle(fontSize: 13));
+  } else if (difference.inDays >= 1) {
+    return (numericDates) ? Text('1d', style: TextStyle(fontSize: 13)) : Text('Yesterday', style: TextStyle(fontSize: 13));
+  } else if (difference.inHours >= 2) {
+    return Text('${difference.inHours}h', style: TextStyle(fontSize: 13));
+  } else if (difference.inHours >= 1) {
+    return (numericDates) ? Text('1h', style: TextStyle(fontSize: 13)) : Text('An hour ago', style: TextStyle(fontSize: 13));
+  } else if (difference.inMinutes >= 2) {
+    return Text('${difference.inMinutes}m', style: TextStyle(fontSize: 13));
+  } else if (difference.inMinutes >= 1) {
+    return (numericDates) ? Text('1m', style: TextStyle(fontSize: 13)) : Text('A minute ago', style: TextStyle(fontSize: 13));
+  } else if (difference.inSeconds >= 3) {
+    return Text('${difference.inSeconds}s', style: TextStyle(fontSize: 13));
+  } else {
+    return Text('Just now', style: TextStyle(fontSize: 13));
+  }
+}

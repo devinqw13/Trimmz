@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'jsonConvert.dart';
 import 'Model/Appointment.dart';
 import 'Model/Reviews.dart';
+import 'Model/Notifications.dart';
 
 Future<Map> loginPost(String url, Map jsonData, BuildContext context, ) async {
   Map<String, String> headers = {
@@ -1698,7 +1699,7 @@ Future<Map> sendPushNotification(BuildContext context, String title, String body
   }
 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (033)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (034)", "Please try again.");
     return {};
   }
 
@@ -1712,4 +1713,190 @@ Future<Map> sendPushNotification(BuildContext context, String title, String body
   print(jsonResponse);
   return jsonResponse;
   //if successful created row in data table (notifications)
+}
+
+Future<bool> submitNotification(BuildContext context, int from, int recipient, String title, String message) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonData = {
+    "key": "notifications",
+    "from": from,
+    "recipient": recipient,
+    "title": title,
+    "message": message,
+    "created": "${DateTime.now()}"
+  };
+
+  String url = "${globals.baseUrl}";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (035)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (035)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    return true;
+  }else {
+    return false;
+  }
+}
+
+Future<List<Notifications>> getUnreadNotifications(BuildContext context, int userId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}?key=unread_notifications&token=$userId";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (036)", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  } 
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (036)", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    List<Notifications> notifications = [];
+    for(var item in jsonResponse['notifications']) {
+      Notifications notify = new Notifications();
+      notify.from = int.parse(item['from']);
+      notify.recipient = int.parse(item['recipient']);
+      notify.title = item['title'];
+      notify.message = item['message'];
+      notify.read = int.parse(item['read']) == 0 ? false : true;
+      notify.created = item['created'];
+
+      notifications.add(notify);
+    }
+    return notifications;
+  }else {
+    return [];
+  }
+}
+
+Future<List<Notifications>> getAllNotifications(BuildContext context, int userId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}?key=all_notifications&token=$userId";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (036)", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  } 
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (036)", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    List<Notifications> notifications = [];
+    for(var item in jsonResponse['notifications']) {
+      Notifications notify = new Notifications();
+      notify.from = int.parse(item['from']);
+      notify.recipient = int.parse(item['recipient']);
+      notify.title = item['title'];
+      notify.message = item['message'];
+      notify.read = int.parse(item['read']) == 0 ? false : true;
+      notify.created = item['created'];
+
+      notifications.add(notify);
+    }
+    return notifications;
+  }else {
+    return [];
+  }
+}
+
+Future<bool> setNotificationsRead(BuildContext context, int recipient) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonData = {
+    "key": "read_notifications",
+    "recipient": recipient,
+  };
+
+  String url = "${globals.baseUrl}";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (037)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (037)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    return true;
+  }else {
+    return false;
+  }
 }

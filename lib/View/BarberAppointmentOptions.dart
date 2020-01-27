@@ -64,12 +64,14 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                   colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
                                 )
                               ),
+                              //TODO: dynamic with barber or client based on account type
                               child: Center(child: Text(appointment['name'].substring(0,1), style: TextStyle(fontSize: 20)))
                             ),
                             Padding(padding: EdgeInsets.all(5)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
+                                //TODO: dynamic with barber or client based on account type
                                 Text(
                                   appointment['name'], 
                                   style: TextStyle(
@@ -137,6 +139,26 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                           )
                                         ]
                                       ),
+                                      globals.userType != 2 ? Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Text(
+                                            'Processing Fees',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey
+                                            )
+                                          ),
+                                          Text(
+                                            '\$1',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey
+                                            )
+                                          )
+                                        ]
+                                      ) :
+                                      //TODO: dynamic fee based on transfer method
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
@@ -168,6 +190,8 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             )
                                           ),
                                           Text(
+                                            globals.userType != 2 ?
+                                            '\$' + (int.parse(appointment['price']) + int.parse(appointment['tip']) + 1).toString() :
                                             '\$' + (double.parse(appointment['price']) + double.parse(appointment['tip']) -  ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .025)).toStringAsFixed(2),
                                             style: TextStyle(
                                               fontSize: 17,

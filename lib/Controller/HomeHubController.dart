@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trimmz/Controller/MarketplaceCartController.dart';
 import 'package:trimmz/View/Widgets.dart';
-import 'package:trimmz/dialogs.dart';
 import '../Model/SuggestedBarbers.dart';
 import '../globals.dart' as globals;
 import '../View/HomeHubTabs.dart';
@@ -57,6 +56,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
 
     initSuggestedBarbers();
     firebaseCloudMessagingListeners();
+    checkNotificiations();
   }
 
   void firebaseCloudMessagingListeners() {
@@ -71,10 +71,10 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print('on message $message');
-        //TODO: add info to notifications database and do if statment for badgeNotifications
-        setState(() {
-          badgeNotifications = badgeNotifications + 1;
-        });
+        var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        if(res) {
+          checkNotificiations();
+        }
       },
       onResume: (Map<String, dynamic> message) async {
         print('on resume $message');
@@ -114,6 +114,13 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     }else {
 
     }
+  }
+
+  checkNotificiations() async {
+    var res = await getUnreadNotifications(context, globals.token);
+    setState(() {
+      badgeNotifications = res.length;
+    });
   }
 
   void initSuggestedBarbers() async {
@@ -590,9 +597,14 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                 animationType: BadgeAnimationType.scale,
                 animationDuration: const Duration(milliseconds: 300),
                 child: IconButton(
-                  onPressed: () {
+                  onPressed: () async {
                     final notificationScreen = new NotificationScreen();
-                    Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationScreen));
+                    var result = await Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationScreen));
+                    if(result == null) {
+                      setState(() {
+                        badgeNotifications = 0;
+                      });
+                    }
                   },
                   icon: Icon(LineIcons.bell, size: 25.0),
                 ) 
