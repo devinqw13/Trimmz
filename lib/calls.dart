@@ -1669,7 +1669,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
   }
 }
 
-Future<Map> sendPushNotification(BuildContext context, String title, String body, int toUserId) async {
+Future<Map> sendPushNotification(BuildContext context, String title, String body, int toUserId, [Map<String, dynamic> data]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Authorization': 'key=AAAAU6aHEg0:APA91bGeJLiMB3qRqmbAKzEfg9M3d-I6Ear-WQ8l7PmVJMA8xcCLklLVfzOp8zZOTCbZ1WzrJbq1pLG7aAxE_aXke6WThoejom1QREterliWuN0k7fDdbw9gCwanXKWzxR2WlJW5O-pv'
@@ -1684,12 +1684,8 @@ Future<Map> sendPushNotification(BuildContext context, String title, String body
       'title': '$title'
     },
     'priority': 'high',
-    'data': {
-      'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-      'id': '1',
-      'status': 'done'
-    },
-    'to': 'epKxPeTKpEnWnUMq82g95q:APA91bGaHZCbyT4dR5-6klbfmjckVt1nvvNdKlEbKKf5bn6TtKqGKn2FGJAB9EmXV_SWvKzjE2LY8Wt3chnsoSc6B-_dwArp9vl4Q3S_RMMFCZb0a2DXbhnRxmqLSN24EyubcV8pPHnn'//await getUserFirebaseToken(context, toUserId),
+    'data': data ?? {'click_action': 'FLUTTER_NOTIFICATION_CLICK'},
+    'to': 'drNzk7unpEI9h5YKiHklwk:APA91bHrDqk5xIvGLHOaSyX93CyRpHXNstjgn3EQAj9z5vmwsNfDuLGwOeKzbuiP4KycMUzSn-zjN5AYZ3lGt3CRGqU2x1e9RSuMOhXBRB9cKbuW6DrJVZBgV-1cpYCYhEuwUDt-U0yc'//await getUserFirebaseToken(context, toUserId),
   };
 
   String url = "https://fcm.googleapis.com/fcm/send";
@@ -1713,5 +1709,7 @@ Future<Map> sendPushNotification(BuildContext context, String title, String body
     jsonResponse = json.decode(response.body);
   }
 
+  print(jsonResponse);
   return jsonResponse;
+  //if successful created row in data table (notifications)
 }

@@ -71,6 +71,10 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print('on message $message');
+        //TODO: add info to notifications database and do if statment for badgeNotifications
+        setState(() {
+          badgeNotifications = badgeNotifications + 1;
+        });
       },
       onResume: (Map<String, dynamic> message) async {
         print('on resume $message');
@@ -581,8 +585,8 @@ class HomeHubScreenState extends State<HomeHubScreen> {
               _tabTitle == "Home" ?
               Badge(
                 showBadge: badgeNotifications == 0 ? false : true,
-                badgeContent: Text('1'),
-                position: BadgePosition.topLeft(),
+                badgeContent: Text(badgeNotifications.toString()),
+                position: BadgePosition.topLeft(top:0, left: 7),
                 animationType: BadgeAnimationType.scale,
                 animationDuration: const Duration(milliseconds: 300),
                 child: IconButton(
