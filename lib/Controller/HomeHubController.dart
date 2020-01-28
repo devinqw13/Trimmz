@@ -62,12 +62,11 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   void firebaseCloudMessagingListeners() {
     if (Platform.isIOS) iOSPermission();
 
-    _firebaseMessaging.getToken().then((token){
-      //setFirebaseToken(context, token);
+    _firebaseMessaging.getToken().then((token) async {
+      await setFirebaseToken(context, token);
       print('Firebase APNs Token: ' + token);
     });
 
-    //SHOW AND UPDATE NOTIFICATION BADGE
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print('on message $message');

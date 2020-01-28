@@ -41,6 +41,7 @@ dependencies:
   stripe_payment: ^1.0.6
   keyboard_actions: ^3.1.2
   firebase_messaging: ^6.0.9
+  device_info: ^0.4.1+4
   # alphabet_list_scroll_view: ^1.0.5
 
 

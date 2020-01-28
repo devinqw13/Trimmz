@@ -14,6 +14,35 @@ import 'jsonConvert.dart';
 import 'Model/Appointment.dart';
 import 'Model/Reviews.dart';
 import 'Model/Notifications.dart';
+import 'dart:io';
+import 'package:device_info/device_info.dart';
+
+Future<List<String>> getDeviceDetails() async {
+  String deviceName;
+  String deviceVersion;
+  String deviceIdentifier;
+  String deviceType;
+  final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
+  try {
+    if (Platform.isAndroid) {
+      var build = await deviceInfoPlugin.androidInfo;
+      deviceName = build.model;
+      deviceVersion = build.version.toString();
+      deviceIdentifier = build.id;
+      deviceType = 'Android';
+    } else if (Platform.isIOS) {
+      var data = await deviceInfoPlugin.iosInfo;
+      deviceName = data.name;
+      deviceVersion = data.systemVersion;
+      deviceIdentifier = data.identifierForVendor; // UUID for iOS
+      deviceType = 'iOS';
+    }
+  } on Exception {
+    print("failed to get platform version");
+  }
+
+  return [deviceName, deviceVersion, deviceIdentifier, deviceType];
+}
 
 Future<Map> loginPost(String url, Map jsonData, BuildContext context, ) async {
   Map<String, String> headers = {
@@ -1841,6 +1870,55 @@ Future<bool> setNotificationsRead(BuildContext context, int recipient) async {
   
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (037)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    return true;
+  }else {
+    return false;
+  }
+}
+
+Future<bool> setFirebaseToken(BuildContext context, String firebaseToken) async {
+  Map<String, String> headers = {
+    'Content-type' : 'application/json', 
+    'Accept': 'application/json',
+  };
+
+  var deviceInfo = await getDeviceDetails();
+
+  var jsonData = {
+    "key": "set_notification_token",
+    "userid": globals.token,
+    "token": "$firebaseToken",
+    "device_type": '${deviceInfo[0]}',
+    "device_os_version": '${deviceInfo[1]}',
+    "device_id": '${deviceInfo[2]}',
+    "device_os": '${deviceInfo[3]}',
+    "created": '${DateTime.now()}'
+  };
+
+  String url = "${globals.baseUrl}";
+
+  Map jsonResponse = {};
+  http.Response response;
+  try {
+    response = await http.post(url, body: jsonEncode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (038)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+  print(response.body);
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (038)", "Please try again.");
     return false;
   }
 
