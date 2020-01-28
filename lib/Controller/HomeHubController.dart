@@ -63,8 +63,9 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     if (Platform.isIOS) iOSPermission();
 
     _firebaseMessaging.getToken().then((token) async {
+      //TODO: add check if device_id exists in database then update that row if not add the row ** DELETE ROW WHEN USER LOGOUT
       await setFirebaseToken(context, token);
-      print('Firebase APNs Token: ' + token);
+      print('APNs Token: ' + token);
     });
 
     _firebaseMessaging.configure(

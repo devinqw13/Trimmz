@@ -31,6 +31,7 @@ import '../Model/BarberPolicies.dart';
 import '../View/BarberPoliciesModal.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'dart:async';
+import '../View/AddManualAppointmentModal.dart';
 
 class BarberHubScreen extends StatefulWidget {
   BarberHubScreen({Key key}) : super (key: key);
@@ -529,6 +530,22 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     });
   }
 
+  showAddManualAppointment(DateTime selectedDate) {
+    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+      return AddManualAppointmentModal(
+        selectedDate: selectedDate,
+        updateAppointmentList: (value) {
+          setState(() {
+            _events = value;
+          });
+        },
+        showFullCalendar: (value) {
+          showFullCalendar(value);
+        }
+      );
+    });
+  }
+
   showFullCalendar([DateTime selectDate]) {
     showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
       return FullCalendarModal(
@@ -536,6 +553,9 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
         selectDate: selectDate,
         showAppointmentOptions: (value) {
           showFullCalendarAptOptions(value);
+        },
+        showManualAddAppointment: (value) {
+          showAddManualAppointment(value);
         },
       );
     });

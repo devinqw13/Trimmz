@@ -5,10 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 
 class FullCalendarModal extends StatefulWidget {
-  FullCalendarModal({@required this.appointments, this.showAppointmentOptions, this.selectDate});
+  FullCalendarModal({@required this.appointments, this.showAppointmentOptions, this.selectDate, this.showManualAddAppointment});
   final appointments;
   final DateTime selectDate;
   final ValueChanged showAppointmentOptions;
+  final ValueChanged showManualAddAppointment;
 
   @override
   _FullCalendarModal createState() => _FullCalendarModal();
@@ -82,7 +83,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
   }
 
   buildList() {
-    if(_selectedEvents.length > 0){
+    if(_selectedEvents != null && _selectedEvents.length > 0){
       return Expanded(
         child: new ListView.builder(
           shrinkWrap: true,
@@ -271,6 +272,10 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
             Row(
               children: <Widget>[
                 GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    widget.showManualAddAppointment(selectedDate);
+                  },
                   child: Icon(LineIcons.calendar_plus_o, color: Colors.blue, size: 30)
                 )
               ],
