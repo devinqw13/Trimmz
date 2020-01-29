@@ -13,7 +13,7 @@ class AddManualAppointmentModal extends StatefulWidget {
 }
 
 class _AddManualAppointmentModal extends State<AddManualAppointmentModal> {
-  bool show = true; // REMOVE JUST A PLACE HOLDER FOR CHECK
+  bool show = false; // REMOVE JUST A PLACE HOLDER FOR CHECK
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,9 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> {
                         child: FlatButton(
                           color: Colors.blue,
                           onPressed: () async {
-                            
+                            Navigator.pop(context);
+                            //widget.updateAppointmentList();
+                            widget.showFullCalendar(widget.selectedDate);
                           },
                           child: Text('Book Appointment')
                         )
