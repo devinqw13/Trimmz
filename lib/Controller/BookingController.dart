@@ -245,7 +245,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     });
   }
 
-  calculateTimeV2(List<Availability> list, Map<DateTime, List<dynamic>> existing, DateTime day) {
+  calculateTime(List<Availability> list, Map<DateTime, List<dynamic>> existing, DateTime day) {
     final df = new DateFormat('hh:mm a');
     //final df2 = new DateFormat('HH:mm');
     var weekday = DateFormat.EEEE().format(day).toString();
@@ -313,45 +313,11 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     }
   }
 
-  calculateTime(List<Availability> list, DateTime day) {
-    final df = new DateFormat('hh:mm a');
-    //final df2 = new DateFormat('HH:mm');
-    var weekday = DateFormat.EEEE().format(day).toString();
-    List<RadioModel> timesList = new List<RadioModel>();
-    for(var item in list){
-      if(item.day == weekday){
-        if((item.start != null && item.end != null) && (item.start != '00:00:00' && item.end != '00:00:00')){
-          var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
-          var end = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.end).toString());
-          
-          var startDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(day.toString()));
-          var startTime = DateFormat('Hms').format(DateTime.parse(start.toString()));
-
-          var newStart = DateTime.parse(startDate + ' ' + startTime);
-
-          var newTime = newStart;
-          if(newTime.isAfter(DateTime.now())){
-            timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
-          }
-          for (int i = 0; i <= end.difference(start.add(Duration(minutes: 45))).inMinutes; i+=15) {
-            newTime = newTime.add(Duration(minutes: 15));
-            if(newTime.isAfter(DateTime.now())){
-              var convertTime = df.format(DateTime.parse(newTime.toString()));
-              timesList.add(new RadioModel(false, convertTime));
-            }
-          }
-          return timesList;
-        }else {
-          return timesList = [];
-        }
-      }
-    }
-  }
-
   getInitDate() async {
     final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
     var res = await getBarberAvailability(context, int.parse(barberInfo.id));
-    var newTimes = await calculateTime(res, _selectedDay); //TODO: CHANGE THIS WHEN NEW CALC IS DONE
+    var res2 = await getBarberAppointments(context, int.parse(barberInfo.id));
+    var newTimes = await calculateTime(res, res2, _selectedDay);
     setState(() {
       _availableTimes = newTimes;
       selectedDate = _selectedDay;
@@ -368,7 +334,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
       var res = await getBarberAvailability(context, int.parse(barberInfo.id));
       var res2 = await getBarberAppointments(context, int.parse(barberInfo.id));
       //var newTimes = await calculateTime(res, day);
-      var newTimes = await calculateTimeV2(res, res2, day);
+      var newTimes = await calculateTime(res, res2, day);
 
       setState(() {
         _availableTimes = newTimes;
