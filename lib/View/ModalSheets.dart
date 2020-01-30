@@ -269,7 +269,7 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                       padding: EdgeInsets.all(10),
                                       child: Center(
                                         child: Text(
-                                          '\$' + (requests[i].price).toString(), //TODO: add tip into the pricing
+                                          '\$' + (requests[i].price + requests[i].tip).toString(),
                                           textAlign: TextAlign.center,
                                         )
                                       ),

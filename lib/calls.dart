@@ -874,6 +874,7 @@ Future<List<AppointmentRequest>> getBarberAppointmentRequests(BuildContext conte
       request.packageId = int.parse(item['package_id']);
       request.packageName = item['pname'];
       request.price = int.parse(item['price']);
+      request.tip = int.parse(item['tip']);
       appointmentReq.add(request);
     }
     return appointmentReq;

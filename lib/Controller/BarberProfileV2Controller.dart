@@ -435,6 +435,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
           title: new Text('@'+user.username)
         ),
         body: new SingleChildScrollView(
+          physics: ClampingScrollPhysics(),
           child: Stack(
             alignment: Alignment.topCenter,
             children: <Widget> [
