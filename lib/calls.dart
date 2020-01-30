@@ -188,7 +188,7 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
     return null;
   }
 }
-
+//TODO: TEST THIS NEW CALL TRANSFERED TO INDEX
 Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, int type, [List location]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
@@ -198,25 +198,16 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
   Map jsonResponse = {};
   http.Response response;
 
-  var jsonMap;
+  String url = '';
+
   if(location == null) {
-    jsonMap = {
-      "userid" : userid,
-      "type" : type
-    };
+    url = "${globals.baseUrl}?key=suggestions&token=$userid&type=$type";
   }else {
-    jsonMap = {
-      "userid" : userid,
-      "type" : type,
-      "city" : location[0],
-      "state" : location[1]
-    };
+    url = "${globals.baseUrl}?key=suggestions&token=$userid&type=$type&city=${location[0]}&state=${location[1]}";
   }
 
-  String url = "${globals.baseUrl}suggestions/";
-
   try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (010)", "Please try again. If this error continues to occur, please contact support.");
     return [];
@@ -1597,7 +1588,7 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
     return {};
   }
 }
-//TODO: Add ability to create a new policy row in database when editing policy but doesn't exists
+//TODO: Add ability to create a new policy row in database when editing policy but doesn't exists ***DONE-TEST****
 Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [String cancelFee, bool isCancelPercent, int cancelTime, String noShowFee, bool isNoShowPercent, bool cancelEnabled, bool noShowEnabled]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
@@ -1887,7 +1878,7 @@ Future<bool> setNotificationsRead(BuildContext context, int recipient) async {
     return false;
   }
 }
-
+//TODO: TEST THIS CALL NEW FUNCTION IN BACKEND
 Future<bool> setFirebaseToken(BuildContext context, String firebaseToken) async {
   Map<String, String> headers = {
     'Content-type' : 'application/json', 
@@ -1905,6 +1896,50 @@ Future<bool> setFirebaseToken(BuildContext context, String firebaseToken) async 
     "device_id": '${deviceInfo[2]}',
     "device_os": '${deviceInfo[3]}',
     "created": '${DateTime.now()}'
+  };
+
+  String url = "${globals.baseUrl}";
+
+  Map jsonResponse = {};
+  http.Response response;
+  try {
+    response = await http.post(url, body: jsonEncode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (038)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+  print(response.body);
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (038)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    return true;
+  }else {
+    return false;
+  }
+}
+
+Future<bool> removeFirebaseToken(BuildContext context) async {
+  Map<String, String> headers = {
+    'Content-type' : 'application/json', 
+    'Accept': 'application/json',
+  };
+
+  var deviceInfo = await getDeviceDetails();
+
+  var jsonData = {
+    "key": "delete_notification_token",
+    "token": globals.token,
+    "device_id": "${deviceInfo[2]}",
   };
 
   String url = "${globals.baseUrl}";

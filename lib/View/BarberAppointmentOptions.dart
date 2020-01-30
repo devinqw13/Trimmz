@@ -64,16 +64,18 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                   colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
                                 )
                               ),
-                              //TODO: dynamic with barber or client based on account type
-                              child: Center(child: Text(appointment['name'].substring(0,1), style: TextStyle(fontSize: 20)))
+                              //TODO: dynamic with barber or client based on account type ***DONE - TEST****
+                              child: globals.userType != 2 ? Center(
+                                child: Text(globals.name.substring(0,1), style: TextStyle(fontSize: 20))
+                              ) : Center(child: Text(appointment['name'].substring(0,1), style: TextStyle(fontSize: 20)))
                             ),
                             Padding(padding: EdgeInsets.all(5)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                //TODO: dynamic with barber or client based on account type
+                                //TODO: dynamic with barber or client based on account type ***DONE - TEST****
                                 Text(
-                                  appointment['name'], 
+                                  globals.userType != 2 ? globals.name : appointment['name'], 
                                   style: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold
@@ -158,19 +160,19 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                           )
                                         ]
                                       ) :
-                                      //TODO: dynamic fee based on transfer method
+                                      //TODO: dynamic fee based on transfer method ***DONE - TEST****
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
                                           Text(
-                                            'Fees (2.5%)',
+                                            globals.spPayoutMethod == 'standard' ? 'Fees (2.5%)' : 'Fees (3%)',
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.grey
                                             )
                                           ),
                                           Text(
-                                            '- \$' + ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .025).toStringAsFixed(2),
+                                            globals.spPayoutMethod == 'standard' ? '- \$' + ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .025).toStringAsFixed(2) : '- \$' + ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .03).toStringAsFixed(2),
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.grey
