@@ -255,26 +255,24 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                 child: Container(
                   color: Colors.transparent,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      new Container(
-                        width: 50.0,
-                        height: 50.0,
-                        decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.purple,
-                          gradient: new LinearGradient(
-                            colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
-                          )
-                        ),
-                        child: Center(child: Text(_selectedEvents[i]['name'].substring(0,1), style: TextStyle(fontSize: 20)))
-                      ),
-                      Padding(padding: EdgeInsets.all(5)),
                       Container(
-                        width: MediaQuery.of(context).size.width * .8,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
+                            Container(
+                              width: 50.0,
+                              height: 50.0,
+                              decoration: new BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.purple,
+                                gradient: new LinearGradient(
+                                  colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
+                                )
+                              ),
+                              child: Center(child: Text(_selectedEvents[i]['name'].substring(0,1), style: TextStyle(fontSize: 20)))
+                            ),
+                            Padding(padding: EdgeInsets.all(5)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
@@ -301,6 +299,14 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                                 Text('\$' + _selectedEvents[i]['price']),
                               ]
                             ),
+                          ]
+                        )
+                      ),
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
                             Container(
                               padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 2.0, bottom: 2.0),
                               decoration: BoxDecoration(
@@ -534,6 +540,8 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
       return AddManualAppointmentModal(
         selectedDate: selectedDate,
+        packages: packages,
+        appointments: _events,
         updateAppointmentList: (value) {
           setState(() {
             _events = value;

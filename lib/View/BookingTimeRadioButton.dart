@@ -17,10 +17,10 @@ class RadioItem extends StatelessWidget {
         ),
       ),
       decoration: new BoxDecoration(
-        color: _item.isSelected ? Colors.blueAccent : Colors.grey[700],
+        color: _item.isSelected ? Colors.blue : Colors.grey[700],
         border: new Border.all(
           width: 1.0,
-          color: _item.isSelected ? Colors.blueAccent : Colors.grey[700]),
+          color: _item.isSelected ? Colors.blue : Colors.grey[700]),
         borderRadius: const BorderRadius.all(const Radius.circular(5.0)),
       ),
     );

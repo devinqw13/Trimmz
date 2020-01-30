@@ -190,7 +190,7 @@ class ReviewControllerState extends State<ReviewController> {
         shrinkWrap: true,
         itemBuilder: (context, i) {
           return Container(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.only(left: 0, top:10, bottom: 10, right: 0),
             child: Column(
               children: <Widget>[
                 Row(

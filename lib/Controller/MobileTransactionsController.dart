@@ -274,7 +274,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Method', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Transfer Method', style: TextStyle(fontWeight: FontWeight.bold)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -300,7 +300,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
                                 });
                               },
                             ),
-                            Text('Standard Transfer')
+                            Text('Standard')
                           ]
                         )
                       )
@@ -325,7 +325,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
                                 });
                               },
                             ),
-                            Text('Instant Transfer')
+                            Text('Instant')
                           ]
                         )
                       )
