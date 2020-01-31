@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../globals.dart' as globals;
+import '../calls.dart';
 
 class AppointmentOptionsBottomSheet extends StatefulWidget {
   AppointmentOptionsBottomSheet({@required this.appointment, @required this.showCancel, this.showFullCalendar, this.showFull});
@@ -216,8 +217,21 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                 Expanded(
                                                   child: Container(
                                                     child: RaisedButton(
-                                                      onPressed: () {
+                                                      onPressed: () async {
                                                         //TODO: MARK STATUS COMPLETE(1) AND CHARGE CUSTOMER(PRICE + TIP + 1), ALSO DO PAYOUT BASED ON METHOD (Price + tip - fees(method))
+
+                                                        List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
+                                                        for(var token in tokens){
+                                                          Map<String, dynamic> dataMap =  {
+                                                            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                                            'action': 'APPOINTMENT',
+                                                            'sender': '${globals.token}',
+                                                            'recipient': '${appointment['clientid']}',
+                                                            'appointment': appointment,
+                                                          };
+                                                          await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', int.parse(appointment['clientid']), token, dataMap);
+                                                        }
+
                                                       },
                                                       child: Text('Complete Appointment'),
                                                     )
@@ -245,8 +259,21 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                 Expanded(
                                                   child: Container(
                                                     child: RaisedButton(
-                                                      onPressed: () {
+                                                      onPressed: () async {
                                                         //TODO: MARK STATUS AS NO-SHOW(4) AND CHARGE CUSTOMER IF BARBER HAS NO-SHOW POLICY
+
+                                                        List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
+                                                        for(var token in tokens){
+                                                          Map<String, dynamic> dataMap =  {
+                                                            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                                            'action': 'APPOINTMENT',
+                                                            'sender': '${globals.token}',
+                                                            'recipient': '${appointment['clientid']}',
+                                                            'appointment': appointment,
+                                                          };
+                                                          await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', int.parse(appointment['clientid']), token, dataMap);
+                                                        }
+                                                        
                                                       },
                                                       child: Text('Mark as no-show appointment'),
                                                     )

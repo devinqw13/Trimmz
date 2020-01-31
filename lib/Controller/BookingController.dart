@@ -407,6 +407,17 @@ class BookingControllerState extends State<BookingController> with TickerProvide
 
     var res = await bookAppointment(context, userId, barberId, price, time, packageId, tip);
     if(res) {
+      List tokens = await getNotificationTokens(context, int.parse(barberId));
+      for(var token in tokens){
+        Map<String, dynamic> dataMap =  {
+          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          'action': 'BOOK_APPOINTMENT',
+          'sender': '${globals.token}',
+          'recipient': '$barberId',
+        };
+        await sendPushNotification(context, 'Appointment Requested', '${globals.username} has requested an appointment', int.parse(barberId), token, dataMap);
+      }
+
       if(globals.userType == 1 || globals.userType == 3){
         final homeScreen = new HomeHubScreen(); 
         Navigator.push(context, new MaterialPageRoute(builder: (context) => homeScreen));

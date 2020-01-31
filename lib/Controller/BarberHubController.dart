@@ -102,7 +102,6 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
 
     _firebaseMessaging.getToken().then((token) async {
       await setFirebaseToken(context, token);
-      print('APNs Token: ' + token);
     });
 
     _firebaseMessaging.configure(
@@ -1479,14 +1478,19 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               _tabTitle == "Home" ?
               Badge(
                 showBadge: badgeNotifications == 0 ? false : true,
-                badgeContent: Text('1'),
+                badgeContent: Text(badgeNotifications.toString()),
                 position: BadgePosition.topLeft(),
                 animationType: BadgeAnimationType.scale,
                 animationDuration: const Duration(milliseconds: 300),
                 child: IconButton(
-                  onPressed: () {
+                  onPressed: () async {
                     final notificationScreen = new NotificationScreen();
-                    Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationScreen));
+                    var result = await Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationScreen));
+                    if(result == null) {
+                      setState(() {
+                        badgeNotifications = 0;
+                      });
+                    }
                   },
                   icon: Icon(LineIcons.bell, size: 25.0),
                 ) 
