@@ -115,7 +115,7 @@ class AppointmentListState extends State<AppointmentList> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              upcoming[i]['name'],
+                              upcoming[i]['barber_name'],
                               style: TextStyle(
                                 fontWeight: FontWeight.bold
                               )
@@ -210,7 +210,7 @@ class AppointmentListState extends State<AppointmentList> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              pending[i]['name'],
+                              pending[i]['barber_name'],
                               style: TextStyle(
                                 fontWeight: FontWeight.bold
                               )
@@ -303,7 +303,7 @@ class AppointmentListState extends State<AppointmentList> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              past[i]['name'],
+                              past[i]['barber_name'],
                               style: TextStyle(
                                 fontWeight: FontWeight.bold
                               )

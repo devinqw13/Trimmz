@@ -53,14 +53,17 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                           child: RaisedButton(
                             onPressed: () async {
                               //TODO: Cancel appointment and charge customer the price amount
-                              Map<String, dynamic> dataMap =  {
-                                'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                                'action': 'APPOINTMENT',
-                                'sender': '${globals.token}',
-                                'recipient': appointment['clientid'],
-                                'appointment': appointment,
-                              };
-                              await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment with a cancellation fee', int.parse(appointment['clientid']), dataMap);
+                              List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
+                              for(var token in tokens){
+                                Map<String, dynamic> dataMap =  {
+                                  'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                  'action': 'APPOINTMENT',
+                                  'sender': '${globals.token}',
+                                  'recipient': appointment['clientid'],
+                                  'appointment': appointment,
+                                };
+                                await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment with a cancellation fee', int.parse(appointment['clientid']), token, dataMap);
+                              }
                             },
                             child: Text('Cancel with payment'),
                           )
@@ -71,14 +74,18 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                             onPressed: () async {
                               var res1 = await updateAppointmentStatus(context, int.parse(appointment['id']), 2);
                               if(res1) {
-                                Map<String, dynamic> dataMap =  {
-                                  'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                                  'action': 'APPOINTMENT',
-                                  'sender': '${globals.token}',
-                                  'recipient': '${appointment['clientid']}',
-                                  'appointment': appointment,
-                                };
-                                await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', int.parse(appointment['clientid']), dataMap);
+                                List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
+                                for(var token in tokens){
+                                  Map<String, dynamic> dataMap =  {
+                                    'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                    'action': 'APPOINTMENT',
+                                    'sender': '${globals.token}',
+                                    'recipient': '${appointment['clientid']}',
+                                    'appointment': appointment,
+                                  };
+                                  await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', int.parse(appointment['clientid']), token, dataMap);
+                                }
+
                                 var res2 = await getBarberAppointments(context, globals.token);
                                 Navigator.pop(context);
                                 widget.setAppointmentList(res2);

@@ -296,13 +296,18 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                     GestureDetector(
                                       onTap: () async {
                                         var result = await aptRequestDecision(context, globals.token, requests[i].requestId, 0);
-                                        Map<String, dynamic> dataMap =  {
-                                          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                                          'action': 'APPOINTMENT_REQUEST',
-                                          'sender': '${globals.token}',
-                                          'recipient': requests[i].clientId,
-                                        };
-                                        await sendPushNotification(context, 'Appointment Request Expired', '${globals.username} has dismissed your appointment request because it has expired.', requests[i].clientId, dataMap);
+
+                                        List tokens = await getNotificationTokens(context, requests[i].clientId);
+                                        for(var token in tokens){
+                                          Map<String, dynamic> dataMap =  {
+                                            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                            'action': 'APPOINTMENT_REQUEST',
+                                            'sender': '${globals.token}',
+                                            'recipient': requests[i].clientId,
+                                          };
+                                          await sendPushNotification(context, 'Appointment Request Expired', '${globals.username} has dismissed your appointment request because it has expired.', requests[i].clientId, token, dataMap);
+                                        }
+
                                         Navigator.pop(context);
                                         results = result;
                                       },
@@ -315,13 +320,18 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                     GestureDetector(
                                       onTap: () async {
                                         var result = await aptRequestDecision(context, globals.token, requests[i].requestId, 0);
-                                        Map<String, dynamic> dataMap =  {
-                                          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                                          'action': 'APPOINTMENT_REQUEST',
-                                          'sender': '${globals.token}',
-                                          'recipient': requests[i].clientId,
-                                        };
-                                        await sendPushNotification(context, 'Appointment Declined', '${globals.username} has declined your appointment request.', requests[i].clientId, dataMap);
+
+                                        List tokens = await getNotificationTokens(context, requests[i].clientId);
+                                        for(var token in tokens){
+                                          Map<String, dynamic> dataMap =  {
+                                            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                            'action': 'APPOINTMENT_REQUEST',
+                                            'sender': '${globals.token}',
+                                            'recipient': requests[i].clientId,
+                                          };
+                                          await sendPushNotification(context, 'Appointment Declined', '${globals.username} has declined your appointment request.', requests[i].clientId, token, dataMap);
+                                        }
+
                                         Navigator.pop(context);
                                         results = result;
                                       },
@@ -333,13 +343,18 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                     GestureDetector(
                                       onTap: () async {
                                         var result = await aptRequestDecision(context, globals.token, requests[i].requestId, 1);
-                                        Map<String, dynamic> dataMap =  {
-                                          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                                          'action': 'APPOINTMENT_REQUEST',
-                                          'sender': '${globals.token}',
-                                          'recipient': requests[i].clientId,
-                                        };
-                                        await sendPushNotification(context, 'Appointment Confirmed', '${globals.username} has confirmed your appointment request.', requests[i].clientId, dataMap);
+
+                                        List tokens = await getNotificationTokens(context, requests[i].clientId);
+                                        for(var token in tokens){
+                                          Map<String, dynamic> dataMap =  {
+                                            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                            'action': 'APPOINTMENT_REQUEST',
+                                            'sender': '${globals.token}',
+                                            'recipient': requests[i].clientId,
+                                          };
+                                          await sendPushNotification(context, 'Appointment Confirmed', '${globals.username} has confirmed your appointment request.', requests[i].clientId, token, dataMap);
+                                        }
+
                                         Navigator.pop(context);
                                         results = result;
                                       },

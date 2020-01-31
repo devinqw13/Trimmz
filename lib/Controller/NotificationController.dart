@@ -67,7 +67,10 @@ class NotificationScreenState extends State<NotificationScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(notifications[i].title, style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(notifications[i].message),
+                      Container(
+                        width: MediaQuery.of(context).size.width * .77,
+                        child: Text(notifications[i].message, softWrap: true),
+                      ),
                       buildTimeAgo(notifications[i].created)
                     ]
                   )

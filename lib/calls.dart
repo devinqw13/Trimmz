@@ -188,7 +188,7 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
     return null;
   }
 }
-//TODO: TEST THIS NEW CALL TRANSFERED TO INDEX
+
 Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, int type, [List location]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
@@ -212,6 +212,7 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
     showErrorDialog(context, "The Server is not responding (010)", "Please try again. If this error continues to occur, please contact support.");
     return [];
   } 
+  
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (010)", "Please try again.");
     return [];
@@ -225,7 +226,7 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
   }
 
   if(jsonResponse['error'] == false){
-    if(jsonResponse['type'] == 1){
+    if(jsonResponse['type'] == '1'){
       List<SuggestedBarbers> suggestedBarbers = [];
       for(var item in jsonResponse['suggestions']){
         var suggestedBarber = new SuggestedBarbers();
@@ -1577,9 +1578,9 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(!apt.containsKey(date)) {
-        apt[date] = [{'id': item['id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']}];
+        apt[date] = [{'id': item['id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']}];
       }else {
-        apt[date].add({'id': item['id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']});
+        apt[date].add({'id': item['id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']});
       }
     }
 
@@ -1588,7 +1589,7 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
     return {};
   }
 }
-//TODO: Add ability to create a new policy row in database when editing policy but doesn't exists ***DONE-TEST****
+//TODO: TEST THIS CALL
 Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [String cancelFee, bool isCancelPercent, int cancelTime, String noShowFee, bool isNoShowPercent, bool cancelEnabled, bool noShowEnabled]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
@@ -1648,7 +1649,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
   }
 }
 
-Future<Map> sendPushNotification(BuildContext context, String title, String body, int toUserId, [Map<String, dynamic> data]) async {
+Future<Map> sendPushNotification(BuildContext context, String title, String body, int toUserId, String token, [Map<String, dynamic> data]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Authorization': 'key=AAAAU6aHEg0:APA91bGeJLiMB3qRqmbAKzEfg9M3d-I6Ear-WQ8l7PmVJMA8xcCLklLVfzOp8zZOTCbZ1WzrJbq1pLG7aAxE_aXke6WThoejom1QREterliWuN0k7fDdbw9gCwanXKWzxR2WlJW5O-pv'
@@ -1664,7 +1665,7 @@ Future<Map> sendPushNotification(BuildContext context, String title, String body
     },
     'priority': 'high',
     'data': data ?? {'click_action': 'FLUTTER_NOTIFICATION_CLICK'},
-    'to': 'drNzk7unpEI9h5YKiHklwk:APA91bHrDqk5xIvGLHOaSyX93CyRpHXNstjgn3EQAj9z5vmwsNfDuLGwOeKzbuiP4KycMUzSn-zjN5AYZ3lGt3CRGqU2x1e9RSuMOhXBRB9cKbuW6DrJVZBgV-1cpYCYhEuwUDt-U0yc'//await getUserFirebaseToken(context, toUserId),
+    'to': '$token'
   };
 
   String url = "https://fcm.googleapis.com/fcm/send";
@@ -1688,9 +1689,7 @@ Future<Map> sendPushNotification(BuildContext context, String title, String body
     jsonResponse = json.decode(response.body);
   }
 
-  print(jsonResponse);
   return jsonResponse;
-  //if successful created row in data table (notifications)
 }
 
 Future<bool> submitNotification(BuildContext context, int from, int recipient, String title, String message) async {
@@ -1878,7 +1877,7 @@ Future<bool> setNotificationsRead(BuildContext context, int recipient) async {
     return false;
   }
 }
-//TODO: TEST THIS CALL NEW FUNCTION IN BACKEND
+
 Future<bool> setFirebaseToken(BuildContext context, String firebaseToken) async {
   Map<String, String> headers = {
     'Content-type' : 'application/json', 
@@ -1969,5 +1968,45 @@ Future<bool> removeFirebaseToken(BuildContext context) async {
     return true;
   }else {
     return false;
+  }
+}
+
+Future<List> getNotificationTokens(BuildContext context, int userId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+  print(userId);
+  String url = "${globals.baseUrl}?key=notification_tokens&token=$userId";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (036)", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (036)", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    List tokens = [];
+    for(var item in jsonResponse['tokens']) {
+      tokens.add(item['token']);
+    }
+    return tokens;
+  }else {
+    return [];
   }
 }

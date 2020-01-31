@@ -32,6 +32,8 @@ import '../View/BarberPoliciesModal.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'dart:async';
 import '../View/AddManualAppointmentModal.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:io';
 
 class BarberHubScreen extends StatefulWidget {
   BarberHubScreen({Key key}) : super (key: key);
@@ -41,6 +43,7 @@ class BarberHubScreen extends StatefulWidget {
 }
 
 class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderStateMixin {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final TextEditingController _search = new TextEditingController();
   StreamController<String> searchStreamController = StreamController();
   FocusNode _searchFocus = new FocusNode();
@@ -90,6 +93,51 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
 
     initSuggestedBarbers();
     initBarberInfo();
+
+    firebaseCloudMessagingListeners();
+  }
+
+  void firebaseCloudMessagingListeners() {
+    if (Platform.isIOS) iOSPermission();
+
+    _firebaseMessaging.getToken().then((token) async {
+      await setFirebaseToken(context, token);
+      print('APNs Token: ' + token);
+    });
+
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print('on message $message');
+        var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        if(res) {
+          checkNotificiations();
+        }
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print('on resume $message');
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print('on launch $message');
+      },
+    );
+  }
+
+  void iOSPermission() {
+    _firebaseMessaging.requestNotificationPermissions(
+        IosNotificationSettings(sound: true, badge: true, alert: true)
+    );
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings)
+    {
+      print("Settings registered: $settings");
+    });
+  }
+
+  checkNotificiations() async {
+    var res = await getUnreadNotifications(context, globals.token);
+    setState(() {
+      badgeNotifications = res.length;
+    });
   }
 
   @override

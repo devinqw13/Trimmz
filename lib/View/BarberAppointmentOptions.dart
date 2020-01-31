@@ -64,18 +64,16 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                   colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
                                 )
                               ),
-                              //TODO: dynamic with barber or client based on account type ***DONE - TEST****
                               child: globals.userType != 2 ? Center(
-                                child: Text(globals.name.substring(0,1), style: TextStyle(fontSize: 20))
+                                child: Text(appointment['barber_name'].substring(0,1), style: TextStyle(fontSize: 20))
                               ) : Center(child: Text(appointment['name'].substring(0,1), style: TextStyle(fontSize: 20)))
                             ),
                             Padding(padding: EdgeInsets.all(5)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                //TODO: dynamic with barber or client based on account type ***DONE - TEST****
                                 Text(
-                                  globals.userType != 2 ? globals.name : appointment['name'], 
+                                  globals.userType != 2 ? appointment['barber_name'] : appointment['name'], 
                                   style: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold
@@ -160,7 +158,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                           )
                                         ]
                                       ) :
-                                      //TODO: dynamic fee based on transfer method ***DONE - TEST****
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
@@ -194,7 +191,9 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                           Text(
                                             globals.userType != 2 ?
                                             '\$' + (int.parse(appointment['price']) + int.parse(appointment['tip']) + 1).toString() :
-                                            '\$' + (double.parse(appointment['price']) + double.parse(appointment['tip']) -  ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .025)).toStringAsFixed(2),
+                                            globals.spPayoutMethod == 'standard' ?
+                                            '\$' + (double.parse(appointment['price']) + double.parse(appointment['tip']) -  ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .025)).toStringAsFixed(2) :
+                                            '\$' + (double.parse(appointment['price']) + double.parse(appointment['tip']) -  ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .03)).toStringAsFixed(2),
                                             style: TextStyle(
                                               fontSize: 17,
                                               color: Colors.white,
@@ -218,7 +217,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                   child: Container(
                                                     child: RaisedButton(
                                                       onPressed: () {
-
+                                                        //TODO: MARK STATUS COMPLETE(1) AND CHARGE CUSTOMER(PRICE + TIP + 1), ALSO DO PAYOUT BASED ON METHOD (Price + tip - fees(method))
                                                       },
                                                       child: Text('Complete Appointment'),
                                                     )
@@ -247,7 +246,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                   child: Container(
                                                     child: RaisedButton(
                                                       onPressed: () {
-
+                                                        //TODO: MARK STATUS AS NO-SHOW(4) AND CHARGE CUSTOMER IF BARBER HAS NO-SHOW POLICY
                                                       },
                                                       child: Text('Mark as no-show appointment'),
                                                     )
