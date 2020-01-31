@@ -155,7 +155,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   _searchValue(String string, int type) async {
     if(type == 0) {
       if(_search.text.length > 2) {
-        var res = await getSearchUsers(context, _search.text);
+        var res = await getSearchBarbers(context, _search.text);
         setState(() {
           searchedBarbers = res;
           isSearching = true;

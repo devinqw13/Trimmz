@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:trimmz/Model/AppointmentRequests.dart';
+import 'package:trimmz/Model/BarberClients.dart';
 import 'package:trimmz/Model/BarberPolicies.dart';
 import 'globals.dart' as globals;
 import 'dialogs.dart';
@@ -1339,7 +1340,7 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userId) async
 
 }
 
-Future<List<SuggestedBarbers>> getSearchUsers(BuildContext context, String username) async {
+Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String username) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -1348,7 +1349,7 @@ Future<List<SuggestedBarbers>> getSearchUsers(BuildContext context, String usern
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}?key=search_user&username=$username";
+  String url = "${globals.baseUrl}?key=search_barber&username=$username";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1370,9 +1371,9 @@ Future<List<SuggestedBarbers>> getSearchUsers(BuildContext context, String usern
   }
 
   if(jsonResponse['error'] == false){
-    if(jsonResponse['users'].length > 0){
+    if(jsonResponse['barbers'].length > 0){
       List<SuggestedBarbers> suggestedBarbers = [];
-      for(var item in jsonResponse['users']){
+      for(var item in jsonResponse['barbers']){
         var suggestedBarber = new SuggestedBarbers();
         suggestedBarber.id = item['id'];
         suggestedBarber.name = item['name'];
@@ -1948,12 +1949,12 @@ Future<bool> removeFirebaseToken(BuildContext context) async {
   try {
     response = await http.post(url, body: jsonEncode(jsonData), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (038)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (039)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   }
   
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (038)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (039)", "Please try again.");
     return false;
   }
 
@@ -1985,11 +1986,11 @@ Future<List> getNotificationTokens(BuildContext context, int userId) async {
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (036)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (040)", "Please try again. If this error continues to occur, please contact support.");
     return [];
   }
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (036)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (040)", "Please try again.");
     return [];
   }
 
@@ -2006,6 +2007,52 @@ Future<List> getNotificationTokens(BuildContext context, int userId) async {
       tokens.add(item['token']);
     }
     return tokens;
+  }else {
+    return [];
+  }
+}
+
+Future<List<BarberClients>> getBarberClients(BuildContext context, int token, int type) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}?key=get_barber_clients&token=$token&type=$type";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (041)", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  } 
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (041)", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    List<BarberClients> clients = [];
+    for(var item in jsonResponse['clients']) {
+      BarberClients client = new BarberClients();
+      client.token = item['id'];
+      client.name = item['name'];
+      client.username = item['username'];
+
+      clients.add(client);
+    }
+    return clients;
   }else {
     return [];
   }
