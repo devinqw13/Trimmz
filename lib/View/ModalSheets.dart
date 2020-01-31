@@ -302,6 +302,8 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                           Map<String, dynamic> dataMap =  {
                                             'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                                             'action': 'APPOINTMENT_REQUEST',
+                                            'title': 'Appointment Request Expired',
+                                            'body': '${globals.username} has dismissed your appointment request because it has expired.',
                                             'sender': '${globals.token}',
                                             'recipient': requests[i].clientId,
                                           };
@@ -326,6 +328,8 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                           Map<String, dynamic> dataMap =  {
                                             'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                                             'action': 'APPOINTMENT_REQUEST',
+                                            'title': 'Appointment Declined',
+                                            'body': '${globals.username} has declined your appointment request.',
                                             'sender': '${globals.token}',
                                             'recipient': requests[i].clientId,
                                           };
@@ -349,6 +353,8 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                           Map<String, dynamic> dataMap =  {
                                             'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                                             'action': 'APPOINTMENT_REQUEST',
+                                            'title': 'Appointment Confirmed',
+                                            'body': '${globals.username} has confirmed your appointment request.',
                                             'sender': '${globals.token}',
                                             'recipient': requests[i].clientId,
                                           };

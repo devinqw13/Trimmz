@@ -58,6 +58,8 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                                 Map<String, dynamic> dataMap =  {
                                   'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                                   'action': 'APPOINTMENT',
+                                  'title': 'Appointment Cancelled',
+                                  'body': '${globals.username} has cancelled your appointment',
                                   'sender': '${globals.token}',
                                   'recipient': appointment['clientid'],
                                   'appointment': appointment,
@@ -79,6 +81,8 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                                   Map<String, dynamic> dataMap =  {
                                     'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                                     'action': 'APPOINTMENT',
+                                    'title': 'Appointment Cancelled',
+                                    'body': '${globals.username} has cancelled your appointment',
                                     'sender': '${globals.token}',
                                     'recipient': '${appointment['clientid']}',
                                     'appointment': appointment,

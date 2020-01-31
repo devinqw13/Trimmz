@@ -104,19 +104,28 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
       await setFirebaseToken(context, token);
     });
 
+    //TODO: ONMESSAGE, ONRESUME, ONLAUNCH NOT WORKING FOR BOTH BARBER AND HOME
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print('on message $message');
         var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
         if(res) {
           checkNotificiations();
+          if(message['action'] == 'BOOK_APPOINTMENT') {
+            var res3 = await getBarberAppointmentRequests(context, globals.token);
+            setState(() {
+              appointmentReq = res3;
+            });
+          }
         }
       },
       onResume: (Map<String, dynamic> message) async {
         print('on resume $message');
+        await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
+        await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
       },
     );
   }
@@ -125,10 +134,8 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     _firebaseMessaging.requestNotificationPermissions(
         IosNotificationSettings(sound: true, badge: true, alert: true)
     );
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings)
-    {
-      print("Settings registered: $settings");
+    _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings){
+
     });
   }
 
@@ -1479,7 +1486,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               Badge(
                 showBadge: badgeNotifications == 0 ? false : true,
                 badgeContent: Text(badgeNotifications.toString()),
-                position: BadgePosition.topLeft(),
+                position: BadgePosition.topLeft(top:0, left: 7),
                 animationType: BadgeAnimationType.scale,
                 animationDuration: const Duration(milliseconds: 300),
                 child: IconButton(

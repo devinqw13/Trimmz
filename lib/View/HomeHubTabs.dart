@@ -56,7 +56,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
           headerAlignment: ExpandablePanelHeaderAlignment.center,
           collapsed: Container(
            padding: EdgeInsets.only(left: 15.0),
-            child: Row(
+            child: Row( //TODO: ADD RichTEXT
               children: <Widget>[
                 Text(
                   'Upcoming Appointment: ',

@@ -225,11 +225,13 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                           Map<String, dynamic> dataMap =  {
                                                             'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                                                             'action': 'APPOINTMENT',
+                                                            'title': 'Appointment Completed',
+                                                            'body': '${globals.username} has cancelled your appointment',
                                                             'sender': '${globals.token}',
                                                             'recipient': '${appointment['clientid']}',
                                                             'appointment': appointment,
                                                           };
-                                                          await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', int.parse(appointment['clientid']), token, dataMap);
+                                                          await sendPushNotification(context, 'Appointment Completed', '${globals.username} has completed your appointment.', int.parse(appointment['clientid']), token, dataMap);
                                                         }
 
                                                       },
@@ -267,11 +269,13 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                           Map<String, dynamic> dataMap =  {
                                                             'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                                                             'action': 'APPOINTMENT',
+                                                            'title': 'No-Show Appointment',
+                                                            'body': '${globals.username} has marked your appointment as a no-show',
                                                             'sender': '${globals.token}',
                                                             'recipient': '${appointment['clientid']}',
                                                             'appointment': appointment,
                                                           };
-                                                          await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', int.parse(appointment['clientid']), token, dataMap);
+                                                          await sendPushNotification(context, 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', int.parse(appointment['clientid']), token, dataMap);
                                                         }
                                                         
                                                       },

@@ -1951,7 +1951,7 @@ Future<bool> removeFirebaseToken(BuildContext context) async {
     showErrorDialog(context, "The Server is not responding (038)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   }
-  print(response.body);
+  
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (038)", "Please try again.");
     return false;
@@ -1979,7 +1979,7 @@ Future<List> getNotificationTokens(BuildContext context, int userId) async {
 
   Map jsonResponse = {};
   http.Response response;
-  print(userId);
+  
   String url = "${globals.baseUrl}?key=notification_tokens&token=$userId";
 
   try {

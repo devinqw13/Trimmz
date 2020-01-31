@@ -412,6 +412,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         Map<String, dynamic> dataMap =  {
           'click_action': 'FLUTTER_NOTIFICATION_CLICK',
           'action': 'BOOK_APPOINTMENT',
+          'title': 'Appointment Requested',
+          'body': '${globals.username} has requested an appointment',
           'sender': '${globals.token}',
           'recipient': '$barberId',
         };

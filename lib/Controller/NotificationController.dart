@@ -68,7 +68,7 @@ class NotificationScreenState extends State<NotificationScreen> {
                     children: <Widget>[
                       Text(notifications[i].title, style: TextStyle(fontWeight: FontWeight.bold)),
                       Container(
-                        width: MediaQuery.of(context).size.width * .77,
+                        width: MediaQuery.of(context).size.width * .75,
                         child: Text(notifications[i].message, softWrap: true),
                       ),
                       buildTimeAgo(notifications[i].created)

@@ -64,22 +64,23 @@ class HomeHubScreenState extends State<HomeHubScreen> {
 
     _firebaseMessaging.getToken().then((token) async {
       await setFirebaseToken(context, token);
-      print('APNs Token: ' + token);
     });
 
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print('on message $message');
-        var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['title'], message['body']);
         if(res) {
           checkNotificiations();
         }
       },
       onResume: (Map<String, dynamic> message) async {
         print('on resume $message');
+        await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
+        await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
       },
     );
   }
