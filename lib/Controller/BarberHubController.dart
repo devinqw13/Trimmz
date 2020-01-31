@@ -104,11 +104,10 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
       await setFirebaseToken(context, token);
     });
 
-    //TODO: ONMESSAGE, ONRESUME, ONLAUNCH NOT WORKING FOR BOTH BARBER AND HOME
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print('on message $message');
-        var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['title'], message['body']);
         if(res) {
           checkNotificiations();
           if(message['action'] == 'BOOK_APPOINTMENT') {
@@ -121,7 +120,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
       },
       onResume: (Map<String, dynamic> message) async {
         print('on resume $message');
-        await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['title'], message['body']);
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
