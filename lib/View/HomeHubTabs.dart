@@ -3,7 +3,6 @@ import 'package:trimmz/calls.dart';
 import '../globals.dart' as globals;
 import 'package:flutter/cupertino.dart';
 import 'package:expandable/expandable.dart';
-import '../Model/FeedItems.dart';
 import '../Controller/SelectBarberController.dart';
 import 'package:line_icons/line_icons.dart';
 import '../View/Widgets.dart';
@@ -19,10 +18,6 @@ class HomeHubTabWidget extends StatefulWidget{
 }
 
 class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderStateMixin {
-  final GlobalKey<RefreshIndicatorState> refreshKey = new GlobalKey<RefreshIndicatorState>();
-  Radius cardEdgeRadius;
-  List<Image> imageList = new List<Image>();
-  List<FeedItem> feedItems = [];
   Appointment upcomingAppointment;
 
   void initState() {

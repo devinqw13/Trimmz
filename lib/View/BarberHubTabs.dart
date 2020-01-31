@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import '../View/Widgets.dart';
-import 'dart:async';
 import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../Controller/LoginController.dart';
-import '../Model/FeedItems.dart';
 import 'package:line_icons/line_icons.dart';
 
 class BarberHubTabWidget extends StatefulWidget{
@@ -16,32 +12,6 @@ class BarberHubTabWidget extends StatefulWidget{
 }
 
 class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProviderStateMixin {
-  final GlobalKey<RefreshIndicatorState> refreshKey = new GlobalKey<RefreshIndicatorState>();
-  Radius cardEdgeRadius;
-  List<Image> imageList = new List<Image>();
-  List<FeedItem> feedItems = [];
-
-  Future<Null> refreshHomeList() async {
-  //  Completer<Null> completer = new Completer<Null>();
-  //   refreshKey.currentState.show();
-  //   //var results = await getTimeline(context);
-  //   var results = await getUserMoves(context);
-  //   completer.complete();
-  //   setState(() {
-  //     userMoves = results;    
-  //   });
-  //   _buildTabBarViewContainer();
-  //   return completer.future;
-  }
-
-  logout() async {
-    final loginScreen = new LoginScreen();
-    Navigator.push(context, new MaterialPageRoute(builder: (context) => loginScreen));
-    //Navigator.of(context).popUntil(ModalRoute.withName('/'));
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
-    //bool _ = await logout(context);
-  }
 
   @override
   Widget build(BuildContext context) {
