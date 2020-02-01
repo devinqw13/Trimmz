@@ -11,9 +11,9 @@ import 'package:line_icons/line_icons.dart';
 import '../Model/ClientBarbers.dart';
 import 'package:flushbar/flushbar.dart';
 import 'dart:ui';
-import 'package:url_launcher/url_launcher.dart';
 import '../Model/Packages.dart';
 import 'ReviewController.dart';
+import 'package:marquee/marquee.dart';
 
 class BarberProfileV2Screen extends StatefulWidget {
   final token;
@@ -179,7 +179,13 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                       padding: EdgeInsets.all(5),
                     ),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
+                        var res = await addBarber(context, globals.token, int.parse(user.id));
+                        if(res) {
+                          setState(() {
+                            hasAdded = true;
+                          });
+                        }
                         final bookingScreen = new BookingController(barberInfo: user); 
                         Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
                       },
@@ -237,7 +243,23 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
             children: <Widget>[
               Text(user.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               Padding(padding: EdgeInsets.all(2)),
-              user.shopName != null && user.shopName != '' ? Container(width: MediaQuery.of(context).size.width * .33, child: AutoSizeText.rich(TextSpan(text: user.shopName, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)), maxFontSize:16, minFontSize: 13, maxLines: 1, overflow: TextOverflow.ellipsis)) : Container(),
+              user.shopName != null && user.shopName != '' ? Container(
+                width: MediaQuery.of(context).size.width * .28,
+                height: 20,
+                child: Marquee(
+                  text: user.shopName + ' ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                  ),
+                  scrollAxis: Axis.horizontal,
+                  pauseAfterRound: Duration(seconds: 2),
+                  accelerationDuration: Duration(seconds: 5),
+                  decelerationDuration: Duration(milliseconds: 5),
+                  accelerationCurve: Curves.linear,
+                  velocity: 50.0,
+                )
+              ) : Container(),
               Padding(padding: EdgeInsets.all(2)),
               GestureDetector(
                 onTap: () async {
@@ -253,7 +275,19 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                   children: <Widget> [
                     Icon(LineIcons.map_marker, size: 17),
                     Padding(padding: EdgeInsets.all(2)),
-                    Container(width: MediaQuery.of(context).size.width * .33, child: AutoSizeText.rich(TextSpan(text: user.shopAddress + ', ' + user.city + ', ' + user.state + ' ' + user.zipcode), maxFontSize:16, minFontSize: 13, maxLines: 1, overflow: TextOverflow.ellipsis))
+                    Container(
+                      width: MediaQuery.of(context).size.width * .28,
+                      height: 16,
+                      child: Marquee(
+                        text: user.shopAddress + ', ' + user.city + ', ' + user.state + ' ' + user.zipcode + ' ',
+                        scrollAxis: Axis.horizontal,
+                        pauseAfterRound: Duration(seconds: 2),
+                        accelerationDuration: Duration(seconds: 5),
+                        decelerationDuration: Duration(milliseconds: 5),
+                        accelerationCurve: Curves.linear,
+                        velocity: 50.0,
+                      )
+                    )
                   ]
                 )
               ),

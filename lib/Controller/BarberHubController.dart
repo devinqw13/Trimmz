@@ -1293,7 +1293,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                             ),
                           ]
                         ),
-                        trailing: !suggestedBarbers[i].hasAdded ? IconButton(
+                        trailing: globals.token == int.parse(suggestedBarbers[i].id) ? Container(child:Text('')) : !suggestedBarbers[i].hasAdded ? IconButton(
                           onPressed: () async {
                             bool res = await addBarber(context, globals.token, int.parse(suggestedBarbers[i].id));
                             if(res) {

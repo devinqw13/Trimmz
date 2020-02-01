@@ -34,10 +34,10 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, top: 50),
       child: Container(
         padding: EdgeInsets.all(10.0),
-        height: 415,
+        height: MediaQuery.of(context).size.height * .55,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 21, 21, 21),
@@ -77,6 +77,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: TextField(
                     controller: nameController,
+                    autocorrect: false,
                     onChanged: (value) {
                       setState(() {
                         _name = value;
@@ -106,6 +107,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: TextField(
                     controller: priceController,
+                    autocorrect: false,
                     onChanged: (value) {
                       setState(() {
                         _price = value;
@@ -135,6 +137,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: TextField(
                     controller: durationController,
+                    autocorrect: false,
                     onChanged: (value) {
                       setState(() {
                         _duration = value;
@@ -151,20 +154,28 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5.0),
                 ),
-                new Center(
-                  child: GestureDetector(
-                    onTap: () async {
-                      bool res = await removePackage(context, globals.token, int.parse(package.id));
-                      if(res) {
-                        var res = await getBarberPkgs(context, globals.token);
-                        Navigator.pop(context);
-                        widget.updatePackages(res);
-                      }else {
-                        return;
-                      }
-                    },
-                    child: Text('Remove Package', style: TextStyle(color: Colors.red))
-                  )
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: FlatButton(
+                          color: Colors.red,
+                          onPressed: () async {
+                            bool res = await removePackage(context, globals.token, int.parse(package.id));
+                            if(res) {
+                              var res = await getBarberPkgs(context, globals.token);
+                              Navigator.pop(context);
+                              widget.updatePackages(res);
+                            }else {
+                              return;
+                            }
+                          },
+                          child: Text('Remove Package')
+                        )
+                      )
+                    )
+                  ]
                 ),
                 new Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5.0),
