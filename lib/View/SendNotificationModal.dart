@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import '../calls.dart';
+import '../globals.dart' as globals;
 
 class SendNotificationModal extends StatefulWidget {
-  SendNotificationModal({this.addRecipients, this.recipients});
+  SendNotificationModal({this.addRecipients, this.recipients, this.success});
   final ValueChanged addRecipients;
+  final ValueChanged success;
   final List<Map<dynamic, dynamic>> recipients;
 
   @override
@@ -17,6 +20,25 @@ class _SendNotificationModal extends State<SendNotificationModal> {
   void initState() {
     super.initState();
     recipients = widget.recipients ?? [];
+  }
+
+  sendMessage(String message) async {
+    for(var item in recipients) {
+      List tokens = await getNotificationTokens(context, item['id']);
+      for(var token in tokens){
+        Map<String, dynamic> dataMap =  {
+          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          'action': 'BOOK_APPOINTMENT',
+          'title': '${globals.username}',
+          'body': '$message',
+          'sender': '${globals.token}',
+          'recipient': '$token',
+        };
+        await sendPushNotification(context, '${globals.username}', '$message', item['id'], token, dataMap);
+      }
+    }
+    Navigator.pop(context);
+    widget.success(true);
   }
 
   buildRecipients() {
@@ -107,6 +129,11 @@ class _SendNotificationModal extends State<SendNotificationModal> {
                       Container(
                         child: TextField(
                           controller: messageController,
+                          onChanged: (val) {
+                            setState(() {
+                              messageController.text = val;
+                            });
+                          },
                           keyboardType: TextInputType.multiline,
                           maxLines: 8,
                           maxLength: 100,
@@ -124,7 +151,7 @@ class _SendNotificationModal extends State<SendNotificationModal> {
             ),
             Column(
               children: <Widget>[
-                (recipients.length > 0 && (messageController.text != null && messageController.text != '')) ?
+                (recipients.length > 0 && messageController.text.length > 0) ?
                 Row(
                   children: <Widget>[
                     Expanded(
@@ -133,9 +160,9 @@ class _SendNotificationModal extends State<SendNotificationModal> {
                         child: FlatButton(
                           color: Colors.blue,
                           onPressed: () async {
-                            
+                            sendMessage(messageController.text);
                           },
-                          child: Text('Send Message')
+                          child: Text('Send Annoucement')
                         )
                       )
                     )

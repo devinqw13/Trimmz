@@ -7,6 +7,7 @@ import '../functions.dart';
 import '../calls.dart';
 import '../View/SendNotificationModal.dart';
 import '../View/AddNotificationRecipientsModal.dart';
+import 'package:flushbar/flushbar.dart';
 
 class NotificationScreen extends StatefulWidget {
   NotificationScreen({Key key}) : super (key: key);
@@ -87,6 +88,16 @@ class NotificationScreenState extends State<NotificationScreen> {
   sendNotification([var recipients]) {
     showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
       return SendNotificationModal(
+        success: (value) {
+          if(value) {
+            Flushbar(
+              flushbarPosition: FlushbarPosition.BOTTOM,
+              title: "Message Sent",
+              message: "Your message was sent successfully",
+              duration: Duration(seconds: 2),
+            )..show(context);
+          }
+        },
         recipients: recipients,
         addRecipients: (value) {
           showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
@@ -113,7 +124,7 @@ class NotificationScreenState extends State<NotificationScreen> {
             child: new FlatButton(
               padding: EdgeInsets.all(0),
               textColor: Colors.blue,
-              child: Text('Send Message', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),),
+              child: Text('Send Annoucement', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),),
               onPressed: () async {
                 sendNotification();
               },

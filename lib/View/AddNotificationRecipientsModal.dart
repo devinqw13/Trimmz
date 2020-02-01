@@ -90,8 +90,36 @@ class _AddNotificationRecipientsModal extends State<AddNotificationRecipientsMod
                     color: Colors.blue,
                     borderRadius: BorderRadius.circular(5)
                   ),
-                  child: Text(
-                    recipients[i]['username']
+                  child: Row(
+                    children: <Widget>[
+                      Text(
+                        recipients[i]['username']
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            for(var item in suggested) {
+                              if(item.username == recipients[i]['username']) {
+                                setState(() {
+                                  item.selected = false;
+                                });
+                              }
+                            }
+                            if(searched.length > 0) {
+                              for(var item in searched) {
+                                if(item.username == recipients[i]['username']) {
+                                  setState(() {
+                                    item.selected = false;
+                                  });
+                                }
+                              }
+                            }
+                            recipients.removeWhere((item) => item.containsValue(recipients[i]['username']));
+                          });
+                        },
+                        child: Icon(LineIcons.close, size: 15),
+                      )
+                    ]
                   )
                 )
               );
@@ -104,6 +132,7 @@ class _AddNotificationRecipientsModal extends State<AddNotificationRecipientsMod
             onChanged: (val) {
               searchStreamController.add(val);
             },
+            autocorrect: false,
             decoration: InputDecoration(
               hintText: recipients.length > 0 ? '' : 'Search',
               hintStyle: TextStyle(fontStyle: FontStyle.italic),
@@ -207,16 +236,18 @@ class _AddNotificationRecipientsModal extends State<AddNotificationRecipientsMod
                                     activeColor: Colors.blue,
                                     value: searched[i].selected,
                                     onChanged: (value) {
+                                      setState(() {
+                                        searched[i].selected = value;
+                                      });
                                       Map map = {'id': searched[i].token, 'username': searched[i].username};
                                       var res = recipients.where((item) => item.containsValue(searched[i].username));
                                       if(res.length > 0) {
                                         recipients.removeWhere((item) => item.containsValue(searched[i].username));
                                       }else {
                                         recipients.add(map);
+                                        searchRecipientController.clear();
+                                        searched = [];
                                       }
-                                      setState(() {
-                                        searched[i].selected = value;
-                                      });
                                     },
                                   )
                                 ]
