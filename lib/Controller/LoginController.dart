@@ -115,7 +115,7 @@ class LoginScreenState extends State<LoginScreen> {
       child: new ClipRRect(
         borderRadius: new BorderRadius.circular(10.0),
         child: new Image.asset('images/trimmz_icon_t.png',
-          height: 200.0,
+          height: MediaQuery.of(context).size.height * .22,
         )
       ),
     );
@@ -304,7 +304,7 @@ class LoginScreenState extends State<LoginScreen> {
                                     new GestureDetector(
                                       onTap: () {/*_resetPasswordTapped();*/},
                                       child: new Container(
-                                        padding: const EdgeInsets.only(left: 12.0, bottom: 25.0),
+                                        padding: const EdgeInsets.only(left: 12.0, bottom: 10.0),
                                         child: new Text("Forgot Password?",
                                           style: new TextStyle(
                                             fontSize: 13.0,
@@ -320,7 +320,7 @@ class LoginScreenState extends State<LoginScreen> {
                                       },
                                       child: new Container(
                                         padding: const EdgeInsets.only(right: 12.0,
-                                        bottom: 25.0),
+                                        bottom: 10.0),
                                         child: new Text("New User? Click Here",
                                           style: new TextStyle(
                                             fontSize: 13.0,
