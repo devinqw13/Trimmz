@@ -1404,6 +1404,52 @@ Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String use
   }
 }
 
+Future<List<BarberClients>> getSearchClients(BuildContext context, String username) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}?key=search_client&username=$username";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (029)", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  } 
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (029)", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    List<BarberClients> clients = [];
+    for(var item in jsonResponse['clients']){
+      BarberClients client = new BarberClients();
+      client.token = int.parse(item['id']);
+      client.name = item['name'];
+      client.username = item['username'];
+      clients.add(client);
+    }
+
+    return clients;
+  }else {
+    return [];
+  }
+}
+
 Future<List<BarberReviews>> getUserReviews(BuildContext context, int userId) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
@@ -2028,7 +2074,7 @@ Future<List<BarberClients>> getBarberClients(BuildContext context, int token, in
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (041)", "Please try again. If this error continues to occur, please contact support.");
     return [];
-  } 
+  }
   
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (041)", "Please try again.");
@@ -2046,7 +2092,7 @@ Future<List<BarberClients>> getBarberClients(BuildContext context, int token, in
     List<BarberClients> clients = [];
     for(var item in jsonResponse['clients']) {
       BarberClients client = new BarberClients();
-      client.token = item['id'];
+      client.token = int.parse(item['id']);
       client.name = item['name'];
       client.username = item['username'];
 
