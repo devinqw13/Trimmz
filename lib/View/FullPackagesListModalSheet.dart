@@ -57,46 +57,45 @@ class _FullPackagesBottomSheet extends State<FullPackagesBottomSheet> {
                           }
                           else {
                             final i = index ~/ 2;
-                            return new ListTile(
-                              title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget> [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget> [
-                                      Text(packages[i].name,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500
-                                        )
-                                      ),
-                                      Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
-                                        style: TextStyle(
-                                          color: Colors.grey
-                                        )
-                                      )
-                                    ]
-                                  ),
-                                  Row(
-                                    children: <Widget>[
-                                      Container(
-                                        padding: EdgeInsets.all(12),
-                                        child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[900],
-                                          shape: BoxShape.circle
+                            return new GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                                widget.showPackageOptions(packages[i]);
+                              },
+                              child: ListTile(
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget> [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget> [
+                                        Text(packages[i].name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500
+                                          )
                                         ),
-                                      ),
-                                      Padding(padding: EdgeInsets.all(5),),
-                                      GestureDetector(
-                                        onTap: () async {
-                                          Navigator.pop(context);
-                                          widget.showPackageOptions(packages[i]);
-                                        },
-                                        child: Icon(Icons.more_vert)
-                                      )
-                                    ],
-                                  ),
-                                ]
+                                        Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
+                                          style: TextStyle(
+                                            color: Colors.grey
+                                          )
+                                        )
+                                      ]
+                                    ),
+                                    Row(
+                                      children: <Widget>[
+                                        Container(
+                                          padding: EdgeInsets.all(12),
+                                          child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[900],
+                                            shape: BoxShape.circle
+                                          ),
+                                        ),
+                                        Padding(padding: EdgeInsets.all(5)),
+                                      ],
+                                    ),
+                                  ]
+                                )
                               )
                             );
                           }

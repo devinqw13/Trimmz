@@ -64,27 +64,27 @@ class _SendNotificationModal extends State<SendNotificationModal> {
               itemCount: recipients.length,
               itemBuilder: (context, i) {
                 return Center(
-                  child: Container(
-                    margin: EdgeInsets.all(2),
-                    padding: EdgeInsets.only(top: 5, bottom: 5, left: 8, right: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(5)
-                    ),
-                    child: Text(
-                      recipients[i]['username']
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      widget.addRecipients(recipients);
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(2),
+                      padding: EdgeInsets.only(top: 5, bottom: 5, left: 8, right: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(5)
+                      ),
+                      child: Text(
+                        recipients[i]['username']
+                      )
                     )
                   )
                 );
               },
             )
           ),
-          IconButton(
-            icon: Icon(LineIcons.plus,color: Colors.blue),
-            onPressed: () {
-              widget.addRecipients(recipients);
-            },
-          )
         ]
       );
     }

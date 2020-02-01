@@ -92,8 +92,8 @@ class NotificationScreenState extends State<NotificationScreen> {
           if(value) {
             Flushbar(
               flushbarPosition: FlushbarPosition.BOTTOM,
-              title: "Message Sent",
-              message: "Your message was sent successfully",
+              title: "Announcement Sent",
+              message: "Your announcement has been sent successfully",
               duration: Duration(seconds: 2),
             )..show(context);
           }
