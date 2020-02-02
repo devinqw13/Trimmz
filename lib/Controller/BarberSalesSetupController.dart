@@ -10,6 +10,13 @@ import '../calls.dart';
 import '../View/SetAvailabilityModal.dart';
 import '../states.dart' as states;
 import '../View/StateBottomSheetPicker.dart';
+import '../Model/ClientPaymentMethod.dart';
+import 'package:stripe_payment/stripe_payment.dart';
+import '../Calls/StripeConfig.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../functions.dart';
+import '../Calls/FinancialCalls.dart';
+import 'package:progress_hud/progress_hud.dart';
 
 class BarberSalesSetup extends StatefulWidget{
   final String address;
@@ -28,17 +35,29 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
   TextEditingController _addressTextController = new TextEditingController();
   TextEditingController _cityTextController = new TextEditingController();
   TextEditingController _zipcodeTextController = new TextEditingController();
+  TextEditingController _shopNameTextController = new TextEditingController();
   int stateValue;
   String state = '';
   String stateAbr = '';
   List<Packages> packages = [];
   List<Availability> availability = [];
+  ClientPaymentMethod payoutCard;
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
   @override
   void initState() {
     super.initState();
-
+    stripeInit();
     getBarberInfo();
+
+    _progressHUD = new ProgressHUD(
+      backgroundColor: Color.fromARGB(255, 21, 21, 21),
+      color: Colors.blue,
+      containerColor: Colors.transparent,
+      borderRadius: 8.0,
+      loading: false,
+    );
 
     setState(() {
       stateValue = widget.stateValue;
@@ -47,6 +66,17 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
       _addressTextController.text = widget.address;
       _cityTextController.text = widget.city;
       _zipcodeTextController.text = widget.zipcode;
+    });
+  }
+
+  void progressHUD() {
+    setState(() {
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
     });
   }
 
@@ -83,6 +113,7 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
             children: <Widget>[
               Text('Shop Name', style: TextStyle(fontSize: 15)),
               TextField(
+                controller: _shopNameTextController,
                 keyboardType: TextInputType.text,
                 autocorrect: false,
                 style: new TextStyle(
@@ -442,6 +473,167 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
     );
   }
 
+  void setError() {
+
+  }
+
+  addPayoutCard() async {
+    await StripePayment.paymentRequestWithCardForm(
+      CardFormPaymentRequest(),
+    ).then((PaymentMethod paymentMethod) async {
+        progressHUD();
+        var res1 = await spCreateCustomer(context, paymentMethod.id);
+        if(res1.length > 0) {
+          String spCustomerId = res1['id'];
+          var res2 = await spCreatePaymentIntent(context, paymentMethod.id, spCustomerId, '100');
+          if(res2.length > 0) {
+            var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId);
+            if(res3.length > 0) {
+              setGlobals(res3);
+              var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
+              if(res != null) {
+                for(var item in res) {
+                  if(item.id == paymentMethod.id) {
+                    var res = await updatePayoutSettings(context, globals.token, item.id, null);
+                    if(res) {
+                      setState(() {
+                        globals.spPayoutId = paymentMethod.id;
+                        payoutCard = item;
+                      });
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.setString('spPayoutId', paymentMethod.id);
+                    }
+                  }
+                }
+              }
+            }
+          }else {
+            // payment wasn't able to be authorized
+          }
+        }
+        progressHUD();
+    }).catchError(setError);
+  }
+
+  changePayoutCard() async {
+    await StripePayment.paymentRequestWithCardForm(
+      CardFormPaymentRequest(),
+    ).then((PaymentMethod paymentMethod) async {
+      progressHUD();
+      var res1 = await spDetachCustomerFromPM(context, payoutCard.id);
+      if(res1.length > 0) {
+        var res2 = await spAttachCustomerToPM(context, paymentMethod.id, globals.spCustomerId);
+        if(res2.length > 0) {
+          var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2); // return list of cards
+          if(res4 != null) {
+            for(var item in res4) {
+              var res3 = await updatePayoutSettings(context, globals.token, paymentMethod.id, null);
+              if(res3){
+                if(item.id == paymentMethod.id) {
+                  setState(() {
+                    globals.spPayoutId = paymentMethod.id;
+                    payoutCard = item;
+                  });
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setString('spPayoutId', paymentMethod.id);
+                }
+              }
+            }
+          }
+        }
+      }
+      progressHUD();
+    }).catchError(setError);
+  }
+
+  payoutSetup() {
+    if(payoutCard != null) {
+      return new Container(
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.all(5.0),
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          gradient: new LinearGradient(
+            begin: Alignment(0.0, -2.0),
+            colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+          )
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('Direct Deposit', style: TextStyle(fontWeight: FontWeight.bold)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    payoutCard.icon,
+                    Padding(padding: EdgeInsets.all(10)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Padding(padding: EdgeInsets.all(3)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Padding(padding: EdgeInsets.all(3)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                    Padding(padding: EdgeInsets.all(3)),
+                    Text(payoutCard.lastFour)
+                  ]
+                ),
+                FlatButton(
+                  textColor: Colors.blue,
+                  onPressed: () {
+                    changePayoutCard();
+                  },
+                  child: Text('Change')
+                )
+              ]
+            ),
+          ]
+        )
+      );
+    }else {
+      return new Container(
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.all(5.0),
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          gradient: new LinearGradient(
+            begin: Alignment(0.0, -2.0),
+            colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+          )
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('Direct Deposit', style: TextStyle(fontWeight: FontWeight.bold)),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: () {
+                  addPayoutCard();
+                },
+                child: Row(
+                  children: <Widget> [
+                    Icon(LineIcons.plus, size: 15, color: Colors.blue),
+                    Text('Add Card', style: TextStyle(color: Colors.blue))
+                  ]
+                )
+              )
+            )
+          ]
+        )
+      );
+    }
+  }
+
   buildBody() {
     return new Container(
       child: Column(
@@ -452,7 +644,8 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
                 children: <Widget>[
                   shopInfo(),
                   barberPackages(),
-                  barberAvailability()
+                  barberAvailability(),
+                  payoutSetup()
                 ],
               ),
             )
@@ -462,7 +655,14 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
               Expanded(
                 child: new GestureDetector(
                   onTap: () {
-                    
+                    if(_addressTextController.text != widget.address || _cityTextController.text != widget.city || _zipcodeTextController.text != widget.zipcode || _shopNameTextController.text != '') {
+                      
+                      final barberHubScreen = new BarberHubScreen();
+                      Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberHubScreen));
+                    }else {
+                      final barberHubScreen = new BarberHubScreen();
+                      Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberHubScreen));
+                    }
                   },
                   child: Container(
                     margin: EdgeInsets.only(left: 10, right: 10, top: 5),
@@ -512,8 +712,8 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
           actions: <Widget>[
             FlatButton(
               onPressed: () {
-                final homeHubScreen = new BarberHubScreen();
-                Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => homeHubScreen));
+                final barberHubScreen = new BarberHubScreen();
+                Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberHubScreen));
               },
               child: Text('Skip')
             )
@@ -524,7 +724,8 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
           return false;
         }, child: Stack(
             children: <Widget>[
-              buildBody()
+              buildBody(),
+              _progressHUD
             ]
           )
         ),

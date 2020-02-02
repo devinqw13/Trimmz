@@ -228,7 +228,7 @@ class RegisterScreenState extends State<RegisterScreen> with WidgetsBindingObser
           )
         ),
         Container(
-          width: size * .6,
+          width: size * .7,
           child: Row(
             children: <Widget>[
               Radio(
@@ -270,7 +270,7 @@ class RegisterScreenState extends State<RegisterScreen> with WidgetsBindingObser
                   });
                 },
                 child: Text(
-                  'Barber / Sales',
+                  'Barber/Merchant',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16

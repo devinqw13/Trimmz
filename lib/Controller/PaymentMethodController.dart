@@ -52,7 +52,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
       if(globals.spCustomerId != '') {
         var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
         if(res != null) {
-          if(res != null) {
+          if(res.length > 0) {
             for(var item in res) {
               if(item.id == globals.spPaymentId) {
                 setState(() {
