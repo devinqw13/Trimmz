@@ -243,6 +243,23 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              user.name.length > 12 ? Container(
+                width: MediaQuery.of(context).size.width * .33,
+                height: 20,
+                child: Marquee(
+                  text: user.name + ' ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20
+                  ),
+                  scrollAxis: Axis.horizontal,
+                  pauseAfterRound: Duration(seconds: 2),
+                  accelerationDuration: Duration(seconds: 5),
+                  decelerationDuration: Duration(milliseconds: 5),
+                  accelerationCurve: Curves.linear,
+                  velocity: 50.0,
+                )
+              ): 
               Text(user.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               Padding(padding: EdgeInsets.all(2)),
               user.shopName != null && user.shopName != '' ? Container(
