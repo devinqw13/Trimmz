@@ -262,14 +262,15 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
               ): 
               Text(user.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               Padding(padding: EdgeInsets.all(2)),
-              user.shopName != null && user.shopName != '' ? Container(
-                width: MediaQuery.of(context).size.width * .28,
+              user.shopName != null && user.shopName != '' ? user.shopName.length > 16 ? Container(
+                width: MediaQuery.of(context).size.width * .33,
                 height: 20,
                 child: Marquee(
                   text: user.shopName + ' ',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic,
+                    color: Colors.grey
                   ),
                   scrollAxis: Axis.horizontal,
                   pauseAfterRound: Duration(seconds: 2),
@@ -278,7 +279,8 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                   accelerationCurve: Curves.linear,
                   velocity: 50.0,
                 )
-              ) : Container(),
+              ):
+              Text(user.shopName, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)) : Container(),
               Padding(padding: EdgeInsets.all(2)),
               GestureDetector(
                 onTap: () async {
