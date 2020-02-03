@@ -13,6 +13,7 @@ import 'dart:ui';
 import '../Model/Packages.dart';
 import 'ReviewController.dart';
 import 'package:marquee/marquee.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BarberProfileV2Screen extends StatefulWidget {
   final token;
@@ -262,8 +263,9 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
               Padding(padding: EdgeInsets.all(2)),
               GestureDetector(
                 onTap: () async {
-                  //TODO: click to open maps ***THROWS AN ERROR****
-                  // String url = "http://maps.apple.com/?address=${user.shopAddress}+${user.city}+${user.state}";
+                  //TODO: Closes app when you click -- error
+                  // String address = user.shopAddress + '+' + user.city + '+' + user.state;
+                  // String url = "http://maps.apple.com/?daddr=$address";
                   // if (await canLaunch(url)) {
                   //   await launch(url);
                   // } else {

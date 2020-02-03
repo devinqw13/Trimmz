@@ -541,14 +541,15 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                 searchStreamController.add(val);
               },
               autocorrect: false,
-              textInputAction: TextInputAction.search, 
+              textInputAction: TextInputAction.done, 
               decoration: new InputDecoration(
+                prefixIcon: Icon(LineIcons.search, color: Colors.grey),
                 contentPadding: EdgeInsets.all(8.0),
                 hintText: searchTabIndex == 0 ? 'Search by username' : 'Search by name',
                 fillColor: globals.darkModeEnabled ? Colors.grey[900] : Colors.grey[100],
                 filled: true,
                 hintStyle: TextStyle(
-                  color: globals.darkModeEnabled ? Colors.white : Colors.black
+                  color: Colors.grey
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
