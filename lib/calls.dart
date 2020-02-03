@@ -504,14 +504,10 @@ Future<Map<DateTime, List<dynamic>>> getBarberAppointments(BuildContext context,
   Map jsonResponse = {};
   http.Response response;
 
-  var jsonMap = {
-    "userid" : userid,
-  };
-
-  String url = "${globals.baseUrl}getBarberApt/";
+  String url = "${globals.baseUrl}?key=get_barber_appointments&token=$userid";
 
   try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (017)", "Please try again. If this error continues to occur, please contact support.");
     return {};
@@ -538,9 +534,9 @@ Future<Map<DateTime, List<dynamic>>> getBarberAppointments(BuildContext context,
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(!apt.containsKey(date)) {
-        apt[date] = [{'id': item['id'], 'clientid': item['client_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']}];
+        apt[date] = [{'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']}];
       }else {
-        apt[date].add({'id': item['id'], 'clientid': item['client_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']});
+        apt[date].add({'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']});
       }
     }
 
@@ -1625,9 +1621,9 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(!apt.containsKey(date)) {
-        apt[date] = [{'id': item['id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']}];
+        apt[date] = [{'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']}];
       }else {
-        apt[date].add({'id': item['id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']});
+        apt[date].add({'id': item['id'], 'barberId': item['barber_id'], 'clientId': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']});
       }
     }
 

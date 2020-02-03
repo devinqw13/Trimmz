@@ -30,6 +30,11 @@ class AppointmentListState extends State<AppointmentList> {
     if(apt == null){
       res = await getUserAppointments(context, globals.token);
     }else {
+      setState(() {
+        past = [];
+        upcoming = [];
+        pending = [];
+      });
       res = apt;
     }
 
@@ -54,23 +59,13 @@ class AppointmentListState extends State<AppointmentList> {
     showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
       return AppointmentOptionsBottomSheet(
         appointment: appointment,
-        showCancel: (val) async {
-          if(val){
-            showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-              return CancelOptionsBottomSheet(
-                appointment: appointment,
-                setAppointmentList: (value) {
-                  setState(() {
-                    initChecks(value);
-                  });
-                },
-                showAppointmentDetails: (value) {
-                  showAppointmentDetails(value);
-                },
-              );
-            });
-          }
-        },
+        showCancel: (val) async {},
+        updateAppointments: (value) {
+          setState(() {
+            appointments = value;
+          });
+          initChecks(value);
+        }
       );
     });
   }

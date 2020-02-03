@@ -4,11 +4,12 @@ import '../globals.dart' as globals;
 import '../calls.dart';
 
 class AppointmentOptionsBottomSheet extends StatefulWidget {
-  AppointmentOptionsBottomSheet({@required this.appointment, @required this.showCancel, this.showFullCalendar, this.showFull});
+  AppointmentOptionsBottomSheet({@required this.appointment, @required this.showCancel, this.showFullCalendar, this.showFull, this.updateAppointments});
   final appointment;
   final ValueChanged showCancel;
   final bool showFull;
   final ValueChanged showFullCalendar;
+  final ValueChanged updateAppointments;
 
   @override
   _AppointmentOptionsBottomSheet createState() => _AppointmentOptionsBottomSheet();
@@ -23,6 +24,37 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
   void initState() {
     appointment = widget.appointment;
     super.initState();
+    print(appointment);
+  }
+
+  clientCancel(int barberId, int appointmentId) async {
+    var res =  await getBarberPolicies(context, barberId);
+    if(res.cancelEnabled) {
+      // TODO: charge customer the barbers cancelFee
+    }else {
+      var res = await updateAppointmentStatus(context, appointmentId, 2);
+      if(res) {
+        List tokens = await getNotificationTokens(context, barberId);
+        for(var token in tokens){
+          Map<String, dynamic> dataMap =  {
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'action': 'APPOINTMENT',
+            'title': 'Appointment Cancelled',
+            'body': '${globals.username} has cancelled their appointment with you',
+            'sender': '${globals.token}',
+            'recipient': '$barberId',
+            'appointment': appointment,
+          };
+          await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled their appointment with you.', int.parse(appointment['clientid']), token, dataMap);
+        }
+        setState(() {
+          appointment['updated'] = DateTime.now().toString();
+          appointment['status'] = '2';
+        });
+        var res1 = await getUserAppointments(context, globals.token);
+        widget.updateAppointments(res1);
+      }
+    }
   }
 
   @override
@@ -297,16 +329,20 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             ]
                                           )
                                         )
-                                      ) : (globals.userType != 2 && appointment['status'] == '0' && DateTime.now().isBefore(DateTime.parse(appointment['full_time']))) ? Container(
-                                        child: RichText(
-                                          softWrap: true,
-                                          text: new TextSpan(
-                                            children: <TextSpan> [
-                                              new TextSpan(text: 'Appointment coming soon', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-                                            ]
+                                      ) : (globals.userType != 2 && appointment['status'] == '0' && DateTime.now().isBefore(DateTime.parse(appointment['full_time']))) ? Row(
+                                      children: <Widget> [
+                                        Expanded(
+                                          child: Container(
+                                            child: RaisedButton(
+                                              onPressed: () {
+                                                clientCancel(int.parse(appointment['barberid']), int.parse(appointment['id']));
+                                              },
+                                              child: Text('Cancel Appointment'),
+                                            )
                                           )
                                         )
-                                      ) : (globals.userType != 2 && appointment['status'] == '3') ? Container(
+                                      ]
+                                    ) : (globals.userType != 2 && appointment['status'] == '3') ? Container(
                                         child: RichText(
                                           softWrap: true,
                                           text: new TextSpan(
