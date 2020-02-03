@@ -57,7 +57,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   margin: EdgeInsets.only(bottom: 10),
                   child: Text(
-                    'Edit Package',
+                    'Edit Service',
                     style: TextStyle(
                       fontSize: 19,
                       color: Colors.blue
@@ -171,7 +171,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                               return;
                             }
                           },
-                          child: Text('Remove Package')
+                          child: Text('Remove Service')
                         )
                       )
                     )
@@ -196,12 +196,11 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                           var res = await getBarberPkgs(context, globals.token);
                           Navigator.pop(context);
                           widget.updatePackages(res);
-                          //results = res;
                         }else {
                           return;
                         }
                       },
-                      child: Text('Update Package')
+                      child: Text('Update Service')
                     )
                   )
                 )

@@ -436,7 +436,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             bool isNull = false;
             String start;
             String end;
-            final df = new DateFormat('hh:mm a');
+            final df = new DateFormat('h:mm a');
             if(availability[i].start != null && availability[i].end != null) {
               if(availability[i].start == '00:00:00' && availability[i].end == '00:00:00') {
                 isNull = true;
@@ -796,7 +796,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                       Row(
                         children: <Widget>[
                           Text(
-                            'Packages',
+                            'Services',
                             style: TextStyle(
                               fontSize: 17.0,
                               fontWeight: FontWeight.w400,
@@ -869,38 +869,55 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                         }
                         else {
                           final i = index ~/ 2;
-                          return new ListTile(
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget> [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget> [
-                                    Text(packages[i].name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500
-                                      )
-                                    ),
-                                    Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
-                                      style: TextStyle(
-                                        color: Colors.grey
-                                      )
-                                    )
-                                  ]
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    Container(
-                                      padding: EdgeInsets.all(12),
-                                      child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[900],
-                                        shape: BoxShape.circle
+                          return new GestureDetector(
+                            onTap: () {
+                              showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                                return PackageOptionsBottomSheet(
+                                  package: packages[i],
+                                  updatePackages: (value) {
+                                    setState(() {
+                                      packages = value;
+                                    });
+                                  },
+                                  showPackagesList: (value) {
+                                    
+                                  },
+                                );
+                              });
+                            },
+                            child: ListTile(
+                              title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget> [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget> [
+                                      Text(packages[i].name,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500
+                                        )
                                       ),
-                                    )
-                                  ],
-                                )
-                              ]
+                                      Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
+                                        style: TextStyle(
+                                          color: Colors.grey
+                                        )
+                                      )
+                                    ]
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Container(
+                                        padding: EdgeInsets.all(12),
+                                        child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[900],
+                                          shape: BoxShape.circle
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                ]
+                              )
                             )
                           );
                         }
