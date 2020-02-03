@@ -10,7 +10,7 @@ import 'RegisterController.dart';
 import 'dart:ui';
 import '../functions.dart';
 import 'package:line_icons/line_icons.dart';
-//TODO: FIX ERROR WITH SMALLER SCREENS ON LOGIN
+
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super (key: key);
 

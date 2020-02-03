@@ -6,7 +6,6 @@ import '../globals.dart' as globals;
 import '../View/Widgets.dart';
 import '../Model/availability.dart';
 import '../calls.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:line_icons/line_icons.dart';
 import '../Model/ClientBarbers.dart';
 import 'package:flushbar/flushbar.dart';
