@@ -193,16 +193,18 @@ class _AddNotificationRecipientsModal extends State<AddNotificationRecipientsMod
                             color: Colors.transparent,
                             child: GestureDetector(
                               onTap: () {
+                                setState(() {
+                                  searched[i].selected = !searched[i].selected;
+                                });
                                 Map map = {'id': searched[i].token, 'username': searched[i].username};
                                 var res = recipients.where((item) => item.containsValue(searched[i].username));
                                 if(res.length > 0) {
                                   recipients.removeWhere((item) => item.containsValue(searched[i].username));
                                 }else {
                                   recipients.add(map);
+                                  searchRecipientController.clear();
+                                  searched = [];
                                 }
-                                setState(() {
-                                  searched[i].selected = !searched[i].selected;
-                                });
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
