@@ -236,6 +236,7 @@ class ReviewControllerState extends State<ReviewController> {
                       itemCount: 5,
                       itemSize: 17.0,
                       direction: Axis.horizontal,
+                      unratedColor: Colors.white70,
                     ),
                   ]
                 )
