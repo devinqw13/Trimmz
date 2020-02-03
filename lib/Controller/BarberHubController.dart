@@ -1129,8 +1129,8 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                                           softWrap: true,
                                           text: new TextSpan(
                                             children: <TextSpan> [
-                                              new TextSpan(text: suggestedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              new TextSpan(text: '@'+suggestedBarbers[i].username, style: TextStyle(fontSize: 12,color: Colors.grey)),
+                                              new TextSpan(text: searchedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              new TextSpan(text: '@'+searchedBarbers[i].username, style: TextStyle(fontSize: 12,color: Colors.grey)),
                                             ]
                                           )
                                         )
@@ -1430,7 +1430,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               decoration: new InputDecoration(
                 prefixIcon: Icon(LineIcons.search, color: Colors.grey),
                 contentPadding: EdgeInsets.all(8.0),
-                hintText: searchTabIndex == 0 ? 'Search by username' : 'Search by name',
+                hintText: 'Search',
                 fillColor: globals.darkModeEnabled ? Colors.grey[900] : Colors.grey[100],
                 filled: true,
                 hintStyle: TextStyle(
