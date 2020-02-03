@@ -24,7 +24,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
   void initState() {
     appointment = widget.appointment;
     super.initState();
-    print(appointment);
   }
 
   clientCancel(int barberId, int appointmentId) async {
