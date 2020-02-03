@@ -400,7 +400,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   }
 
   bookingAppointment(int userId, String barberId, int price, DateTime time, String packageId, int tip) async {
-    if(userId == null || barberId == null || price == null || time == null || packageId == null || tip == null) {
+    if(userId == null || barberId == null || price == null || time == null || packageId == null || tip == null || paymentCard == null) {
       showErrorDialog(context, 'Missing Information', 'Enter/Select all required information');
       return;
     }
@@ -742,7 +742,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                 ],
                               ) : 
                               Container(
-                                margin: EdgeInsets.only(top: 10),
+                                margin: EdgeInsets.only(top: 10, bottom: 10),
                                 child: GestureDetector(
                                   onTap: () {
                                     addPaymentMethod();
