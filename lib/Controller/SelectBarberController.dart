@@ -95,8 +95,26 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
                 child: new Center(
                   child: new FlatButton(
                     onPressed: () {
-                      final bookingScreen = new BookingController(barberInfo: barber); 
-                      Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
+                      if(barber is SuggestedBarbers) {
+                        ClientBarbers newBarber = new ClientBarbers();
+                        newBarber.id = barber.id;
+                        newBarber.name = barber.name;
+                        newBarber.phone = barber.phone;
+                        newBarber.rating = barber.rating;
+                        newBarber.shopAddress = barber.shopAddress;
+                        newBarber.shopName = barber.shopName;
+                        newBarber.state = barber.state;
+                        newBarber.username = barber.username;
+                        newBarber.zipcode = barber.zipcode;
+                        newBarber.email = barber.email;
+                        newBarber.city = barber.city;
+
+                        final bookingScreen = new BookingController(barberInfo: newBarber); 
+                        Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
+                      }else {
+                        final bookingScreen = new BookingController(barberInfo: barber); 
+                        Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
+                      }
                     },
                     child: Text('Book Appointment', 
                       style: TextStyle(
@@ -153,12 +171,16 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
             childAspectRatio: 0.9
           ),
           itemBuilder: (context, index) {
-            return new Card(
-              child: _buildGridTile(searchBarbers[index], index, 1.1),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(2.0))
-              ),
-            );
+            if(searchBarbers[index].id != globals.token.toString()) {
+              return new Card(
+                child: _buildGridTile(searchBarbers[index], index, 1.1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(2.0))
+                ),
+              );
+            }else {
+              return Container();
+            }
           },
         );
       }else {
