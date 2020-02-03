@@ -466,7 +466,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                           showSetAvailableTime(context, availability[i]);
                         },
                         child: Text(
-                          isNull ? 'Closed' : start + " to " + end,
+                          isNull ? 'Closed' : start + " - " + end,
                           style: TextStyle(
                             fontSize: 17.0
                           ),
