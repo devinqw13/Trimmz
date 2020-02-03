@@ -8,6 +8,8 @@ import '../globals.dart' as globals;
 import 'PaymentMethodController.dart';
 import 'BarberSalesSetupController.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:stream_transform/stream_transform.dart';
+import 'dart:async';
 
 class RegisterStep3Screen extends StatefulWidget {
   final String username;
@@ -29,7 +31,60 @@ class RegisterStep3Screen extends StatefulWidget {
 class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBindingObserver {
   TextEditingController _registerUserPasswordController = new TextEditingController();
   TextEditingController _registerUserPassword2Controller = new TextEditingController();
+  StreamController<String> passwordStreamController = StreamController();
   bool showPassword = false;
+  bool charLength = false;
+  bool upperLetter = false;
+  bool number = false;
+  bool specChar = false;
+
+  void initState() {
+    super.initState();
+
+    passwordStreamController.stream
+    .debounce(Duration(seconds: 1))
+    .listen((s) => _passwordCheck(s));
+  }
+
+  _passwordCheck(String string) async {
+    if(RegExp(r'^(?=.*\d)').hasMatch(string)) {
+      setState(() {
+        number = true;
+      });
+    }else {
+      setState(() {
+        number = false;
+      });
+    }
+    if(RegExp(r'^(?=.*[#$^+=!*()@%&])').hasMatch(string)) {
+      setState(() {
+        specChar = true;
+      });
+    }else {
+      setState(() {
+        specChar = false;
+      });
+    }
+    if(RegExp(r'^.{8,}').hasMatch(string)) {
+      setState(() {
+        charLength = true;
+      });
+    }else {
+      setState(() {
+        charLength = false;
+      });
+    }
+    if(RegExp(r'^(?=.*[a-z])(?=.*[A-Z])').hasMatch(string)) {
+      setState(() {
+        upperLetter = true;
+      });
+    }else {
+      setState(() {
+        upperLetter = false;
+      });
+    }
+    // bool passwordIsValid = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,}').hasMatch(string);
+  }
 
   buildPasswordTextField(double size) {
     return new Column(
@@ -47,6 +102,9 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
           width: size * .6,
           child: TextField(
             controller: _registerUserPasswordController,
+            onChanged: (val) {
+              passwordStreamController.add(val);
+            },
             keyboardType: TextInputType.visiblePassword,
             obscureText: showPassword ? false : true,
             autocorrect: false,
@@ -317,6 +375,38 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
     }
   }
 
+  passwordChecks() {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Must be at least 8 characters',
+          style: TextStyle(
+            color: _registerUserPasswordController.text == '' ? Colors.white : charLength ? Colors.green : Colors.red,
+          ),
+        ),
+        Text(
+          'Must contain an uppercase letter',
+          style: TextStyle(
+            color: _registerUserPasswordController.text == '' ? Colors.white : upperLetter ? Colors.green : Colors.red,
+          ),
+        ),
+        Text(
+          'Must contain a number',
+          style: TextStyle(
+            color: _registerUserPasswordController.text == '' ? Colors.white : number ? Colors.green : Colors.red,
+          ),
+        ),
+        Text(
+          'Must contain a special character',
+          style: TextStyle(
+            color: _registerUserPasswordController.text == '' ? Colors.white : specChar ? Colors.green : Colors.red,
+          ),
+        ),
+      ],
+    );
+  }
+
   _buildRegisterBody() {
     double screenWidth = MediaQuery.of(context).size.width;
     return new Stack(
@@ -356,13 +446,15 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
                                     fontSize: 25
                                   ),
                                 ),
-                                Padding(padding: EdgeInsets.all(10),),
+                                Padding(padding: EdgeInsets.all(10)),
                                 Text(
                                   'Signing up for your Trimmz account',
                                   style: TextStyle(
                                     color: Colors.grey,
                                   ),
                                 ),
+                                Padding(padding: EdgeInsets.all(5)),
+                                passwordChecks(),
                                 Center(
                                   child: Column(
                                     children: <Widget>[
