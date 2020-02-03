@@ -51,20 +51,14 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
           headerAlignment: ExpandablePanelHeaderAlignment.center,
           collapsed: Container(
            padding: EdgeInsets.only(left: 15.0),
-            child: Row( //TODO: ADD RichTEXT
-              children: <Widget>[
-                Text(
-                  'Upcoming Appointment: ',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: MediaQuery.of(context).size.height * .017
-                  )
-                ),
-                Text(
-                  appointmentTime,
-                  overflow: TextOverflow.ellipsis,
-                )
-              ],
+            child: RichText(
+              softWrap: true,
+              text: new TextSpan(
+                children: <TextSpan> [
+                  new TextSpan(text: 'Upcoming Appointment: ', style: new TextStyle(fontWeight: FontWeight.bold)),
+                  new TextSpan(text: appointmentTime),
+                ]
+              )
             )
           ),
           expanded: Container(
