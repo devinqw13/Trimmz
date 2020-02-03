@@ -16,6 +16,7 @@ class SendNotificationModal extends StatefulWidget {
 class _SendNotificationModal extends State<SendNotificationModal> {
   List<Map<dynamic, dynamic>> recipients = [];
   TextEditingController messageController = new TextEditingController();
+  bool isEmpty = true;
 
   void initState() {
     super.initState();
@@ -130,9 +131,15 @@ class _SendNotificationModal extends State<SendNotificationModal> {
                         child: TextField(
                           controller: messageController,
                           onChanged: (val) {
-                            setState(() {
-                              messageController.text = val;
-                            });
+                            if(val != '') {
+                              setState(() {
+                                isEmpty = false;
+                              });
+                            }else {
+                              setState(() {
+                                isEmpty = true;
+                              });
+                            }
                           },
                           keyboardType: TextInputType.multiline,
                           maxLines: 8,
@@ -151,7 +158,7 @@ class _SendNotificationModal extends State<SendNotificationModal> {
             ),
             Column(
               children: <Widget>[
-                (recipients.length > 0 && messageController.text.length > 0) ?
+                (recipients.length > 0 && !isEmpty) ?
                 Row(
                   children: <Widget>[
                     Expanded(
