@@ -1704,7 +1704,8 @@ Future<Map> sendPushNotification(BuildContext context, String title, String body
   Map<String, dynamic> jsonMap = {
     'notification': {
       'body': '$body',
-      'title': '$title'
+      'title': '$title',
+      'sound': 'default'
     },
     'priority': 'high',
     'data': data ?? {'click_action': 'FLUTTER_NOTIFICATION_CLICK'},
