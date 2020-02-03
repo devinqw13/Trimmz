@@ -239,110 +239,115 @@ class LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.black,
         resizeToAvoidBottomPadding: true,
         body: new Container(
-          child: Stack(
-            children: <Widget>[
-              new ConstrainedBox(
-                constraints: const BoxConstraints.expand(),
-                child: new Image.asset(
-                  'images/barberBackground.png',
-                  fit: BoxFit.cover,
-                )
-              ),
-              new Center(
-                child: new ClipRect(
-                  child: new BackdropFilter(
-                    filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                    child: new Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      decoration: new BoxDecoration(
-                        color: Colors.black.withOpacity(0.85)
-                      ),
-                      child: new Stack(
-                        children: <Widget>[
-                          new Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              new Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  titleSection
-                                ],
-                              ),
-                              new Column(
-                                children: <Widget>[
-                                  new Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      new Container(
-                                        child: new Column(
-                                          children: <Widget>[
-                                            new Container(
-                                              width: screenWidth * .9,
-                                              child: new Column(
-                                                children: <Widget>[
-                                                  usernameTextField(),
-                                                  passwordTextField
-                                                ],
-                                              )
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  buildLoginButton()
-                                ],
-                              ),
-                              new Container(
-                                padding: const EdgeInsets.all(12.0),
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+          child: new WillPopScope(
+            onWillPop: () async {
+              return false;
+            },
+            child: new Stack(
+              children: <Widget>[
+                new ConstrainedBox(
+                  constraints: const BoxConstraints.expand(),
+                  child: new Image.asset(
+                    'images/barberBackground.png',
+                    fit: BoxFit.cover,
+                  )
+                ),
+                new Center(
+                  child: new ClipRect(
+                    child: new BackdropFilter(
+                      filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                      child: new Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        decoration: new BoxDecoration(
+                          color: Colors.black.withOpacity(0.85)
+                        ),
+                        child: new Stack(
+                          children: <Widget>[
+                            new Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                new Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    new GestureDetector(
-                                      onTap: () {/*_resetPasswordTapped();*/},
-                                      child: new Container(
-                                        padding: const EdgeInsets.only(left: 12.0, bottom: 10.0),
-                                        child: new Text("Forgot Password?",
-                                          style: new TextStyle(
-                                            fontSize: 13.0,
-                                            color: Colors.white
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    new GestureDetector(
-                                      onTap: () {
-                                        final registerScreen = new RegisterScreen();
-                                        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => registerScreen));
-                                      },
-                                      child: new Container(
-                                        padding: const EdgeInsets.only(right: 12.0,
-                                        bottom: 10.0),
-                                        child: new Text("New User? Click Here",
-                                          style: new TextStyle(
-                                            fontSize: 13.0,
-                                            color: Colors.white
-                                          ),
-                                        ),
-                                      )
-                                    )
+                                    titleSection
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                          _progressHUD
-                      ]
-                    )
+                                new Column(
+                                  children: <Widget>[
+                                    new Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        new Container(
+                                          child: new Column(
+                                            children: <Widget>[
+                                              new Container(
+                                                width: screenWidth * .9,
+                                                child: new Column(
+                                                  children: <Widget>[
+                                                    usernameTextField(),
+                                                    passwordTextField
+                                                  ],
+                                                )
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    buildLoginButton()
+                                  ],
+                                ),
+                                new Container(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisSize: MainAxisSize.max,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: <Widget>[
+                                      new GestureDetector(
+                                        onTap: () {/*_resetPasswordTapped();*/},
+                                        child: new Container(
+                                          padding: const EdgeInsets.only(left: 12.0, bottom: 10.0),
+                                          child: new Text("Forgot Password?",
+                                            style: new TextStyle(
+                                              fontSize: 13.0,
+                                              color: Colors.white
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      new GestureDetector(
+                                        onTap: () {
+                                          final registerScreen = new RegisterScreen();
+                                          Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => registerScreen));
+                                        },
+                                        child: new Container(
+                                          padding: const EdgeInsets.only(right: 12.0,
+                                          bottom: 10.0),
+                                          child: new Text("New User? Click Here",
+                                            style: new TextStyle(
+                                              fontSize: 13.0,
+                                              color: Colors.white
+                                            ),
+                                          ),
+                                        )
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            _progressHUD
+                        ]
+                      )
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        )
+            ],
+          )
+          )
         )
       )
     );

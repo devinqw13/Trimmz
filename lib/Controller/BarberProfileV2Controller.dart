@@ -180,11 +180,13 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        var res = await addBarber(context, globals.token, int.parse(user.id));
-                        if(res) {
-                          setState(() {
-                            hasAdded = true;
-                          });
+                        if(!hasAdded){
+                          var res = await addBarber(context, globals.token, int.parse(user.id));
+                          if(res) {
+                            setState(() {
+                              hasAdded = true;
+                            });
+                          }
                         }
                         final bookingScreen = new BookingController(barberInfo: user); 
                         Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
@@ -465,7 +467,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         appBar: new AppBar(
           title: new Text('@'+user.username)
         ),

@@ -661,11 +661,10 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                   children: <Widget>[
                     Text('Appointment Requests', style: TextStyle(fontWeight: FontWeight.w400)),
                     Container(
-                      width: 30.0,
-                      height: 30.0,
+                      padding: EdgeInsets.all(9),
                       decoration: new BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.grey[900],
+                        color: Colors.blue
                       ),
                       child: Center(child:Text(appointmentReq.length.toString(), textAlign: TextAlign.center))
                     )
@@ -880,7 +879,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                                     });
                                   },
                                   showPackagesList: (value) {
-                                    
+
                                   },
                                 );
                               });
