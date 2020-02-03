@@ -61,7 +61,7 @@ class AboutControllerState extends State<AboutController> {
               new Center(
                 child: new Text("App Version: $version",
                   style: new TextStyle(
-                    fontSize: 16.0,
+                    color: Colors.grey[800]
                   )
                 ),
               ),
