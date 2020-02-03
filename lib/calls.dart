@@ -1632,7 +1632,7 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
     return {};
   }
 }
-//TODO: TEST THIS CALL
+
 Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [String cancelFee, bool isCancelPercent, int cancelTime, String noShowFee, bool isNoShowPercent, bool cancelEnabled, bool noShowEnabled]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
