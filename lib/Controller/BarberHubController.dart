@@ -1289,15 +1289,15 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                           onPressed: () async {
                             bool res = await addBarber(context, globals.token, int.parse(searchedBarbers[i].id));
                             if(res) {
+                              setState(() {
+                                searchedBarbers[i].hasAdded = true;
+                              });
                               Flushbar(
                                 flushbarPosition: FlushbarPosition.BOTTOM,
                                 title: "Barber Added",
                                 message: "You can now book an appointment with this barber",
                                 duration: Duration(seconds: 2),
                               )..show(context);
-                              setState(() {
-                                searchedBarbers[i].hasAdded = true;
-                              });
                             }
                           },
                           color: Colors.green,
@@ -1307,15 +1307,15 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                           onPressed: () async {
                             bool res = await removeBarber(context, globals.token, int.parse(searchedBarbers[i].id));
                             if(res) {
+                              setState(() {
+                                searchedBarbers[i].hasAdded = false;
+                              });
                               Flushbar(
                                 flushbarPosition: FlushbarPosition.BOTTOM,
                                 title: "Barber Removed",
                                 message: "This babrber has been removed from your list",
                                 duration: Duration(seconds: 2),
                               )..show(context);
-                              setState(() {
-                                searchedBarbers[i].hasAdded = false;
-                              });
                             }
                           },
                           color: Colors.red,
