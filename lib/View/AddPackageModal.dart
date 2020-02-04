@@ -253,7 +253,7 @@ class _AddPackageBottomSheet extends State<AddPackageBottomSheet> {
                     ),
                     Column(
                       children: <Widget> [
-                        (_name != '' || _price != '' || _duration != '') ?
+                        (_name != '' && _price != '' && _duration != '') ?
                         Row(
                           children: <Widget>[
                             Expanded(
