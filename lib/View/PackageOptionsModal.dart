@@ -177,49 +177,50 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                     )
                   ]
                 ),
-                new Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5.0),
-                ),
               ],
             ),
-            (_name != '' || _price != '' || _duration != '') ?
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: FlatButton(
-                      color: Colors.blue,
-                      onPressed: () async {
-                        var res = await updatePackage(context, globals.token, int.parse(package.id), nameController.text != '' ? nameController.text : null, priceController.text != '' ? int.parse(priceController.text) : null, durationController.text != '' ? int.parse(durationController.text) : null);
-                        if(res) {
-                          var res = await getBarberPkgs(context, globals.token);
-                          Navigator.pop(context);
-                          widget.updatePackages(res);
-                        }else {
-                          return;
-                        }
-                      },
-                      child: Text('Update Service')
+            Column(
+              children: <Widget> [
+                (_name != '' || _price != '' || _duration != '') ?
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: FlatButton(
+                          color: Colors.blue,
+                          onPressed: () async {
+                            var res = await updatePackage(context, globals.token, int.parse(package.id), nameController.text != '' ? nameController.text : null, priceController.text != '' ? int.parse(priceController.text) : null, durationController.text != '' ? int.parse(durationController.text) : null);
+                            if(res) {
+                              var res = await getBarberPkgs(context, globals.token);
+                              Navigator.pop(context);
+                              widget.updatePackages(res);
+                            }else {
+                              return;
+                            }
+                          },
+                          child: Text('Update Service')
+                        )
+                      )
                     )
-                  )
-                )
-              ]
-            ) : Container(),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: FlatButton(
-                      color: Colors.blue,
-                      onPressed: () async {
-                        Navigator.pop(context);
-                        widget.showPackagesList(true);
-                      },
-                      child: Text('Cancel')
+                  ]
+                ) : Container(),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: FlatButton(
+                          color: Colors.blue,
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            widget.showPackagesList(true);
+                          },
+                          child: Text('Cancel')
+                        )
+                      )
                     )
-                  )
+                  ]
                 )
               ]
             )
