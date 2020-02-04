@@ -660,12 +660,12 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                             overflow: TextOverflow.ellipsis,
                             text: new TextSpan(
                               children: <TextSpan> [
-                                new TextSpan(text: 'Actions Required ', style: new TextStyle(fontWeight: FontWeight.bold)),
+                                new TextSpan(text: 'Actions Required ', style: new TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
                               ]
                             )
                           )
                         ),
-                        Icon(Icons.arrow_drop_down)
+                        Icon(Icons.arrow_drop_down, color: Colors.blue)
                       ],
                     ),
                   ),
@@ -689,12 +689,12 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                                 overflow: TextOverflow.ellipsis,
                                 text: new TextSpan(
                                   children: <TextSpan> [
-                                    new TextSpan(text: 'Actions Required', style: new TextStyle(fontWeight: FontWeight.bold)),
+                                    new TextSpan(text: 'Actions Required', style: new TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
                                   ]
                                 )
                               )
                             ),
-                            Icon(Icons.arrow_drop_up)
+                            Icon(Icons.arrow_drop_up, color: Colors.blue)
                           ],
                         ),
                       ),

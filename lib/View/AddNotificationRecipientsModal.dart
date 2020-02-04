@@ -177,7 +177,7 @@ class _AddNotificationRecipientsModal extends State<AddNotificationRecipientsMod
                   ),
                   Container(
                     margin: EdgeInsets.only(bottom: 10),
-                    child: searched.length > 0 ? Text('Searched', style: TextStyle(fontWeight: FontWeight.bold)) : Text('Suggested', style: TextStyle(fontWeight: FontWeight.bold))
+                    child: searched.length > 0 ? Text('Searched', style: TextStyle(fontWeight: FontWeight.bold)) : Text('Your Clients', style: TextStyle(fontWeight: FontWeight.bold))
                   ),
                   searched.length > 0 ? Expanded(
                     child: SingleChildScrollView(
