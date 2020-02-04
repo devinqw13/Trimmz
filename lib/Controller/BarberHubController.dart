@@ -36,6 +36,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
 import 'package:expandable/expandable.dart';
 import 'MobileTransactionsController.dart';
+import '../View/AddPackageModal.dart';
 
 class BarberHubScreen extends StatefulWidget {
   final Map message;
@@ -730,14 +731,15 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                           Padding(padding: EdgeInsets.all(5)),
                           packages.length == 0 ? new GestureDetector(
                             onTap: () async {
-                              var res = await showAddPackageModalSheet(context);
-                              if(res != null) {
-                                setState(() {
-                                  packages = res;
-                                });
-                              }else {
-                                return;
-                              }
+                              showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                                return AddPackageBottomSheet(
+                                  updatePackages: (value) {
+                                    setState(() {
+                                      packages = value;
+                                    });
+                                  },
+                                );
+                              });
                             },
                             child: RichText(
                               softWrap: true,
@@ -971,14 +973,15 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                             padding: EdgeInsets.only(top: 5, right: 10.0),
                             child: GestureDetector(
                               onTap: () async {
-                                var res = await showAddPackageModalSheet(context);
-                                if(res != null) {
-                                  setState(() {
-                                    packages = res;
-                                  });
-                                }else {
-                                  return;
-                                }
+                                showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                                  return AddPackageBottomSheet(
+                                    updatePackages: (value) {
+                                      setState(() {
+                                        packages = value;
+                                      });
+                                    },
+                                  );
+                                });
                               },
                               child: Icon(LineIcons.plus, color: Colors.blue)
                             )

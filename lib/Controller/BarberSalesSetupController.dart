@@ -4,7 +4,7 @@ import '../globals.dart' as globals;
 import 'BarberHubController.dart';
 import '../Model/Packages.dart';
 import 'package:line_icons/line_icons.dart';
-import '../View/ModalSheets.dart';
+import '../View/AddPackageModal.dart';
 import 'package:intl/intl.dart';
 import '../calls.dart';
 import '../View/SetAvailabilityModal.dart';
@@ -288,14 +288,15 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
                     padding: EdgeInsets.only(top: 5, right: 10.0),
                     child: GestureDetector(
                       onTap: () async {
-                        var res = await showAddPackageModalSheet(context);
-                        if(res != null) {
-                          setState(() {
-                            packages = res;
-                          });
-                        }else {
-                          return;
-                        }
+                        showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                          return AddPackageBottomSheet(
+                            updatePackages: (value) {
+                              setState(() {
+                                packages = value;
+                              });
+                            },
+                          );
+                        });
                       },
                       child: Icon(LineIcons.plus, color: Colors.blue)
                     )
