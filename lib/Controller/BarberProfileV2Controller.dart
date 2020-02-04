@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:trimmz/Controller/BookingController.dart';
 import '../Model/BarberPolicies.dart';
 import '../globals.dart' as globals;
@@ -13,7 +14,6 @@ import 'dart:ui';
 import '../Model/Packages.dart';
 import 'ReviewController.dart';
 import 'package:marquee/marquee.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class BarberProfileV2Screen extends StatefulWidget {
   final token;
@@ -128,49 +128,12 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                           }
                         }
                       },
-                      child: Container( 
+                      child: Container(
                         padding: EdgeInsets.all(5),
                         child: Row(
                           children: <Widget>[
                             !hasAdded ? Icon(Icons.add, size: 18) : Icon(LineIcons.minus, size: 18),
                             !hasAdded ? Text('Add') : Text('Remove')
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(5),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-
-                      },
-                      child: Container( 
-                        padding: EdgeInsets.all(5),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(Icons.person_add, size: 18),
-                            Padding(padding: EdgeInsets.all(2)),
-                            Text('Follow')
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(5),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        final reviewScreen = new ReviewController(userId: int.parse(user.id), username: user.username); 
-                        Navigator.push(context, new MaterialPageRoute(builder: (context) => reviewScreen));
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(Icons.chat_bubble_outline, size: 18),
-                            Padding(padding: EdgeInsets.all(2)),
-                            Text('Reviews')
                           ],
                         ),
                       ),
@@ -198,6 +161,43 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                             Icon(Icons.calendar_today, size: 18),
                             Padding(padding: EdgeInsets.all(2)),
                             Text('Book')
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final reviewScreen = new ReviewController(userId: int.parse(user.id), username: user.username); 
+                        Navigator.push(context, new MaterialPageRoute(builder: (context) => reviewScreen));
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.chat_bubble_outline, size: 18),
+                            Padding(padding: EdgeInsets.all(2)),
+                            Text('Reviews')
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        //TODO: URL LAUNCHER THAT RECOMMENDS THIS BARBER
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(FontAwesomeIcons.share, size: 17),
+                            Padding(padding: EdgeInsets.all(2)),
+                            Text('Share')
                           ],
                         ),
                       ),
@@ -284,14 +284,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
               Padding(padding: EdgeInsets.all(2)),
               GestureDetector(
                 onTap: () async {
-                  //TODO: Closes app when you click -- error
-                  // String address = user.shopAddress + '+' + user.city + '+' + user.state;
-                  // String url = "http://maps.apple.com/?daddr=$address";
-                  // if (await canLaunch(url)) {
-                  //   await launch(url);
-                  // } else {
-                  //   throw 'Could not launch $url';
-                  // }
+
                 },
                 child: Row(
                   children: <Widget> [
