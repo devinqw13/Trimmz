@@ -366,7 +366,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                 );
               },
             )
-          ) : Container(child: Center(child: Text('Barber has no Packages', textAlign: TextAlign.center, style: TextStyle(fontStyle: FontStyle.italic)))),
+          ) : Container(child: Center(child: Text('Barber has no services', textAlign: TextAlign.center, style: TextStyle(fontStyle: FontStyle.italic)))),
         ]
       )
     );
