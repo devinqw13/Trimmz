@@ -230,21 +230,14 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                                       constraints: BoxConstraints(maxWidth: 200),
                                       child: GestureDetector(
                                         onTap: () {},
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Text(
-                                              searchedBarbers[i].name+' '
-                                            ),
-                                            Text(
-                                              '@'+searchedBarbers[i].username,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey
-                                              )
-                                            )
-                                          ]
+                                         child: RichText(
+                                          softWrap: true,
+                                          text: new TextSpan(
+                                            children: <TextSpan> [
+                                              new TextSpan(text: searchedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              new TextSpan(text: '@'+searchedBarbers[i].username, style: TextStyle(fontSize: 12,color: Colors.grey)),
+                                            ]
+                                          )
                                         )
                                       ),
                                     ),
@@ -388,21 +381,14 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                                     constraints: BoxConstraints(maxWidth: 200),
                                     child: GestureDetector(
                                       onTap: () {},
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Text(
-                                            suggestedBarbers[i].name+' '
-                                          ),
-                                          Text(
-                                            '@'+suggestedBarbers[i].username,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey
-                                            )
-                                          )
-                                        ]
+                                      child: RichText(
+                                        softWrap: true,
+                                        text: new TextSpan(
+                                          children: <TextSpan> [
+                                            new TextSpan(text: suggestedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            new TextSpan(text: '@'+suggestedBarbers[i].username, style: TextStyle(fontSize: 12,color: Colors.grey)),
+                                          ]
+                                        )
                                       )
                                     ),
                                   ),
