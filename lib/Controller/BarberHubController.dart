@@ -35,9 +35,11 @@ import '../View/AddManualAppointmentModal.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
 import 'package:expandable/expandable.dart';
+import 'MobileTransactionsController.dart';
 
 class BarberHubScreen extends StatefulWidget {
-  BarberHubScreen({Key key}) : super (key: key);
+  final Map message;
+  BarberHubScreen({Key key, this.message}) : super (key: key);
 
   @override
   BarberHubScreenState createState() => new BarberHubScreenState();
@@ -94,6 +96,17 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
 
     initSuggestedBarbers();
     initBarberInfo();
+
+    if(widget.message != null) {
+      if(widget.message['title'] == 'Appointment Requested') {
+        Flushbar(
+          flushbarPosition: FlushbarPosition.BOTTOM,
+          title: widget.message['title'],
+          message: widget.message['body'],
+          duration: Duration(seconds: 2),
+        )..show(context);
+      }
+    }
 
     firebaseCloudMessagingListeners();
   }
@@ -699,25 +712,43 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                       child: new Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          globals.spPayoutId == null ? new RichText(
-                            softWrap: true,
-                            text: new TextSpan(
-                              children: <TextSpan> [
-                                new TextSpan(text: 'Connect Direct Deposit: '),
-                                new TextSpan(text: 'required before taking any appointments', style: new TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
-                              ]
+                          globals.spPayoutId == null ? new GestureDetector(
+                            onTap: () {
+                              final mobileTransaction = new MobileTransactionScreen();
+                              Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));
+                            },
+                            child: RichText(
+                              softWrap: true,
+                              text: new TextSpan(
+                                children: <TextSpan> [
+                                  new TextSpan(text: 'Connect Direct Deposit: ', style: TextStyle(color: Colors.blue)),
+                                  new TextSpan(text: 'required before taking any appointments', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                                ]
+                              )
                             )
-                          ) : Container(),
+                           ) : Container(),
                           Padding(padding: EdgeInsets.all(5)),
-                          packages.length == 0 ? new RichText(
-                            softWrap: true,
-                            text: new TextSpan(
-                              children: <TextSpan> [
-                                new TextSpan(text: 'Add Services: '),
-                                new TextSpan(text: 'required before taking any appointments', style: new TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
-                              ]
+                          packages.length == 0 ? new GestureDetector(
+                            onTap: () async {
+                              var res = await showAddPackageModalSheet(context);
+                              if(res != null) {
+                                setState(() {
+                                  packages = res;
+                                });
+                              }else {
+                                return;
+                              }
+                            },
+                            child: RichText(
+                              softWrap: true,
+                              text: new TextSpan(
+                                children: <TextSpan> [
+                                  new TextSpan(text: 'Add Services: ', style: TextStyle(color: Colors.blue)),
+                                  new TextSpan(text: 'required before taking any appointments', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                                ]
+                              )
                             )
-                          ) : Container()
+                           ) : Container()
                         ]
                       )
                     )

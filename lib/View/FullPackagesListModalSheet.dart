@@ -124,7 +124,7 @@ class _FullPackagesBottomSheet extends State<FullPackagesBottomSheet> {
             new Container(
               child: Center(
                 child: Text(
-                  'You don\'t have any packages.',
+                  'You don\'t have any services.',
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     fontWeight: FontWeight.bold

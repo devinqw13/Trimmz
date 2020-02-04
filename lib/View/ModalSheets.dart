@@ -46,7 +46,7 @@ Future<List<Packages>> showAddPackageModalSheet(BuildContext context) async {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   margin: EdgeInsets.only(bottom: 10),
                   child: Text(
-                    'New Package',
+                    'New Service',
                     style: TextStyle(
                       fontSize: 19,
                       color: Colors.blue

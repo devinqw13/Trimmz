@@ -19,8 +19,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
 
 class HomeHubScreen extends StatefulWidget {
-  final int dashType;
-  HomeHubScreen({Key key, this.dashType}) : super (key: key);
+  final Map message;
+  HomeHubScreen({Key key, this.message}) : super (key: key);
 
   @override
   HomeHubScreenState createState() => new HomeHubScreenState();
@@ -55,6 +55,18 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     .listen((s) => _searchValue(s, searchTabIndex));
 
     initSuggestedBarbers();
+
+    if(widget.message != null) {
+      if(widget.message['title'] == 'Appointment Requested') {
+        Flushbar(
+          flushbarPosition: FlushbarPosition.BOTTOM,
+          title: widget.message['title'],
+          message: widget.message['body'],
+          duration: Duration(seconds: 2),
+        )..show(context);
+      }
+    }
+    
     firebaseCloudMessagingListeners();
     checkNotificiations();
   }
@@ -76,7 +88,10 @@ class HomeHubScreenState extends State<HomeHubScreen> {
       },
       onResume: (Map<String, dynamic> message) async {
         print('on resume $message');
-        await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        if(res) {
+          checkNotificiations();
+        }
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
@@ -96,6 +111,14 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     });
   }
 
+  showBookingSuccess(Map message) {
+    return Flushbar(
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      title: "Appointment Requested",
+      message: "Your appointment has been requested.",
+      duration: Duration(seconds: 2),
+    )..show(context);
+  }
 
   _searchValue(String string, int type) async {
     if(type == 0) {

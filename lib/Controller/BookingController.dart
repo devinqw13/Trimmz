@@ -421,11 +421,13 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         await sendPushNotification(context, 'Appointment Requested', '${globals.username} has requested an appointment', int.parse(barberId), token, dataMap);
       }
 
+      Map message = {'title': 'Appointment Requested', 'body': 'Your appointment request with ${barberInfo.name} has been sent.'};
+
       if(globals.userType == 1 || globals.userType == 3){
-        final homeScreen = new HomeHubScreen(); 
+        final homeScreen = new HomeHubScreen(message: message); 
         Navigator.push(context, new MaterialPageRoute(builder: (context) => homeScreen));
       }else if(globals.userType == 2) {
-        final homeScreen = new BarberHubScreen(); 
+        final homeScreen = new BarberHubScreen(message: message); 
         Navigator.push(context, new MaterialPageRoute(builder: (context) => homeScreen));
       }
     }else {
