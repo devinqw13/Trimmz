@@ -22,6 +22,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
   final TextEditingController durationController = new TextEditingController();
   final FocusNode _priceFocus = FocusNode();
   final FocusNode _durationFocus = FocusNode();
+  final FocusNode _nameFocus = FocusNode();
   Packages package;
   String _name = '';
   String _price = '';
@@ -39,10 +40,6 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
         setState(() {
           numberKeyboard = true;
         });
-      }else {
-        setState(() {
-          numberKeyboard = false;
-        });
       }
     });
 
@@ -51,7 +48,11 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
         setState(() {
           numberKeyboard = true;
         });
-      }else {
+      }
+    });
+
+    _nameFocus.addListener(() {
+      if(_nameFocus.hasFocus) {
         setState(() {
           numberKeyboard = false;
         });
@@ -167,6 +168,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               child: TextField(
                                 controller: nameController,
+                                focusNode: _nameFocus,
                                 autocorrect: false,
                                 onChanged: (value) {
                                   setState(() {
