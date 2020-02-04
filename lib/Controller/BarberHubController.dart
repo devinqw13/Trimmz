@@ -34,6 +34,7 @@ import 'dart:async';
 import '../View/AddManualAppointmentModal.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
+import 'package:expandable/expandable.dart';
 
 class BarberHubScreen extends StatefulWidget {
   BarberHubScreen({Key key}) : super (key: key);
@@ -622,11 +623,122 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     });
   }
 
+  setupChecks() {
+    if(globals.spPayoutId == null) {
+      return ExpandableNotifier(
+        child: Card(
+          child: Column(
+            children: <Widget>[
+              Expandable(
+                collapsed: ExpandableButton(
+                  child: Container(
+                    color: Colors.grey[900],
+                    padding: const EdgeInsets.only(top: 0.0, left: 8.0, right: 8.0),
+                    height: 40.0,
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          width: MediaQuery.of(context).size.width * .85,
+                          child: RichText(
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                            text: new TextSpan(
+                              children: <TextSpan> [
+                                new TextSpan(text: 'Actions Required ', style: new TextStyle(fontWeight: FontWeight.bold)),
+                              ]
+                            )
+                          )
+                        ),
+                        Icon(Icons.arrow_drop_down)
+                      ],
+                    ),
+                  ),
+                ),
+                expanded: Column(
+                  children: <Widget>[
+                    ExpandableButton(
+                      child: Container(
+                        color: Colors.grey[900],
+                        padding: const EdgeInsets.only(top: 0.0, left: 8.0, right: 8.0),
+                        height: 40.0,
+                        width: MediaQuery.of(context).size.width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              width: MediaQuery.of(context).size.width * .85,
+                              child: RichText(
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                                text: new TextSpan(
+                                  children: <TextSpan> [
+                                    new TextSpan(text: 'Actions Required', style: new TextStyle(fontWeight: FontWeight.bold)),
+                                  ]
+                                )
+                              )
+                            ),
+                            Icon(Icons.arrow_drop_up)
+                          ],
+                        ),
+                      ),
+                    ),
+                    new Container(
+                      decoration: BoxDecoration(
+                        color: globals.userBrightness == Brightness.light ? Color.fromARGB(255, 242, 242, 242) : Color.fromARGB(255, 42, 42, 42),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(4.0),
+                          bottomRight: Radius.circular(4.0)
+                        )
+                      ),
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.only(left: 12.0, top: 10.0, right: 12.0, bottom: 10),
+                      child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          globals.spPayoutId == null ? new RichText(
+                            softWrap: true,
+                            text: new TextSpan(
+                              children: <TextSpan> [
+                                new TextSpan(text: 'Connect Direct Deposit: '),
+                                new TextSpan(text: 'required before taking any appointments', style: new TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                              ]
+                            )
+                          ) : Container(),
+                          Padding(padding: EdgeInsets.all(5)),
+                          packages.length == 0 ? new RichText(
+                            softWrap: true,
+                            text: new TextSpan(
+                              children: <TextSpan> [
+                                new TextSpan(text: 'Add Services: '),
+                                new TextSpan(text: 'required before taking any appointments', style: new TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                              ]
+                            )
+                          ) : Container()
+                        ]
+                      )
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    }else {
+      return Container();
+    }
+  }
+
   Widget dashboardTab() {
     return Container(
       child: SingleChildScrollView(
         child: new Column(
           children: <Widget>[
+            setupChecks(),
             appointmentReq.length > 0 ? 
             GestureDetector(
               onTap: () async {
