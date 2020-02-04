@@ -36,67 +36,119 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
     if(upcomingAppointment != null){
       final df = new DateFormat('EEE, MMM d @ hh:mm a');
       String appointmentTime = df.format(DateTime.parse(upcomingAppointment.dateTime.toString()));
-      return new Container(
-        padding: EdgeInsets.only(bottom: 10.0),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          boxShadow: [
-            new BoxShadow(
-              color: Colors.black,
-              blurRadius: 20.0
-            )
-          ]
-        ),
-        child: ExpandablePanel(
-          headerAlignment: ExpandablePanelHeaderAlignment.center,
-          collapsed: Container(
-           padding: EdgeInsets.only(left: 15.0),
-            child: RichText(
-              softWrap: true,
-              text: new TextSpan(
-                children: <TextSpan> [
-                  new TextSpan(text: 'Upcoming Appointment: ', style: new TextStyle(fontWeight: FontWeight.bold)),
-                  new TextSpan(text: appointmentTime),
-                ]
-              )
-            )
-          ),
-          expanded: Container(
-            padding: EdgeInsets.only(top: 10.0, left: 15.0),
+      return ExpandableNotifier(
+          child: Card(
             child: Column(
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Text('Upcoming Appointment', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text('Time: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text(appointmentTime)
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text('Barber: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text(upcomingAppointment.barberName)
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('Location: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text('${upcomingAppointment.locationAddress}\n${upcomingAppointment.geoAddress}')
-                  ],
+                Expandable(
+                  collapsed: ExpandableButton(
+                    child: Container(
+                      padding: const EdgeInsets.only(top: 0.0, left: 8.0, right: 8.0),
+                      height: 40.0,
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            width: MediaQuery.of(context).size.width * .85,
+                            child: RichText(
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                              text: new TextSpan(
+                                children: <TextSpan> [
+                                  new TextSpan(text: 'Upcoming Appointment: ', style: new TextStyle(fontWeight: FontWeight.bold)),
+                                  new TextSpan(text: appointmentTime),
+                                ]
+                              )
+                            )
+                          ),
+                          Icon(Icons.arrow_drop_down)
+                        ],
+                      ),
+                    ),
+                  ),
+                  expanded: Column(
+                    children: <Widget>[
+                      ExpandableButton(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 0.0, left: 8.0, right: 8.0),
+                          height: 40.0,
+                          width: MediaQuery.of(context).size.width,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: MediaQuery.of(context).size.width * .85,
+                                child: RichText(
+                                  softWrap: true,
+                                  overflow: TextOverflow.ellipsis,
+                                  text: new TextSpan(
+                                    children: <TextSpan> [
+                                      new TextSpan(text: 'Upcoming Appointment', style: new TextStyle(fontWeight: FontWeight.bold)),
+                                    ]
+                                  )
+                                )
+                              ),
+                              Icon(Icons.arrow_drop_up)
+                            ],
+                          ),
+                        ),
+                      ),
+                      new Container(
+                        decoration: BoxDecoration(
+                          color: globals.userBrightness == Brightness.light ? Color.fromARGB(255, 242, 242, 242) : Color.fromARGB(255, 42, 42, 42),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(4.0),
+                            bottomRight: Radius.circular(4.0)
+                          )
+                        ),
+                        width: MediaQuery.of(context).size.width,
+                        padding: const EdgeInsets.only(left: 12.0, top: 10.0, right: 12.0, bottom: 10),
+                        child: new Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            RichText(
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                              text: new TextSpan(
+                                children: <TextSpan> [
+                                  new TextSpan(text: 'Time: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  TextSpan(text: appointmentTime)
+                                ]
+                              )
+                            ),
+                            RichText(
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                              text: new TextSpan(
+                                children: <TextSpan> [
+                                  new TextSpan(text: 'Barber: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  TextSpan(text: upcomingAppointment.barberName)
+                                ]
+                              )
+                            ),
+                            RichText(
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                              text: new TextSpan(
+                                children: <TextSpan> [
+                                  new TextSpan(text: 'Location: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  TextSpan(text: '${upcomingAppointment.locationAddress}, ${upcomingAppointment.geoAddress}')
+                                ]
+                              )
+                            )
+                          ]
+                        )
+                      )
+                    ],
+                  ),
                 )
               ],
-            )
+            ),
           ),
-          tapHeaderToExpand: true,
-          tapBodyToCollapse: true,
-          hasIcon: true,
-        )
-      );
+        );
     }else {
       return Container();
     }

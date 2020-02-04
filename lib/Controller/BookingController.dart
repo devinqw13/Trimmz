@@ -175,6 +175,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
             }
           }
         }else {
+          //TODO: LOOK INTO ERROR MESSAGE
           var res1 = await spCreateCustomer(context, paymentMethod.id);
           if(res1.length > 0) {
             String spCustomerId = res1['id'];
@@ -182,7 +183,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
             if(res2.length > 0) {
               var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId);
               if(res3.length > 0) {
-                var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
+                var res4 = await spGetClientPaymentMethod(context, spCustomerId, 2);
                 if(res4 != null) {
                   for(var item in res4) {
                     if(item.id == paymentMethod.id) {
