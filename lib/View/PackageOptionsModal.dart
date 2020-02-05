@@ -61,7 +61,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
 
     super.initState();
   }
-
+//TODO: ERROR WHEN REMOVING PACKAGES
   KeyboardActionsConfig _buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
       keyboardActionsPlatform: KeyboardActionsPlatform.ALL,

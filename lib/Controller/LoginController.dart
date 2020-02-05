@@ -83,8 +83,7 @@ class LoginScreenState extends State<LoginScreen> {
   void normalLogin(String user, String pass) async {
     if (pass != "") {
       currentContext = context;
-      //var deviceInfo = await getDeviceDetails();
-      callLoginPost('${globals.baseUrl}login/', {'username': user, 'password': pass, /*'device_id': deviceInfo[2]*/}, false, context);
+      callLoginPost('${globals.baseUrl}', {'key': 'login', 'username': user, 'password': pass}, false, context);
     } else {
       _openTextDialog("Please enter a valid password");
     }

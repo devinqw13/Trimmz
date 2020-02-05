@@ -35,7 +35,6 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
   _searchValue(String string) async {
     if(_search.text.length > 2) {
       var res = await getSearchBarbers(context, _search.text);
-      print(res);
       setState(() {
         searchBarbers = res;
       });

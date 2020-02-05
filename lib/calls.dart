@@ -144,13 +144,11 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
 
   Map jsonResponse = {};
   http.Response response;
-
-  var jsonMap = {"userid": token};
-
-  String url = "${globals.baseUrl}getUser/";
+  
+  String url = "${globals.baseUrl}?key=get_user&token=$token";
 
   try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (003)", "Please try again. If this error continues to occur, please contact support.");
     return null;
@@ -269,14 +267,10 @@ Future<List<ClientBarbers>> getUserBarbers(BuildContext context, int userid) asy
   Map jsonResponse = {};
   http.Response response;
 
-  var jsonMap = {
-    "userid" : userid,
-  };
-
-  String url = "${globals.baseUrl}getAddedBarbers/";
+  String url = "${globals.baseUrl}?key=get_added_barbers&token=$userid";
 
   try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (011)", "Please try again. If this error continues to occur, please contact support.");
     return [];
@@ -327,11 +321,12 @@ Future<bool> addBarber(BuildContext context, int userid, int barberid) async {
   http.Response response;
 
   var jsonMap = {
+    "key": "add_barber",
     "userid" : userid,
     "barberid" : barberid
   };
 
-  String url = "${globals.baseUrl}addBarbers/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -410,14 +405,10 @@ Future<List<Packages>> getBarberPkgs(BuildContext context, int userid) async {
   Map jsonResponse = {};
   http.Response response;
 
-  var jsonMap = {
-    "userid" : userid,
-  };
-
-  String url = "${globals.baseUrl}getBarberPkgs/";
+  String url = "${globals.baseUrl}?key=get_barber_packages&token=$userid";
 
   try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (015)", "Please try again. If this error continues to occur, please contact support.");
     return [];
@@ -461,13 +452,14 @@ Future<bool> addPackage(BuildContext context, int barberid, String name, int dur
   http.Response response;
 
   var jsonMap = {
+    "key": "add_package",
     "barberid" : barberid,
     "name" : name,
     "duration" : duration,
     "price" : price
   };
 
-  String url = "${globals.baseUrl}addPackage/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -598,14 +590,10 @@ Future<List<Availability>> getBarberAvailability(BuildContext context, int useri
   Map jsonResponse = {};
   http.Response response;
 
-  var jsonMap = {
-    "userid" : userid,
-  };
-
-  String url = "${globals.baseUrl}getBarberAvailability/";
+  String url = "${globals.baseUrl}?key=get_barber_availability&token=$userid";
 
   try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (015)", "Please try again. If this error continues to occur, please contact support.");
     return [];
@@ -782,6 +770,7 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
   http.Response response;
 
   var jsonMap = {
+    "key": "book_appointment",
     "userid" : userId,
     "barberid": barberId,
     "price": price,
@@ -790,7 +779,7 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
     "tip": tip
   };
 
-  String url = "${globals.baseUrl}bookAppointment/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -883,12 +872,13 @@ Future<int> aptRequestDecision(BuildContext context, int barberId, int requestId
   http.Response response;
 
   var jsonMap = {
+    "key": "appointment_request_decision",
     "barberid": barberId,
     "requestid": requestId,
     "decision": decision,
   };
 
-  String url = "${globals.baseUrl}appointmentRequestDecision/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -928,14 +918,10 @@ Future<Appointment> getUpcomingAppointment(BuildContext context, int userId) asy
   Map jsonResponse = {};
   http.Response response;
 
-  var jsonMap = {
-    "userid": userId,
-  };
-
-  String url = "${globals.baseUrl}getUpcomingAppointment/";
+  String url = "${globals.baseUrl}?key=get_upcoming_appointment&token=$userId";
 
   try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (020)", "Please try again. If this error continues to occur, please contact support.");
     return null;
@@ -1027,24 +1013,16 @@ Future<bool> exists(BuildContext context, String string, int type, [var userid])
 
   Map jsonResponse = {};
   http.Response response;
-  var jsonMap;
+
+  String url;
   if(type == 1){
-    jsonMap = {
-      "type" : type,
-      "string": string,
-    };
-  }else if(type == 2) {
-    jsonMap = {
-      "type" : type,
-      "string": string,
-      "userid": userid
-    };
+    url = "${globals.baseUrl}?key=exist&string=$string&type=1";
+  }else if(type == 2){
+    url = "${globals.baseUrl}?key=exist&string=$string&type=2&token=$userid";
   }
 
-  String url = "${globals.baseUrl}exists/";
-
   try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (022)", "Please try again. If this error continues to occur, please contact support.");
     return false;
@@ -1082,11 +1060,12 @@ Future<bool> changePassword(BuildContext context, String newPassword, int userid
   http.Response response;
 
   var jsonMap = {
+    "key": "change_password",
     "userid" : userid,
     "password": newPassword,
   };
 
-  String url = "${globals.baseUrl}changePassword/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
