@@ -360,7 +360,7 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
     }
 
     if (result) {
-      Map userInfo = await loginPost('${globals.baseUrl}login/', {'username': widget.username, 'password': password}, context);
+      Map userInfo = await loginPost(widget.username, password, context);
 
       setGlobals(userInfo);
 

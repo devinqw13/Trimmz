@@ -45,21 +45,25 @@ Future<List<String>> getDeviceDetails() async {
   return [deviceName, deviceVersion, deviceIdentifier, deviceType];
 }
 
-Future<Map> loginPost(String url, Map jsonData, BuildContext context, ) async {
+Future<Map> loginPost(String username, String password, BuildContext context) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
-    'Content-type' : 'application/json', 
     'Accept': 'application/json',
   };
+
+
   http.Response response;
   Map jsonResponse = {};
+
+  String url = '${globals.baseUrl}?key=login&username=$username&password=$password';
+
   try {
-    response = await http.post(url, body: json.encode(jsonData), headers: headers);
+    response = await http.get(url, headers: headers);
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (001)", "Please try again later.");
     return {};
   }
-  
+  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (001)", "Please try again.");
     return {};
@@ -1192,12 +1196,13 @@ Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payo
   http.Response response;
 
   var jsonMap = {
-    "userid" : userid,
+    "key": "update_payout_settings",
+    "token" : userid,
     "payoutId": payoutId != null ? payoutId : null,
     "payoutMethod": payoutMethod != null ? payoutMethod : null,
   };
 
-  String url = "${globals.baseUrl}updatePayoutSettings/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));

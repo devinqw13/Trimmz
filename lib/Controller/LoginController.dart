@@ -51,15 +51,15 @@ class LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  callLoginPost(String url, Map jsonData, bool retry, BuildContext context) async {
-    Map results = await loginPost(url, jsonData, context);
+  callLoginPost(String username, String password, bool retry, BuildContext context) async {
+    Map results = await loginPost(username, password, context);
     if (results.length == 0) {
       return;
     }
-    processLogin(results, jsonData, retry);
+    processLogin(results, retry);
   }
 
-  void processLogin(Map results, Map jsonData, bool retry) async {
+  void processLogin(Map results, bool retry) async {
     var status = results['error'];
 
     switch (status) {
@@ -83,7 +83,7 @@ class LoginScreenState extends State<LoginScreen> {
   void normalLogin(String user, String pass) async {
     if (pass != "") {
       currentContext = context;
-      callLoginPost('${globals.baseUrl}', {'key': 'login', 'username': user, 'password': pass}, false, context);
+      callLoginPost(user, pass, false, context);
     } else {
       _openTextDialog("Please enter a valid password");
     }
