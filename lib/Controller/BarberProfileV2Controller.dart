@@ -14,6 +14,7 @@ import 'dart:ui';
 import '../Model/Packages.dart';
 import 'ReviewController.dart';
 import 'package:marquee/marquee.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BarberProfileV2Screen extends StatefulWidget {
   final token;
@@ -188,8 +189,14 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                       padding: EdgeInsets.all(5),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        //TODO: URL LAUNCHER THAT RECOMMENDS THIS BARBER
+                      onTap: () async {
+                        String message = '?body=Check%20out%20this%20barber,%20${user.username}.%20You%20can%20view%20their%20cuts%20and%20book%20an%20appointment%20using%20the%20Trimmz%20app.%20Download%20the%20app%20at';
+
+                        if (await canLaunch("sms:$message")) {
+                          await launch("sms:$message");
+                        } else {
+                          throw 'Could not launch';
+                        }
                       },
                       child: Container(
                         padding: EdgeInsets.all(5),

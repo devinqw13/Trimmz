@@ -58,15 +58,17 @@ settingsWidget(BuildContext context) {
 
     new CSHeader('Share'),
     new CSLink('Recommend Trimmz', () async {
-      if (await canLaunch("sms:")) {
-        await launch("sms:");
+      String message = '?body=';
+      if (await canLaunch("sms:$message")) {
+        await launch("sms:$message");
       } else {
         throw 'Could not launch';
       }
     }, style: CSWidgetStyle(icon: Icon(LineIcons.lightbulb_o))),
     new CSLink('Invite Barber', () async {
-      if (await canLaunch("sms:")) {
-        await launch("sms:");
+      String message = '?body=Check%20this%20app%20for%20barbers,%20Trimmz.%20Download%20the%20app%20at%20';
+      if (await canLaunch("sms:$message")) {
+        await launch("sms:$message");
       } else {
         throw 'Could not launch';
       }
