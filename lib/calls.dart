@@ -942,7 +942,6 @@ Future<Appointment> getUpcomingAppointment(BuildContext context, int userId) asy
       for(var item in jsonResponse['appointment']){
         appointment.clientId = int.parse(item['client_id']);
         appointment.barberId = int.parse(item['barber_id']);
-        //appointment.clientName = globals.username;
         appointment.barberName = item['barber_name'];
         appointment.dateTime = DateTime.parse(item['date']);
         appointment.status = int.parse(item['status']);
@@ -1059,7 +1058,8 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
   http.Response response;
 
   var jsonMap = {
-    "userid" : userid,
+    "key": "update_settings",
+    "token" : userid,
     "type": type,
     "name": name != null ? name : null,
     "email": email != null ? email : null,
@@ -1067,7 +1067,7 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
     "sp_paymentid": spPaymentId != null ? spPaymentId : null
   };
 
-  String url = "${globals.baseUrl}updateSettings/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -1075,7 +1075,7 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
     showErrorDialog(context, "The Server is not responding (024)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
-  
+
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (024)", "Please try again.");
     return {};
@@ -1088,14 +1088,14 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
     jsonResponse = json.decode(response.body);
   }
   
-  if(jsonResponse['error'] == false && jsonResponse['message'] == 'Settings Updated'){
+  if(jsonResponse['error'] == false){
     return jsonResponse;
   }else {
     return {};
   }
 }
 
-Future<bool> updatePackage(BuildContext context, int userid, int type, [String name, int price, int duration]) async {
+Future<bool> updatePackage(BuildContext context, int userid, int packageid, [String name, int price, int duration]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -1105,14 +1105,15 @@ Future<bool> updatePackage(BuildContext context, int userid, int type, [String n
   http.Response response;
 
   var jsonMap = {
-    "userid" : userid,
-    "packageid": type,
+    "key": "update_package",
+    "token" : userid,
+    "packageid": packageid,
     "name": name != null ? name : null,
     "price": price != null ? price : null,
     "duration": duration != null ? duration : null
   };
 
-  String url = "${globals.baseUrl}updatePackage/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -1149,11 +1150,12 @@ Future<bool> updateAppointmentStatus(BuildContext context, int appointmentId, in
   http.Response response;
 
   var jsonMap = {
-    "id" : appointmentId,
+    "key": "update_appointment_status",
+    "appointment" : appointmentId,
     "status": status,
   };
 
-  String url = "${globals.baseUrl}updateAppointmentStatus/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));

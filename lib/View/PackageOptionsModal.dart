@@ -101,9 +101,11 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
   }
 
   submitUpdate() async {
-    if(!(int.parse(durationController.text) % 15 == 0)) {
-      showErrorDialog(context, 'Invalid Duration', 'The duration of the service must be in increments of 15 minutes, e.g: 15, 30.');
-      return;
+    if(durationController.text != ''){
+      if(!(int.parse(durationController.text) % 15 == 0)) {
+        showErrorDialog(context, 'Invalid Duration', 'The duration of the service must be in increments of 15 minutes, e.g: 15, 30.');
+        return;
+      }
     }
     var res = await updatePackage(context, globals.token, int.parse(package.id), nameController.text != '' ? nameController.text : null, priceController.text != '' ? int.parse(priceController.text) : null, durationController.text != '' ? int.parse(durationController.text) : null);
     if(res) {
