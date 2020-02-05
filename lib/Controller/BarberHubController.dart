@@ -646,7 +646,12 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               Expandable(
                 collapsed: ExpandableButton(
                   child: Container(
-                    color: Colors.grey[900],
+                    decoration: BoxDecoration(
+                      gradient: new LinearGradient(
+                        begin: Alignment(0.0, -2.0),
+                        colors: [Colors.black, Colors.grey[900]]
+                      )
+                    ),
                     padding: const EdgeInsets.only(top: 0.0, left: 8.0, right: 8.0),
                     height: 40.0,
                     width: MediaQuery.of(context).size.width,
@@ -675,7 +680,12 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                   children: <Widget>[
                     ExpandableButton(
                       child: Container(
-                        color: Colors.grey[900],
+                        decoration: BoxDecoration(
+                          gradient: new LinearGradient(
+                            begin: Alignment(0.0, -2.0),
+                            colors: [Colors.black, Colors.grey[900]]
+                          )
+                        ),
                         padding: const EdgeInsets.only(top: 0.0, left: 8.0, right: 8.0),
                         height: 40.0,
                         width: MediaQuery.of(context).size.width,
@@ -702,7 +712,10 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                     ),
                     new Container(
                       decoration: BoxDecoration(
-                        color: globals.userBrightness == Brightness.light ? Color.fromARGB(255, 242, 242, 242) : Color.fromARGB(255, 42, 42, 42),
+                        gradient: new LinearGradient(
+                          begin: Alignment(0.0, -2.0),
+                          colors: [Colors.black, Colors.grey[900]]
+                        ),
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(4.0),
                           bottomRight: Radius.circular(4.0)
@@ -723,7 +736,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                               text: new TextSpan(
                                 children: <TextSpan> [
                                   new TextSpan(text: 'Connect Direct Deposit: ', style: TextStyle(color: Colors.blue)),
-                                  new TextSpan(text: 'required before taking any appointments', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                                  new TextSpan(text: 'required before taking any appointments.', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
                                 ]
                               )
                             )
@@ -746,7 +759,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                               text: new TextSpan(
                                 children: <TextSpan> [
                                   new TextSpan(text: 'Add Services: ', style: TextStyle(color: Colors.blue)),
-                                  new TextSpan(text: 'required before taking any appointments', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                                  new TextSpan(text: 'required before taking any appointments.', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
                                 ]
                               )
                             )

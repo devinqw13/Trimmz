@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/dialogs.dart';
 import '../globals.dart' as globals;
 import '../calls.dart';
 import '../Model/AppointmentRequests.dart';
@@ -141,23 +142,27 @@ Future<int> showAptRequestsModalSheet(BuildContext context, List<AppointmentRequ
                                     ),
                                     GestureDetector(
                                       onTap: () async {
-                                        var result = await aptRequestDecision(context, globals.token, requests[i].requestId, 1);
+                                        if(globals.spPayoutId == null) {
+                                          showErrorDialog(context, 'Action Required', 'You must enter direct deposit information before accepting appointments.');
+                                        }else {
+                                          var result = await aptRequestDecision(context, globals.token, requests[i].requestId, 1);
 
-                                        List tokens = await getNotificationTokens(context, requests[i].clientId);
-                                        for(var token in tokens){
-                                          Map<String, dynamic> dataMap =  {
-                                            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                                            'action': 'APPOINTMENT_REQUEST',
-                                            'title': 'Appointment Confirmed',
-                                            'body': '${globals.username} has confirmed your appointment request.',
-                                            'sender': '${globals.token}',
-                                            'recipient': requests[i].clientId,
-                                          };
-                                          await sendPushNotification(context, 'Appointment Confirmed', '${globals.username} has confirmed your appointment request.', requests[i].clientId, token, dataMap);
+                                          List tokens = await getNotificationTokens(context, requests[i].clientId);
+                                          for(var token in tokens){
+                                            Map<String, dynamic> dataMap =  {
+                                              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                              'action': 'APPOINTMENT_REQUEST',
+                                              'title': 'Appointment Confirmed',
+                                              'body': '${globals.username} has confirmed your appointment request.',
+                                              'sender': '${globals.token}',
+                                              'recipient': requests[i].clientId,
+                                            };
+                                            await sendPushNotification(context, 'Appointment Confirmed', '${globals.username} has confirmed your appointment request.', requests[i].clientId, token, dataMap);
+                                          }
+
+                                          Navigator.pop(context);
+                                          results = result;
                                         }
-
-                                        Navigator.pop(context);
-                                        results = result;
                                       },
                                       child: Text('Accept', style: TextStyle(color: Colors.blue)),
                                     ),
