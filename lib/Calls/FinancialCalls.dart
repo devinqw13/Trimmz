@@ -9,13 +9,13 @@ import '../globals.dart' as globals;
 Future<dynamic> spGetClientPaymentMethod(BuildContext context, String customerId, int type) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
-    'Authorization' : 'Bearer $stripeSecretKey', 
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${stripeURL}payment_methods?customer=$customerId&type=card";
+  String url = "${globals.stripeURL}payment_methods?customer=$customerId&type=card";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -86,7 +86,7 @@ Future<dynamic> spGetClientPaymentMethod(BuildContext context, String customerId
 Future<Map> spCreateCustomer(BuildContext context, String paymentId) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
-    'Authorization' : 'Bearer $stripeSecretKey', 
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
   };
 
   Map jsonResponse = {};
@@ -99,7 +99,7 @@ Future<Map> spCreateCustomer(BuildContext context, String paymentId) async {
     "payment_method": "$paymentId"
   };
 
-  String url = "${stripeURL}customers";
+  String url = "${globals.stripeURL}customers";
 
   try {
     response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
@@ -130,7 +130,7 @@ Future<Map> spCreateCustomer(BuildContext context, String paymentId) async {
 Future<Map> spCreatePaymentIntent(BuildContext context, String paymentId, String customerId, String amount) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
-    'Authorization' : 'Bearer $stripeSecretKey', 
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
   };
 
   Map jsonResponse = {};
@@ -144,7 +144,7 @@ Future<Map> spCreatePaymentIntent(BuildContext context, String paymentId, String
     "payment_method": "$paymentId"
   };
 
-  String url = "${stripeURL}payment_intents";
+  String url = "${globals.stripeURL}payment_intents";
 
   try {
     response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
@@ -175,13 +175,13 @@ Future<Map> spCreatePaymentIntent(BuildContext context, String paymentId, String
 Future<Map> spDetachCustomerFromPM(BuildContext context, String paymentId) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
-    'Authorization' : 'Bearer $stripeSecretKey', 
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${stripeURL}payment_methods/$paymentId/detach";
+  String url = "${globals.stripeURL}payment_methods/$paymentId/detach";
 
   try {
     response = await http.post(url, headers: headers).timeout(Duration(seconds: 60));
@@ -212,7 +212,7 @@ Future<Map> spDetachCustomerFromPM(BuildContext context, String paymentId) async
 Future<Map> spAttachCustomerToPM(BuildContext context, String paymentId, String customerId) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
-    'Authorization' : 'Bearer $stripeSecretKey', 
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
   };
 
   Map jsonResponse = {};
@@ -222,7 +222,7 @@ Future<Map> spAttachCustomerToPM(BuildContext context, String paymentId, String 
     "customer": "$customerId"
   };
 
-  String url = "${stripeURL}payment_methods/$paymentId/attach";
+  String url = "${globals.stripeURL}payment_methods/$paymentId/attach";
 
   try {
     response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));

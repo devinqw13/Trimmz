@@ -22,6 +22,11 @@ bool darkModeEnabled;
 Color textColor = darkModeEnabled ? Colors.white : Colors.black;
 Color textColorAlt = darkModeEnabled ? Colors.black : Colors.white;
 
+String stripeURL = "";
+String stripeSecretKey = "";
+String stripePublishablekey = "";
+String stripeMerchantId = "";
+
 class LoginUser {
   int token;
   String username;
