@@ -144,7 +144,7 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
 
   Map jsonResponse = {};
   http.Response response;
-  
+
   String url = "${globals.baseUrl}?key=get_user&token=$token";
 
   try {
@@ -364,11 +364,12 @@ Future<bool> removeBarber(BuildContext context, int userid, int barberid) async 
   http.Response response;
 
   var jsonMap = {
+    "key": "remove_barber",
     "userid" : userid,
     "barberid" : barberid
   };
 
-  String url = "${globals.baseUrl}removeBarbers/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -549,11 +550,12 @@ Future<bool> removePackage(BuildContext context, int userid, int packageid) asyn
   http.Response response;
 
   var jsonMap = {
-    "userid" : userid,
+    "key": "remove_package",
+    "token" : userid,
     "packageid" : packageid
   };
 
-  String url = "${globals.baseUrl}removePackage/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -572,6 +574,8 @@ Future<bool> removePackage(BuildContext context, int userid, int packageid) asyn
   } else {
     jsonResponse = json.decode(response.body);
   }
+
+  print(jsonResponse);
 
   if(jsonResponse['error'] == false){
     return true;
@@ -815,16 +819,10 @@ Future<List<AppointmentRequest>> getBarberAppointmentRequests(BuildContext conte
   Map jsonResponse = {};
   http.Response response;
 
-  var jsonMap = {
-    //"apiKey": 1018,
-    "barberid": barberId,
-  };
-
-  String url = "${globals.baseUrl}getBarberAppointmentRequests/";
-  //String url = "${globals.baseUrl}";
+  String url = "${globals.baseUrl}?key=get_barber_appointment_requests&token=$barberId";
 
   try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (018)", "Please try again. If this error continues to occur, please contact support.");
     return [];
@@ -961,47 +959,6 @@ Future<Appointment> getUpcomingAppointment(BuildContext context, int userId) asy
     }
   }else {
     return null;
-  }
-}
-
-Future<bool> markAppointment(BuildContext context, int id, int mark) async {
-  Map<String, String> headers = {
-    'Content-Type' : 'application/x-www-form-urlencoded',
-    'Accept': 'application/json',
-  };
-
-  Map jsonResponse = {};
-  http.Response response;
-
-  var jsonMap = {
-    "appointmentid" : id,
-    "mark": mark,
-  };
-
-  String url = "${globals.baseUrl}markAppointment/";
-
-  try {
-    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
-  } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (021)", "Please try again. If this error continues to occur, please contact support.");
-    return false;
-  } 
-  if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (021)", "Please try again.");
-    return false;
-  }
-
-  if (json.decode(response.body) is List) {
-    var responseBody = response.body.substring(1, response.body.length - 1);
-    jsonResponse = json.decode(responseBody);
-  } else {
-    jsonResponse = json.decode(response.body);
-  }
-  
-  if(jsonResponse['error'] == false){
-    return true;
-  }else {
-    return false;
   }
 }
 
