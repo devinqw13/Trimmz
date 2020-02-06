@@ -97,7 +97,10 @@ class HomeHubScreenState extends State<HomeHubScreen> {
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
-        await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        if(res) {
+          checkNotificiations();
+        }
       },
     );
   }

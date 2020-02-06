@@ -148,7 +148,16 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
-        await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+        if(res) {
+          checkNotificiations();
+          if(message['action'] == 'BOOK_APPOINTMENT') {
+            var res3 = await getBarberAppointmentRequests(context, globals.token);
+            setState(() {
+              appointmentReq = res3;
+            });
+          }
+        }
       },
     );
   }
