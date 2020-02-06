@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:trimmz/Model/BarberPolicies.dart';
 import '../globals.dart' as globals;
 import '../calls.dart';
+import 'package:progress_hud/progress_hud.dart';
 
 class AppointmentOptionsBottomSheet extends StatefulWidget {
   AppointmentOptionsBottomSheet({@required this.appointment, @required this.showCancel, this.showFullCalendar, this.showFull, this.updateAppointments});
@@ -19,18 +21,40 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
   var appointment;
   final df = new DateFormat('EEEE, MMMM d, y');
   final df2 = new DateFormat('h:mm a');
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
   @override
   void initState() {
     appointment = widget.appointment;
+    print(appointment);
+    _progressHUD = new ProgressHUD(
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
+      borderRadius: 8.0,
+      loading: false,
+      text: 'Loading...'
+    );
     super.initState();
   }
 
+  void progressHUD() {
+    setState(() {
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
+    });
+  }
+
   clientCancel(int barberId, int appointmentId) async {
-    var res =  await getBarberPolicies(context, barberId);
+    var res = await getBarberPolicies(context, barberId) ?? new BarberPolicies();
     if(res.cancelEnabled) {
       // TODO: charge customer the barbers cancelFee
     }else {
+      progressHUD();
       var res = await updateAppointmentStatus(context, appointmentId, 2);
       if(res) {
         List tokens = await getNotificationTokens(context, barberId);
@@ -51,6 +75,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
           appointment['status'] = '2';
         });
         var res1 = await getUserAppointments(context, globals.token);
+        progressHUD();
         widget.updateAppointments(res1);
       }
     }
@@ -415,6 +440,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                 ]
               ),
             ),
+            _progressHUD
           ]
         )
       )
