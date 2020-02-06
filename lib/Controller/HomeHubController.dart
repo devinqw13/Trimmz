@@ -554,7 +554,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
               decoration: new InputDecoration(
                 prefixIcon: Icon(LineIcons.search, color: Colors.grey),
                 contentPadding: EdgeInsets.all(8.0),
-                hintText: searchTabIndex == 0 ? 'Search by username' : 'Search by name',
+                hintText: 'Search',
                 fillColor: globals.darkModeEnabled ? Colors.grey[900] : Colors.grey[100],
                 filled: true,
                 hintStyle: TextStyle(
