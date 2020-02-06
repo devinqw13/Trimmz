@@ -203,7 +203,10 @@ class HomeHubScreenState extends State<HomeHubScreen> {
             else {
               final i = index ~/ 2;
               return new GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  progressHUD();
+                  var res = await getBarberPolicies(context, int.parse(searchedBarbers[i].id));
+                  progressHUD();
                   ClientBarbers barber = new ClientBarbers();
                   barber.id = searchedBarbers[i].id;
                   barber.name = searchedBarbers[i].name;
@@ -217,7 +220,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                   barber.state = searchedBarbers[i].state;
                   barber.zipcode = searchedBarbers[i].zipcode;
                   // barber.created = suggestedBarbers[i].created;
-                  final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber);
+                  final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                 },
                 child: Column(
@@ -354,7 +357,10 @@ class HomeHubScreenState extends State<HomeHubScreen> {
           else {
             final i = index ~/ 2;
             return new GestureDetector(
-              onTap: () {
+              onTap: () async {
+                progressHUD();
+                var res = await getBarberPolicies(context, int.parse(suggestedBarbers[i].id));
+                progressHUD();
                 ClientBarbers barber = new ClientBarbers();
                 barber.id = suggestedBarbers[i].id;
                 barber.name = suggestedBarbers[i].name;
@@ -367,7 +373,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                 barber.city = suggestedBarbers[i].city;
                 barber.state = suggestedBarbers[i].state;
                 barber.zipcode = suggestedBarbers[i].zipcode;
-                final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber);
+                final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                 Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
               },
               child: Column(
