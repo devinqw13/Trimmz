@@ -14,7 +14,6 @@ import 'package:table_calendar/table_calendar.dart';
 import 'SelectBarberController.dart';
 import '../Model/Packages.dart';
 import 'package:intl/intl.dart';
-import '../View/ModalSheets.dart';
 import '../Model/availability.dart';
 import '../View/SetAvailabilityModal.dart';
 import 'BarberProfileV2Controller.dart';
@@ -37,6 +36,7 @@ import 'dart:io';
 import 'package:expandable/expandable.dart';
 import 'MobileTransactionsController.dart';
 import '../View/AddPackageModal.dart';
+import '../View/AppointmentRequestModal.dart';
 
 class BarberHubScreen extends StatefulWidget {
   final Map message;
@@ -135,7 +135,16 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
       },
       onResume: (Map<String, dynamic> message) async {
         print('on resume $message');
-        await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['title'], message['body']);
+        var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['title'], message['body']);
+        if(res) {
+          checkNotificiations();
+          if(message['action'] == 'BOOK_APPOINTMENT') {
+            var res3 = await getBarberAppointmentRequests(context, globals.token);
+            setState(() {
+              appointmentReq = res3;
+            });
+          }
+        }
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
@@ -788,22 +797,21 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
             appointmentReq.length > 0 ? 
             GestureDetector(
               onTap: () async {
-                var res = await showAptRequestsModalSheet(context, appointmentReq);
-                if(res == 1) {
-                  var res = await getBarberAppointmentRequests(context, globals.token);
-                  setState(() {
-                    appointmentReq = res;
-                  });
-                  var res2 = await getBarberAppointments(context, globals.token);
-                  setState(() {
-                    _events = res2;
-                  });
-                }else {
-                  var res = await getBarberAppointmentRequests(context, globals.token);
-                  setState(() {
-                    appointmentReq = res;
-                  });
-                }
+                showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                  return AppointmentRequestBottomSheet(
+                    requests: appointmentReq,
+                    updateAppointments: (value) {
+                      setState(() {
+                        _events = value;
+                      });
+                    },
+                    updateAppointmentRequests: (value) {
+                      setState(() {
+                        appointmentReq = value;
+                      });
+                    }
+                  );
+                });
               },
               child: Container(
                 padding: EdgeInsets.only(left: 5, right: 20, bottom: 5, top: 5),

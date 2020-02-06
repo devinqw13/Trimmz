@@ -587,8 +587,6 @@ Future<bool> removePackage(BuildContext context, int userid, int packageid) asyn
     jsonResponse = json.decode(response.body);
   }
 
-  print(jsonResponse);
-
   if(jsonResponse['error'] == false){
     return true;
   }else {
@@ -861,7 +859,7 @@ Future<List<AppointmentRequest>> getBarberAppointmentRequests(BuildContext conte
 
 }
 
-Future<int> aptRequestDecision(BuildContext context, int barberId, int requestId, int decision) async {
+Future<bool> aptRequestDecision(BuildContext context, int barberId, int requestId, int decision) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -883,11 +881,11 @@ Future<int> aptRequestDecision(BuildContext context, int barberId, int requestId
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (019)", "Please try again. If this error continues to occur, please contact support.");
-    return 0;
+    return false;
   } 
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (019)", "Please try again.");
-    return 0;
+    return false;
   }
 
   if (json.decode(response.body) is List) {
@@ -896,15 +894,15 @@ Future<int> aptRequestDecision(BuildContext context, int barberId, int requestId
   } else {
     jsonResponse = json.decode(response.body);
   }
-  
+  print(jsonResponse);
   if(jsonResponse['error'] == false){
-    if(jsonResponse['decision'] == 'accepted'){
-      return 1;
+    if(jsonResponse['result'] == true){
+      return true;
     }else {
-      return 2;
+      return false;
     }
   }else {
-    return 0;
+    return false;
   }
 }
 
@@ -1891,7 +1889,6 @@ Future<bool> setFirebaseToken(BuildContext context, String firebaseToken) async 
     showErrorDialog(context, "The Server is not responding (038)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   }
-  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (038)", "Please try again.");
     return false;
