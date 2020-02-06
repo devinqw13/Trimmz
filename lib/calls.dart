@@ -1286,7 +1286,7 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userId) async
   }
 
 }
-//TODO: ALSO RETURNS CLIENTS
+
 Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String username) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
