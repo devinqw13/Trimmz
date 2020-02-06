@@ -80,21 +80,18 @@ class HomeHubScreenState extends State<HomeHubScreen> {
 
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print('on message $message');
         var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['title'], message['body']);
         if(res) {
           checkNotificiations();
         }
       },
       onResume: (Map<String, dynamic> message) async {
-        print('on resume $message');
         var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
         if(res) {
           checkNotificiations();
         }
       },
       onLaunch: (Map<String, dynamic> message) async {
-        print('on launch $message');
         var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
         if(res) {
           checkNotificiations();
@@ -107,10 +104,8 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     _firebaseMessaging.requestNotificationPermissions(
         IosNotificationSettings(sound: true, badge: true, alert: true)
     );
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings)
-    {
-      print("Settings registered: $settings");
+    _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings){
+      
     });
   }
 
