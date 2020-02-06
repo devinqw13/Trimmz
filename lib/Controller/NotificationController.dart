@@ -30,7 +30,12 @@ class NotificationScreenState extends State<NotificationScreen> {
     setState(() {
       notifications = res;
     });
-    await setNotificationsRead(context, globals.token);
+    for(var item in notifications) {
+      if(item.read == false) {
+        await setNotificationsRead(context, globals.token);
+        break;
+      }
+    }
   }
 
   buildNotificationList() {

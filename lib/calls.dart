@@ -63,7 +63,7 @@ Future<Map> loginPost(String username, String password, BuildContext context) as
     showErrorDialog(context, "The Server is not responding (001)", "Please try again later.");
     return {};
   }
-  print(response.body);
+  
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (001)", "Please try again.");
     return {};
@@ -215,7 +215,7 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
     showErrorDialog(context, "The Server is not responding (010)", "Please try again. If this error continues to occur, please contact support.");
     return [];
   } 
-  
+
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (010)", "Please try again.");
     return [];
@@ -1894,7 +1894,7 @@ Future<bool> setFirebaseToken(BuildContext context, String firebaseToken) async 
     showErrorDialog(context, "The Server is not responding (038)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   }
-
+  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (038)", "Please try again.");
     return false;

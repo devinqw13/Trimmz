@@ -9,7 +9,7 @@ import 'palette.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  globals.baseUrl = "http://trimmz.theemove.com/api/";
+  globals.baseUrl = "https://trimmz.app/api/";
   globals.stripeURL = "https://api.stripe.com/v1/";
   globals.stripeSecretKey = "sk_test_5h8VY4cc8ZUKHpIHO0TQWNkN00KJNxvrgY";
   globals.stripePublishablekey = "pk_test_X7T99aRCpPlsEHCjm7TOHnuO00JlKLGdal";
