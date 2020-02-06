@@ -93,26 +93,29 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
                 padding: const EdgeInsets.all(0.0),
                 child: new Center(
                   child: new FlatButton(
-                    onPressed: () {
-                      if(barber is SuggestedBarbers) {
-                        ClientBarbers newBarber = new ClientBarbers();
-                        newBarber.id = barber.id;
-                        newBarber.name = barber.name;
-                        newBarber.phone = barber.phone;
-                        newBarber.rating = barber.rating;
-                        newBarber.shopAddress = barber.shopAddress;
-                        newBarber.shopName = barber.shopName;
-                        newBarber.state = barber.state;
-                        newBarber.username = barber.username;
-                        newBarber.zipcode = barber.zipcode;
-                        newBarber.email = barber.email;
-                        newBarber.city = barber.city;
+                    onPressed: () async {
+                      bool res = await addBarber(context, globals.token, int.parse(barber.id));
+                      if(res) {
+                        if(barber is SuggestedBarbers) {
+                          ClientBarbers newBarber = new ClientBarbers();
+                          newBarber.id = barber.id;
+                          newBarber.name = barber.name;
+                          newBarber.phone = barber.phone;
+                          newBarber.rating = barber.rating;
+                          newBarber.shopAddress = barber.shopAddress;
+                          newBarber.shopName = barber.shopName;
+                          newBarber.state = barber.state;
+                          newBarber.username = barber.username;
+                          newBarber.zipcode = barber.zipcode;
+                          newBarber.email = barber.email;
+                          newBarber.city = barber.city;
 
-                        final bookingScreen = new BookingController(barberInfo: newBarber); 
-                        Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
-                      }else {
-                        final bookingScreen = new BookingController(barberInfo: barber); 
-                        Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
+                          final bookingScreen = new BookingController(barberInfo: newBarber); 
+                          Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
+                        }else {
+                          final bookingScreen = new BookingController(barberInfo: barber); 
+                          Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
+                        }
                       }
                     },
                     child: Text('Book Appointment', 
@@ -241,12 +244,13 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
                   autocorrect: false,
                   textInputAction: TextInputAction.done, 
                   decoration: new InputDecoration(
+                    prefixIcon: Icon(LineIcons.search, color: Colors.grey),
                     contentPadding: EdgeInsets.all(8.0),
                     hintText: 'Search',
                     fillColor: globals.darkModeEnabled ? Colors.grey[900] : Colors.grey[100],
                     filled: true,
                     hintStyle: TextStyle(
-                      color: globals.darkModeEnabled ? Colors.white : Colors.black
+                      color: Colors.grey
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
