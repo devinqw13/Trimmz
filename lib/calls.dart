@@ -710,7 +710,7 @@ Future<List<Availability>> getBarberAvailability(BuildContext context, int useri
 
 }
 
-Future<bool> setTimeAvailability(BuildContext context, int userid, String day, DateTime start, DateTime end, bool isClosed, bool setup) async {
+Future<bool> setTimeAvailability(BuildContext context, int userid, String day, DateTime start, DateTime end, bool isClosed) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -722,41 +722,31 @@ Future<bool> setTimeAvailability(BuildContext context, int userid, String day, D
   String startString;
   String endString;
 
-  if(!setup) {
-    if(isClosed){
-      startString = 'null';
-      endString = 'null';
-    }else {
-      startString = DateFormat.Hms().format(start);
-      endString = DateFormat.Hms().format(end);
-    }
-  }
-
-  var jsonMap;
-  if(!setup) {
-    jsonMap = {
-      "userid" : userid,
-      "day" : day,
-      "start" : startString,
-      "end" : endString
-    };
+  if(isClosed){
+    startString = 'null';
+    endString = 'null';
   }else {
-    jsonMap = {
-      "userid" : userid,
-      "day" : '',
-      "start" : '',
-      "end" : ''
-    };
+    startString = DateFormat.Hms().format(start);
+    endString = DateFormat.Hms().format(end);
   }
 
-  String url = "${globals.baseUrl}setTimeAvailability/";
+  Map jsonMap = {
+    "key": "update_availability",
+    "token" : userid,
+    "day" : day,
+    "start" : startString,
+    "end" : endString
+  };
+
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (016)", "Please try again. If this error continues to occur, please contact support.");
     return false;
-  } 
+  }
+  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (016)", "Please try again.");
     return false;

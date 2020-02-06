@@ -368,7 +368,6 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
         final paymentMethod = new PaymentMethodScreen(signup: true);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => paymentMethod));
       }else {
-        await setTimeAvailability(context, globals.token, '', null, null, null, true);
         final barberSalesSetup = new BarberSalesSetup(address: widget.shopAddress, city: widget.city, state: widget.state, zipcode: widget.zipcode, stateValue: widget.stateValue);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberSalesSetup));
       }

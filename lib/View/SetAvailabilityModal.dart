@@ -141,7 +141,7 @@ class _AvailabilityBottomSheet extends State<AvailabilityBottomSheet> {
                     child: FlatButton(
                       color: Colors.blue,
                       onPressed: () async {
-                        var res = await setTimeAvailability(context, globals.token, aDay.day, start, end, _switchValue, false);
+                        var res = await setTimeAvailability(context, globals.token, aDay.day, start, end, _switchValue);
                         if(res){
                           var res1 = await getBarberAvailability(context, globals.token);
                           setState(() {
