@@ -22,9 +22,9 @@ import 'package:line_icons/line_icons.dart';
 import '../Controller/MobileTransactionsController.dart';
 
 logout(BuildContext context) async {
-  var _ = await removeFirebaseToken(context);
   final loginScreen = new LoginScreen();
   Navigator.push(context, new MaterialPageRoute(builder: (context) => loginScreen));
+  var _ = await removeFirebaseToken(context);
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.clear();
 }
