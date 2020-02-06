@@ -58,10 +58,6 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     .listen((s) => _searchValue(s, searchTabIndex));
 
     initSuggestedBarbers();
-
-    // if(widget.message != null) {
-    //   displayMessage(widget.message);
-    // }
     
     firebaseCloudMessagingListeners();
     checkNotificiations();
@@ -73,15 +69,6 @@ class HomeHubScreenState extends State<HomeHubScreen> {
       loading: false,
       text: 'Loading...'
     );
-  }
-
-  displayMessage(Map message) {
-    return Flushbar(
-      flushbarPosition: FlushbarPosition.BOTTOM,
-      title: message['title'],
-      message: message['body'],
-      duration: Duration(seconds: 2),
-    )..show(context);
   }
 
   void firebaseCloudMessagingListeners() {

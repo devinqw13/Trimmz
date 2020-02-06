@@ -94,28 +94,26 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
                 child: new Center(
                   child: new FlatButton(
                     onPressed: () async {
-                      bool res = await addBarber(context, globals.token, int.parse(barber.id));
-                      if(res) {
-                        if(barber is SuggestedBarbers) {
-                          ClientBarbers newBarber = new ClientBarbers();
-                          newBarber.id = barber.id;
-                          newBarber.name = barber.name;
-                          newBarber.phone = barber.phone;
-                          newBarber.rating = barber.rating;
-                          newBarber.shopAddress = barber.shopAddress;
-                          newBarber.shopName = barber.shopName;
-                          newBarber.state = barber.state;
-                          newBarber.username = barber.username;
-                          newBarber.zipcode = barber.zipcode;
-                          newBarber.email = barber.email;
-                          newBarber.city = barber.city;
+                      if(barber is SuggestedBarbers) {
+                        await addBarber(context, globals.token, int.parse(barber.id));
+                        ClientBarbers newBarber = new ClientBarbers();
+                        newBarber.id = barber.id;
+                        newBarber.name = barber.name;
+                        newBarber.phone = barber.phone;
+                        newBarber.rating = barber.rating;
+                        newBarber.shopAddress = barber.shopAddress;
+                        newBarber.shopName = barber.shopName;
+                        newBarber.state = barber.state;
+                        newBarber.username = barber.username;
+                        newBarber.zipcode = barber.zipcode;
+                        newBarber.email = barber.email;
+                        newBarber.city = barber.city;
 
-                          final bookingScreen = new BookingController(barberInfo: newBarber); 
-                          Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
-                        }else {
-                          final bookingScreen = new BookingController(barberInfo: barber); 
-                          Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
-                        }
+                        final bookingScreen = new BookingController(barberInfo: newBarber); 
+                        Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
+                      }else {
+                        final bookingScreen = new BookingController(barberInfo: barber); 
+                        Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
                       }
                     },
                     child: Text('Book Appointment', 
