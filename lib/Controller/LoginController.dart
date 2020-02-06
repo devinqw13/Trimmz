@@ -31,12 +31,11 @@ class LoginScreenState extends State<LoginScreen> {
     super.initState();
 
     _progressHUD = new ProgressHUD(
-      backgroundColor: Colors.transparent,
-      color: Colors.blue,
-      containerColor: Colors.transparent,
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
       borderRadius: 8.0,
-      //text: "Loading...",
       loading: false,
+      text: 'Loading...'
     );
   }
 

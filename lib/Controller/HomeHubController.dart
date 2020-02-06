@@ -56,19 +56,21 @@ class HomeHubScreenState extends State<HomeHubScreen> {
 
     initSuggestedBarbers();
 
-    if(widget.message != null) {
-      if(widget.message['title'] == 'Appointment Requested') {
-        Flushbar(
-          flushbarPosition: FlushbarPosition.BOTTOM,
-          title: widget.message['title'],
-          message: widget.message['body'],
-          duration: Duration(seconds: 2),
-        )..show(context);
-      }
-    }
+    // if(widget.message != null) {
+    //   displayMessage(widget.message);
+    // }
     
     firebaseCloudMessagingListeners();
     checkNotificiations();
+  }
+
+  displayMessage(Map message) {
+    return Flushbar(
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      title: message['title'],
+      message: message['body'],
+      duration: Duration(seconds: 2),
+    )..show(context);
   }
 
   void firebaseCloudMessagingListeners() {
@@ -671,7 +673,6 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                       )
                     ]
                   ),
-                  //_progressHUD,
                 ]
               )
             )

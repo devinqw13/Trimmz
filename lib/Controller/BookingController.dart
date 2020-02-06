@@ -78,11 +78,11 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     });
 
     _progressHUD = new ProgressHUD(
-      backgroundColor: Color.fromARGB(255, 21, 21, 21),
-      color: Colors.blue,
-      containerColor: Colors.transparent,
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
       borderRadius: 8.0,
       loading: false,
+      text: 'Loading...'
     );
   }
 
@@ -405,7 +405,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
       showErrorDialog(context, 'Missing Information', 'Enter/Select all required information');
       return;
     }
-
+    progressHUD();
     var res = await bookAppointment(context, userId, barberId, price, time, packageId, tip);
     if(res) {
       List tokens = await getNotificationTokens(context, int.parse(barberId));
@@ -420,6 +420,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         };
         await sendPushNotification(context, 'Appointment Requested', '${globals.username} has requested an appointment', int.parse(barberId), token, dataMap);
       }
+      progressHUD();
 
       Map message = {'title': 'Appointment Requested', 'body': 'Your appointment request with ${barberInfo.name} has been sent.'};
 

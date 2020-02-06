@@ -28,11 +28,11 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
     initChecks();
 
     _progressHUD = new ProgressHUD(
-      backgroundColor: Color.fromARGB(255, 21, 21, 21),
-      color: Colors.blue,
-      containerColor: Colors.transparent,
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
       borderRadius: 8.0,
       loading: false,
+      text: 'Loading...'
     );
   }
 

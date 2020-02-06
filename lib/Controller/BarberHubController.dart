@@ -1710,7 +1710,6 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                       )
                     ]
                   ),
-                  //_progressHUD,
                 ]
               )
             )
