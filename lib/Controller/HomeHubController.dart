@@ -599,7 +599,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
               },
               indicatorColor: Colors.white,
               tabs: <Widget>[
-                Tab(text: "Barbers/Stylists"),
+                Tab(text: "Barbers"),
                 Tab(text: "Marketplace")
               ],
             ) : null,
