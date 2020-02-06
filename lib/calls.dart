@@ -746,7 +746,6 @@ Future<bool> setTimeAvailability(BuildContext context, int userid, String day, D
     showErrorDialog(context, "The Server is not responding (016)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   }
-  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (016)", "Please try again.");
     return false;
