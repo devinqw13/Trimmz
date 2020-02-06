@@ -51,10 +51,12 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   callLoginPost(String username, String password, bool retry, BuildContext context) async {
+    progressHUD();
     Map results = await loginPost(username, password, context);
     if (results.length == 0) {
       return;
     }
+    progressHUD();
     processLogin(results, retry);
   }
 
