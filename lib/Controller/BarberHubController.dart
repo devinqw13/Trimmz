@@ -37,6 +37,7 @@ import 'package:expandable/expandable.dart';
 import 'MobileTransactionsController.dart';
 import '../View/AddPackageModal.dart';
 import '../View/AppointmentRequestModal.dart';
+import 'package:progress_hud/progress_hud.dart';
 
 class BarberHubScreen extends StatefulWidget {
   final Map message;
@@ -77,6 +78,8 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
   Colors status;
   List<AppointmentRequest> appointmentReq = [];
   DateTime _calendarSelectDay = DateTime.now();
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
   @override
   void initState() {
@@ -110,6 +113,14 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     }
 
     firebaseCloudMessagingListeners();
+
+    _progressHUD = new ProgressHUD(
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
+      borderRadius: 8.0,
+      loading: false,
+      text: 'Loading...'
+    );
   }
 
   void firebaseCloudMessagingListeners() {
@@ -168,6 +179,17 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     );
     _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings){
 
+    });
+  }
+
+  void progressHUD() {
+    setState(() {
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
     });
   }
 
@@ -1236,12 +1258,16 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                 onTap: () async {
                   FocusScope.of(context).requestFocus(new FocusNode());
                   if(globals.token == int.parse(searchedBarbers[i].id)) {
+                    progressHUD();
                     var res = await getUserDetailsPost(globals.token, context);
                     var res2 = await getBarberPolicies(context, globals.token);
+                    progressHUD();
                     final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res, barberPolicies: res2);
                     Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                   }else {
+                    progressHUD();
                     var res = await getBarberPolicies(context, int.parse(searchedBarbers[i].id));
+                    progressHUD();
                     ClientBarbers barber = new ClientBarbers();
                     barber.id = searchedBarbers[i].id;
                     barber.name = searchedBarbers[i].name;
@@ -1395,7 +1421,9 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               return new GestureDetector(
                 onTap: () async {
                   FocusScope.of(context).requestFocus(new FocusNode());
+                  progressHUD();
                   var res = await getBarberPolicies(context, int.parse(suggestedBarbers[i].id));
+                  progressHUD();
                   ClientBarbers barber = new ClientBarbers();
                   barber.id = suggestedBarbers[i].id;
                   barber.name = suggestedBarbers[i].name;
@@ -1727,6 +1755,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                       )
                     ]
                   ),
+                  _progressHUD
                 ]
               )
             )

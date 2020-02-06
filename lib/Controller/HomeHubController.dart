@@ -17,6 +17,7 @@ import 'dart:async';
 import 'AppointmentListController.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
+import 'package:progress_hud/progress_hud.dart';
 
 class HomeHubScreen extends StatefulWidget {
   final Map message;
@@ -45,6 +46,8 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   List<SuggestedBarbers> searchedBarbers = [];
   bool isSearching = false;
   int searchTabIndex = 0;
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
   @override
   void initState() {
@@ -62,6 +65,14 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     
     firebaseCloudMessagingListeners();
     checkNotificiations();
+
+    _progressHUD = new ProgressHUD(
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
+      borderRadius: 8.0,
+      loading: false,
+      text: 'Loading...'
+    );
   }
 
   displayMessage(Map message) {
@@ -113,6 +124,17 @@ class HomeHubScreenState extends State<HomeHubScreen> {
         .listen((IosNotificationSettings settings)
     {
       print("Settings registered: $settings");
+    });
+  }
+
+  void progressHUD() {
+    setState(() {
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
     });
   }
 
@@ -676,6 +698,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                       )
                     ]
                   ),
+                  _progressHUD
                 ]
               )
             )
