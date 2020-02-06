@@ -51,14 +51,20 @@ Future<Map> loginPost(String username, String password, BuildContext context) as
     'Accept': 'application/json',
   };
 
-
   http.Response response;
   Map jsonResponse = {};
 
-  String url = '${globals.baseUrl}?key=login&username=$username&password=$password';
+  Map jsonMap = {
+    "key": "login",
+    "username": username,
+    "password": password
+  };
+
+  //String url = '${globals.baseUrl}?key=login&username=$username&password=$password';
+  String url = '${globals.baseUrl}';
 
   try {
-    response = await http.get(url, headers: headers);
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers);
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (001)", "Please try again later.");
     return {};
@@ -91,6 +97,7 @@ Future<bool> registerUser(BuildContext context, String name, String username, St
 
   if(accountType == '1') {
     jsonMap = {
+      "key": "register",
       'username': username,
       'name': name,
       'email': email,
@@ -99,6 +106,7 @@ Future<bool> registerUser(BuildContext context, String name, String username, St
     };
   }else {
     jsonMap = {
+      "key": "register",
       'username': username,
       'name': name,
       'email': email,
@@ -111,7 +119,7 @@ Future<bool> registerUser(BuildContext context, String name, String username, St
     };
   }
 
-  String url = "${globals.baseUrl}register/";
+  String url = "${globals.baseUrl}";
 
   http.Response response;
   Map jsonResponse = {};
@@ -1278,7 +1286,7 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userId) async
   }
 
 }
-
+//TODO: ALSO RETURNS CLIENTS
 Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String username) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
