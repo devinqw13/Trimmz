@@ -894,7 +894,6 @@ Future<bool> aptRequestDecision(BuildContext context, int barberId, int requestI
   } else {
     jsonResponse = json.decode(response.body);
   }
-  print(jsonResponse);
   if(jsonResponse['error'] == false){
     if(jsonResponse['result'] == true){
       return true;

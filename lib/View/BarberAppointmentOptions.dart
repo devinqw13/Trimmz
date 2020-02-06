@@ -27,7 +27,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
   @override
   void initState() {
     appointment = widget.appointment;
-    print(appointment);
     _progressHUD = new ProgressHUD(
       color: Colors.white,
       containerColor: Color.fromRGBO(21, 21, 21, 0.4),
