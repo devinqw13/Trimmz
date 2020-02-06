@@ -4,7 +4,6 @@ import '../calls.dart';
 import 'dart:ui';
 import 'LoginController.dart';
 import '../functions.dart';
-import '../globals.dart' as globals;
 import 'PaymentMethodController.dart';
 import 'BarberSalesSetupController.dart';
 import 'package:line_icons/line_icons.dart';
@@ -83,7 +82,6 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
         upperLetter = false;
       });
     }
-    // bool passwordIsValid = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,}').hasMatch(string);
   }
 
   buildPasswordTextField(double size) {
