@@ -385,7 +385,6 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                 barber.city = suggestedBarbers[i].city;
                 barber.state = suggestedBarbers[i].state;
                 barber.zipcode = suggestedBarbers[i].zipcode;
-                // barber.created = suggestedBarbers[i].created;
                 final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber);
                 Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
               },
