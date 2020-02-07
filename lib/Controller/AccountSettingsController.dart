@@ -519,7 +519,8 @@ class AccountSettingsState extends State<AccountSettings> {
               ),
             )
           ),
-          _shopNameController.text != globals.shopName || _cityController.text != globals.city || stateAbr != globals.state || _streetAddressController.text != globals.shopAddress ? Row(
+          //TODO: FINISH SUBMIT BARBER ADDRESS AND DONT SHOW UNLESS SOMETHING CHANGES
+          Row(
             children: <Widget>[
               Expanded(
                 child: new GestureDetector(
@@ -548,7 +549,7 @@ class AccountSettingsState extends State<AccountSettings> {
                 )
               )
             ]
-          ) : Container(),
+          ),
           Padding(padding: EdgeInsets.only(bottom: 24))
         ]
       )
