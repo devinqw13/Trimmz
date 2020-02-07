@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/dialogs.dart';
 import 'package:trimmz/functions.dart';
 import '../globals.dart' as globals;
 import 'ChangePasswordController.dart';
@@ -532,16 +533,22 @@ class AccountSettingsState extends State<AccountSettings> {
       stateAbr != globals.state ? stateChanged = true : stateChanged = false;
 
       progressHUD();
-      Map result = await updateBarberSettings(context, globals.token, shopNameChanged ? _shopNameController.text : null, addressChanged ? _streetAddressController.text : null, stateChanged ? stateAbr : null, cityChanged ? _cityController.text : null);
-      if(result['error'] == false && result['user'].length > 0) {
-        setGlobals(result);
+      var res = await validateAddress('${_streetAddressController.text}, ${_cityController.text}, $stateAbr');
+      if(res){
+        Map result = await updateBarberSettings(context, globals.token, shopNameChanged ? _shopNameController.text : null, addressChanged ? _streetAddressController.text : null, stateChanged ? stateAbr : null, cityChanged ? _cityController.text : null);
+        if(result['error'] == false && result['user'].length > 0) {
+          setGlobals(result);
+          progressHUD();
+          Flushbar(
+            flushbarPosition: FlushbarPosition.BOTTOM,
+            title: "Account Updated",
+            message: "Your account has been updated.",
+            duration: Duration(seconds: 3),
+          )..show(context);
+        }
+      }else {
         progressHUD();
-        Flushbar(
-          flushbarPosition: FlushbarPosition.BOTTOM,
-          title: "Account Updated",
-          message: "Your account has been updated.",
-          duration: Duration(seconds: 3),
-        )..show(context);
+        showErrorDialog(context, 'Address Error', 'The address you provided is not valid');
       }
     }
 

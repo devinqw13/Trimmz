@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:trimmz/dialogs.dart';
+import 'package:trimmz/functions.dart';
 import 'dart:ui';
 import 'LoginController.dart';
 import 'RegisterStep3Controller.dart';
@@ -245,8 +247,13 @@ class RegisterStep2ScreenState extends State<RegisterStep2Screen> with WidgetsBi
 
   void _submitAddressInfo(BuildContext context, String address, String city, String stateAbr, String state, String zipcode) async {
     if(address != '' && city != '' && state != '' && zipcode != ''){
-      final registerStep3Screen = new RegisterStep3Screen(username: widget.username, name: widget.name, email: widget.email, accountType: widget.accountType, shopAddress: address, city: city, state: state, stateAbr: stateAbr, zipcode: zipcode, stateValue: stateValue);
-      Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => registerStep3Screen));
+      var res = await validateAddress('$address, $city, $state');
+      if(res) {
+        final registerStep3Screen = new RegisterStep3Screen(username: widget.username, name: widget.name, email: widget.email, accountType: widget.accountType, shopAddress: address, city: city, state: state, stateAbr: stateAbr, zipcode: zipcode, stateValue: stateValue);
+        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => registerStep3Screen));
+      }else {
+        showErrorDialog(context, 'Address Error', 'The address you provided is not valid');
+      }
     }else {
       AlertDialog dialog = new AlertDialog(
         content: new SingleChildScrollView(

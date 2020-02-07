@@ -167,3 +167,13 @@ buildTimeAgo(String dateString, {bool numericDates = true}) {
     return Text('Just now', style: TextStyle(fontSize: 13));
   }
 }
+
+validateAddress(String address) async {
+  try {
+    await geolocator.placemarkFromAddress(address);
+    return true;
+  } on Exception {
+    print(Exception);
+    return false;
+  }
+}
