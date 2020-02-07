@@ -30,6 +30,12 @@ void main() async {
     user.spPayoutId = prefs.getString('spPayoutId');
     user.spPaymentId = prefs.getString('spPaymentId');
     user.spPayoutMethod= prefs.getString('spPayoutMethod');
+
+    user.shopName = prefs.getString('shopName');
+    user.shopAddress = prefs.getString('shopAddress');
+    user.city = prefs.getString('city');
+    user.state = prefs.getString('state');
+
     globals.user = user;
     globals.token = user.token;
     globals.username = user.username;
@@ -41,6 +47,12 @@ void main() async {
     globals.spPayoutId = user.spPayoutId;
     globals.spPaymentId = user.spPaymentId;
     globals.spPayoutMethod = user.spPayoutMethod;
+
+    globals.shopAddress = user.shopAddress;
+    globals.shopName = user.shopName;
+    globals.city = user.city;
+    globals.state = user.state;
+
     globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
     if (globals.darkModeEnabled) {
       globals.userBrightness = Brightness.dark;

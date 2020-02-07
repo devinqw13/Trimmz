@@ -4,6 +4,8 @@ import '../globals.dart' as globals;
 import 'ChangePasswordController.dart';
 import 'package:flushbar/flushbar.dart';
 import '../calls.dart';
+import '../states.dart' as states;
+import '../View/StateBottomSheetPicker.dart';
 
 class AccountSettings extends StatefulWidget {
   AccountSettings({Key key}) : super (key: key);
@@ -16,9 +18,19 @@ class AccountSettingsState extends State<AccountSettings> {
   TextEditingController _usernameController = new TextEditingController();
   TextEditingController _nameController = new TextEditingController();
   TextEditingController _emailController = new TextEditingController();
+  TextEditingController _shopNameController = new TextEditingController();
+  TextEditingController _streetAddressController = new TextEditingController();
+  TextEditingController _cityController = new TextEditingController();
   bool usernameEmpty;
   bool nameEmpty;
   bool emailEmpty;
+  bool shopNameEmpty;
+  bool streetAddressEmpty;
+  bool cityEmpty;
+
+  int stateValue;
+  String stateStr = '';
+  String stateAbr = '';
 
   void initState() {
     super.initState();
@@ -88,6 +100,81 @@ class AccountSettingsState extends State<AccountSettings> {
         });
       }
     });
+
+    _shopNameController.text = globals.shopName ?? '';
+    if(_shopNameController.text.length == 0) {
+      setState(() {
+        shopNameEmpty = true;
+      });
+    }else {
+      setState(() {
+        shopNameEmpty = false;
+      });
+    }
+    _shopNameController.addListener(() {
+      if(_shopNameController.text.length == 0) {
+        setState(() {
+          shopNameEmpty = true;
+        });
+      }else {
+        setState(() {
+          shopNameEmpty = false;
+        });
+      }
+    });
+
+    _streetAddressController.text = globals.shopAddress;
+    if(_streetAddressController.text.length == 0) {
+      setState(() {
+        streetAddressEmpty = true;
+      });
+    }else {
+      setState(() {
+        streetAddressEmpty = false;
+      });
+    }
+    _streetAddressController.addListener(() {
+      if(_streetAddressController.text.length == 0) {
+        setState(() {
+          streetAddressEmpty = true;
+        });
+      }else {
+        setState(() {
+          streetAddressEmpty = false;
+        });
+      }
+    });
+
+    _cityController.text = globals.city;
+    if(_cityController.text.length == 0) {
+      setState(() {
+        cityEmpty = true;
+      });
+    }else {
+      setState(() {
+        cityEmpty = false;
+      });
+    }
+    _cityController.addListener(() {
+      if(_cityController.text.length == 0) {
+        setState(() {
+          cityEmpty = true;
+        });
+      }else {
+        setState(() {
+          cityEmpty = false;
+        });
+      }
+    });
+
+    setState(() {
+      stateValue = states.abr.indexWhere((abrs) => abrs == globals.state);
+      stateAbr = globals.state;
+      stateStr = states.states[states.abr.indexWhere((abrs) => abrs == globals.state)];
+    });
+
+    print(_shopNameController.text);
+    print(globals.shopName);
   }
 
   profilePicture() {
@@ -182,6 +269,115 @@ class AccountSettingsState extends State<AccountSettings> {
     );
   }
 
+  shopName() {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        shopNameEmpty ? Container() : Text('Shop Name', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        TextField(
+          controller: _shopNameController,
+          keyboardType: TextInputType.text,
+          autocorrect: false,
+          style: new TextStyle(
+            fontSize: 13.0,
+            color: Colors.white
+          ),
+          decoration: new InputDecoration(
+            hintText: 'Shop Name',
+            hintStyle: TextStyle(color: Colors.white70),
+            border: InputBorder.none
+          ),
+        )
+      ]
+    );
+  }
+
+  streetAddress() {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        streetAddressEmpty ? Container() : Text('Street Address', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        TextField(
+          controller: _streetAddressController,
+          keyboardType: TextInputType.text,
+          autocorrect: false,
+          style: new TextStyle(
+            fontSize: 13.0,
+            color: Colors.white
+          ),
+          decoration: new InputDecoration(
+            hintText: 'Street Address',
+            hintStyle: TextStyle(color: Colors.white70),
+            border: InputBorder.none
+          ),
+        )
+      ]
+    );
+  }
+
+  city() {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        cityEmpty ? Container() : Text('City', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        TextField(
+          controller: _cityController,
+          keyboardType: TextInputType.text,
+          autocorrect: false,
+          style: new TextStyle(
+            fontSize: 13.0,
+            color: Colors.white
+          ),
+          decoration: new InputDecoration(
+            hintText: 'City',
+            hintStyle: TextStyle(color: Colors.white70),
+            border: InputBorder.none
+          ),
+        )
+      ]
+    );
+  }
+
+  state() {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        cityEmpty ? Container() : Text('State', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+            showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+              return StateBottomSheet(
+                value: stateValue,
+                valueChanged: (value) {
+                  setState(() {
+                    stateValue = value;
+                    stateStr = states.states[value];
+                    stateAbr = states.abr[value];
+                  });
+                }
+              );
+            });
+          },
+          child: Container(
+            color: Colors.transparent,
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(stateStr == '' ? 'State' : stateStr, style: TextStyle(color: stateStr == '' ? Colors.grey[400] : Colors.white, fontSize: 15)),
+                    Icon(Icons.keyboard_arrow_down, color: stateStr == '' ? Colors.grey[400] : Colors.white)
+                  ]
+                ),
+              ]
+            )
+          )
+        )
+      ]
+    );
+  }
+
   settings() {
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -248,6 +444,43 @@ class AccountSettingsState extends State<AccountSettings> {
     );
   }
 
+  address() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        gradient: new LinearGradient(
+          begin: Alignment(0.0, -2.0),
+          colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+        )
+      ),
+      child: Column(
+        children: <Widget>[
+          shopName(),
+          Divider(
+            height: 15,
+            color: Colors.grey[700],
+          ),
+          streetAddress(),
+          Divider(
+            height: 15,
+            color: Colors.grey[700],
+          ),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: city()
+              ),
+              Expanded(
+                child: state()
+              )
+            ]
+          ),
+        ]
+      )
+    );
+  }
 
   submitUpdatedSettings() async {
     var nameChanged = false;
@@ -280,12 +513,13 @@ class AccountSettingsState extends State<AccountSettings> {
               child: Column(
                 children: <Widget>[
                   settings(),
-                  password()
+                  globals.userType == 2 ? address() : Container(),
+                  password(),
                 ],
               ),
             )
           ),
-          Row(
+          _shopNameController.text != globals.shopName || _cityController.text != globals.city || stateAbr != globals.state || _streetAddressController.text != globals.shopAddress ? Row(
             children: <Widget>[
               Expanded(
                 child: new GestureDetector(
@@ -294,7 +528,6 @@ class AccountSettingsState extends State<AccountSettings> {
                   },
                   child: Container(
                     margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-                    // padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
                     constraints: const BoxConstraints(maxHeight: 35.0, minWidth: 200.0, minHeight: 35.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.0),
@@ -315,7 +548,7 @@ class AccountSettingsState extends State<AccountSettings> {
                 )
               )
             ]
-          ),
+          ) : Container(),
           Padding(padding: EdgeInsets.only(bottom: 24))
         ]
       )

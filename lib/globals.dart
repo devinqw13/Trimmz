@@ -14,6 +14,11 @@ String spPayoutId;
 String spPaymentId;
 Position currentLocation;
 
+String shopName;
+String shopAddress;
+String city;
+String state;
+
 LoginUser user;
 
 Color userColor;
@@ -38,4 +43,9 @@ class LoginUser {
   String spPayoutMethod;
   String spPayoutId;
   String spPaymentId;
+
+  String shopName;
+  String shopAddress;
+  String city;
+  String state;
 }

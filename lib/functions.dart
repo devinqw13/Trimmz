@@ -20,6 +20,11 @@ setGlobals(Map results) async {
   user.spPaymentId = results['user']['sp_paymentid'];
   user.spPayoutMethod = results['user']['payoutMethod'] ?? 'standard';
 
+  user.shopName = results['user']['shop_name'] ?? '';
+  user.shopAddress = results['user']['shop_address'];
+  user.city = results['user']['city'];
+  user.state = results['user']['state'];
+
   globals.user = user;
   globals.token = user.token;
   globals.username = user.username;
@@ -31,6 +36,11 @@ setGlobals(Map results) async {
   globals.spPayoutId = user.spPayoutId;
   globals.spPaymentId = user.spPaymentId;
   globals.spPayoutMethod = user.spPayoutMethod;
+
+  globals.shopName = user.shopName;
+  globals.shopAddress = user.shopAddress;
+  globals.city = user.city;
+  globals.state = user.state;
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
@@ -53,6 +63,11 @@ setGlobals(Map results) async {
   prefs.setString('spPayoutId', globals.user.spPayoutId);
   prefs.setString('spPaymentId', globals.user.spPaymentId);
   prefs.setString('spPayoutMethod', globals.user.spPayoutMethod);
+
+  prefs.setString('shopName', globals.user.shopName);
+  prefs.setString('shopAddress', globals.user.shopAddress);
+  prefs.setString('city', globals.user.city);
+  prefs.setString('state', globals.user.state);
 }
 
 getUserLocation() async {
