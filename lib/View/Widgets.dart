@@ -34,17 +34,7 @@ settingsWidget(BuildContext context) {
     new CSHeader('Account'),
     new CSLink('Account Settings', () async {
       final accountSettingsScreen = new AccountSettings();
-      var result = await Navigator.push(context, new MaterialPageRoute(builder: (context) => accountSettingsScreen));
-      if(result != null) {
-        if(result) {
-          Flushbar(
-            flushbarPosition: FlushbarPosition.BOTTOM,
-            title: "Account Updated",
-            message: "Your account has been updated.",
-            duration: Duration(seconds: 5),
-          )..show(context);
-        }
-      }
+      Navigator.push(context, new MaterialPageRoute(builder: (context) => accountSettingsScreen));
     }, style: CSWidgetStyle(icon: Icon(LineIcons.cog))),
     globals.userType == 2 ? CSLink('View Profile', () async {var res = await getUserDetailsPost(globals.token, context); var res2 = await getBarberPolicies(context, globals.token); final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res, barberPolicies: res2); Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));}, style: CSWidgetStyle(icon: Icon(LineIcons.user))) : Container(),
     globals.userType == 2 ? CSLink('Reviews', () {final reviewController = new ReviewController(userId: globals.token, username: globals.username); Navigator.push(context, new MaterialPageRoute(builder: (context) => reviewController));}, style: CSWidgetStyle(icon: Icon(Icons.chat_bubble_outline))) : Container(),
@@ -94,6 +84,14 @@ settingsWidget(BuildContext context) {
 
     new CSHeader('General'),
     new CSLink('About', () {final aboutScreen = new AboutController(); Navigator.push(context, new MaterialPageRoute(builder: (context) => aboutScreen));}, style: CSWidgetStyle(icon: Icon(Icons.brightness_auto))),
+    new CSLink('Privacy Policy', () async {
+      String url = 'https://trimmz.app/privacy/';
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        throw 'Could not launch';
+      }
+    }, style: CSWidgetStyle(icon: Icon(Icons.brightness_auto))),
     new CSLink('Logout', () {logout(context);}, style: CSWidgetStyle(icon: Icon(Icons.exit_to_app))),
     new Container(
       margin: EdgeInsets.all(10),

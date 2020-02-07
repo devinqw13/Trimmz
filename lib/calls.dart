@@ -1093,6 +1093,52 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
   }
 }
 
+Future<Map> updateBarberSettings(BuildContext context, int userid, [String shopName, String address, String state, String city]) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+    "key": "update_barber_settings",
+    "token" : userid,
+    "shop_name": shopName != null ? shopName : null,
+    "address": address != null ? address : null,
+    "city": city != null ? city : null,
+    "state": state != null ? state : null
+  };
+
+  String url = "${globals.baseUrl}";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (024)", "Please try again. If this error continues to occur, please contact support.");
+    return {};
+  } 
+
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (024)", "Please try again.");
+    return {};
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == false){
+    return jsonResponse;
+  }else {
+    return {};
+  }
+}
+
 Future<bool> updatePackage(BuildContext context, int userid, int packageid, [String name, int price, int duration]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',

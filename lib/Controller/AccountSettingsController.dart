@@ -6,6 +6,7 @@ import 'package:flushbar/flushbar.dart';
 import '../calls.dart';
 import '../states.dart' as states;
 import '../View/StateBottomSheetPicker.dart';
+import 'package:progress_hud/progress_hud.dart';
 
 class AccountSettings extends StatefulWidget {
   AccountSettings({Key key}) : super (key: key);
@@ -27,10 +28,11 @@ class AccountSettingsState extends State<AccountSettings> {
   bool shopNameEmpty;
   bool streetAddressEmpty;
   bool cityEmpty;
-
   int stateValue;
   String stateStr = '';
   String stateAbr = '';
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
   void initState() {
     super.initState();
@@ -101,17 +103,8 @@ class AccountSettingsState extends State<AccountSettings> {
       }
     });
 
-    _shopNameController.text = globals.shopName ?? '';
-    if(_shopNameController.text.length == 0) {
-      setState(() {
-        shopNameEmpty = true;
-      });
-    }else {
-      setState(() {
-        shopNameEmpty = false;
-      });
-    }
-    _shopNameController.addListener(() {
+    if(globals.userType == 2) {
+      _shopNameController.text = globals.shopName ?? '';
       if(_shopNameController.text.length == 0) {
         setState(() {
           shopNameEmpty = true;
@@ -121,19 +114,19 @@ class AccountSettingsState extends State<AccountSettings> {
           shopNameEmpty = false;
         });
       }
-    });
+      _shopNameController.addListener(() {
+        if(_shopNameController.text.length == 0) {
+          setState(() {
+            shopNameEmpty = true;
+          });
+        }else {
+          setState(() {
+            shopNameEmpty = false;
+          });
+        }
+      });
 
-    _streetAddressController.text = globals.shopAddress;
-    if(_streetAddressController.text.length == 0) {
-      setState(() {
-        streetAddressEmpty = true;
-      });
-    }else {
-      setState(() {
-        streetAddressEmpty = false;
-      });
-    }
-    _streetAddressController.addListener(() {
+      _streetAddressController.text = globals.shopAddress;
       if(_streetAddressController.text.length == 0) {
         setState(() {
           streetAddressEmpty = true;
@@ -143,19 +136,19 @@ class AccountSettingsState extends State<AccountSettings> {
           streetAddressEmpty = false;
         });
       }
-    });
+      _streetAddressController.addListener(() {
+        if(_streetAddressController.text.length == 0) {
+          setState(() {
+            streetAddressEmpty = true;
+          });
+        }else {
+          setState(() {
+            streetAddressEmpty = false;
+          });
+        }
+      });
 
-    _cityController.text = globals.city;
-    if(_cityController.text.length == 0) {
-      setState(() {
-        cityEmpty = true;
-      });
-    }else {
-      setState(() {
-        cityEmpty = false;
-      });
-    }
-    _cityController.addListener(() {
+      _cityController.text = globals.city;
       if(_cityController.text.length == 0) {
         setState(() {
           cityEmpty = true;
@@ -165,16 +158,43 @@ class AccountSettingsState extends State<AccountSettings> {
           cityEmpty = false;
         });
       }
-    });
+      _cityController.addListener(() {
+        if(_cityController.text.length == 0) {
+          setState(() {
+            cityEmpty = true;
+          });
+        }else {
+          setState(() {
+            cityEmpty = false;
+          });
+        }
+      });
 
+      setState(() {
+        stateValue = states.abr.indexWhere((abrs) => abrs == globals.state);
+        stateAbr = globals.state;
+        stateStr = states.states[states.abr.indexWhere((abrs) => abrs == globals.state)];
+      });
+    }
+
+    _progressHUD = new ProgressHUD(
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
+      borderRadius: 8.0,
+      loading: false,
+      text: 'Loading...'
+    );
+  }
+
+  void progressHUD() {
     setState(() {
-      stateValue = states.abr.indexWhere((abrs) => abrs == globals.state);
-      stateAbr = globals.state;
-      stateStr = states.states[states.abr.indexWhere((abrs) => abrs == globals.state)];
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
     });
-
-    print(_shopNameController.text);
-    print(globals.shopName);
   }
 
   profilePicture() {
@@ -433,12 +453,6 @@ class AccountSettingsState extends State<AccountSettings> {
         padding: EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width,
         color: Colors.grey[850],
-        // decoration: BoxDecoration(
-        //   gradient: new LinearGradient(
-        //     begin: Alignment(0.0, -2.0),
-        //     colors: [Colors.black, Colors.grey[850]]
-        //   )
-        // ),
         child: Text('Password', style: TextStyle(fontWeight: FontWeight.bold))
       )
     );
@@ -493,13 +507,42 @@ class AccountSettingsState extends State<AccountSettings> {
     }
 
     if(nameChanged || emailChanged){
+      progressHUD();
       Map result = await updateSettings(context, globals.token, 1, nameChanged ? _nameController.text : null, emailChanged ? _emailController.text : null);
       if(result['error'] == false && result['user'].length > 0) {
         setGlobals(result);
-        Navigator.pop(context, true);
+        progressHUD();
+        Flushbar(
+          flushbarPosition: FlushbarPosition.BOTTOM,
+          title: "Account Updated",
+          message: "Your account has been updated.",
+          duration: Duration(seconds: 3),
+        )..show(context);
       }
-    }else {
-      Navigator.pop(context);
+    }
+
+    if(globals.userType == 2) {
+      var shopNameChanged = false;
+      var addressChanged = false;
+      var stateChanged = false;
+      var cityChanged = false;
+      _shopNameController.text != globals.shopName ? shopNameChanged = true : shopNameChanged = false;
+      _streetAddressController.text != globals.shopAddress ? addressChanged = true : addressChanged = false;
+      _cityController.text != globals.city ? cityChanged = true : cityChanged = false;
+      stateAbr != globals.state ? stateChanged = true : stateChanged = false;
+
+      progressHUD();
+      Map result = await updateBarberSettings(context, globals.token, shopNameChanged ? _shopNameController.text : null, addressChanged ? _streetAddressController.text : null, stateChanged ? stateAbr : null, cityChanged ? _cityController.text : null);
+      if(result['error'] == false && result['user'].length > 0) {
+        setGlobals(result);
+        progressHUD();
+        Flushbar(
+          flushbarPosition: FlushbarPosition.BOTTOM,
+          title: "Account Updated",
+          message: "Your account has been updated.",
+          duration: Duration(seconds: 3),
+        )..show(context);
+      }
     }
 
   }
@@ -519,12 +562,12 @@ class AccountSettingsState extends State<AccountSettings> {
               ),
             )
           ),
-          //TODO: FINISH SUBMIT BARBER ADDRESS AND DONT SHOW UNLESS SOMETHING CHANGES
-          Row(
+          globals.userType != 2 ? _emailController.text != globals.email || _nameController.text != globals.name ? Row(
             children: <Widget>[
               Expanded(
                 child: new GestureDetector(
                   onTap: () {
+                    FocusScope.of(context).requestFocus(new FocusNode());
                     submitUpdatedSettings();
                   },
                   child: Container(
@@ -549,7 +592,39 @@ class AccountSettingsState extends State<AccountSettings> {
                 )
               )
             ]
-          ),
+          ) : Container() : 
+          _emailController.text != globals.email || _nameController.text != globals.name || _shopNameController.text != globals.shopName || _streetAddressController.text != globals.shopAddress || _cityController.text != globals.city || stateAbr != globals.state?
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: new GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                    submitUpdatedSettings();
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+                    constraints: const BoxConstraints(maxHeight: 35.0, minWidth: 200.0, minHeight: 35.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0),
+                      gradient: new LinearGradient(
+                        colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
+                      )
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Save',
+                        style: new TextStyle(
+                          fontSize: 19.0,
+                          fontWeight: FontWeight.w300
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            ]
+          ) : Container(),
           Padding(padding: EdgeInsets.only(bottom: 24))
         ]
       )
@@ -572,7 +647,8 @@ class AccountSettingsState extends State<AccountSettings> {
         ),
         body: new Stack(
           children: <Widget> [
-            buildBody()
+            buildBody(),
+            _progressHUD
           ]
         )
       )

@@ -112,7 +112,7 @@ class ChangePasswordState extends State<ChangePassword> {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('Old Password', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        Text('Password', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         TextField(
           controller: _oldPasswordController,
           onChanged: (val) {
@@ -126,7 +126,7 @@ class ChangePasswordState extends State<ChangePassword> {
             color: Colors.white
           ),
           decoration: new InputDecoration(
-            hintText: 'Old Password',
+            hintText: 'Password',
             hintStyle: TextStyle(color: Colors.white70),
             border: InputBorder.none,
             suffix: showPasswordIndicator ? (!passwordValid ? Icon(LineIcons.times, color: Colors.red) : Icon(LineIcons.check, color: Colors.green)) : null,
