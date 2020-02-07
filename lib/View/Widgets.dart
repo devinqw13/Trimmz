@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:trimmz/Controller/ReviewController.dart';
 import '../CustomCupertinoSettings.dart';
 import '../Controller/AboutController.dart';
@@ -93,7 +94,7 @@ settingsWidget(BuildContext context) {
       } else {
         throw 'Could not launch';
       }
-    }, style: CSWidgetStyle(icon: Icon(Icons.brightness_auto))),
+    }, style: CSWidgetStyle(icon: Icon(Icons.lock_outline))),
     new CSLink('Logout', () {logout(context);}, style: CSWidgetStyle(icon: Icon(Icons.exit_to_app))),
     new Container(
       margin: EdgeInsets.all(10),

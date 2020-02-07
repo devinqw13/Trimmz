@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:progress_hud/progress_hud.dart';
 import 'package:trimmz/calls.dart';
 import '../globals.dart' as globals;
 import 'package:flutter/cupertino.dart';
@@ -19,10 +20,31 @@ class HomeHubTabWidget extends StatefulWidget{
 
 class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderStateMixin {
   Appointment upcomingAppointment;
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
   void initState() {
     super.initState();
     initChecks();
+
+    _progressHUD = new ProgressHUD(
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
+      borderRadius: 8.0,
+      loading: false,
+      text: 'Loading...'
+    );
+  }
+
+  void progressHUD() {
+    setState(() {
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
+    });
   }
 
   initChecks() async {
@@ -157,28 +179,35 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
   @override
   Widget build(BuildContext context) {
     if(widget.widgetItem == 0){
-      return new Column(
-        children: <Widget>[
-          upcomingAlert(),
-          new Container(
-            margin: EdgeInsets.all(0),
-            width: MediaQuery.of(context).size.width,
-            color: Colors.black45,
-            child: new FlatButton(
-              padding: EdgeInsets.all(0),
-              textColor: Colors.blue,
-              child: Text('Book Appointment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),),
-              onPressed: () async {
-                var barberList = await getUserBarbers(context, globals.token);
-                final selectBarberScreen = new SelectBarberScreen(clientBarbers: barberList); 
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => selectBarberScreen));
-              },
-            )
+      return new Stack(
+        children: <Widget> [
+          Column(
+            children: <Widget>[
+              upcomingAlert(),
+              new Container(
+                margin: EdgeInsets.all(0),
+                width: MediaQuery.of(context).size.width,
+                color: Colors.black45,
+                child: new FlatButton(
+                  padding: EdgeInsets.all(0),
+                  textColor: Colors.blue,
+                  child: Text('Book Appointment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),),
+                  onPressed: () async {
+                    progressHUD();
+                    var barberList = await getUserBarbers(context, globals.token);
+                    progressHUD();
+                    final selectBarberScreen = new SelectBarberScreen(clientBarbers: barberList); 
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => selectBarberScreen));
+                  },
+                )
+              ),
+              Expanded(
+                child: buildFeed(context) 
+              )
+            ],
           ),
-          Expanded(
-            child: buildFeed(context) 
-          )
-        ],
+          _progressHUD
+        ]
       );
     }else if(widget.widgetItem == 1){
       return new Container(

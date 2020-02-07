@@ -1220,7 +1220,9 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
               textColor: Colors.blue,
               child: Text('Book Appointment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),),
               onPressed: () async {
+                progressHUD();
                 var barberList = await getUserBarbers(context, globals.token);
+                progressHUD();
                 final selectBarberScreen = new SelectBarberScreen(clientBarbers: barberList); 
                 Navigator.push(context, new MaterialPageRoute(builder: (context) => selectBarberScreen));
               },
