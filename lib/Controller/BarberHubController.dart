@@ -340,7 +340,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
           itemCount: _selectedEvents.length * 2,
           itemBuilder: (context, index) {
             if (index.isOdd) {
-              return new Divider();
+              return new Padding(padding: EdgeInsets.all(8),);
             }else {
               final i = index ~/ 2;
               Color statusColor;
@@ -404,7 +404,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                                   ]
                                 ),
                                 Text(_selectedEvents[i]['package']),
-                                Text('\$' + _selectedEvents[i]['price']),
+                                Text('\$' + (int.parse(_selectedEvents[i]['price']) + (int.parse(_selectedEvents[i]['tip']))).toString()),
                               ]
                             ),
                           ]
@@ -959,7 +959,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                       ),
                       Positioned(
                         right: MediaQuery.of(context).size.width * .15,
-                        top: MediaQuery.of(context).size.width * .043,
+                        top: MediaQuery.of(context).size.width * .046,
                         child: GestureDetector(
                           onTap: () {
                             showFullCalendar();
