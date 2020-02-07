@@ -14,7 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../Controller/AccountSettingsController.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flushbar/flushbar.dart';
+import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
 import '../functions.dart';
 import '../Model/FeedItems.dart';
@@ -48,7 +48,8 @@ settingsWidget(BuildContext context) {
 
     new CSHeader('Share'),
     new CSLink('Recommend Trimmz', () async {
-      String message = '?body=';
+      final separator = Platform.isIOS ? '&' : '?';
+      String message = '${separator}body=Check%20out%20this%20app,%20Trimmz.%20You%20can%20book%20appointment,%20view%20cuts,%20and%20more.%20Download%20the%20app%20at%20https://trimmz.app/';
       if (await canLaunch("sms:$message")) {
         await launch("sms:$message");
       } else {
@@ -56,7 +57,8 @@ settingsWidget(BuildContext context) {
       }
     }, style: CSWidgetStyle(icon: Icon(LineIcons.lightbulb_o))),
     new CSLink('Invite Barber', () async {
-      String message = '?body=Check%20this%20app%20for%20barbers,%20Trimmz.%20Download%20the%20app%20at%20';
+      final separator = Platform.isIOS ? '&' : '?';
+      String message = '${separator}body=Check%20this%20app%20for%20barbers,%20Trimmz.%20Download%20the%20app%20at%20https://trimmz.app/';
       if (await canLaunch("sms:$message")) {
         await launch("sms:$message");
       } else {
