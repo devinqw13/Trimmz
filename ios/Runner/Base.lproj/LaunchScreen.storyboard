@@ -19,16 +19,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="trimmz_icon_t" translatesAutoresizingMaskIntoConstraints="NO" id="s9d-pK-YoI">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="trimmz_icon_t" translatesAutoresizingMaskIntoConstraints="NO" id="s9d-pK-YoI">
                                 <rect key="frame" x="57" y="349" width="301" height="199"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="s9d-pK-YoI" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="37" id="BcP-Vl-wpG"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="s9d-pK-YoI" secondAttribute="trailing" constant="36" id="M0T-jQ-uvD"/>
-                            <constraint firstItem="s9d-pK-YoI" firstAttribute="top" secondItem="Ydg-fD-yQy" secondAttribute="bottom" constant="305" id="q4R-L5-Vix"/>
-                            <constraint firstItem="xbc-2k-c8Z" firstAttribute="top" secondItem="s9d-pK-YoI" secondAttribute="bottom" constant="314" id="vhG-Ma-arE"/>
+                            <constraint firstItem="s9d-pK-YoI" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="V29-19-Caa"/>
+                            <constraint firstItem="s9d-pK-YoI" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="ei5-Ua-cmc"/>
                         </constraints>
                     </view>
                 </viewController>
