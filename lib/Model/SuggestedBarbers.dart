@@ -10,5 +10,6 @@ class SuggestedBarbers {
   String city;
   String state;
   String zipcode;
+  String profilePicture;
   bool hasAdded = false;
 }
