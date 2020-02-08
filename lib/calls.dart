@@ -236,7 +236,7 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
   } else {
     jsonResponse = json.decode(response.body);
   }
-print(jsonResponse);
+
   if(jsonResponse['error'] == false){
     if(jsonResponse['type'] == '1'){
       List<SuggestedBarbers> suggestedBarbers = [];
