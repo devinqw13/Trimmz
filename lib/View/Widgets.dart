@@ -302,3 +302,27 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
       );
     }
   }
+
+  buildProfilePictures(BuildContext context, double radius) {
+    if(globals.profilePic != null) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundImage: NetworkImage('https://trimmz.app/images/pp/${globals.profilePic}'),
+      );
+    }else {
+      return Container(
+        child: CircleAvatar(
+          child: Center(child:Text(globals.name.substring(0,1), style: TextStyle(color: Colors.white, fontSize: 50))),
+          radius: radius,
+          backgroundColor: Colors.transparent,
+        ),
+        decoration: new BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.purple,
+          gradient: new LinearGradient(
+            colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
+          )
+        ),
+      );
+    }
+  }

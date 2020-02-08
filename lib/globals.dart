@@ -13,6 +13,7 @@ String spPayoutMethod;
 String spPayoutId;
 String spPaymentId;
 Position currentLocation;
+String profilePic;
 
 String shopName;
 String shopAddress;
@@ -43,9 +44,9 @@ class LoginUser {
   String spPayoutMethod;
   String spPayoutId;
   String spPaymentId;
-
   String shopName;
   String shopAddress;
   String city;
   String state;
+  String profilePic;
 }

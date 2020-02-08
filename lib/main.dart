@@ -30,6 +30,7 @@ void main() async {
     user.spPayoutId = prefs.getString('spPayoutId');
     user.spPaymentId = prefs.getString('spPaymentId');
     user.spPayoutMethod= prefs.getString('spPayoutMethod');
+    user.profilePic = prefs.getString('profilePic');
 
     user.shopName = prefs.getString('shopName');
     user.shopAddress = prefs.getString('shopAddress');
@@ -47,6 +48,7 @@ void main() async {
     globals.spPayoutId = user.spPayoutId;
     globals.spPaymentId = user.spPaymentId;
     globals.spPayoutMethod = user.spPayoutMethod;
+    globals.profilePic = user.profilePic;
 
     globals.shopAddress = user.shopAddress;
     globals.shopName = user.shopName;

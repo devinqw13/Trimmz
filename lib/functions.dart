@@ -19,6 +19,7 @@ setGlobals(Map results) async {
   user.spPayoutId = results['user']['payoutId'];
   user.spPaymentId = results['user']['sp_paymentid'];
   user.spPayoutMethod = results['user']['payoutMethod'] ?? 'standard';
+  user.profilePic = results['user']['profile_picture'];
 
   user.shopName = results['user']['shop_name'] ?? '';
   user.shopAddress = results['user']['shop_address'];
@@ -41,6 +42,8 @@ setGlobals(Map results) async {
   globals.shopAddress = user.shopAddress;
   globals.city = user.city;
   globals.state = user.state;
+
+  globals.profilePic = user.profilePic;
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
@@ -68,6 +71,8 @@ setGlobals(Map results) async {
   prefs.setString('shopAddress', globals.user.shopAddress);
   prefs.setString('city', globals.user.city);
   prefs.setString('state', globals.user.state);
+
+  prefs.setString('profilePic', globals.user.profilePic);
 }
 
 getUserLocation() async {

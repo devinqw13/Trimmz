@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/View/Widgets.dart';
 import 'package:trimmz/dialogs.dart';
 import 'package:trimmz/functions.dart';
 import '../globals.dart' as globals;
@@ -199,23 +200,17 @@ class AccountSettingsState extends State<AccountSettings> {
   }
 
   profilePicture() {
-    return new Container(
-      padding: EdgeInsets.all(10),
-      child: Column(
-        children: <Widget>[
-          Container(
-            width: 50.0,
-            height: 50.0,
-            decoration: new BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.purple,
-              gradient: new LinearGradient(
-                colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-              )
-            ),
-            child: Center(child:Text(globals.name.substring(0,1), style: TextStyle(fontSize: 20)))
-          )
-        ]
+    return new GestureDetector(
+      onTap: () {
+
+      },
+      child: Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          children: <Widget>[
+            buildProfilePictures(context, 50.0)
+          ]
+        )
       )
     );
   }
@@ -413,6 +408,12 @@ class AccountSettingsState extends State<AccountSettings> {
       child: Column(
         children: <Widget>[
           profilePicture(),
+          GestureDetector(
+            onTap: () {
+
+            },
+            child: Text('Change profile picture', style: TextStyle(color: Colors.blue))
+          ),
           Divider(
             height: 15,
             color: Colors.grey[700],
