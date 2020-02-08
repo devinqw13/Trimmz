@@ -228,7 +228,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                     Container(
                       color: Colors.black87,
                       child: ListTile(
-                        leading: buildProfilePictures(context, searchedBarbers[i].profilePicture, searchedBarbers[i].username, 25.0),
+                        leading: buildProfilePictures(context, searchedBarbers[i].profilePicture, searchedBarbers[i].username, 30.0),
                         subtitle: new Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -371,7 +371,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                   Container(
                     color: Colors.black87,
                     child: ListTile(
-                      leading: buildProfilePictures(context, suggestedBarbers[i].profilePicture, suggestedBarbers[i].username, 25.0),
+                      leading: buildProfilePictures(context, suggestedBarbers[i].profilePicture, suggestedBarbers[i].username, 30.0),
                       subtitle: new Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[

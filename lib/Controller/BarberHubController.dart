@@ -1434,11 +1434,11 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                 },
                 child: Column(
-                  children: <Widget> [ 
+                  children: <Widget> [
                     Container(
                       color: Colors.black87,
                       child: ListTile(
-                        leading: buildProfilePictures(context, suggestedBarbers[i].profilePicture, suggestedBarbers[i].username, 25.0),
+                        leading: buildProfilePictures(context, suggestedBarbers[i].profilePicture, suggestedBarbers[i].username, 30.0),
                         subtitle: new Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
