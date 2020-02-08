@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:trimmz/calls.dart';
+import 'package:trimmz/functions.dart';
 import 'Controller/LoginController.dart';
 import 'Controller/HomeHubController.dart';
 import 'Controller/BarberHubController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'globals.dart' as globals;
-import 'palette.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,53 +18,55 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   var token = prefs.getInt('userToken');
-  globals.LoginUser user;
+  //globals.LoginUser user;
   if(token != null){
-    user = new globals.LoginUser();
-    user.token = prefs.getInt('userToken');
-    user.username = prefs.getString('userUsername');
-    user.name = prefs.getString('userName');
-    user.userEmail = prefs.getString('userUserEmail');
-    user.userAdmin = prefs.getBool('userIsAdmin');
-    user.userType = prefs.getInt('userType');
-    user.spCustomerId = prefs.getString('spCustomerId');
-    user.spPayoutId = prefs.getString('spPayoutId');
-    user.spPaymentId = prefs.getString('spPaymentId');
-    user.spPayoutMethod= prefs.getString('spPayoutMethod');
-    user.profilePic = prefs.getString('profilePic');
+    var res = await loginPostV2(token);
+    setGlobals(res);
+    // user = new globals.LoginUser();
+    // user.token = prefs.getInt('userToken');
+    // user.username = prefs.getString('userUsername');
+    // user.name = prefs.getString('userName');
+    // user.userEmail = prefs.getString('userUserEmail');
+    // user.userAdmin = prefs.getBool('userIsAdmin');
+    // user.userType = prefs.getInt('userType');
+    // user.spCustomerId = prefs.getString('spCustomerId');
+    // user.spPayoutId = prefs.getString('spPayoutId');
+    // user.spPaymentId = prefs.getString('spPaymentId');
+    // user.spPayoutMethod= prefs.getString('spPayoutMethod');
+    // user.profilePic = prefs.getString('profilePic');
 
-    user.shopName = prefs.getString('shopName');
-    user.shopAddress = prefs.getString('shopAddress');
-    user.city = prefs.getString('city');
-    user.state = prefs.getString('state');
+    // user.shopName = prefs.getString('shopName');
+    // user.shopAddress = prefs.getString('shopAddress');
+    // user.city = prefs.getString('city');
+    // user.state = prefs.getString('state');
 
-    globals.user = user;
-    globals.token = user.token;
-    globals.username = user.username;
-    globals.name = user.name;
-    globals.email = user.userEmail;
-    globals.userAdmin = user.userAdmin == true ? true : false;
-    globals.userType = user.userType;
-    globals.spCustomerId = user.spCustomerId;
-    globals.spPayoutId = user.spPayoutId;
-    globals.spPaymentId = user.spPaymentId;
-    globals.spPayoutMethod = user.spPayoutMethod;
-    globals.profilePic = user.profilePic;
+    // globals.user = user;
+    // globals.token = user.token;
+    // globals.username = user.username;
+    // globals.name = user.name;
+    // globals.email = user.userEmail;
+    // globals.userAdmin = user.userAdmin == true ? true : false;
+    // globals.userType = user.userType;
+    // globals.spCustomerId = user.spCustomerId;
+    // globals.spPayoutId = user.spPayoutId;
+    // globals.spPaymentId = user.spPaymentId;
+    // globals.spPayoutMethod = user.spPayoutMethod;
+    // globals.profilePic = user.profilePic;
 
-    globals.shopAddress = user.shopAddress;
-    globals.shopName = user.shopName;
-    globals.city = user.city;
-    globals.state = user.state;
+    // globals.shopAddress = user.shopAddress;
+    // globals.shopName = user.shopName;
+    // globals.city = user.city;
+    // globals.state = user.state;
 
-    globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
-    if (globals.darkModeEnabled) {
-      globals.userBrightness = Brightness.dark;
-      globals.userColor = Color.fromARGB(255, 0, 0, 0);
-    }
-    else {
-      globals.userBrightness = Brightness.light;
-      globals.userColor = lightBackgroundWhite;
-    }
+    // globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
+    // if (globals.darkModeEnabled) {
+    //   globals.userBrightness = Brightness.dark;
+    //   globals.userColor = Color.fromARGB(255, 0, 0, 0);
+    // }
+    // else {
+    //   globals.userBrightness = Brightness.light;
+    //   globals.userColor = lightBackgroundWhite;
+    // }
   }
 
   runApp(

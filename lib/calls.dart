@@ -86,6 +86,40 @@ Future<Map> loginPost(String username, String password, BuildContext context) as
   return results;
 }
 
+Future<Map> loginPostV2(int token, [BuildContext context]) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  http.Response response;
+  Map jsonResponse = {};
+
+  String url = '${globals.baseUrl}?key=get_login_id&token=$token';
+
+  try {
+    response = await http.get(url, headers: headers);
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (001)", "Please try again later.");
+    return {};
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (001)", "Please try again.");
+    return {};
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  Map results = jsonResponse;
+  return results;
+}
+
 Future<bool> registerUser(BuildContext context, String name, String username, String email, String accountType, String password,[String address, String city, String state, String zipcode]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
