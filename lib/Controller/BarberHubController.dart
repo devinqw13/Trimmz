@@ -269,6 +269,9 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
 
   void onNavTapTapped(int index) {
    setState(() {
+     _search.clear();
+     isSearching = false;
+     searchedBarbers = [];
      _currentIndex = index;
      if(_currentIndex == 0){
        _tabTitle = 'Home';

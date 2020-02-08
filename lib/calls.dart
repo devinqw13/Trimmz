@@ -2085,3 +2085,80 @@ Future<List<BarberClients>> getBarberClients(BuildContext context, int token, in
     return [];
   }
 }
+
+Future<String> uploadImage(BuildContext context, String filePath, int type) async {
+  Map<String, String>jsonData = {
+    "key": "upload_image",
+    "token": globals.token.toString(),
+    "type": type.toString()
+  };
+
+  String url = "${globals.baseUrl}";
+  var encodedUrl = Uri.encodeFull(url);
+
+  Map jsonResponse = {};
+  http.StreamedResponse response;
+  try {
+    var request = new http.MultipartRequest("POST", Uri.parse(encodedUrl));
+    request.fields.addAll(jsonData);
+    request.files.add(await http.MultipartFile.fromPath('image', filePath));
+    response = await request.send();
+    jsonResponse = await json.decode(await response.stream.bytesToString());
+  } catch (Exception) {
+    showErrorDialog(context, "The server is not responding (042)", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (042)", "Please try again.");
+    return null;
+  }
+  print(jsonResponse);
+  if(jsonResponse['error'] == false){
+    return jsonResponse['result'];
+  }else {
+    return null;
+  }
+}
+
+Future<bool> removeImage(BuildContext context, String image, int type) async {
+  Map<String, String> headers = {
+    'Content-type' : 'application/json', 
+    'Accept': 'application/json',
+  };
+
+  var jsonData = {
+    "key": "remove_image",
+    "image": image,
+    "type": type,
+  };
+
+  String url = "${globals.baseUrl}";
+
+  Map jsonResponse = {};
+  http.Response response;
+  try {
+    response = await http.post(url, body: jsonEncode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (043)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (043)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    return true;
+  }else {
+    return false;
+  }
+}

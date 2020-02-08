@@ -169,6 +169,9 @@ class HomeHubScreenState extends State<HomeHubScreen> {
 
   void onNavTapTapped(int index) {
    setState(() {
+     _search.clear();
+     isSearching = false;
+     searchedBarbers = [];
      _currentIndex = index;
      if(_currentIndex == 0){
        _tabTitle = 'Home';

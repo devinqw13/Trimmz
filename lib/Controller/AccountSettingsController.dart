@@ -9,6 +9,8 @@ import '../calls.dart';
 import '../states.dart' as states;
 import '../View/StateBottomSheetPicker.dart';
 import 'package:progress_hud/progress_hud.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountSettings extends StatefulWidget {
   AccountSettings({Key key}) : super (key: key);
@@ -199,10 +201,28 @@ class AccountSettingsState extends State<AccountSettings> {
     });
   }
 
+  changeProfilePicture() async {
+    progressHUD();
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    if(image != null) {
+      var res = await uploadImage(context, image.path, 1);
+      if(res != null) {
+        await removeImage(context, globals.profilePic, 1);
+        setState(() {
+          globals.profilePic = res;
+        });
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('profilePic', res);
+      }
+    }
+    progressHUD();
+  }
+
   profilePicture() {
     return new GestureDetector(
       onTap: () {
-
+        changeProfilePicture();
       },
       child: Container(
         padding: EdgeInsets.all(10),
@@ -409,8 +429,8 @@ class AccountSettingsState extends State<AccountSettings> {
         children: <Widget>[
           profilePicture(),
           GestureDetector(
-            onTap: () {
-
+            onTap: () async {
+              changeProfilePicture();
             },
             child: Text('Change profile picture', style: TextStyle(color: Colors.blue))
           ),
