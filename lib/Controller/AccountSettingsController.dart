@@ -208,7 +208,7 @@ class AccountSettingsState extends State<AccountSettings> {
         padding: EdgeInsets.all(10),
         child: Column(
           children: <Widget>[
-            buildProfilePictures(context, 50.0)
+            buildProfilePictures(context, globals.profilePic, globals.username, 50)
           ]
         )
       )

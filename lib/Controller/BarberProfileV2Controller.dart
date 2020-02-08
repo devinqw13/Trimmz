@@ -234,18 +234,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
         children: <Widget>[
           Column(
             children: <Widget>[
-              Container(
-                width: 50,
-                height: 50,
-                margin: EdgeInsets.only(bottom: 5),
-                child: Center(child:Text(user.name.substring(0,1), textAlign: TextAlign.center, style: TextStyle(fontSize: 30))),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: new LinearGradient(
-                    colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-                  )
-                ),
-              ),
+              buildProfilePictures(context, user.profilePicture, user.username, 25)
             ]
           ),
           Padding(padding: EdgeInsets.all(5)),

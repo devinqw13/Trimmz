@@ -219,7 +219,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                   barber.city = searchedBarbers[i].city;
                   barber.state = searchedBarbers[i].state;
                   barber.zipcode = searchedBarbers[i].zipcode;
-                  // barber.created = suggestedBarbers[i].created;
+                  barber.profilePicture = suggestedBarbers[i].profilePicture;
                   final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                 },
@@ -228,18 +228,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                     Container(
                       color: Colors.black87,
                       child: ListTile(
-                        leading: new Container(
-                          width: 50.0,
-                          height: 50.0,
-                          decoration: new BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.purple,
-                            gradient: new LinearGradient(
-                              colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-                            )
-                          ),
-                          child: Center(child:Text(searchedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20),))
-                        ),
+                        leading: buildProfilePictures(context, searchedBarbers[i].profilePicture, searchedBarbers[i].username, 25.0),
                         subtitle: new Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -373,6 +362,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                 barber.city = suggestedBarbers[i].city;
                 barber.state = suggestedBarbers[i].state;
                 barber.zipcode = suggestedBarbers[i].zipcode;
+                barber.profilePicture = suggestedBarbers[i].profilePicture;
                 final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                 Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
               },
@@ -381,18 +371,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                   Container(
                     color: Colors.black87,
                     child: ListTile(
-                      leading: new Container(
-                        width: 50.0,
-                        height: 50.0,
-                        decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.purple,
-                          gradient: new LinearGradient(
-                            colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-                          )
-                        ),
-                        child: Center(child:Text(suggestedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20),))
-                      ),
+                      leading: buildProfilePictures(context, suggestedBarbers[i].profilePicture, suggestedBarbers[i].username, 25.0),
                       subtitle: new Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[

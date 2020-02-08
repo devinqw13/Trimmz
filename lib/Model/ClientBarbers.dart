@@ -10,5 +10,6 @@ class ClientBarbers {
   String city;
   String state;
   String zipcode;
+  String profilePicture;
   DateTime created;
 }

@@ -303,16 +303,16 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
     }
   }
 
-  buildProfilePictures(BuildContext context, double radius) {
-    if(globals.profilePic != null) {
+  buildProfilePictures(BuildContext context, String profilePicture, String name, double radius) {
+    if(profilePicture != null && profilePicture != '') {
       return CircleAvatar(
         radius: radius,
-        backgroundImage: NetworkImage('https://trimmz.app/images/pp/${globals.profilePic}'),
+        backgroundImage: NetworkImage('https://trimmz.app/images/pp/$profilePicture'),
       );
     }else {
       return Container(
         child: CircleAvatar(
-          child: Center(child:Text(globals.name.substring(0,1), style: TextStyle(color: Colors.white, fontSize: 50))),
+          child: Center(child:Text(name.substring(0,1), style: TextStyle(color: Colors.white, fontSize: (radius-5.0)))),
           radius: radius,
           backgroundColor: Colors.transparent,
         ),

@@ -192,6 +192,7 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
       userDetails.state = item1['state'];
       userDetails.zipcode = item1['zipcode'];
       userDetails.rating = item1['rating'] ?? '0';
+      userDetails.profilePicture = item1['profile_picture'];
     }
 
     return userDetails;
@@ -235,7 +236,7 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
   } else {
     jsonResponse = json.decode(response.body);
   }
-
+print(jsonResponse);
   if(jsonResponse['error'] == false){
     if(jsonResponse['type'] == '1'){
       List<SuggestedBarbers> suggestedBarbers = [];
@@ -252,6 +253,7 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
         suggestedBarber.state = item['state'];
         suggestedBarber.zipcode = item['zipcode'];
         suggestedBarber.rating = item['rating'] ?? '0';
+        suggestedBarber.profilePicture = item['profile_picture'];
         List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
         for(var item2 in clientBarbers) {
           if(item2.id.contains(item['id'])){
@@ -1365,6 +1367,7 @@ Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String use
         suggestedBarber.state = item['state'];
         suggestedBarber.zipcode = item['zipcode'];
         suggestedBarber.rating = item['rating'] ?? '0';
+        suggestedBarber.profilePicture = item['profile_picture'];
         List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
         for(var item2 in clientBarbers) {
           if(item2.id.contains(item['id'])){
