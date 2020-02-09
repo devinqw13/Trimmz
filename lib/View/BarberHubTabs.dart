@@ -19,24 +19,25 @@ import '../Controller/NotificationController.dart';
 import 'package:expandable/expandable.dart';
 import '../Controller/MobileTransactionsController.dart';
 import '../Model/Packages.dart';
-import '../View/AddPackageModal.dart';
+import 'AddPackageModal.dart';
 import '../Model/AppointmentRequests.dart';
-import '../View/AppointmentRequestModal.dart';
+import 'AppointmentRequestModal.dart';
 import 'package:table_calendar/table_calendar.dart';
-import '../View/FullCalendarModal.dart';
-import '../View/BarberAppointmentOptions.dart';
-import '../View/AppointmentCancelOptions.dart';
-import '../View/AddManualAppointmentModal.dart';
+import 'FullCalendarModal.dart';
+import 'BarberAppointmentOptions.dart';
+import 'AppointmentCancelOptions.dart';
+import 'AddManualAppointmentModal.dart';
 import 'package:intl/intl.dart';
-import '../View/FullPackagesListModalSheet.dart';
-import '../View/PackageOptionsModal.dart';
+import 'FullPackagesListModalSheet.dart';
+import 'PackageOptionsModal.dart';
 import '../Model/BarberPolicies.dart';
-import '../View/BarberPoliciesModal.dart';
+import 'BarberPoliciesModal.dart';
 import '../Model/availability.dart';
-import '../View/SetAvailabilityModal.dart';
+import 'SetAvailabilityModal.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'package:camera/camera.dart';
 
 class BarberHubTabWidget extends StatefulWidget{
   final int widgetItem;
@@ -1557,7 +1558,27 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
         length: 2,
         child: Scaffold(
           backgroundColor: Colors.black,
+          floatingActionButton: new Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              new Container(
+                child: new FloatingActionButton(
+                  onPressed: () async {
+                    var cameras = await availableCameras();
+                    final cameraScreen = new CameraApp(cameras: cameras);
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
+                  },
+                  child: new Icon(Icons.add),
+                  tooltip: "Add",
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  heroTag: null,
+                )
+              ),
+            ]
+          ),
           appBar: new AppBar(
+            automaticallyImplyLeading: false,
             title: Text('Home'),
             actions: <Widget>[
               Badge(
@@ -1588,7 +1609,11 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               ],
             ),
           ),
-          body: new Stack(
+          body: new WillPopScope(
+            onWillPop: () async {
+              return false;
+            },
+            child: new Stack(
             children: <Widget> [
               TabBarView(
                 children: <Widget>[
@@ -1600,11 +1625,13 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
             ]
           )
         )
+        )
       );
     }else if(widget.widgetItem == 1){
       return new Scaffold(
         backgroundColor: Colors.black,
         appBar: new AppBar(
+          automaticallyImplyLeading: false,
           title: Text('Marketplace'),
           actions: <Widget>[
             Badge(
@@ -1623,7 +1650,11 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
             )
           ],
         ),
-        body: new Stack(
+        body: new WillPopScope(
+            onWillPop: () async {
+              return false;
+            },
+            child: new Stack(
           children: <Widget> [
             Container(
               width: MediaQuery.of(context).size.width,
@@ -1644,6 +1675,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
             _progressHUD
           ]
         )
+        )
       );
     }else if(widget.widgetItem == 2){
       return new DefaultTabController(
@@ -1651,6 +1683,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
         child: Scaffold(
           backgroundColor: Colors.black,
           appBar: new AppBar(
+            automaticallyImplyLeading: false,
             title: TextField(
               focusNode: _searchFocus,
               autofocus: false,
@@ -1698,7 +1731,11 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               ],
             ),
           ),
-          body: new Stack(
+          body: new WillPopScope(
+            onWillPop: () async {
+              return false;
+            },
+            child: new Stack(
             children: <Widget> [
               TabBarView(
                 children: <Widget>[
@@ -1709,6 +1746,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               _progressHUD
             ]
           )
+        )
         )
       );
     }else {
