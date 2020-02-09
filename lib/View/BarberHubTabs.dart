@@ -1564,9 +1564,9 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               new Container(
                 child: new FloatingActionButton(
                   onPressed: () async {
-                    var cameras = await availableCameras();
-                    final cameraScreen = new CameraApp(cameras: cameras);
-                    Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
+                    // var cameras = await availableCameras();
+                    // final cameraScreen = new CameraApp(cameras: cameras);
+                    // Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
                   },
                   child: new Icon(Icons.add),
                   tooltip: "Add",
@@ -1651,30 +1651,30 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
           ],
         ),
         body: new WillPopScope(
-            onWillPop: () async {
-              return false;
-            },
-            child: new Stack(
-          children: <Widget> [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(LineIcons.frown_o, size: MediaQuery.of(context).size.height * .2, color: Colors.grey[600]),
-                  Text(
-                    'Marketplace is currently unavailable.',
-                    style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.height * .018,
-                      color: Colors.grey[600]
-                    )
-                  ),
-                ],
-              )
-            ),
-            _progressHUD
-          ]
-        )
+          onWillPop: () async {
+            return false;
+          },
+          child: new Stack(
+            children: <Widget> [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(LineIcons.frown_o, size: MediaQuery.of(context).size.height * .2, color: Colors.grey[600]),
+                    Text(
+                      'Marketplace is currently unavailable.',
+                      style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.height * .018,
+                        color: Colors.grey[600]
+                      )
+                    ),
+                  ],
+                )
+              ),
+              _progressHUD
+            ]
+          )
         )
       );
     }else if(widget.widgetItem == 2){
@@ -1750,7 +1750,24 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
         )
       );
     }else {
-      return settingsWidget(context);
+      return new Scaffold(
+        backgroundColor: Colors.black,
+        appBar: new AppBar(
+          automaticallyImplyLeading: false,
+          title: Text('Settings'),
+        ),
+        body: new WillPopScope(
+          onWillPop: () async {
+            return false;
+          },
+          child: new Stack(
+            children: <Widget> [
+              settingsWidget(context),
+              _progressHUD
+            ]
+          )
+        )
+      );
     }
   }
 }
