@@ -38,6 +38,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:camera/camera.dart';
+import '../Controller/AddImageController.dart';
 
 class BarberHubTabWidget extends StatefulWidget{
   final int widgetItem;
@@ -1564,9 +1565,9 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               new Container(
                 child: new FloatingActionButton(
                   onPressed: () async {
-                    // var cameras = await availableCameras();
-                    // final cameraScreen = new CameraApp(cameras: cameras);
-                    // Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
+                    var cameras = await availableCameras();
+                    final cameraScreen = new CameraApp(cameras: cameras);
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
                   },
                   child: new Icon(Icons.add),
                   tooltip: "Add",
@@ -1614,17 +1615,17 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               return false;
             },
             child: new Stack(
-            children: <Widget> [
-              TabBarView(
-                children: <Widget>[
-                  dashboardTab(),
-                  feedTab()
-                ],
-              ),
-              _progressHUD
-            ]
+              children: <Widget> [
+                TabBarView(
+                  children: <Widget>[
+                    dashboardTab(),
+                    feedTab()
+                  ],
+                ),
+                _progressHUD
+              ]
+            )
           )
-        )
         )
       );
     }else if(widget.widgetItem == 1){
@@ -1736,17 +1737,17 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               return false;
             },
             child: new Stack(
-            children: <Widget> [
-              TabBarView(
-                children: <Widget>[
-                  barberTab(),
-                  marketplaceTab()
-                ],
-              ),
-              _progressHUD
-            ]
+              children: <Widget> [
+                TabBarView(
+                  children: <Widget>[
+                    barberTab(),
+                    marketplaceTab()
+                  ],
+                ),
+                _progressHUD
+              ]
+            )
           )
-        )
         )
       );
     }else {
