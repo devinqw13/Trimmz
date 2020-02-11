@@ -495,7 +495,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
           children: <Widget>[
             Icon(LineIcons.frown_o, size: MediaQuery.of(context).size.height * .2, color: Colors.grey[600]),
             Text(
-              'Barber has no posts.\nPosts disabled',
+              'Barber has no posts yet.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: MediaQuery.of(context).size.height * .018,
