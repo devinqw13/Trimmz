@@ -4,6 +4,8 @@ import '../globals.dart' as globals;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import '../View/CustomCameraButton.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
+import 'dart:io';
 
 class CameraApp extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -17,6 +19,7 @@ class _CameraAppState extends State<CameraApp> {
   int _currentIndex = 0;
   int selectedCameraId = 0;
   double controllerAspect = 0.0;
+  String takenPhoto = '';
 
   @override
   void initState() {
@@ -40,6 +43,7 @@ class _CameraAppState extends State<CameraApp> {
 
   void onNavTapTapped(int index) {
    setState(() {
+     takenPhoto = '';
      _currentIndex = index;
    });
   }
@@ -56,7 +60,24 @@ class _CameraAppState extends State<CameraApp> {
       }
       setState(() {});
     });
-    //_initCameraController(selectedCamera);
+  }
+
+  Future<String> resizePhoto(String filePath) async {
+    ImageProperties properties = await FlutterNativeImage.getImageProperties(filePath);
+
+    int width = properties.width;
+    var offset = (properties.height - properties.width) / 2;
+    File croppedFile = await FlutterNativeImage.cropImage(filePath, 0, offset.round(), width, width);
+    return croppedFile.path;
+  }
+
+  Future<String> takePhoto() async {
+    var tempDir = await getTemporaryDirectory();
+    var tempPath = tempDir.path;
+    //var genName = randomString(10);
+    final path = join(tempPath,'image.png');
+    await controller.takePicture(path);
+    return path;
   }
 
   Widget buildGallery() {
@@ -65,9 +86,6 @@ class _CameraAppState extends State<CameraApp> {
 
   buildBody(BuildContext context) {
     var size = MediaQuery.of(context).size.width;
-    // if (!controller.value.isInitialized) {
-    //   return Container(child: Text('TESTING'));
-    // }
     return new Theme(
       data: new ThemeData(
         splashColor: Colors.transparent,
@@ -80,12 +98,17 @@ class _CameraAppState extends State<CameraApp> {
         appBar: new AppBar(
           title: _currentIndex == 0 ? Text('Photo') : Text('Gallery'),
           actions: <Widget>[
-            Container()
+            takenPhoto != '' ? new FlatButton(
+              child: new Text('Next', style: TextStyle(color: Colors.blue)),
+              onPressed: () {
+                
+              }
+            ) : Container()
           ]
         ),
         body: _currentIndex == 0 ? Column(
           children: <Widget> [
-            controller.value.isInitialized ? Container(
+            takenPhoto == '' ? controller.value.isInitialized ? Container(
               width: size,
               height: size,
               child: ClipRect(
@@ -104,6 +127,10 @@ class _CameraAppState extends State<CameraApp> {
             ) : Container(
               height: size,
               width: size
+            ) : Container(
+              child: Image.file(
+                File(takenPhoto)
+              )
             ),
             Expanded(
               child: Center(
@@ -114,24 +141,41 @@ class _CameraAppState extends State<CameraApp> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Container(
+                      takenPhoto == '' ? Container(
                         width: 40,
                         height: 40,
                         child: IconButton(
                           onPressed: _onSwitchCamera,
                           icon: Icon(Icons.rotate_right, size: MediaQuery.of(context).size.height * .04)
                         )
-                      ),
-                      CustomCameraButton(
+                      ) : Container(),
+                      takenPhoto == '' ? CustomCameraButton(
                         strokeWidth: 5,
                         radius: 50,
                         gradient: LinearGradient(colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent]),
                         child: Container(),
-                        onPressed: () {
-
+                        onPressed: () async {
+                          var res = await takePhoto();
+                          var res1 = await resizePhoto(res);
+                          setState(() {
+                            takenPhoto = res1;
+                          });
                         },
+                      ) : GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            takenPhoto = '';
+                          });
+                        },
+                        child: Text(
+                          'Retake',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: MediaQuery.of(context).size.height * .03
+                          )
+                        )
                       ),
-                      Container(
+                      takenPhoto == '' ? Container(
                         width: 40,
                         height: 40,
                         child: IconButton(
@@ -140,7 +184,7 @@ class _CameraAppState extends State<CameraApp> {
                           },
                           icon: Icon(Icons.flash_off, color: Colors.grey, size: MediaQuery.of(context).size.height * .04)
                         )
-                      ),
+                      ) : Container(),
                     ]
                   )
                 )

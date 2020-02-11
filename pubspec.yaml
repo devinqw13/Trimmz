@@ -46,6 +46,8 @@ dependencies:
   camera: ^0.5.7+3
   path_provider: ^1.6.0
   path: ^1.6.4
+  #photo_manager: ^0.4.8
+  flutter_native_image: ^0.0.5
   # alphabet_list_scroll_view: ^1.0.5
 
 
