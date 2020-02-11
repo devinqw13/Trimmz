@@ -16,6 +16,7 @@ import 'ReviewController.dart';
 import 'package:marquee/marquee.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
+import '../Model/FeedItems.dart';
 
 class BarberProfileV2Screen extends StatefulWidget {
   final token;
@@ -32,6 +33,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
   ClientBarbers user;
   List<Availability> availability = [];
   List<Packages> packages = [];
+  List<FeedItem> feedItems = [];
   bool hasAdded = false;
 
   void initState() {
@@ -43,14 +45,12 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
 
   setUserInfo() async {
     var res1 = await getBarberAvailability(context, int.parse(user.id));
-
     setState(() {
       availability = res1;
       user = widget.userInfo;
     });
 
     var res2 = await getBarberPkgs(context, int.parse(user.id));
-
     setState(() {
       packages = res2;
     });
@@ -63,6 +63,11 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
         });
       }
     }
+
+    var res3 = await getPosts(context, widget.token);
+    setState(() {
+      feedItems = res3;
+    });
   }
 
   header() {
@@ -435,28 +440,77 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
     );
   }
 
-  postBody() {
-    return new Container(
-      margin: EdgeInsets.only(bottom: 20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Icon(LineIcons.frown_o, size: MediaQuery.of(context).size.height * .2, color: Colors.grey[600]),
-          Text(
-            'Barber has no posts.\nPosts disabled',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: MediaQuery.of(context).size.height * .018,
-              color: Colors.grey[600]
-            )
-          ),
-        ],
-      ),
+  _buildGridTile(var item) {
+    return new GestureDetector(
+      onTap: () {},
+      child: Container(
+        child: new Column(
+          children: <Widget>[
+            new Expanded(
+              flex: 5,
+              child: new Container(
+                child: Image.network(item.imageUrl, fit: BoxFit.fill,),
+                decoration: new BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.all(Radius.circular(2.0))
+                ),
+              ),
+            ),
+          ],
+        ),
+        decoration: new BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(2.0)),
+        )
+      )
     );
+  }
+
+  postBody() {
+    if(feedItems.length > 0) {
+      return new GridView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: feedItems.length,
+        padding: EdgeInsets.all(2),
+        gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisSpacing: 5.0,
+          crossAxisSpacing: 5.0,
+          childAspectRatio: 0.9
+        ),
+        itemBuilder: (context, index) {
+          return new Card(
+            child: _buildGridTile(feedItems[index]),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(2.0))
+            ),
+          );
+        },
+      );
+    }else {
+      return new Container(
+        margin: EdgeInsets.only(bottom: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(LineIcons.frown_o, size: MediaQuery.of(context).size.height * .2, color: Colors.grey[600]),
+            Text(
+              'Barber has no posts.\nPosts disabled',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: MediaQuery.of(context).size.height * .018,
+                color: Colors.grey[600]
+              )
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   buildProfileBody() {
     return Container(
+      margin: EdgeInsets.only(bottom: 30),
       child: Column(
         children: <Widget>[
           header(),
