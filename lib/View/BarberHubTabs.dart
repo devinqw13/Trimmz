@@ -50,6 +50,7 @@ class BarberHubTabWidget extends StatefulWidget{
 }
 
 class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProviderStateMixin {
+  final GlobalKey<RefreshIndicatorState> refreshKey = new GlobalKey<RefreshIndicatorState>();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool isSearching = false;
   List<SuggestedBarbers> suggestedBarbers = [];
@@ -1530,6 +1531,57 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
     );
   }
 
+  Future<Null> refreshFeedList() async {
+   Completer<Null> completer = new Completer<Null>();
+    refreshKey.currentState.show();
+    var results = await getPosts(context, globals.token);
+    completer.complete();
+    setState(() {
+      feedItems = results;    
+    });
+    return completer.future;
+  }
+
+  feedList() {
+    if (feedItems.length > 0) {
+      return new RefreshIndicator(
+        color: Colors.blue,
+        onRefresh: refreshFeedList,
+        key: refreshKey,
+        child: new ListView.builder(
+          itemCount: feedItems.length,
+          padding: const EdgeInsets.all(5.0),
+          itemBuilder: (context, i) {
+            return buildFeed(context, feedItems[i]);
+          },
+        ),
+      );
+    }else {
+      return new RefreshIndicator(
+        color: globals.darkModeEnabled ? Colors.white : globals.userColor,
+        onRefresh: refreshFeedList,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(LineIcons.frown_o, size: MediaQuery.of(context).size.height * .2, color: Colors.grey[600]),
+            new Container(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: new Text(
+                "Follow a barber to start viewing cuts",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: MediaQuery.of(context).size.height * .018,
+                  color: Colors.grey[600]
+                )
+              ),
+            ),
+          ],
+        )
+      );
+    }
+  }
+
   Widget feedTab() {
     return new Container(
       child: Column(
@@ -1552,7 +1604,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
             )
           ),
           Expanded(
-            child: buildFeed(context, feedItems) 
+            child: feedList() 
           )
         ]
       )

@@ -5,6 +5,9 @@ import '../CustomCupertinoSettings.dart';
 import '../Controller/AboutController.dart';
 import '../Controller/PaymentMethodController.dart';
 import '../Controller/LoginController.dart';
+import '../calls.dart';
+import '../calls.dart';
+import '../functions.dart';
 import '../globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/BarberProfileV2Controller.dart';
@@ -213,60 +216,60 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
     );
   }
 
-  Future<Null> refreshHomeList() async {
-  //  Completer<Null> completer = new Completer<Null>();
-  //   refreshKey.currentState.show();
-  //   //var results = await getTimeline(context);
-  //   var results = await getUserMoves(context);
-  //   completer.complete();
-  //   setState(() {
-  //     userMoves = results;    
-  //   });
-  //   _buildTabBarViewContainer();
-  //   return completer.future;
-  }
+  buildFeed(BuildContext context, FeedItem feedItems) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
 
-  buildFeed(BuildContext context, List<FeedItem> feedItems) {
-    final GlobalKey<RefreshIndicatorState> refreshKey = new GlobalKey<RefreshIndicatorState>();
-
-    if (feedItems.length > 0) {
-      return new RefreshIndicator(
-        onRefresh: refreshHomeList,
-        key: refreshKey,
-        child: new ListView.builder(
-          itemCount: feedItems.length,
-          padding: const EdgeInsets.all(5.0),
-          itemBuilder: (context, i) {
-            return Container(
-              child: Text(feedItems[i].imageUrl)
-            );
-          },
-        ),
-      );
-    }else {
-      return new RefreshIndicator(
-        color: globals.darkModeEnabled ? Colors.white : globals.userColor,
-        onRefresh: refreshHomeList,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(LineIcons.frown_o, size: MediaQuery.of(context).size.height * .2, color: Colors.grey[600]),
-            new Container(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              child: new Text(
-                "Follow a barber to start viewing cuts",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: MediaQuery.of(context).size.height * .018,
-                  color: Colors.grey[600]
+                },
+                child: Row(
+                  children: <Widget>[
+                    buildProfilePictures(context, feedItems.profilePic, feedItems.username, 20),
+                    Padding(padding: EdgeInsets.all(5)),
+                    Text(
+                      feedItems.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      )
+                    )
+                  ]
                 )
               ),
-            ),
-          ],
-        )
-      );
-    }
+              Row(
+                children: <Widget>[
+                  buildTimeAgo(feedItems.created.toString()),
+                  IconButton(
+                    onPressed: () {
+
+                    },
+                    icon: Icon(Icons.more_horiz)
+                  )
+                ]
+              )
+            ]
+          ),
+          Padding(padding: EdgeInsets.all(5)),
+          Image.network(feedItems.imageUrl),
+          Padding(padding: EdgeInsets.all(5)),
+          RichText(
+            softWrap: true,
+            text: new TextSpan(
+              children: <TextSpan> [
+                new TextSpan(text: feedItems.username+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                new TextSpan(text: feedItems.caption),
+              ]
+            )
+          )
+        ]
+      )
+    );
   }
 
   buildProfilePictures(BuildContext context, String profilePicture, String name, double radius) {

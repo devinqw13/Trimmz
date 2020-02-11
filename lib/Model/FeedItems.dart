@@ -6,4 +6,5 @@ class FeedItem {
   String username;
   DateTime created;
   String caption;
+  String profilePic;
 }
