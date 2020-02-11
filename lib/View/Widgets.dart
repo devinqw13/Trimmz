@@ -6,12 +6,10 @@ import '../Controller/AboutController.dart';
 import '../Controller/PaymentMethodController.dart';
 import '../Controller/LoginController.dart';
 import '../calls.dart';
-import '../calls.dart';
 import '../functions.dart';
 import '../globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/BarberProfileV2Controller.dart';
-import '../calls.dart';
 import '../Model/availability.dart';
 import 'package:intl/intl.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -19,8 +17,6 @@ import '../Controller/AccountSettingsController.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
-import '../functions.dart';
-import '../Model/FeedItems.dart';
 import 'package:line_icons/line_icons.dart';
 import '../Controller/MobileTransactionsController.dart';
 
@@ -213,62 +209,6 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
           ]
         );
       },
-    );
-  }
-
-  buildFeed(BuildContext context, FeedItem feedItems) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              GestureDetector(
-                onTap: () {
-
-                },
-                child: Row(
-                  children: <Widget>[
-                    buildProfilePictures(context, feedItems.profilePic, feedItems.username, 20),
-                    Padding(padding: EdgeInsets.all(5)),
-                    Text(
-                      feedItems.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold
-                      )
-                    )
-                  ]
-                )
-              ),
-              Row(
-                children: <Widget>[
-                  buildTimeAgo(feedItems.created.toString()),
-                  IconButton(
-                    onPressed: () {
-
-                    },
-                    icon: Icon(Icons.more_horiz)
-                  )
-                ]
-              )
-            ]
-          ),
-          Padding(padding: EdgeInsets.all(5)),
-          Image.network(feedItems.imageUrl),
-          Padding(padding: EdgeInsets.all(5)),
-          RichText(
-            softWrap: true,
-            text: new TextSpan(
-              children: <TextSpan> [
-                new TextSpan(text: feedItems.username+' ', style: TextStyle(fontWeight: FontWeight.bold)),
-                new TextSpan(text: feedItems.caption),
-              ]
-            )
-          )
-        ]
-      )
     );
   }
 

@@ -11,6 +11,8 @@ import '../Model/Appointment.dart';
 import 'package:intl/intl.dart';
 import '../Model/FeedItems.dart';
 import 'dart:async';
+import '../functions.dart';
+import '../Controller/BarberProfileV2Controller.dart';
 
 class HomeHubTabWidget extends StatefulWidget{
   final int widgetItem;
@@ -206,7 +208,64 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
           itemCount: feedItems.length,
           padding: const EdgeInsets.all(5.0),
           itemBuilder: (context, i) {
-            return buildFeed(context, feedItems[i]);
+            return Container(
+              margin: EdgeInsets.only(bottom: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () async {
+                          progressHUD();
+                          var res = await getUserDetailsPost(feedItems[i].userId, context);
+                          var res2 = await getBarberPolicies(context, feedItems[i].userId);
+                          progressHUD();
+                          final profileScreen = new BarberProfileV2Screen(token: feedItems[i].userId, userInfo: res, barberPolicies: res2);
+                          Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
+                        },
+                        child: Row(
+                          children: <Widget>[
+                            buildProfilePictures(context, feedItems[i].profilePic, feedItems[i].username, 20),
+                            Padding(padding: EdgeInsets.all(5)),
+                            Text(
+                              feedItems[i].name,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold
+                              )
+                            )
+                          ]
+                        )
+                      ),
+                      Row(
+                        children: <Widget>[
+                          buildTimeAgo(feedItems[i].created.toString()),
+                          IconButton(
+                            onPressed: () {
+
+                            },
+                            icon: Icon(Icons.more_horiz)
+                          )
+                        ]
+                      )
+                    ]
+                  ),
+                  Padding(padding: EdgeInsets.all(5)),
+                  Image.network(feedItems[i].imageUrl),
+                  Padding(padding: EdgeInsets.all(5)),
+                  RichText(
+                    softWrap: true,
+                    text: new TextSpan(
+                      children: <TextSpan> [
+                        new TextSpan(text: feedItems[i].username+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                        new TextSpan(text: feedItems[i].caption),
+                      ]
+                    )
+                  )
+                ]
+              )
+            );
           },
         ),
       );
