@@ -2199,7 +2199,7 @@ Future<bool> removeImage(BuildContext context, String image, int type) async {
   }
 }
 
-Future<List<FeedItem>> getPosts(BuildContext context, int userId) async {
+Future<List<FeedItem>> getPosts(BuildContext context, int userId, int type) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
@@ -2208,7 +2208,7 @@ Future<List<FeedItem>> getPosts(BuildContext context, int userId) async {
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}?key=get_posts&token=$userId";
+  String url = "${globals.baseUrl}?key=get_posts&token=$userId&type=$type";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));

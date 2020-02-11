@@ -192,7 +192,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       policies = res4 ?? new BarberPolicies();
     });
 
-    var res5 = await getPosts(context, globals.token);
+    var res5 = await getPosts(context, globals.token, 1);
     setState(() {
       feedItems = res5;
     });
@@ -1534,10 +1534,10 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
   Future<Null> refreshFeedList() async {
    Completer<Null> completer = new Completer<Null>();
     refreshKey.currentState.show();
-    var results = await getPosts(context, globals.token);
+    var results = await getPosts(context, globals.token, 1);
     completer.complete();
     setState(() {
-      feedItems = results;    
+      feedItems = results;
     });
     return completer.future;
   }

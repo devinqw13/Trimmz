@@ -64,7 +64,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
       }
     }
 
-    var res3 = await getPosts(context, widget.token);
+    var res3 = await getPosts(context, widget.token, 2);
     setState(() {
       feedItems = res3;
     });

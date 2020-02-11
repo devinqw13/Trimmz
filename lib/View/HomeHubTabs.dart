@@ -59,7 +59,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
       upcomingAppointment = res1;
     });
 
-    var res2 = await getPosts(context, globals.token);
+    var res2 = await getPosts(context, globals.token, 1);
     setState(() {
       feedItems = res2;
     });
@@ -190,10 +190,10 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
   Future<Null> refreshFeedList() async {
    Completer<Null> completer = new Completer<Null>();
     refreshKey.currentState.show();
-    var results = await getPosts(context, globals.token);
+    var results = await getPosts(context, globals.token, 1);
     completer.complete();
     setState(() {
-      feedItems = results;    
+      feedItems = results;
     });
     return completer.future;
   }
