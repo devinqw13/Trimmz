@@ -226,53 +226,20 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
   //   return completer.future;
   }
 
-  List<Image> _buildImageList(List<FeedItem> timelineItems,double scale) {
-    var imageList = new List<Image>();
-    for (var item in timelineItems) {
-      if (item.userId.toString().length > 0) {
-        imageList.add(new Image.network("", 
-          scale: scale)
-        );
-      } else {
-        imageList.add(new Image.network("https://ocelli.erpsuites.com/ocelli/dist/icons/missing.png", 
-          scale: scale)
-        );
-      }
-    }
-    return imageList;
-  }
-
-  buildFeed(BuildContext context) {
-    List<FeedItem> feedItems = [];
-    List<Image> imageList = new List<Image>();
-    double textScale = 1.0;
-    double listImageScale;
+  buildFeed(BuildContext context, List<FeedItem> feedItems) {
     final GlobalKey<RefreshIndicatorState> refreshKey = new GlobalKey<RefreshIndicatorState>();
 
-
-    imageList = _buildImageList(feedItems, listImageScale);
     if (feedItems.length > 0) {
       return new RefreshIndicator(
         onRefresh: refreshHomeList,
         key: refreshKey,
         child: new ListView.builder(
-          itemCount: feedItems.length * 2,
+          itemCount: feedItems.length,
           padding: const EdgeInsets.all(5.0),
-          itemBuilder: (context, index) {
-            if (index.isOdd) {
-              return new Divider();
-            }
-            else {
-              final i = index ~/ 2;
-              return new ListTile(
-                leading: imageList[i],
-                title: new Text(feedItems[i].userId.toString(),
-                  style: new TextStyle(
-                    fontSize: 12.0 * textScale
-                  ),
-                ),
-              );
-            }
+          itemBuilder: (context, i) {
+            return Container(
+              child: Text(feedItems[i].imageUrl)
+            );
           },
         ),
       );

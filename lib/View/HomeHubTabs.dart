@@ -9,6 +9,7 @@ import 'package:line_icons/line_icons.dart';
 import '../View/Widgets.dart';
 import '../Model/Appointment.dart';
 import 'package:intl/intl.dart';
+import '../Model/FeedItems.dart';
 
 class HomeHubTabWidget extends StatefulWidget{
   final int widgetItem;
@@ -22,6 +23,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
   Appointment upcomingAppointment;
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
+  List<FeedItem> feedItems = [];
 
   void initState() {
     super.initState();
@@ -52,6 +54,8 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
     setState(() {
       upcomingAppointment = res1;
     });
+
+    //TODO: GET ALL POSTS THAT THIS USER FOLLOWS
   }
 
   upcomingAlert() {
@@ -202,7 +206,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                 )
               ),
               Expanded(
-                child: buildFeed(context) 
+                child: buildFeed(context, feedItems) 
               )
             ],
           ),

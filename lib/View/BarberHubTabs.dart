@@ -39,6 +39,7 @@ import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import '../Controller/AddImageController.dart';
+import '../Model/FeedItems.dart';
 
 class BarberHubTabWidget extends StatefulWidget{
   final int widgetItem;
@@ -72,6 +73,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
   AnimationController _animationController;
   BarberPolicies policies = new BarberPolicies();
   final df2 = new DateFormat('yyyy-MM-dd');
+  List<FeedItem> feedItems = [];
 
   void initState() {
     super.initState();
@@ -187,6 +189,11 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
     var res4 = await getBarberPolicies(context, globals.token);
     setState(() {
       policies = res4 ?? new BarberPolicies();
+    });
+
+    var res5 = await getPosts(context, globals.token);
+    setState(() {
+      feedItems = res5;
     });
   }
 
@@ -1545,7 +1552,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
             )
           ),
           Expanded(
-            child: buildFeed(context) 
+            child: buildFeed(context, feedItems) 
           )
         ]
       )

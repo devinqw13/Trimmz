@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:trimmz/Model/AppointmentRequests.dart';
 import 'package:trimmz/Model/BarberClients.dart';
 import 'package:trimmz/Model/BarberPolicies.dart';
+import 'package:trimmz/Model/FeedItems.dart';
 import 'globals.dart' as globals;
 import 'dialogs.dart';
 import 'Model/availability.dart';
@@ -2196,4 +2197,53 @@ Future<bool> removeImage(BuildContext context, String image, int type) async {
   }else {
     return false;
   }
+}
+
+Future<List<FeedItem>> getPosts(BuildContext context, int userId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}?key=get_posts&token=$userId";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (028)", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (028)", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == false){
+    List<FeedItem> feed = [];
+    for(var item in jsonResponse['posts']){
+      FeedItem feedItem = new FeedItem();
+      feedItem.id = int.parse(item['id']);
+      feedItem.userId = int.parse(item['userid']);
+      feedItem.imageUrl = 'https://trimmz.app/images/posts/${item['url']}';
+      feedItem.name = item['name'];
+      feedItem.username = item['username'];
+      feedItem.created = DateTime.parse(item['created']);
+      feedItem.caption = item['caption'];
+      feed.add(feedItem);
+    }
+    return feed;
+  }else {
+    return [];
+  }
+
 }
