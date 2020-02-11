@@ -2120,11 +2120,12 @@ Future<List<BarberClients>> getBarberClients(BuildContext context, int token, in
   }
 }
 
-Future<String> uploadImage(BuildContext context, String filePath, int type) async {
+Future<String> uploadImage(BuildContext context, String filePath, int type, [String caption]) async {
   Map<String, String>jsonData = {
     "key": "upload_image",
     "token": globals.token.toString(),
-    "type": type.toString()
+    "type": type.toString(),
+    "caption": caption != null ? caption : null
   };
 
   String url = "${globals.baseUrl}";

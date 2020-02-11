@@ -6,6 +6,7 @@ import 'package:path/path.dart';
 import '../View/CustomCameraButton.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'dart:io';
+import 'ShareImageController.dart';
 
 class CameraApp extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -99,9 +100,10 @@ class _CameraAppState extends State<CameraApp> {
           title: _currentIndex == 0 ? Text('Photo') : Text('Gallery'),
           actions: <Widget>[
             takenPhoto != '' ? new FlatButton(
-              child: new Text('Next', style: TextStyle(color: Colors.blue)),
-              onPressed: () {
-                
+              child: new Text('Next', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+              onPressed: (){
+                final shareImageScreen = new ShareImage(image: takenPhoto);
+                Navigator.push(context, new MaterialPageRoute(builder: (context) => shareImageScreen));
               }
             ) : Container()
           ]
