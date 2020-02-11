@@ -7,6 +7,9 @@ import '../View/CustomCameraButton.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'dart:io';
 import 'ShareImageController.dart';
+import 'package:photo_manager/photo_manager.dart';
+import '../View/GallaryImageThumbnail.dart';
+import 'dart:typed_data';
 
 class CameraApp extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -16,11 +19,16 @@ class CameraApp extends StatefulWidget {
 }
 
 class _CameraAppState extends State<CameraApp> {
+  List<AssetPathEntity> galleryList = [];
+  AssetPathEntity defaultGallery;
+  List<AssetEntity> defaultGalleryImageList = [];
+  AssetEntity gallerySelectedImage;
   CameraController controller;
   int _currentIndex = 0;
   int selectedCameraId = 0;
   double controllerAspect = 0.0;
   String takenPhoto = '';
+  String test = '';
 
   @override
   void initState() {
@@ -42,11 +50,21 @@ class _CameraAppState extends State<CameraApp> {
     super.dispose();
   }
 
-  void onNavTapTapped(int index) {
-   setState(() {
-     takenPhoto = '';
-     _currentIndex = index;
-   });
+  void onNavTapTapped(int index) async {
+    if(index == 1) {
+      var list = await PhotoManager.getAssetPathList();
+      var imageList = await list[0].assetList;
+      setState(() {
+        galleryList = list;
+        defaultGallery = list[0];
+        defaultGalleryImageList = imageList;
+        gallerySelectedImage = defaultGalleryImageList[0];
+      });
+    }
+    setState(() {
+      takenPhoto = '';
+      _currentIndex = index;
+    });
   }
 
   void _onSwitchCamera() {
@@ -75,7 +93,6 @@ class _CameraAppState extends State<CameraApp> {
   Future<String> takePhoto() async {
     var tempDir = await getTemporaryDirectory();
     var tempPath = tempDir.path;
-    //var genName = randomString(10);
     final path = join(tempPath,'image.png');
     await controller.takePicture(path);
     return path;
@@ -83,6 +100,26 @@ class _CameraAppState extends State<CameraApp> {
 
   Widget buildGallery() {
     return Container(child:Text('Gallery'));
+  }
+
+  buildGallerySelectedImage(BuildContext context) {
+    final format = ThumbFormat.jpeg;
+    return FutureBuilder<Uint8List>(
+      future: gallerySelectedImage.thumbDataWithSize(500, 500, format: format),
+      builder: (BuildContext context, snapshot) {
+        if (snapshot.hasData) {
+          return Image.memory(snapshot.data);
+        } else {
+          return Center(
+            child: Container(
+              child: CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue)
+              ),
+            ),
+          );
+        }
+      },
+    );
   }
 
   buildBody(BuildContext context) {
@@ -99,7 +136,7 @@ class _CameraAppState extends State<CameraApp> {
         appBar: new AppBar(
           title: _currentIndex == 0 ? Text('Photo') : Text('Gallery'),
           actions: <Widget>[
-            takenPhoto != '' ? new FlatButton(
+            takenPhoto != '' || (_currentIndex == 1 && gallerySelectedImage != null) ? new FlatButton(
               child: new Text('Next', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
               onPressed: (){
                 final shareImageScreen = new ShareImage(image: takenPhoto);
@@ -193,7 +230,55 @@ class _CameraAppState extends State<CameraApp> {
               )
             )
           ]
-        ) : Container(child:Text('Gallery')),
+        ) : 
+        defaultGalleryImageList != null ?
+        Column(
+          children: <Widget> [
+            Container(
+              height: size,
+              width: size,
+              child: gallerySelectedImage != null ? buildGallerySelectedImage(context) : Container()
+            ),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 5.0,
+                  crossAxisSpacing: 5.0,
+                  childAspectRatio: 0.9
+                ),
+                itemCount: defaultGalleryImageList.length,
+                itemBuilder: (contex, i) {
+                  return GestureDetector(
+                    onTap: () async {
+                      // var req = await defaultGalleryImageList[i].thumbData;
+                      // var tempDir = await getTemporaryDirectory();
+                      // var tempPath = tempDir.path;
+
+                      // var imageId = defaultGalleryImageList[i].id;
+                      // var nameList = imageId.split('-');
+                      // var name = nameList[0];
+
+                      // File file = new File('$tempPath/$name.png');
+
+                      // await file.writeAsBytes(req);
+
+                      // var path = await resizePhoto(file.path);
+
+                      setState(() {
+                        gallerySelectedImage = defaultGalleryImageList[i];
+                      });
+                    },
+                    child: ImageItemWidget(
+                      key: ValueKey(defaultGalleryImageList[i]),
+                      entity: defaultGalleryImageList[i],
+                    ),
+                  );
+                },
+              ),
+            )
+          ]
+        ) : Container(),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: globals.userColor,
           type: BottomNavigationBarType.fixed,
