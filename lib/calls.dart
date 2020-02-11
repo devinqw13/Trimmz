@@ -2239,6 +2239,7 @@ Future<List<FeedItem>> getPosts(BuildContext context, int userId) async {
       feedItem.username = item['username'];
       feedItem.created = DateTime.parse(item['created']);
       feedItem.caption = item['caption'];
+      feedItem.profilePic = item['profile_picture'];
       feed.add(feedItem);
     }
     return feed;
