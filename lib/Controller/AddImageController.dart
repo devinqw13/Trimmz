@@ -10,6 +10,7 @@ import 'ShareImageController.dart';
 import 'package:photo_manager/photo_manager.dart';
 import '../View/GallaryImageThumbnail.dart';
 import 'dart:typed_data';
+import 'package:simple_image_crop/simple_image_crop.dart';
 
 class CameraApp extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -28,7 +29,7 @@ class _CameraAppState extends State<CameraApp> {
   int selectedCameraId = 0;
   double controllerAspect = 0.0;
   String takenPhoto = '';
-  String test = '';
+  Uint8List test;
 
   @override
   void initState() {
@@ -54,10 +55,12 @@ class _CameraAppState extends State<CameraApp> {
     if(index == 1) {
       var list = await PhotoManager.getAssetPathList();
       var imageList = await list[0].assetList;
+      var req = await imageList[0].thumbData;
       setState(() {
         galleryList = list;
         defaultGallery = list[0];
         defaultGalleryImageList = imageList;
+        test = req;
         gallerySelectedImage = defaultGalleryImageList[0];
       });
     }
@@ -104,11 +107,18 @@ class _CameraAppState extends State<CameraApp> {
 
   buildGallerySelectedImage(BuildContext context) {
     final format = ThumbFormat.jpeg;
+    final imgCropKey = GlobalKey<ImgCropState>();
     return FutureBuilder<Uint8List>(
       future: gallerySelectedImage.thumbDataWithSize(500, 500, format: format),
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasData) {
-          return Image.memory(snapshot.data);
+          return ImgCrop(
+            key: imgCropKey,
+            maximumScale: 1.0,
+            chipRadius: 200,
+            chipShape: 'rect',
+            image: MemoryImage(snapshot.data)
+          );
         } else {
           return Center(
             child: Container(
@@ -251,7 +261,7 @@ class _CameraAppState extends State<CameraApp> {
                 itemBuilder: (contex, i) {
                   return GestureDetector(
                     onTap: () async {
-                      // var req = await defaultGalleryImageList[i].thumbData;
+                      var req = await defaultGalleryImageList[i].thumbData;
                       // var tempDir = await getTemporaryDirectory();
                       // var tempPath = tempDir.path;
 
@@ -266,6 +276,7 @@ class _CameraAppState extends State<CameraApp> {
                       // var path = await resizePhoto(file.path);
 
                       setState(() {
+                        test = req;
                         gallerySelectedImage = defaultGalleryImageList[i];
                       });
                     },

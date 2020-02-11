@@ -113,6 +113,8 @@ PODS:
   - Reachability (3.2)
   - shared_preferences (0.0.1):
     - Flutter
+  - simple_image_crop (0.0.1):
+    - Flutter
   - Stripe (18.4.0)
   - stripe_payment (1.0.0):
     - Flutter
@@ -139,6 +141,7 @@ DEPENDENCIES:
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+  - simple_image_crop (from `.symlinks/plugins/simple_image_crop/ios`)
   - stripe_payment (from `.symlinks/plugins/stripe_payment/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
@@ -192,6 +195,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/photo_manager/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
+  simple_image_crop:
+    :path: ".symlinks/plugins/simple_image_crop/ios"
   stripe_payment:
     :path: ".symlinks/plugins/stripe_payment/ios"
   url_launcher:
@@ -232,6 +237,7 @@ SPEC CHECKSUMS:
   Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
+  simple_image_crop: 7bc768de8b5fa16adafb0c96557bba83ec6f734e
   Stripe: fa837c60f0644b488c994024ce7d9b001ea4e97c
   stripe_payment: 1baf1bbf556f7a35c210dc9e2eccf2075947b6be
   url_launcher: a1c0cc845906122c4784c542523d8cacbded5626
