@@ -171,32 +171,6 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
   }
 
   initBarberInfo() async {
-    // var res = await getBarberPkgs(context, globals.token);
-    // setState(() {
-    //   packages = res;
-    // });
-
-    // final _selectedDay = DateTime.parse(df2.format(DateTime.parse(DateTime.now().toString())));
-    // var res1 = await getBarberAppointments(context, globals.token);
-    // setState(() {
-    //   _events = res1;
-    // _selectedEvents = _events[_selectedDay] ?? [];
-    // });
-
-    // var res2 = await getBarberAvailability(context, globals.token);
-    // setState(() {
-    //   availability = res2;
-    // });
-
-    // var res3 = await getBarberAppointmentRequests(context, globals.token);
-    // setState(() {
-    //   appointmentReq = res3;
-    // });
-
-    // var res4 = await getBarberPolicies(context, globals.token);
-    // setState(() {
-    //   policies = res4 ?? new BarberPolicies();
-    // });
     setState(() {
       packages = widget.packages;
       _events = widget.events;
@@ -1730,7 +1704,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                 animationDuration: const Duration(milliseconds: 300),
                 child: IconButton(
                   onPressed: () async {
-                    final notificationScreen = new NotificationScreen();
+                    final notificationScreen = new NotificationScreen(selectedEvents: _selectedEvents, packages: packages, events: _events, availability: availability, appointmentReq: appointmentReq, policies: policies);
                     var result = await Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationScreen));
                     if(result == null) {
                       setState(() {

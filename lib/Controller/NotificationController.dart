@@ -5,12 +5,20 @@ import '../Model/Notifications.dart';
 import 'package:line_icons/line_icons.dart';
 import '../functions.dart';
 import '../calls.dart';
-import '../View/SendNotificationModal.dart';
-import '../View/AddNotificationRecipientsModal.dart';
-import 'package:flushbar/flushbar.dart';
+import 'AddAnnoucementRecipients.dart';
+import '../Model/Packages.dart';
+import '../Model/availability.dart';
+import '../Model/AppointmentRequests.dart';
+import '../Model/BarberPolicies.dart';
 
 class NotificationScreen extends StatefulWidget {
-  NotificationScreen({Key key}) : super (key: key);
+  final List selectedEvents;
+  final List<Packages> packages;
+  final Map<DateTime, List> events;
+  final List<Availability> availability;
+  final List<AppointmentRequest> appointmentReq;
+  final BarberPolicies policies;
+  NotificationScreen({Key key, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
 
   @override
   NotificationScreenState createState() => new NotificationScreenState();
@@ -90,34 +98,6 @@ class NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  sendNotification([var recipients]) {
-    showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-      return SendNotificationModal(
-        success: (value) {
-          if(value) {
-            Flushbar(
-              flushbarPosition: FlushbarPosition.BOTTOM,
-              title: "Announcement Sent",
-              message: "Your announcement has been sent successfully",
-              duration: Duration(seconds: 2),
-            )..show(context);
-          }
-        },
-        recipients: recipients,
-        addRecipients: (value) {
-          showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-            return AddNotificationRecipientsModal(
-              recipients: value,
-              showSendNotification: (value) {
-                sendNotification(value);
-              }
-            );
-          });
-        },
-      );
-    });
-  }
-
   buildBody() {
     return Container(
       child: Column(
@@ -131,7 +111,8 @@ class NotificationScreenState extends State<NotificationScreen> {
               textColor: Colors.blue,
               child: Text('Send Annoucement', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),),
               onPressed: () async {
-                sendNotification();
+                final addAnnoucementRecipientScreen = new AddAnnoucementRecipients(selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies);
+                Navigator.push(context, new MaterialPageRoute(builder: (context) => addAnnoucementRecipientScreen));
               },
             )
           ) : Container(),
