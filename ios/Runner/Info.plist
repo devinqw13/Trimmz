@@ -28,18 +28,18 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow Camera usage for trimmz</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open and in the background.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow Photo Library usage for trimmz</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Allow Camera usage for trimmz</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Mic usage for trimmz</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow Photo Library usage for trimmz</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

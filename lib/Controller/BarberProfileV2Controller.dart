@@ -57,7 +57,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
 
     var clientBarbers = await getUserBarbers(context, globals.token);
     for(var item2 in clientBarbers) {
-      if(item2.id.contains(user.id)){
+      if(item2.id.contains(user.id)) {
         setState(() {
           hasAdded = true;
         });

@@ -112,6 +112,7 @@ class ShareImageState extends State<ShareImage> {
             FlatButton(
               child: new Text('Share', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
               onPressed: () async {
+                FocusScope.of(context).requestFocus(new FocusNode());
                 progressHUD();
                 var res = await uploadImage(context, image, 2, captionController.text);
                 progressHUD();
