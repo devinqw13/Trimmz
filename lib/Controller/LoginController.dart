@@ -10,6 +10,8 @@ import 'RegisterController.dart';
 import 'dart:ui';
 import '../functions.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:intl/intl.dart';
+import '../Model/BarberPolicies.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super (key: key);
@@ -74,7 +76,17 @@ class LoginScreenState extends State<LoginScreen> {
           final homeHubScreen = new HomeHubScreen();
           Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => homeHubScreen));
         }else if(globals.userType == 2){
-          final barberHubScreen = new BarberHubScreen();
+          progressHUD();
+          var packages = await getBarberPkgs(context, globals.token);
+          final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
+          var events = await getBarberAppointments(context, globals.token);
+          var selectedEvents = events[_selectedDay] ?? [];
+          var availability = await getBarberAvailability(context, globals.token);
+          var appointmentReq = await getBarberAppointmentRequests(context, globals.token);
+          var policies = await getBarberPolicies(context, globals.token) ?? new BarberPolicies();
+          progressHUD();
+
+          final barberHubScreen = new BarberHubScreen(packages: packages, events: events, selectedEvents: selectedEvents, availability: availability, appointmentReq: appointmentReq, policies: policies);
           Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberHubScreen));
         }
       break;

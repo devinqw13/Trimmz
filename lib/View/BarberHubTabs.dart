@@ -43,7 +43,13 @@ import '../Model/FeedItems.dart';
 
 class BarberHubTabWidget extends StatefulWidget{
   final int widgetItem;
-  BarberHubTabWidget(this.widgetItem);
+  final List selectedEvents;
+  final List<Packages> packages;
+  final Map<DateTime, List> events;
+  final List<Availability> availability;
+  final List<AppointmentRequest> appointmentReq;
+  final BarberPolicies policies;
+  BarberHubTabWidget({Key key, this.widgetItem, this.selectedEvents, this.packages, this.events, this.availability, this.appointmentReq, this.policies}) : super (key: key);
 
   @override
   BarberHubTabWidgetState  createState() => BarberHubTabWidgetState ();
@@ -165,31 +171,39 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
   }
 
   initBarberInfo() async {
-    var res = await getBarberPkgs(context, globals.token);
-    setState(() {
-      packages = res;
-    });
+    // var res = await getBarberPkgs(context, globals.token);
+    // setState(() {
+    //   packages = res;
+    // });
 
-    final _selectedDay = DateTime.parse(df2.format(DateTime.parse(DateTime.now().toString())));
-    var res1 = await getBarberAppointments(context, globals.token);
-    setState(() {
-      _events = res1;
-      _selectedEvents = _events[_selectedDay] ?? [];
-    });
+    // final _selectedDay = DateTime.parse(df2.format(DateTime.parse(DateTime.now().toString())));
+    // var res1 = await getBarberAppointments(context, globals.token);
+    // setState(() {
+    //   _events = res1;
+    // _selectedEvents = _events[_selectedDay] ?? [];
+    // });
 
-    var res2 = await getBarberAvailability(context, globals.token);
-    setState(() {
-      availability = res2;
-    });
+    // var res2 = await getBarberAvailability(context, globals.token);
+    // setState(() {
+    //   availability = res2;
+    // });
 
-    var res3 = await getBarberAppointmentRequests(context, globals.token);
-    setState(() {
-      appointmentReq = res3;
-    });
+    // var res3 = await getBarberAppointmentRequests(context, globals.token);
+    // setState(() {
+    //   appointmentReq = res3;
+    // });
 
-    var res4 = await getBarberPolicies(context, globals.token);
+    // var res4 = await getBarberPolicies(context, globals.token);
+    // setState(() {
+    //   policies = res4 ?? new BarberPolicies();
+    // });
     setState(() {
-      policies = res4 ?? new BarberPolicies();
+      packages = widget.packages;
+      _events = widget.events;
+      _selectedEvents = widget.selectedEvents;
+      availability = widget.availability;
+      appointmentReq = widget.appointmentReq;
+      policies = widget.policies;
     });
 
     var res5 = await getPosts(context, globals.token, 1);
@@ -1665,7 +1679,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                 progressHUD();
                 var barberList = await getUserBarbers(context, globals.token);
                 progressHUD();
-                final selectBarberScreen = new SelectBarberScreen(clientBarbers: barberList); 
+                final selectBarberScreen = new SelectBarberScreen(clientBarbers: barberList, selectedEvents: _selectedEvents, packages: packages, events: _events, availability: availability, appointmentReq: appointmentReq, policies: policies); 
                 Navigator.push(context, new MaterialPageRoute(builder: (context) => selectBarberScreen));
               },
             )

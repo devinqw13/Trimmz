@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../globals.dart' as globals;
-//import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutController extends StatefulWidget {
@@ -19,20 +18,7 @@ class AboutControllerState extends State<AboutController> {
     super.initState();
 
     version = "1.0.0";
-
-    //getPackageInfo();
   }
-
-  /*void getPackageInfo() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    setState(() {
-      version = packageInfo.version;      
-    });
-    
-    print(version);
-    print(packageInfo.version);
-    print(packageInfo.buildNumber);
-  }*/
 
   Widget buildPage() {
     return new Container(

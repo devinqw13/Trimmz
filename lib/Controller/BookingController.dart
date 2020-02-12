@@ -20,10 +20,19 @@ import '../Calls/FinancialCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../functions.dart';
 import  'package:keyboard_actions/keyboard_actions.dart';
+import '../Model/AppointmentRequests.dart';
+import '../Model/BarberPolicies.dart';
 
 class BookingController extends StatefulWidget {
   final ClientBarbers barberInfo;
-  BookingController({Key key, this.barberInfo}) : super (key: key);
+
+  final List selectedEvents;
+  final List<Packages> packages;
+  final Map<DateTime, List> events;
+  final List<Availability> availability;
+  final List<AppointmentRequest> appointmentReq;
+  final BarberPolicies policies;
+  BookingController({Key key, this.barberInfo, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
 
   @override
   BookingControllerState createState() => new BookingControllerState();
@@ -428,7 +437,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         final homeScreen = new HomeHubScreen(message: message); 
         Navigator.push(context, new MaterialPageRoute(builder: (context) => homeScreen));
       }else if(globals.userType == 2) {
-        final homeScreen = new BarberHubScreen(message: message); 
+        final homeScreen = new BarberHubScreen(message: message, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies); 
         Navigator.push(context, new MaterialPageRoute(builder: (context) => homeScreen));
       }
     }else {

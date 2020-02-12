@@ -3,10 +3,20 @@ import '../globals.dart' as globals;
 import '../View/BarberHubTabs.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:progress_hud/progress_hud.dart';
+import '../Model/BarberPolicies.dart';
+import '../Model/Packages.dart';
+import '../Model/availability.dart';
+import '../Model/AppointmentRequests.dart';
 
 class BarberHubScreen extends StatefulWidget {
   final Map message;
-  BarberHubScreen({Key key, this.message}) : super (key: key);
+  final List selectedEvents;
+  final List<Packages> packages;
+  final Map<DateTime, List> events;
+  final List<Availability> availability;
+  final List<AppointmentRequest> appointmentReq;
+  final BarberPolicies policies;
+  BarberHubScreen({Key key, this.message, this.selectedEvents, this.packages, this.appointmentReq, this.availability, this.events, this.policies}) : super (key: key);
 
   @override
   BarberHubScreenState createState() => new BarberHubScreenState();
@@ -14,18 +24,20 @@ class BarberHubScreen extends StatefulWidget {
 
 class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderStateMixin {
   int _currentIndex = 0;
-  List<Widget> _children = [
-    BarberHubTabWidget(0),
-    BarberHubTabWidget(1),
-    BarberHubTabWidget(2),
-    BarberHubTabWidget(3)
-  ];
+  List<Widget> _children = [];
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
 
   @override
   void initState() {
     super.initState();
+
+    _children = [
+      BarberHubTabWidget(widgetItem: 0, selectedEvents: widget.selectedEvents, packages: widget.packages, appointmentReq: widget.appointmentReq, availability: widget.availability, events: widget.events, policies: widget.policies),
+      BarberHubTabWidget(widgetItem: 1),
+      BarberHubTabWidget(widgetItem: 2),
+      BarberHubTabWidget(widgetItem: 3)
+    ];
 
     _progressHUD = new ProgressHUD(
       color: Colors.white,
