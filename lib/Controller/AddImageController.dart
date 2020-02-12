@@ -20,6 +20,7 @@ class CameraApp extends StatefulWidget {
 }
 
 class _CameraAppState extends State<CameraApp> {
+  final imgCropKey = GlobalKey<ImgCropState>();
   List<AssetPathEntity> galleryList = [];
   AssetPathEntity defaultGallery;
   List<AssetEntity> defaultGalleryImageList = [];
@@ -29,7 +30,6 @@ class _CameraAppState extends State<CameraApp> {
   int selectedCameraId = 0;
   double controllerAspect = 0.0;
   String takenPhoto = '';
-  Uint8List test;
 
   @override
   void initState() {
@@ -55,12 +55,10 @@ class _CameraAppState extends State<CameraApp> {
     if(index == 1) {
       var list = await PhotoManager.getAssetPathList();
       var imageList = await list[0].assetList;
-      var req = await imageList[0].thumbData;
       setState(() {
         galleryList = list;
         defaultGallery = list[0];
         defaultGalleryImageList = imageList;
-        test = req;
         gallerySelectedImage = defaultGalleryImageList[0];
       });
     }
@@ -107,9 +105,8 @@ class _CameraAppState extends State<CameraApp> {
 
   buildGallerySelectedImage(BuildContext context) {
     final format = ThumbFormat.jpeg;
-    final imgCropKey = GlobalKey<ImgCropState>();
     return FutureBuilder<Uint8List>(
-      future: gallerySelectedImage.thumbDataWithSize(500, 500, format: format),
+      future: gallerySelectedImage.thumbDataWithSize(600, 600, format: format),
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasData) {
           return ImgCrop(
@@ -132,6 +129,27 @@ class _CameraAppState extends State<CameraApp> {
     );
   }
 
+  createCropImage(BuildContext context) async {
+    //progressHUD();
+    final format = ThumbFormat.jpeg;
+    var req = await gallerySelectedImage.thumbDataWithSize(600, 600, format: format);
+    var tempDir = await getTemporaryDirectory();
+    var tempPath = tempDir.path;
+    var imageId = gallerySelectedImage.id;
+    var nameList = imageId.split('-');
+    var name = nameList[0];
+
+    File file = new File('$tempPath/$name.png');
+    await file.writeAsBytes(req);
+
+    final crop = imgCropKey.currentState;
+    final croppedFile = await crop.cropCompleted(file, pictureQuality: 900);
+    //progressHUD();
+
+    final shareImageScreen = new ShareImage(image: croppedFile.path);
+    Navigator.push(context, new MaterialPageRoute(builder: (context) => shareImageScreen));
+}
+
   buildBody(BuildContext context) {
     var size = MediaQuery.of(context).size.width;
     return new Theme(
@@ -148,9 +166,13 @@ class _CameraAppState extends State<CameraApp> {
           actions: <Widget>[
             takenPhoto != '' || (_currentIndex == 1 && gallerySelectedImage != null) ? new FlatButton(
               child: new Text('Next', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
-              onPressed: (){
-                final shareImageScreen = new ShareImage(image: takenPhoto);
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => shareImageScreen));
+              onPressed: () async {
+                if(_currentIndex == 1 && gallerySelectedImage != null) {
+                  createCropImage(context);
+                }else {
+                  final shareImageScreen = new ShareImage(image: takenPhoto);
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => shareImageScreen));
+                }
               }
             ) : Container()
           ]
@@ -261,22 +283,7 @@ class _CameraAppState extends State<CameraApp> {
                 itemBuilder: (contex, i) {
                   return GestureDetector(
                     onTap: () async {
-                      var req = await defaultGalleryImageList[i].thumbData;
-                      // var tempDir = await getTemporaryDirectory();
-                      // var tempPath = tempDir.path;
-
-                      // var imageId = defaultGalleryImageList[i].id;
-                      // var nameList = imageId.split('-');
-                      // var name = nameList[0];
-
-                      // File file = new File('$tempPath/$name.png');
-
-                      // await file.writeAsBytes(req);
-
-                      // var path = await resizePhoto(file.path);
-
                       setState(() {
-                        test = req;
                         gallerySelectedImage = defaultGalleryImageList[i];
                       });
                     },
