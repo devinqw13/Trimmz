@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<string>NO</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -36,6 +36,10 @@
 	<string>This app needs access to location when open.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow Photo Library usage for trimmz</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow Camera usage for trimmz</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow Mic usage for trimmz</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
