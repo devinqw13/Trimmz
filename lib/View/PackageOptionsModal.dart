@@ -136,7 +136,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                   blurRadius: 2, color: Colors.grey[400], spreadRadius: 0)
             ]
           ),
-          child: Column(
+          child: Column( //TODO: THROWS ERROR WHEN SWITCHING BETWEEN NUMBER & TEXT TEXTFIELDS
             children: <Widget>[
               Expanded(
                 child: SingleChildScrollView(
