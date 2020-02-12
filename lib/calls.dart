@@ -61,7 +61,6 @@ Future<Map> loginPost(String username, String password, BuildContext context) as
     "password": password
   };
 
-  //String url = '${globals.baseUrl}?key=login&username=$username&password=$password';
   String url = '${globals.baseUrl}';
 
   try {

@@ -848,7 +848,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
           showFullCalendarAptOptions(value);
         },
         showManualAddAppointment: (value) {
-          //NOT BEING USED YET
+          //TODO: NOT BEING USED YET
           showAddManualAppointment(value);
         },
       );
