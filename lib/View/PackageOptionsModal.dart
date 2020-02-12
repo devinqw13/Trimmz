@@ -136,195 +136,189 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                   blurRadius: 2, color: Colors.grey[400], spreadRadius: 0)
             ]
           ),
-          child: SafeArea(
-            child: Stack(
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        margin: EdgeInsets.only(bottom: 10),
+                        child: Text(
+                          'Edit Service',
+                          style: TextStyle(
+                            fontSize: 19,
+                            color: Colors.blue
+                          )
+                        )
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          'Name',
+                          style: TextStyle(
+                            fontSize: 18.0
+                          )
+                        )
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextField(
+                          controller: nameController,
+                          focusNode: _nameFocus,
+                          autocorrect: false,
+                          onChanged: (value) {
+                            setState(() {
+                              _name = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: package.name,
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)
+                            )
+                          ),
+                        )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          'Price',
+                          style: TextStyle(
+                            fontSize: 18.0
+                          )
+                        )
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextField(
+                          controller: priceController,
+                          focusNode: _priceFocus,
+                          keyboardType: TextInputType.number,
+                          autocorrect: false,
+                          onChanged: (value) {
+                            setState(() {
+                              _price = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: package.price,
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)
+                            )
+                          ),
+                        )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: RichText(
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                          text: new TextSpan(
+                            children: <TextSpan> [
+                              new TextSpan(text: 'Duration ', style: TextStyle(fontSize: 18)),
+                              TextSpan(text: '15 min increments', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic))
+                            ]
+                          )
+                        )
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextField(
+                          controller: durationController,
+                          keyboardType: TextInputType.number,
+                          focusNode: _durationFocus,
+                          autocorrect: false,
+                          onChanged: (value) {
+                            setState(() {
+                              _duration = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: package.duration,
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)
+                            )
+                          ),
+                        )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              margin: EdgeInsets.only(bottom: 10),
-                              child: Text(
-                                'Edit Service',
-                                style: TextStyle(
-                                  fontSize: 19,
-                                  color: Colors.blue
-                                )
-                              )
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                'Name',
-                                style: TextStyle(
-                                  fontSize: 18.0
-                                )
-                              )
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: TextField(
-                                controller: nameController,
-                                focusNode: _nameFocus,
-                                autocorrect: false,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _name = value;
-                                  });
+                              child: FlatButton(
+                                color: Colors.red,
+                                onPressed: () async {
+                                  bool res = await removePackage(context, globals.token, int.parse(package.id));
+                                  if(res) {
+                                    var res = await getBarberPkgs(context, globals.token);
+                                    Navigator.pop(context);
+                                    widget.updatePackages(res);
+                                  }else {
+                                    return;
+                                  }
                                 },
-                                decoration: InputDecoration(
-                                  hintText: package.name,
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.blue)
-                                  )
-                                ),
+                                child: Text('Remove Service')
                               )
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                'Price',
-                                style: TextStyle(
-                                  fontSize: 18.0
-                                )
-                              )
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: TextField(
-                                controller: priceController,
-                                focusNode: _priceFocus,
-                                keyboardType: TextInputType.number,
-                                autocorrect: false,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _price = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  hintText: package.price,
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.blue)
-                                  )
-                                ),
-                              )
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: RichText(
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                                text: new TextSpan(
-                                  children: <TextSpan> [
-                                    new TextSpan(text: 'Duration ', style: TextStyle(fontSize: 18)),
-                                    TextSpan(text: '15 min increments', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic))
-                                  ]
-                                )
-                              )
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: TextField(
-                                controller: durationController,
-                                keyboardType: TextInputType.number,
-                                focusNode: _durationFocus,
-                                autocorrect: false,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _duration = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  hintText: package.duration,
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.blue)
-                                  )
-                                ),
-                              )
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: FlatButton(
-                                      color: Colors.red,
-                                      onPressed: () async {
-                                        bool res = await removePackage(context, globals.token, int.parse(package.id));
-                                        if(res) {
-                                          var res = await getBarberPkgs(context, globals.token);
-                                          Navigator.pop(context);
-                                          widget.updatePackages(res);
-                                        }else {
-                                          return;
-                                        }
-                                      },
-                                      child: Text('Remove Service')
-                                    )
-                                  )
-                                )
-                              ]
-                            ),
-                          ]
+                            )
+                          )
+                        ]
+                      ),
+                    ]
+                  )
+                )
+              ),
+              Column(
+                children: <Widget> [
+                  (_name != '' || _price != '' || _duration != '') ?
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: FlatButton(
+                            color: Colors.blue,
+                            onPressed: () async {
+                              submitUpdate();
+                            },
+                            child: Text('Update Service')
+                          )
                         )
                       )
-                    ),
-                    Column(
-                      children: <Widget> [
-                        (_name != '' || _price != '' || _duration != '') ?
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: FlatButton(
-                                  color: Colors.blue,
-                                  onPressed: () async {
-                                    submitUpdate();
-                                  },
-                                  child: Text('Update Service')
-                                )
-                              )
-                            )
-                          ]
-                        ) : Container(),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: FlatButton(
-                                  color: Colors.blue,
-                                  onPressed: () async {
-                                    Navigator.pop(context);
-                                    widget.showPackagesList(true);
-                                  },
-                                  child: Text('Cancel')
-                                )
-                              )
-                            )
-                          ]
+                    ]
+                  ) : Container(),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: FlatButton(
+                            color: Colors.blue,
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              widget.showPackagesList(true);
+                            },
+                            child: Text('Cancel')
+                          )
                         )
-                      ]
-                    )
-                  ]
-                )
-              ]
-            )
+                      )
+                    ]
+                  )
+                ]
+              )
+            ]
           )
         )
       )

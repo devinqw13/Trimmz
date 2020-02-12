@@ -99,7 +99,6 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
       config: _buildConfig(context),
       child: Padding(
         padding: EdgeInsets.all(0),
-        //padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Container(
           padding: EdgeInsets.all(10.0),
           height: 415,

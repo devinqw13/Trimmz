@@ -127,171 +127,165 @@ class _AddPackageBottomSheet extends State<AddPackageBottomSheet> {
                   blurRadius: 2, color: Colors.grey[400], spreadRadius: 0)
             ]
           ),
-          child: SafeArea(
-            child: Stack(
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              margin: EdgeInsets.only(bottom: 10),
-                              child: Text(
-                                'New Service',
-                                style: TextStyle(
-                                  fontSize: 19,
-                                  color: Colors.blue
-                                )
-                              )
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                'Name',
-                                style: TextStyle(
-                                  fontSize: 18.0
-                                )
-                              )
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: TextField(
-                                controller: nameController,
-                                focusNode: _nameFocus,
-                                autocorrect: false,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _name = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  hintText: 'Service Name',
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.blue)
-                                  )
-                                ),
-                              )
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                'Price',
-                                style: TextStyle(
-                                  fontSize: 18.0
-                                )
-                              )
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: TextField(
-                                controller: priceController,
-                                focusNode: _priceFocus,
-                                keyboardType: TextInputType.number,
-                                autocorrect: false,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _price = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  hintText: 'Service Price',
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.blue)
-                                  )
-                                ),
-                              )
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: RichText(
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                                text: new TextSpan(
-                                  children: <TextSpan> [
-                                    new TextSpan(text: 'Duration ', style: TextStyle(fontSize: 18)),
-                                    TextSpan(text: '15 min increments', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic))
-                                  ]
-                                )
-                              )
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: TextField(
-                                controller: durationController,
-                                keyboardType: TextInputType.number,
-                                focusNode: _durationFocus,
-                                autocorrect: false,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _duration = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  hintText: 'Service Duration',
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.blue)
-                                  )
-                                ),
-                              )
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                            ),
-                          ]
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        margin: EdgeInsets.only(bottom: 10),
+                        child: Text(
+                          'New Service',
+                          style: TextStyle(
+                            fontSize: 19,
+                            color: Colors.blue
+                          )
+                        )
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          'Name',
+                          style: TextStyle(
+                            fontSize: 18.0
+                          )
+                        )
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextField(
+                          controller: nameController,
+                          focusNode: _nameFocus,
+                          autocorrect: false,
+                          onChanged: (value) {
+                            setState(() {
+                              _name = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Service Name',
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)
+                            )
+                          ),
+                        )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          'Price',
+                          style: TextStyle(
+                            fontSize: 18.0
+                          )
+                        )
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextField(
+                          controller: priceController,
+                          focusNode: _priceFocus,
+                          keyboardType: TextInputType.number,
+                          autocorrect: false,
+                          onChanged: (value) {
+                            setState(() {
+                              _price = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Service Price',
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)
+                            )
+                          ),
+                        )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: RichText(
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                          text: new TextSpan(
+                            children: <TextSpan> [
+                              new TextSpan(text: 'Duration ', style: TextStyle(fontSize: 18)),
+                              TextSpan(text: '15 min increments', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic))
+                            ]
+                          )
+                        )
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextField(
+                          controller: durationController,
+                          keyboardType: TextInputType.number,
+                          focusNode: _durationFocus,
+                          autocorrect: false,
+                          onChanged: (value) {
+                            setState(() {
+                              _duration = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Service Duration',
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)
+                            )
+                          ),
+                        )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      ),
+                    ]
+                  )
+                )
+              ),
+              Column(
+                children: <Widget> [
+                  (_name != '' && _price != '' && _duration != '') ?
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: FlatButton(
+                            color: Colors.blue,
+                            onPressed: () async {
+                              submitService();
+                            },
+                            child: Text('Add Service')
+                          )
                         )
                       )
-                    ),
-                    Column(
-                      children: <Widget> [
-                        (_name != '' && _price != '' && _duration != '') ?
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: FlatButton(
-                                  color: Colors.blue,
-                                  onPressed: () async {
-                                    submitService();
-                                  },
-                                  child: Text('Add Service')
-                                )
-                              )
-                            )
-                          ]
-                        ) : Container(),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: FlatButton(
-                                  color: Colors.blue,
-                                  onPressed: () async {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text('Cancel')
-                                )
-                              )
-                            )
-                          ]
+                    ]
+                  ) : Container(),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: FlatButton(
+                            color: Colors.blue,
+                            onPressed: () async {
+                              Navigator.pop(context);
+                            },
+                            child: Text('Cancel')
+                          )
                         )
-                      ]
-                    )
-                  ]
-                )
-              ]
-            )
+                      )
+                    ]
+                  )
+                ]
+              )
+            ]
           )
         )
       )
