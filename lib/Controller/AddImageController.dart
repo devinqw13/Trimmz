@@ -11,10 +11,20 @@ import 'package:photo_manager/photo_manager.dart';
 import '../View/GallaryImageThumbnail.dart';
 import 'dart:typed_data';
 import 'package:simple_image_crop/simple_image_crop.dart';
+import '../Model/Packages.dart';
+import '../Model/availability.dart';
+import '../Model/AppointmentRequests.dart';
+import '../Model/BarberPolicies.dart';
 
 class CameraApp extends StatefulWidget {
   final List<CameraDescription> cameras;
-  CameraApp({Key key, this.cameras}) : super (key: key);
+  final List selectedEvents;
+  final List<Packages> packages;
+  final Map<DateTime, List> events;
+  final List<Availability> availability;
+  final List<AppointmentRequest> appointmentReq;
+  final BarberPolicies policies;
+  CameraApp({Key key, this.cameras, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
   @override
   _CameraAppState createState() => _CameraAppState();
 }
@@ -146,7 +156,7 @@ class _CameraAppState extends State<CameraApp> {
     final croppedFile = await crop.cropCompleted(file, pictureQuality: 900);
     //progressHUD();
 
-    final shareImageScreen = new ShareImage(image: croppedFile.path);
+    final shareImageScreen = new ShareImage(image: croppedFile.path, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies);
     Navigator.push(context, new MaterialPageRoute(builder: (context) => shareImageScreen));
 }
 
@@ -170,7 +180,7 @@ class _CameraAppState extends State<CameraApp> {
                 if(_currentIndex == 1 && gallerySelectedImage != null) {
                   createCropImage(context);
                 }else {
-                  final shareImageScreen = new ShareImage(image: takenPhoto);
+                  final shareImageScreen = new ShareImage(image: takenPhoto, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies);
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => shareImageScreen));
                 }
               }

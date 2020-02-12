@@ -1706,7 +1706,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                 child: new FloatingActionButton(
                   onPressed: () async {
                     var cameras = await availableCameras();
-                    final cameraScreen = new CameraApp(cameras: cameras);
+                    final cameraScreen = new CameraApp(cameras: cameras, selectedEvents: _selectedEvents, packages: packages, events: _events, availability: availability, appointmentReq: appointmentReq, policies: policies);
                     Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
                   },
                   child: new Icon(Icons.add),
