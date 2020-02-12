@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../calls.dart';
 import 'dart:ui';
+import 'BarberHubController.dart';
 import 'LoginController.dart';
 import '../functions.dart';
 import 'PaymentMethodController.dart';
-import 'BarberSalesSetupController.dart';
+import '../globals.dart' as globals;
 import 'package:line_icons/line_icons.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'dart:async';
@@ -366,8 +367,11 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
         final paymentMethod = new PaymentMethodScreen(signup: true);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => paymentMethod));
       }else {
-        final barberSalesSetup = new BarberSalesSetup(address: widget.shopAddress, city: widget.city, state: widget.state, zipcode: widget.zipcode, stateValue: widget.stateValue);
-        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberSalesSetup));
+        // final barberSalesSetup = new BarberSalesSetup(address: widget.shopAddress, city: widget.city, state: widget.state, zipcode: widget.zipcode, stateValue: widget.stateValue);
+        // Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberSalesSetup));
+        var availability = await getBarberAvailability(context, globals.token);
+        final barberHubScreen = new BarberHubScreen(availability: availability);
+        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberHubScreen));
       }
     }
   }
