@@ -29,17 +29,17 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow Camera usage for trimmz</string>
+	<string>Allow Camera usage for setting profile pictures and making posts.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open and in the background.</string>
+	<string>This app needs access to location when open and in the background to fetch barbers near you.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
+	<string>This app needs access to location when in the background to fetch barbers near you.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open.</string>
+	<string>This app needs access to location when open to fetch barbers near you.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow Mic usage for trimmz</string>
+	<string>Allow Mic usage for taking videos to post them on your profile page.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow Photo Library usage for trimmz</string>
+	<string>Allow Photo Library usage for setting profile pictures and making posts.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
