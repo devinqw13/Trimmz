@@ -23,19 +23,6 @@ platform :ios do
       scheme: "Runner",
       export_xcargs: "-allowProvisioningUpdates"
     )
-    # upload_to_testflight(skip_waiting_for_build_processing: true)
-  end
-
-  lane :prod do
-    Dir.chdir "../.." do
-      sh("flutter", "build", "ios", "-t", "lib/main-prod.dart")
-    end
-
-    build_app(
-      workspace: "Runner.xcworkspace",
-      scheme: "Runner",
-      export_xcargs: "-allowProvisioningUpdates"
-    )
-    # upload_to_testflight(skip_waiting_for_build_processing: true)
+    upload_to_testflight(skip_waiting_for_build_processing: true)
   end
 end
