@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../Model/AppointmentRequests.dart';
 import 'package:intl/intl.dart';
 import '../globals.dart' as globals;
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import '../dialogs.dart';
 import 'package:progress_hud/progress_hud.dart';
 

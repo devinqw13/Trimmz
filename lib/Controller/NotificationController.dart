@@ -4,7 +4,7 @@ import '../globals.dart' as globals;
 import '../Model/Notifications.dart';
 import 'package:line_icons/line_icons.dart';
 import '../functions.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import 'AddAnnoucementRecipients.dart';
 import '../Model/Packages.dart';
 import '../Model/availability.dart';

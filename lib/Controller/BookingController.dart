@@ -7,7 +7,7 @@ import '../Model/ClientBarbers.dart';
 import '../globals.dart' as globals;
 import 'package:table_calendar/table_calendar.dart';
 import 'HomeHubController.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import 'SelectBarberController.dart';
 import 'BarberHubController.dart';
 import '../Model/Packages.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../globals.dart' as globals;
 import 'package:line_icons/line_icons.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import 'package:intl/intl.dart';
 import '../View/BarberAppointmentOptions.dart';
 

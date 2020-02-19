@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:trimmz/Model/BarberPolicies.dart';
 import '../globals.dart' as globals;
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
 
 class AppointmentOptionsBottomSheet extends StatefulWidget {

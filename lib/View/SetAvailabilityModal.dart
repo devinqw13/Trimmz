@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:trimmz/Model/availability.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:intl/intl.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import '../globals.dart' as globals;
 
 class AvailabilityBottomSheet extends StatefulWidget {

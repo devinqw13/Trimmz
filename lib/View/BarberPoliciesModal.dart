@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import '../globals.dart' as globals;
 import '../Model/BarberPolicies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

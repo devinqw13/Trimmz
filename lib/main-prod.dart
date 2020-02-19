@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:trimmz/calls.dart';
+import 'Calls/GeneralCalls.dart';
 import 'package:trimmz/functions.dart';
 import 'Controller/LoginController.dart';
 import 'Controller/HomeHubController.dart';

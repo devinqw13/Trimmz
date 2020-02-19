@@ -6,7 +6,7 @@ import '../Model/BarberPolicies.dart';
 import '../globals.dart' as globals;
 import '../View/Widgets.dart';
 import '../Model/availability.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import 'package:line_icons/line_icons.dart';
 import '../Model/ClientBarbers.dart';
 import 'package:flushbar/flushbar.dart';

@@ -6,7 +6,7 @@ import '../Model/Packages.dart';
 import 'package:line_icons/line_icons.dart';
 import '../View/AddPackageModal.dart';
 import 'package:intl/intl.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import '../View/SetAvailabilityModal.dart';
 import '../states.dart' as states;
 import '../View/StateBottomSheetPicker.dart';

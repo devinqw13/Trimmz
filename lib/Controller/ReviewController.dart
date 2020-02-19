@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../globals.dart' as globals;
 import '../Model/Reviews.dart';
 import 'package:line_icons/line_icons.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:stream_transform/stream_transform.dart';

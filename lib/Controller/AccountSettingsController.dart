@@ -5,7 +5,7 @@ import 'package:trimmz/functions.dart';
 import '../globals.dart' as globals;
 import 'ChangePasswordController.dart';
 import 'package:flushbar/flushbar.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import '../states.dart' as states;
 import '../View/StateBottomSheetPicker.dart';
 import 'package:progress_hud/progress_hud.dart';

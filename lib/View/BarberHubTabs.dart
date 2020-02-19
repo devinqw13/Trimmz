@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../View/Widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:line_icons/line_icons.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import 'package:flushbar/flushbar.dart';
 import '../Model/SuggestedBarbers.dart';
 import '../globals.dart' as globals;

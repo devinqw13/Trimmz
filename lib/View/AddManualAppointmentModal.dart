@@ -4,7 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../dialogs.dart';
 import 'BookingTimeRadioButton.dart';
 import '../globals.dart' as globals;
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import 'package:intl/intl.dart';
 import '../Model/availability.dart';
 

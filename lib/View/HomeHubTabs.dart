@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:progress_hud/progress_hud.dart';
-import 'package:trimmz/calls.dart';
+import '../Calls/GeneralCalls.dart';
 import '../globals.dart' as globals;
 import 'package:flutter/cupertino.dart';
 import 'package:expandable/expandable.dart';

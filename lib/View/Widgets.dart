@@ -5,7 +5,7 @@ import '../CustomCupertinoSettings.dart';
 import '../Controller/AboutController.dart';
 import '../Controller/PaymentMethodController.dart';
 import '../Controller/LoginController.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import '../functions.dart';
 import '../globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';

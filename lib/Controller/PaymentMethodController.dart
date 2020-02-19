@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trimmz/Model/ClientPaymentMethod.dart';
-import 'package:trimmz/calls.dart';
+import '../Calls/GeneralCalls.dart';
 import 'package:trimmz/functions.dart';
 import '../globals.dart' as globals;
 import 'HomeHubController.dart';

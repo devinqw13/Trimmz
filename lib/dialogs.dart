@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:trimmz/calls.dart';
+import 'Calls/GeneralCalls.dart';
 import 'globals.dart' as globals;
 import 'Model/Packages.dart';
 

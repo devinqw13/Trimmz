@@ -7,7 +7,7 @@ import '../Calls/StripeConfig.dart';
 import '../Calls/FinancialCalls.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import '../functions.dart';
-import '../calls.dart';
+import '../Calls/GeneralCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../Model/PayoutDetails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
