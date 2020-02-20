@@ -9,22 +9,22 @@ final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
 setGlobals(Map results) async {
   globals.LoginUser user = new globals.LoginUser();
-  user.token = results['user']['id'];
-  user.username = results['user']['username'];
-  user.name = results['user']['name'];
-  user.userEmail = results['user']['email'];
-  user.userAdmin = results['user']['type'] == 3 ? true : false;
-  user.userType = results['user']['type'];
-  user.spCustomerId = results['user']['sp_customerid'];
-  user.spPayoutId = results['user']['payoutId'];
-  user.spPaymentId = results['user']['sp_paymentid'];
-  user.spPayoutMethod = results['user']['payoutMethod'] ?? 'standard';
-  user.profilePic = results['user']['profile_picture'];
+  user.token = results['user'][0]['id'];
+  user.username = results['user'][0]['username'];
+  user.name = results['user'][0]['name'];
+  user.userEmail = results['user'][0]['email'];
+  user.userAdmin = results['user'][0]['type'] == 3 ? true : false;
+  user.userType = results['user'][0]['type'];
+  user.spCustomerId = results['user'][0]['sp_customerid'];
+  user.spPayoutId = results['user'][0]['payoutId'];
+  user.spPaymentId = results['user'][0]['sp_paymentid'];
+  user.spPayoutMethod = results['user'][0]['payoutMethod'] ?? 'standard';
+  user.profilePic = results['user'][0]['profile_picture'];
 
-  user.shopName = results['user']['shop_name'] ?? '';
-  user.shopAddress = results['user']['shop_address'];
-  user.city = results['user']['city'];
-  user.state = results['user']['state'];
+  user.shopName = results['user'][0]['shop_name'] ?? '';
+  user.shopAddress = results['user'][0]['shop_address'];
+  user.city = results['user'][0]['city'];
+  user.state = results['user'][0]['state'];
 
   globals.user = user;
   globals.token = user.token;

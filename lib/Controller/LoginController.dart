@@ -64,12 +64,11 @@ class LoginScreenState extends State<LoginScreen> {
 
   void processLogin(Map results, bool retry) async {
     var status = results['error'];
-
     switch (status) {
-      case true:
+      case 'true':
         showOkDialog(context, "Login failed. Please verify username and password are correct.");
         break;
-      case false:
+      case 'false':
         setGlobals(results);
 
         if(globals.userType == 1 || globals.userType == 3) {

@@ -5,17 +5,17 @@ import 'package:trimmz/Model/AppointmentRequests.dart';
 import 'package:trimmz/Model/BarberClients.dart';
 import 'package:trimmz/Model/BarberPolicies.dart';
 import 'package:trimmz/Model/FeedItems.dart';
-import '../globals.dart' as globals;
-import '../dialogs.dart';
-import '../Model/availability.dart';
-import '../Model/SuggestedBarbers.dart';
-import '../Model/ClientBarbers.dart';
-import '../Model/Packages.dart';
+import 'globals.dart' as globals;
+import 'dialogs.dart';
+import 'Model/availability.dart';
+import 'Model/SuggestedBarbers.dart';
+import 'Model/ClientBarbers.dart';
+import 'Model/Packages.dart';
 import 'package:intl/intl.dart';
-import '../jsonConvert.dart';
-import '../Model/Appointment.dart';
-import '../Model/Reviews.dart';
-import '../Model/Notifications.dart';
+import 'jsonConvert.dart';
+import 'Model/Appointment.dart';
+import 'Model/Reviews.dart';
+import 'Model/Notifications.dart';
 import 'dart:io';
 import 'package:device_info/device_info.dart';
 
@@ -48,7 +48,7 @@ Future<List<String>> getDeviceDetails() async {
 
 Future<Map> loginPost(String username, String password, BuildContext context) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -56,11 +56,12 @@ Future<Map> loginPost(String username, String password, BuildContext context) as
   Map jsonResponse = {};
 
   Map jsonMap = {
+    "key": "login",
     "username": username,
     "password": password
   };
 
-  String url = '${globals.baseUrl}login/';
+  String url = '${globals.baseUrl}';
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers);
@@ -87,20 +88,22 @@ Future<Map> loginPost(String username, String password, BuildContext context) as
 
 Future<Map> loginPostV2(int token, [BuildContext context]) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   http.Response response;
   Map jsonResponse = {};
-  String url = '${globals.baseUrl}getLoginId?token=$token';
+
+  String url = '${globals.baseUrl}?key=get_login_id&token=$token';
+
   try {
     response = await http.get(url, headers: headers);
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (001)", "Please try again later.");
     return {};
   }
-
+  
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (001)", "Please try again.");
     return {};
@@ -119,7 +122,7 @@ Future<Map> loginPostV2(int token, [BuildContext context]) async {
 
 Future<bool> registerUser(BuildContext context, String name, String username, String email, String accountType, String password,[String address, String city, String state, String zipcode]) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Content-type' : 'application/json', 
     'Accept': 'application/json',
   };
@@ -150,7 +153,7 @@ Future<bool> registerUser(BuildContext context, String name, String username, St
     };
   }
 
-  String url = "${globals.baseUrl}register/";
+  String url = "${globals.baseUrl}";
 
   http.Response response;
   Map jsonResponse = {};
@@ -171,7 +174,7 @@ Future<bool> registerUser(BuildContext context, String name, String username, St
     jsonResponse = json.decode(response.body);
   }
   
-  if(jsonResponse['error'] == 'false') {
+  if(jsonResponse['error'] == false) {
     return true;
   }else {
     return false;
@@ -180,7 +183,7 @@ Future<bool> registerUser(BuildContext context, String name, String username, St
 
 Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Content-type' : 'application/json', 
     'Accept': 'application/json',
   };
@@ -188,7 +191,7 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getUser?token=$token";
+  String url = "${globals.baseUrl}?key=get_user&token=$token";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -208,7 +211,7 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
     jsonResponse = json.decode(response.body);
   }
 
-  if (jsonResponse['error'] == 'false') {
+  if (jsonResponse['error'] == false) {
     ClientBarbers userDetails = new ClientBarbers();
     for(var item1 in jsonResponse['user']){
       userDetails.id = item1['id'];
@@ -234,7 +237,7 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
 
 Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, int type, [List location]) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -244,9 +247,9 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
   String url = '';
 
   if(location == null) {
-    url = "${globals.baseUrl}suggestions?token=$userid&type=$type";
+    url = "${globals.baseUrl}?key=suggestions&token=$userid&type=$type";
   }else {
-    url = "${globals.baseUrl}suggestions?token=$userid&type=$type&city=${location[0]}&state=${location[1]}";
+    url = "${globals.baseUrl}?key=suggestions&token=$userid&type=$type&city=${location[0]}&state=${location[1]}";
   }
 
   try {
@@ -268,12 +271,12 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
-    if(type == 1){
+  if(jsonResponse['error'] == false){
+    if(jsonResponse['type'] == '1'){
       List<SuggestedBarbers> suggestedBarbers = [];
       for(var item in jsonResponse['suggestions']){
         var suggestedBarber = new SuggestedBarbers();
-        suggestedBarber.id = item['id'].toString();
+        suggestedBarber.id = item['id'];
         suggestedBarber.name = item['name'];
         suggestedBarber.username = item['username'];
         suggestedBarber.email = item['email'];
@@ -282,12 +285,12 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
         suggestedBarber.shopAddress = item['shop_address'];
         suggestedBarber.city = item['city'];
         suggestedBarber.state = item['state'];
-        suggestedBarber.zipcode = item['zipcode'].toString();
+        suggestedBarber.zipcode = item['zipcode'];
         suggestedBarber.rating = item['rating'] ?? '0';
         suggestedBarber.profilePicture = item['profile_picture'];
         List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
         for(var item2 in clientBarbers) {
-          if(item2.id.contains(item['id'].toString())){
+          if(item2.id.contains(item['id'])){
             suggestedBarber.hasAdded = true;
           }
         }
@@ -305,14 +308,14 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
 
 Future<List<ClientBarbers>> getUserBarbers(BuildContext context, int userid) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getAddedBarbers?token=$userid";
+  String url = "${globals.baseUrl}?key=get_added_barbers&token=$userid";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -332,11 +335,11 @@ Future<List<ClientBarbers>> getUserBarbers(BuildContext context, int userid) asy
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     List<ClientBarbers> clientBarbers = [];
     for(var item in jsonResponse['barbers']){
       var clientBarber = new ClientBarbers();
-      clientBarber.id = item['id'].toString();
+      clientBarber.id = item['id'];
       clientBarber.name = item['name'];
       clientBarber.username = item['username'];
       clientBarber.email = item['email'];
@@ -358,7 +361,7 @@ Future<List<ClientBarbers>> getUserBarbers(BuildContext context, int userid) asy
 
 Future<bool> addBarber(BuildContext context, int userid, int barberid) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -366,11 +369,12 @@ Future<bool> addBarber(BuildContext context, int userid, int barberid) async {
   http.Response response;
 
   var jsonMap = {
+    "key": "add_barber",
     "userid" : userid,
     "barberid" : barberid
   };
 
-  String url = "${globals.baseUrl}addBarber/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -390,7 +394,7 @@ Future<bool> addBarber(BuildContext context, int userid, int barberid) async {
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -400,7 +404,7 @@ Future<bool> addBarber(BuildContext context, int userid, int barberid) async {
 
 Future<bool> removeBarber(BuildContext context, int userid, int barberid) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -408,11 +412,12 @@ Future<bool> removeBarber(BuildContext context, int userid, int barberid) async 
   http.Response response;
 
   var jsonMap = {
+    "key": "remove_barber",
     "userid" : userid,
     "barberid" : barberid
   };
 
-  String url = "${globals.baseUrl}removeBarber";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -432,7 +437,7 @@ Future<bool> removeBarber(BuildContext context, int userid, int barberid) async 
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -442,14 +447,14 @@ Future<bool> removeBarber(BuildContext context, int userid, int barberid) async 
 
 Future<List<Packages>> getBarberPkgs(BuildContext context, int userid) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getBarberPackages?token=$userid";
+  String url = "${globals.baseUrl}?key=get_barber_packages&token=$userid";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -469,7 +474,7 @@ Future<List<Packages>> getBarberPkgs(BuildContext context, int userid) async {
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     List<Packages> packages = [];
     for(var items in jsonResponse['packages']) {
       var package = new Packages();
@@ -488,7 +493,7 @@ Future<List<Packages>> getBarberPkgs(BuildContext context, int userid) async {
 
 Future<bool> addPackage(BuildContext context, int barberid, String name, int duration, double price) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -496,13 +501,14 @@ Future<bool> addPackage(BuildContext context, int barberid, String name, int dur
   http.Response response;
 
   var jsonMap = {
+    "key": "add_package",
     "barberid" : barberid,
     "name" : name,
     "duration" : duration,
     "price" : price
   };
 
-  String url = "${globals.baseUrl}addPackage/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -522,7 +528,7 @@ Future<bool> addPackage(BuildContext context, int barberid, String name, int dur
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -532,14 +538,14 @@ Future<bool> addPackage(BuildContext context, int barberid, String name, int dur
 
 Future<Map<DateTime, List<dynamic>>> getBarberAppointments(BuildContext context, int userid) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getBarberAppointments?token=$userid";
+  String url = "${globals.baseUrl}?key=get_barber_appointments&token=$userid";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -559,7 +565,7 @@ Future<Map<DateTime, List<dynamic>>> getBarberAppointments(BuildContext context,
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     Map<DateTime, List<dynamic>> apt = {};
     final df = new DateFormat('yyyy-MM-dd');
     final df2 = new DateFormat('hh:mm a');
@@ -584,7 +590,7 @@ Future<Map<DateTime, List<dynamic>>> getBarberAppointments(BuildContext context,
 
 Future<bool> removePackage(BuildContext context, int userid, int packageid) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -592,11 +598,12 @@ Future<bool> removePackage(BuildContext context, int userid, int packageid) asyn
   http.Response response;
 
   var jsonMap = {
+    "key": "remove_package",
     "token" : userid,
     "packageid" : packageid
   };
 
-  String url = "${globals.baseUrl}removePackage/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -616,7 +623,7 @@ Future<bool> removePackage(BuildContext context, int userid, int packageid) asyn
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -626,14 +633,14 @@ Future<bool> removePackage(BuildContext context, int userid, int packageid) asyn
 
 Future<List<Availability>> getBarberAvailability(BuildContext context, int userid) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getBarberAvailability?token=$userid";
+  String url = "${globals.baseUrl}?key=get_barber_availability&token=$userid";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -653,7 +660,7 @@ Future<List<Availability>> getBarberAvailability(BuildContext context, int useri
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     if(jsonResponse['availability'].length > 0) {
       List<Availability> availability = [];
       for(var item in jsonResponse['availability']){
@@ -739,7 +746,7 @@ Future<List<Availability>> getBarberAvailability(BuildContext context, int useri
 
 Future<bool> setTimeAvailability(BuildContext context, int userid, String day, DateTime start, DateTime end, bool isClosed) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -758,13 +765,14 @@ Future<bool> setTimeAvailability(BuildContext context, int userid, String day, D
   }
 
   Map jsonMap = {
+    "key": "update_availability",
     "token" : userid,
     "day" : day,
     "start" : startString,
     "end" : endString
   };
 
-  String url = "${globals.baseUrl}updateAvailability/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -784,7 +792,7 @@ Future<bool> setTimeAvailability(BuildContext context, int userid, String day, D
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -793,7 +801,7 @@ Future<bool> setTimeAvailability(BuildContext context, int userid, String day, D
 
 Future<bool> bookAppointment(BuildContext context, int userId, String barberId, int price, DateTime time, String packageId, int tip) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -801,6 +809,7 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
   http.Response response;
 
   var jsonMap = {
+    "key": "book_appointment",
     "userid" : userId,
     "barberid": barberId,
     "price": price,
@@ -809,7 +818,7 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
     "tip": tip
   };
 
-  String url = "${globals.baseUrl}bookAppointment/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -829,7 +838,7 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
     jsonResponse = json.decode(response.body);
   }
   
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -838,14 +847,14 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
 
 Future<List<AppointmentRequest>> getBarberAppointmentRequests(BuildContext context, int barberId) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getBarberAppointmentReq?token=$barberId";
+  String url = "${globals.baseUrl}?key=get_barber_appointment_requests&token=$barberId";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -865,7 +874,7 @@ Future<List<AppointmentRequest>> getBarberAppointmentRequests(BuildContext conte
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     List<AppointmentRequest> appointmentReq = [];
     for(var item in jsonResponse['appointments']) {
       AppointmentRequest request = new AppointmentRequest();
@@ -888,7 +897,7 @@ Future<List<AppointmentRequest>> getBarberAppointmentRequests(BuildContext conte
 
 Future<bool> aptRequestDecision(BuildContext context, int barberId, int requestId, int decision) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -896,12 +905,13 @@ Future<bool> aptRequestDecision(BuildContext context, int barberId, int requestI
   http.Response response;
 
   var jsonMap = {
+    "key": "appointment_request_decision",
     "barberid": barberId,
     "requestid": requestId,
     "decision": decision,
   };
 
-  String url = "${globals.baseUrl}appointmentReqDecision/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -920,7 +930,7 @@ Future<bool> aptRequestDecision(BuildContext context, int barberId, int requestI
   } else {
     jsonResponse = json.decode(response.body);
   }
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     if(jsonResponse['result'] == true){
       return true;
     }else {
@@ -933,14 +943,14 @@ Future<bool> aptRequestDecision(BuildContext context, int barberId, int requestI
 
 Future<Appointment> getUpcomingAppointment(BuildContext context, int userId) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getUpcomingAppointment?token=$userId";
+  String url = "${globals.baseUrl}?key=get_upcoming_appointment&token=$userId";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -960,7 +970,7 @@ Future<Appointment> getUpcomingAppointment(BuildContext context, int userId) asy
     jsonResponse = json.decode(response.body);
   }
   
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     if(jsonResponse['appointment'].length > 0) {
       Appointment appointment = new Appointment();
       for(var item in jsonResponse['appointment']){
@@ -987,7 +997,7 @@ Future<Appointment> getUpcomingAppointment(BuildContext context, int userId) asy
 
 Future<bool> exists(BuildContext context, String string, int type, [var userid]) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -996,9 +1006,9 @@ Future<bool> exists(BuildContext context, String string, int type, [var userid])
 
   String url;
   if(type == 1){
-    url = "${globals.baseUrl}exists?string=$string&type=1";
+    url = "${globals.baseUrl}?key=exist&string=$string&type=1";
   }else if(type == 2){
-    url = "${globals.baseUrl}exists?string=$string&type=2&token=$userid";
+    url = "${globals.baseUrl}?key=exist&string=$string&type=2&token=$userid";
   }
 
   try {
@@ -1019,8 +1029,8 @@ Future<bool> exists(BuildContext context, String string, int type, [var userid])
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
-    if(jsonResponse['exist'] == 'true') {
+  if(jsonResponse['error'] == false){
+    if(jsonResponse['exist'] == true) {
       return true;
     }else {
       return false;
@@ -1032,7 +1042,7 @@ Future<bool> exists(BuildContext context, String string, int type, [var userid])
 
 Future<bool> changePassword(BuildContext context, String newPassword, int userid) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -1040,11 +1050,12 @@ Future<bool> changePassword(BuildContext context, String newPassword, int userid
   http.Response response;
 
   var jsonMap = {
+    "key": "change_password",
     "userid" : userid,
     "password": newPassword,
   };
 
-  String url = "${globals.baseUrl}changePassword/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -1064,7 +1075,7 @@ Future<bool> changePassword(BuildContext context, String newPassword, int userid
     jsonResponse = json.decode(response.body);
   }
   
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -1073,7 +1084,7 @@ Future<bool> changePassword(BuildContext context, String newPassword, int userid
 
 Future<Map> updateSettings(BuildContext context, int userid, int type, [String name, String email, String spCustomerId, String spPaymentId]) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -1081,6 +1092,7 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
   http.Response response;
 
   var jsonMap = {
+    "key": "update_settings",
     "token" : userid,
     "type": type,
     "name": name != null ? name : null,
@@ -1089,7 +1101,7 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
     "sp_paymentid": spPaymentId != null ? spPaymentId : null
   };
 
-  String url = "${globals.baseUrl}updateSettings/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -1110,7 +1122,7 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
     jsonResponse = json.decode(response.body);
   }
   
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return jsonResponse;
   }else {
     return {};
@@ -1119,7 +1131,7 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
 
 Future<Map> updateBarberSettings(BuildContext context, int userid, [String shopName, String address, String state, String city]) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -1127,6 +1139,7 @@ Future<Map> updateBarberSettings(BuildContext context, int userid, [String shopN
   http.Response response;
 
   var jsonMap = {
+    "key": "update_barber_settings",
     "token" : userid,
     "shop_name": shopName != null ? shopName : null,
     "address": address != null ? address : null,
@@ -1134,7 +1147,7 @@ Future<Map> updateBarberSettings(BuildContext context, int userid, [String shopN
     "state": state != null ? state : null
   };
 
-  String url = "${globals.baseUrl}updateBarberSettings/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -1155,7 +1168,7 @@ Future<Map> updateBarberSettings(BuildContext context, int userid, [String shopN
     jsonResponse = json.decode(response.body);
   }
   
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return jsonResponse;
   }else {
     return {};
@@ -1164,7 +1177,7 @@ Future<Map> updateBarberSettings(BuildContext context, int userid, [String shopN
 
 Future<bool> updatePackage(BuildContext context, int userid, int packageid, [String name, int price, int duration]) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -1172,6 +1185,7 @@ Future<bool> updatePackage(BuildContext context, int userid, int packageid, [Str
   http.Response response;
 
   var jsonMap = {
+    "key": "update_package",
     "token" : userid,
     "packageid": packageid,
     "name": name != null ? name : null,
@@ -1179,7 +1193,7 @@ Future<bool> updatePackage(BuildContext context, int userid, int packageid, [Str
     "duration": duration != null ? duration : null
   };
 
-  String url = "${globals.baseUrl}updatePackage/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -1199,7 +1213,7 @@ Future<bool> updatePackage(BuildContext context, int userid, int packageid, [Str
     jsonResponse = json.decode(response.body);
   }
   
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -1208,7 +1222,7 @@ Future<bool> updatePackage(BuildContext context, int userid, int packageid, [Str
 
 Future<bool> updateAppointmentStatus(BuildContext context, int appointmentId, int status) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -1216,11 +1230,12 @@ Future<bool> updateAppointmentStatus(BuildContext context, int appointmentId, in
   http.Response response;
 
   var jsonMap = {
+    "key": "update_appointment_status",
     "appointment" : appointmentId,
     "status": status,
   };
 
-  String url = "${globals.baseUrl}updateAppointmentStatus/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -1240,7 +1255,7 @@ Future<bool> updateAppointmentStatus(BuildContext context, int appointmentId, in
     jsonResponse = json.decode(response.body);
   }
   
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -1249,7 +1264,7 @@ Future<bool> updateAppointmentStatus(BuildContext context, int appointmentId, in
 
 Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payoutId, String payoutMethod]) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -1257,12 +1272,13 @@ Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payo
   http.Response response;
 
   var jsonMap = {
+    "key": "update_payout_settings",
     "token" : userid,
     "payoutId": payoutId != null ? payoutId : null,
     "payoutMethod": payoutMethod != null ? payoutMethod : null,
   };
 
-  String url = "${globals.baseUrl}updatePayoutSettings/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -1283,7 +1299,7 @@ Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payo
     jsonResponse = json.decode(response.body);
   }
   
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -1292,14 +1308,14 @@ Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payo
 
 Future<BarberPolicies> getBarberPolicies(BuildContext context, int userId) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getPolicies?token=$userId";
+  String url = "${globals.baseUrl}?key=policies&token=$userId";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1319,7 +1335,7 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userId) async
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     BarberPolicies policies = new BarberPolicies();
     if(jsonResponse['policies'].length > 0){
       for(var item in jsonResponse['policies']){
@@ -1341,14 +1357,14 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userId) async
 
 Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String username) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}searchBarbers?string=$username";
+  String url = "${globals.baseUrl}?key=search_barber&username=$username";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1369,7 +1385,7 @@ Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String use
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     if(jsonResponse['barbers'].length > 0){
       List<SuggestedBarbers> suggestedBarbers = [];
       for(var item in jsonResponse['barbers']){
@@ -1406,14 +1422,14 @@ Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String use
 
 Future<List<BarberClients>> getSearchClients(BuildContext context, String username) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}searchClients&string=$username";
+  String url = "${globals.baseUrl}?key=search_client&username=$username";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1434,7 +1450,7 @@ Future<List<BarberClients>> getSearchClients(BuildContext context, String userna
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     List<BarberClients> clients = [];
     for(var item in jsonResponse['clients']){
       BarberClients client = new BarberClients();
@@ -1452,14 +1468,14 @@ Future<List<BarberClients>> getSearchClients(BuildContext context, String userna
 
 Future<List<BarberReviews>> getUserReviews(BuildContext context, int userId) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getUserReviews?token=$userId";
+  String url = "${globals.baseUrl}?key=user_reviews&token=$userId";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1480,7 +1496,7 @@ Future<List<BarberReviews>> getUserReviews(BuildContext context, int userId) asy
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     if(jsonResponse['reviews'].length > 0){
       List<BarberReviews> reviews = [];
       for(var item in jsonResponse['reviews']){
@@ -1506,14 +1522,14 @@ Future<List<BarberReviews>> getUserReviews(BuildContext context, int userId) asy
 
 Future<int> getNumUserReviews(BuildContext context, int userId, int barberid) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getNumUserReviews?token=$userId&barberid=$barberid";
+  String url = "${globals.baseUrl}?key=num_user_reviews&token=$userId&barberid=$barberid";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1534,7 +1550,7 @@ Future<int> getNumUserReviews(BuildContext context, int userId, int barberid) as
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return jsonResponse['number'];
   }else {
     return null;
@@ -1543,7 +1559,7 @@ Future<int> getNumUserReviews(BuildContext context, int userId, int barberid) as
 
 Future<bool> submitReview(BuildContext context, String comment, int barberId, int userId, double rating) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -1551,13 +1567,14 @@ Future<bool> submitReview(BuildContext context, String comment, int barberId, in
   http.Response response;
 
   var jsonData = {
+    "key": "submit_review",
     "barberId": barberId,
     "userId": userId,
     "rating": rating,
     "comment": comment
   };
 
-  String url = "${globals.baseUrl}submitReview/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
@@ -1578,7 +1595,7 @@ Future<bool> submitReview(BuildContext context, String comment, int barberId, in
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return jsonResponse['results'];
   }else {
     return false;
@@ -1587,14 +1604,14 @@ Future<bool> submitReview(BuildContext context, String comment, int barberId, in
 
 Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, int userid) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getUserAppointments?token=$userid";
+  String url = "${globals.baseUrl}?key=user_appointments&token=$userid";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1614,7 +1631,7 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     Map<DateTime, List<dynamic>> apt = {};
     final df = new DateFormat('yyyy-MM-dd');
     final df2 = new DateFormat('hh:mm a');
@@ -1638,7 +1655,7 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
 
 Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [String cancelFee, bool isCancelPercent, int cancelTime, String noShowFee, bool isNoShowPercent, bool cancelEnabled, bool noShowEnabled]) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -1646,6 +1663,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
   http.Response response;
 
   Map jsonMap = {
+    "key": "policies",
     "token": userId,
     "cancelFee": cancelFee != null ? '${isCancelPercent ? '' : '\$'}$cancelFee${isCancelPercent ? '%' : ''}' : null,
     "cancelTime": cancelTime != null ? cancelTime : null,
@@ -1654,7 +1672,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
     "noShowEnabled": noShowEnabled != null ? noShowEnabled ? 1 : 0 : null,
   };
 
-  String url = "${globals.baseUrl}updatePolicies/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
@@ -1675,7 +1693,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     BarberPolicies policies = new BarberPolicies();
     if(jsonResponse['policies'].length > 0){
       for(var item in jsonResponse['policies']){
@@ -1740,7 +1758,7 @@ Future<Map> sendPushNotification(BuildContext context, String title, String body
 
 Future<bool> submitNotification(BuildContext context, int from, int recipient, String title, String message) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -1748,6 +1766,7 @@ Future<bool> submitNotification(BuildContext context, int from, int recipient, S
   http.Response response;
 
   var jsonData = {
+    "key": "notifications",
     "from": from,
     "recipient": recipient,
     "title": title,
@@ -1755,7 +1774,7 @@ Future<bool> submitNotification(BuildContext context, int from, int recipient, S
     "created": "${DateTime.now()}"
   };
 
-  String url = "${globals.baseUrl}submitNotification";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
@@ -1776,7 +1795,7 @@ Future<bool> submitNotification(BuildContext context, int from, int recipient, S
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -1785,14 +1804,14 @@ Future<bool> submitNotification(BuildContext context, int from, int recipient, S
 
 Future<List<Notifications>> getUnreadNotifications(BuildContext context, int userId) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}unreadNotifications?token=$userId";
+  String url = "${globals.baseUrl}?key=unread_notifications&token=$userId";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1813,7 +1832,7 @@ Future<List<Notifications>> getUnreadNotifications(BuildContext context, int use
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     List<Notifications> notifications = [];
     for(var item in jsonResponse['notifications']) {
       Notifications notify = new Notifications();
@@ -1834,14 +1853,14 @@ Future<List<Notifications>> getUnreadNotifications(BuildContext context, int use
 
 Future<List<Notifications>> getAllNotifications(BuildContext context, int userId) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getAllNotifications?token=$userId";
+  String url = "${globals.baseUrl}?key=all_notifications&token=$userId";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1862,7 +1881,7 @@ Future<List<Notifications>> getAllNotifications(BuildContext context, int userId
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     List<Notifications> notifications = [];
     for(var item in jsonResponse['notifications']) {
       Notifications notify = new Notifications();
@@ -1883,7 +1902,7 @@ Future<List<Notifications>> getAllNotifications(BuildContext context, int userId
 
 Future<bool> setNotificationsRead(BuildContext context, int recipient) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
@@ -1891,10 +1910,11 @@ Future<bool> setNotificationsRead(BuildContext context, int recipient) async {
   http.Response response;
 
   var jsonData = {
+    "key": "read_notifications",
     "recipient": recipient,
   };
 
-  String url = "${globals.baseUrl}readNotifications/";
+  String url = "${globals.baseUrl}";
 
   try {
     response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
@@ -1915,7 +1935,7 @@ Future<bool> setNotificationsRead(BuildContext context, int recipient) async {
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -1931,6 +1951,7 @@ Future<bool> setFirebaseToken(BuildContext context, String firebaseToken) async 
   var deviceInfo = await getDeviceDetails();
 
   var jsonData = {
+    "key": "set_notification_token",
     "userid": globals.token,
     "token": "$firebaseToken",
     "device_type": '${deviceInfo[0]}',
@@ -1940,7 +1961,7 @@ Future<bool> setFirebaseToken(BuildContext context, String firebaseToken) async 
     "created": '${DateTime.now()}'
   };
 
-  String url = "${globals.baseUrl}setNotificationToken/";
+  String url = "${globals.baseUrl}";
 
   Map jsonResponse = {};
   http.Response response;
@@ -1962,7 +1983,7 @@ Future<bool> setFirebaseToken(BuildContext context, String firebaseToken) async 
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -1978,11 +1999,12 @@ Future<bool> removeFirebaseToken(BuildContext context) async {
   var deviceInfo = await getDeviceDetails();
 
   var jsonData = {
+    "key": "delete_notification_token",
     "token": globals.token,
     "device_id": "${deviceInfo[2]}",
   };
 
-  String url = "${globals.baseUrl}deleteNotificationToken/";
+  String url = "${globals.baseUrl}";
 
   Map jsonResponse = {};
   http.Response response;
@@ -2005,7 +2027,7 @@ Future<bool> removeFirebaseToken(BuildContext context) async {
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -2014,14 +2036,14 @@ Future<bool> removeFirebaseToken(BuildContext context) async {
 
 Future<List> getNotificationTokens(BuildContext context, int userId) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
   
-  String url = "${globals.baseUrl}getNotificationTokens?token=$userId";
+  String url = "${globals.baseUrl}?key=notification_tokens&token=$userId";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -2041,7 +2063,7 @@ Future<List> getNotificationTokens(BuildContext context, int userId) async {
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     List tokens = [];
     for(var item in jsonResponse['tokens']) {
       tokens.add(item['token']);
@@ -2054,14 +2076,14 @@ Future<List> getNotificationTokens(BuildContext context, int userId) async {
 
 Future<List<BarberClients>> getBarberClients(BuildContext context, int token, int type) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getBarberClients?token=$token&type=$type";
+  String url = "${globals.baseUrl}?key=get_barber_clients&token=$token&type=$type";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -2082,7 +2104,7 @@ Future<List<BarberClients>> getBarberClients(BuildContext context, int token, in
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     List<BarberClients> clients = [];
     for(var item in jsonResponse['clients']) {
       BarberClients client = new BarberClients();
@@ -2100,12 +2122,13 @@ Future<List<BarberClients>> getBarberClients(BuildContext context, int token, in
 
 Future<String> uploadImage(BuildContext context, String filePath, int type, [String caption]) async {
   Map<String, String>jsonData = {
+    "key": "upload_image",
     "token": globals.token.toString(),
     "type": type.toString(),
     "caption": caption != null ? caption : ''
   };
 
-  String url = "${globals.baseUrl}uploadImages";
+  String url = "${globals.baseUrl}";
   var encodedUrl = Uri.encodeFull(url);
 
   Map jsonResponse = {};
@@ -2126,7 +2149,7 @@ Future<String> uploadImage(BuildContext context, String filePath, int type, [Str
     return null;
   }
   print(jsonResponse);
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return jsonResponse['results'];
   }else {
     return null;
@@ -2140,11 +2163,12 @@ Future<bool> removeImage(BuildContext context, String image, int type) async {
   };
 
   var jsonData = {
+    "key": "remove_image",
     "image": image,
     "type": type,
   };
 
-  String url = "${globals.baseUrl}removeImage";
+  String url = "${globals.baseUrl}";
 
   Map jsonResponse = {};
   http.Response response;
@@ -2167,7 +2191,7 @@ Future<bool> removeImage(BuildContext context, String image, int type) async {
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     return true;
   }else {
     return false;
@@ -2176,14 +2200,14 @@ Future<bool> removeImage(BuildContext context, String image, int type) async {
 
 Future<List<FeedItem>> getPosts(BuildContext context, int userId, int type) async {
   Map<String, String> headers = {
-    'Content-Type' : 'application/json',
+    'Content-Type' : 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   };
 
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getPosts?token=$userId&type=$type";
+  String url = "${globals.baseUrl}?key=get_posts&token=$userId&type=$type";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -2203,7 +2227,7 @@ Future<List<FeedItem>> getPosts(BuildContext context, int userId, int type) asyn
     jsonResponse = json.decode(response.body);
   }
 
-  if(jsonResponse['error'] == 'false'){
+  if(jsonResponse['error'] == false){
     List<FeedItem> feed = [];
     for(var item in jsonResponse['posts']){
       FeedItem feedItem = new FeedItem();
