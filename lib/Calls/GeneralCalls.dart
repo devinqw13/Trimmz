@@ -1413,7 +1413,7 @@ Future<List<BarberClients>> getSearchClients(BuildContext context, String userna
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}searchClients&string=$username";
+  String url = "${globals.baseUrl}searchClients?string=$username";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -1438,7 +1438,7 @@ Future<List<BarberClients>> getSearchClients(BuildContext context, String userna
     List<BarberClients> clients = [];
     for(var item in jsonResponse['clients']){
       BarberClients client = new BarberClients();
-      client.token = int.parse(item['id']);
+      client.token = item['id'];
       client.name = item['name'];
       client.username = item['username'];
       clients.add(client);
