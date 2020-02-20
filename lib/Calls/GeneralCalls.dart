@@ -2102,6 +2102,7 @@ Future<String> uploadImage(BuildContext context, String filePath, int type, [Str
   Map<String, String>jsonData = {
     "token": globals.token.toString(),
     "type": type.toString(),
+    "name": filePath.substring(filePath.lastIndexOf('/') + 1, filePath.lastIndexOf('.')) + '.png',
     "caption": caption != null ? caption : ''
   };
 
@@ -2113,7 +2114,7 @@ Future<String> uploadImage(BuildContext context, String filePath, int type, [Str
   try {
     var request = new http.MultipartRequest("POST", Uri.parse(encodedUrl));
     request.fields.addAll(jsonData);
-    request.files.add(await http.MultipartFile.fromPath('image', filePath));
+    request.files.add(await http.MultipartFile.fromPath('file', filePath));
     response = await request.send();
     jsonResponse = await json.decode(await response.stream.bytesToString());
   } catch (Exception) {
@@ -2207,9 +2208,9 @@ Future<List<FeedItem>> getPosts(BuildContext context, int userId, int type) asyn
     List<FeedItem> feed = [];
     for(var item in jsonResponse['posts']){
       FeedItem feedItem = new FeedItem();
-      feedItem.id = int.parse(item['id']);
+      feedItem.id = item['id'];
       feedItem.userId = int.parse(item['userid']);
-      feedItem.imageUrl = 'https://trimmz.app/images/posts/${item['url']}';
+      feedItem.imageUrl = '${globals.baseUrlImage}${item['url']}';
       feedItem.name = item['name'];
       feedItem.username = item['username'];
       feedItem.created = DateTime.parse(item['created']);

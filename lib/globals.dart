@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 String baseUrl = "";
+String baseUrlImage = "";
 int token;
 String username;
 String name;
