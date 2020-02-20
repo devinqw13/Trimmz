@@ -211,17 +211,17 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
   if (jsonResponse['error'] == 'false') {
     ClientBarbers userDetails = new ClientBarbers();
     for(var item1 in jsonResponse['user']){
-      userDetails.id = item1['id'];
+      userDetails.id = item1['id'].toString();
       userDetails.username = item1['username'];
       userDetails.email = item1['email'];
       userDetails.phone = item1['phone'];
       userDetails.name = item1['name'];
       userDetails.shopName = item1['shop_name'];
       userDetails.shopAddress = item1['shop_address'];
-      userDetails.created = DateTime.parse(item1['created']);
+      //userDetails.created = DateTime.parse(item1['created']);
       userDetails.city = item1['city'];
       userDetails.state = item1['state'];
-      userDetails.zipcode = item1['zipcode'];
+      userDetails.zipcode = item1['zipcode'].toString();
       userDetails.rating = item1['rating'] ?? '0';
       userDetails.profilePicture = item1['profile_picture'];
     }
@@ -345,7 +345,7 @@ Future<List<ClientBarbers>> getUserBarbers(BuildContext context, int userid) asy
       clientBarber.shopAddress = item['shopAddress'];
       clientBarber.city = item['city'];
       clientBarber.state = item['state'];
-      clientBarber.zipcode = item['zipcode'];
+      clientBarber.zipcode = item['zipcode'].toString();
       clientBarber.rating = item['rating'];
       clientBarbers.add(clientBarber);
     }
@@ -473,10 +473,10 @@ Future<List<Packages>> getBarberPkgs(BuildContext context, int userid) async {
     List<Packages> packages = [];
     for(var items in jsonResponse['packages']) {
       var package = new Packages();
-      package.id = items['id'];
+      package.id = items['id'].toString();
       package.name = items['name'];
-      package.price = items['price'];
-      package.duration = items['duration'];
+      package.price = items['price'].toString();
+      package.duration = items['duration'].toString();
       packages.add(package);
     }
     return packages;
@@ -1374,7 +1374,7 @@ Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String use
       List<SuggestedBarbers> suggestedBarbers = [];
       for(var item in jsonResponse['barbers']){
         var suggestedBarber = new SuggestedBarbers();
-        suggestedBarber.id = item['id'];
+        suggestedBarber.id = item['id'].toString();
         suggestedBarber.name = item['name'];
         suggestedBarber.username = item['username'];
         suggestedBarber.email = item['email'];
@@ -1383,12 +1383,12 @@ Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String use
         suggestedBarber.shopAddress = item['shop_address'];
         suggestedBarber.city = item['city'];
         suggestedBarber.state = item['state'];
-        suggestedBarber.zipcode = item['zipcode'];
+        suggestedBarber.zipcode = item['zipcode'].toString();
         suggestedBarber.rating = item['rating'] ?? '0';
         suggestedBarber.profilePicture = item['profile_picture'];
         List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
         for(var item2 in clientBarbers) {
-          if(item2.id.contains(item['id'])){
+          if(item2.id.contains(item['id'].toString())){
             suggestedBarber.hasAdded = true;
           }
         }
@@ -1992,7 +1992,7 @@ Future<bool> removeFirebaseToken(BuildContext context) async {
     showErrorDialog(context, "The Server is not responding (039)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   }
-  
+
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (039)", "Please try again.");
     return false;
