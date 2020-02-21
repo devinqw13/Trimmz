@@ -1082,7 +1082,6 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
 
   var jsonMap = {
     "token" : userid,
-    "type": type,
     "name": name != null ? name : null,
     "email": email != null ? email : null,
     "sp_customerid": spCustomerId != null ? spCustomerId : null,
@@ -1111,7 +1110,7 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
   }
   
   if(jsonResponse['error'] == 'false'){
-    return jsonResponse;
+    return jsonResponse['user'];
   }else {
     return {};
   }

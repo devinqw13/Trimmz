@@ -527,7 +527,7 @@ class AccountSettingsState extends State<AccountSettings> {
     if(nameChanged || emailChanged){
       progressHUD();
       Map result = await updateSettings(context, globals.token, 1, nameChanged ? _nameController.text : null, emailChanged ? _emailController.text : null);
-      if(result['error'] == false && result['user'].length > 0) {
+      if(result['error'] == 'false' && result['user'].length > 0) {
         setGlobals(result);
         progressHUD();
         Flushbar(
@@ -549,23 +549,25 @@ class AccountSettingsState extends State<AccountSettings> {
       _cityController.text != globals.city ? cityChanged = true : cityChanged = false;
       stateAbr != globals.state ? stateChanged = true : stateChanged = false;
 
-      progressHUD();
-      var res = await validateAddress('${_streetAddressController.text}, ${_cityController.text}, $stateAbr');
-      if(res){
-        Map result = await updateBarberSettings(context, globals.token, shopNameChanged ? _shopNameController.text : null, addressChanged ? _streetAddressController.text : null, stateChanged ? stateAbr : null, cityChanged ? _cityController.text : null);
-        if(result['error'] == false && result['user'].length > 0) {
-          setGlobals(result);
-          progressHUD();
-          Flushbar(
-            flushbarPosition: FlushbarPosition.BOTTOM,
-            title: "Account Updated",
-            message: "Your account has been updated.",
-            duration: Duration(seconds: 3),
-          )..show(context);
-        }
-      }else {
+      if(shopNameChanged || addressChanged || stateChanged || cityChanged) {
         progressHUD();
-        showErrorDialog(context, 'Address Error', 'The address you provided is not valid');
+        var res = await validateAddress('${_streetAddressController.text}, ${_cityController.text}, $stateAbr');
+        if(res){
+          Map result = await updateBarberSettings(context, globals.token, shopNameChanged ? _shopNameController.text : null, addressChanged ? _streetAddressController.text : null, stateChanged ? stateAbr : null, cityChanged ? _cityController.text : null);
+          if(result['error'] == false && result['user'].length > 0) {
+            setGlobals(result);
+            progressHUD();
+            Flushbar(
+              flushbarPosition: FlushbarPosition.BOTTOM,
+              title: "Account Updated",
+              message: "Your account has been updated.",
+              duration: Duration(seconds: 3),
+            )..show(context);
+          }
+        }else {
+          progressHUD();
+          showErrorDialog(context, 'Address Error', 'The address you provided is not valid');
+        }
       }
     }
 

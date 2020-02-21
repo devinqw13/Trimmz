@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trimmz/Model/ClientPaymentMethod.dart';
+import 'package:trimmz/dialogs.dart';
 import '../Calls/GeneralCalls.dart';
 import 'package:trimmz/functions.dart';
 import '../globals.dart' as globals;
@@ -119,7 +120,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 }
               }
             }else {
-              // payment wasn't able to be authorized
+              showErrorDialog(context, "Authorization Error", "Unable to authorize payment method. Try again.");
             }
           }
         }
@@ -152,6 +153,8 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 }
               }
             }
+          }else {
+            showErrorDialog(context, "Authorization Error", "Unable to authorize payment method. Try again.");
           }
         }
       }
