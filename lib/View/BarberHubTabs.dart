@@ -95,7 +95,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
     _animationController.forward();
 
     searchStreamController.stream
-    .debounce(Duration(milliseconds: 100))
+    .debounce(Duration(milliseconds: 0))
     .listen((s) => _searchValue(s, searchTabIndex));
 
     initSuggestedBarbers();
@@ -250,14 +250,14 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
 
   _searchValue(String string, int type) async {
     if(type == 0) {
-      if(_search.text.length > 2) {
+      if(_search.text.length > 0) {
         var res = await getSearchBarbers(context, _search.text);
         setState(() {
           searchedBarbers = res;
           isSearching = true;
         });
       }
-      if(_search.text.length <= 2) {
+      if(_search.text.length == 0) {
         setState(() {
           isSearching = false;
         });

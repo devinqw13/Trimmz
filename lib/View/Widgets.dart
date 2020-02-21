@@ -216,7 +216,7 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
     if(profilePicture != null && profilePicture != '') {
       return CircleAvatar(
         radius: radius,
-        backgroundImage: NetworkImage('https://trimmz.app/images/pp/$profilePicture'),
+        backgroundImage: NetworkImage('${globals.baseUrlImage}$profilePicture'),
       );
     }else {
       return Container(

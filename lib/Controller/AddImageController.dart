@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:trimmz/Calls/GeneralCalls.dart';
 import '../globals.dart' as globals;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -24,7 +25,8 @@ class CameraApp extends StatefulWidget {
   final List<Availability> availability;
   final List<AppointmentRequest> appointmentReq;
   final BarberPolicies policies;
-  CameraApp({Key key, this.cameras, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
+  final int uploadType;
+  CameraApp({Key key, @required this.uploadType, this.cameras, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
   @override
   _CameraAppState createState() => _CameraAppState();
 }
@@ -156,8 +158,13 @@ class _CameraAppState extends State<CameraApp> {
     final croppedFile = await crop.cropCompleted(file, pictureQuality: 900);
     //progressHUD();
 
-    final shareImageScreen = new ShareImage(image: croppedFile.path, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies);
-    Navigator.push(context, new MaterialPageRoute(builder: (context) => shareImageScreen));
+    if(widget.uploadType == 2) {
+      final shareImageScreen = new ShareImage(image: croppedFile.path, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies);
+      Navigator.push(context, new MaterialPageRoute(builder: (context) => shareImageScreen));
+    }else {
+      var res = await uploadImage(context, croppedFile.path, widget.uploadType);
+      Navigator.pop(context, res);
+    }
 }
 
   buildBody(BuildContext context) {
@@ -174,6 +181,7 @@ class _CameraAppState extends State<CameraApp> {
         appBar: new AppBar(
           title: _currentIndex == 0 ? Text('Photo') : Text('Gallery'),
           actions: <Widget>[
+            widget.uploadType == 2 ?
             takenPhoto != '' || (_currentIndex == 1 && gallerySelectedImage != null) ? new FlatButton(
               child: new Text('Next', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
               onPressed: () async {
@@ -185,6 +193,18 @@ class _CameraAppState extends State<CameraApp> {
                 }
               }
             ) : Container()
+            : 
+            new FlatButton(
+              child: new Text('Use', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+              onPressed: () async {
+                if(_currentIndex == 1 && gallerySelectedImage != null) {
+                  createCropImage(context);
+                }else {
+                  var res = await uploadImage(context, takenPhoto, widget.uploadType);
+                  Navigator.pop(context, res);
+                }
+              },
+            )
           ]
         ),
         body: _currentIndex == 0 ? Column(

@@ -54,7 +54,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
     super.initState();
 
     searchStreamController.stream
-    .debounce(Duration(milliseconds: 500))
+    .debounce(Duration(milliseconds: 0))
     .listen((s) => _searchValue(s, searchTabIndex));
 
     initSuggestedBarbers();
@@ -131,14 +131,14 @@ class HomeHubScreenState extends State<HomeHubScreen> {
 
   _searchValue(String string, int type) async {
     if(type == 0) {
-      if(_search.text.length > 2) {
+      if(_search.text.length > 0) {
         var res = await getSearchBarbers(context, _search.text);
         setState(() {
           searchedBarbers = res;
           isSearching = true;
         });
       }
-      if(_search.text.length <= 2) {
+      if(_search.text.length == 0) {
         setState(() {
           isSearching = false;
         });

@@ -9,8 +9,9 @@ import '../Calls/GeneralCalls.dart';
 import '../states.dart' as states;
 import '../View/StateBottomSheetPicker.dart';
 import 'package:progress_hud/progress_hud.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:camera/camera.dart';
+import '../Controller/AddImageController.dart';
 
 class AccountSettings extends StatefulWidget {
   AccountSettings({Key key}) : super (key: key);
@@ -202,21 +203,16 @@ class AccountSettingsState extends State<AccountSettings> {
   }
 
   changeProfilePicture() async {
-    progressHUD();
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-
-    if(image != null) {
-      var res = await uploadImage(context, image.path, 1);
-      if(res != null) {
-        await removeImage(context, globals.profilePic, 1);
-        setState(() {
-          globals.profilePic = res;
-        });
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('profilePic', res);
-      }
+    var cameras = await availableCameras();
+    final cameraScreen = new CameraApp(uploadType: 1, cameras: cameras);
+    var res = await Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
+    if(res != null) {
+      setState(() {
+        globals.profilePic = res;
+      });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('profilePic', res);
     }
-    progressHUD();
   }
 
   profilePicture() {
