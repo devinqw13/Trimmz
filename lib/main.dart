@@ -17,8 +17,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   globals.baseUrl = "https://trimmz.app/dev_api/";
   globals.stripeURL = "https://api.stripe.com/v1/";
-  globals.stripeSecretKey = "sk_test_5h8VY4cc8ZUKHpIHO0TQWNkN00KJNxvrgY";
-  globals.stripePublishablekey = "pk_test_X7T99aRCpPlsEHCjm7TOHnuO00JlKLGdal";
+  globals.stripeSecretKey = "sk_test_v867iJx7k2BI56g7y9pmPFS60073BdgDOz";
+  globals.stripePublishablekey = "pk_test_7UVBKGuzATDdteCuYSFPkGoY00jTaym2fZ";
   globals.stripeMerchantId = "";
   SharedPreferences prefs = await SharedPreferences.getInstance();
   BuildContext context;

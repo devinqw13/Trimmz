@@ -39,18 +39,18 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
     clientBarbers = widget.clientBarbers;
 
     searchStreamController.stream
-    .debounce(Duration(milliseconds: 100))
+    .debounce(Duration(milliseconds: 0))
     .listen((s) => _searchValue(s));
   }
 
   _searchValue(String string) async {
-    if(_search.text.length > 2) {
+    if(_search.text.length > 0) {
       var res = await getSearchBarbers(context, _search.text);
       setState(() {
         searchBarbers = res;
       });
     }
-    if(_search.text.length <= 2) {
+    if(_search.text.length == 0) {
       setState(() {
         searchBarbers = [];
       });

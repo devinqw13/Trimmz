@@ -120,7 +120,7 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
       String end;
       final df = new DateFormat('ha');
       if(availability[i].start != null && availability[i].end != null) {
-        if(availability[i].start == '00:00:00' && availability[i].end == '00:00:00') {
+        if(availability[i].start == '0:00:00' && availability[i].end == '0:00:00') {
           isNull = true;
         }else {
           start = df.format(DateTime.parse(DateFormat('Hms', 'en_US').parse(availability[i].start).toString()));
