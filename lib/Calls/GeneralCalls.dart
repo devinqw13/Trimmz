@@ -869,14 +869,14 @@ Future<List<AppointmentRequest>> getBarberAppointmentRequests(BuildContext conte
     List<AppointmentRequest> appointmentReq = [];
     for(var item in jsonResponse['appointments']) {
       AppointmentRequest request = new AppointmentRequest();
-      request.requestId = int.parse(item['id']);
-      request.clientId = int.parse(item['client_id']);
+      request.requestId = item['id'];
+      request.clientId = item['client_id'];
       request.clientName = item['cname'];
       request.dateTime = DateTime.parse(item['date']);
       request.packageId = int.parse(item['package_id']);
       request.packageName = item['pname'];
-      request.price = int.parse(item['price']);
-      request.tip = int.parse(item['tip']);
+      request.price = item['price'];
+      request.tip = item['tip'];
       appointmentReq.add(request);
     }
     return appointmentReq;
@@ -921,7 +921,7 @@ Future<bool> aptRequestDecision(BuildContext context, int barberId, int requestI
     jsonResponse = json.decode(response.body);
   }
   if(jsonResponse['error'] == 'false'){
-    if(jsonResponse['result'] == true){
+    if(jsonResponse['results'] == 'true'){
       return true;
     }else {
       return false;
@@ -2020,7 +2020,7 @@ Future<List> getNotificationTokens(BuildContext context, int userId) async {
   Map jsonResponse = {};
   http.Response response;
   
-  String url = "${globals.baseUrl}getNotificationTokens?token=$userId";
+  String url = "${globals.baseUrl}getNotificationToken?token=$userId";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));

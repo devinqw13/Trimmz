@@ -896,16 +896,16 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
             }else {
               final i = index ~/ 2;
               Color statusColor;
-              if(_selectedEvents[i]['status'] == '0'){
+              if(_selectedEvents[i]['status'] == 0){
                 var time = _selectedEvents[i]['full_time'];
                 if(DateTime.now().isAfter(DateTime.parse(time))) {
                   statusColor = Colors.grey;
                 }else {
                   statusColor = Colors.blue;
                 }
-              }else if(_selectedEvents[i]['status'] == '1'){
+              }else if(_selectedEvents[i]['status'] == 1){
                 statusColor = Colors.green;
-              }else if(_selectedEvents[i]['status'] == '2'){
+              }else if(_selectedEvents[i]['status'] == 2){
                 statusColor = Colors.red;
               }
               return GestureDetector(
@@ -921,18 +921,6 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                         child: Row(
                           children: <Widget>[
                             buildProfilePictures(context, _selectedEvents[i]['profile_picture'], _selectedEvents[i]['name'], 30),
-                            // Container(
-                            //   width: 50.0,
-                            //   height: 50.0,
-                            //   decoration: new BoxDecoration(
-                            //     shape: BoxShape.circle,
-                            //     color: Colors.purple,
-                            //     gradient: new LinearGradient(
-                            //       colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
-                            //     )
-                            //   ),
-                            //   child: Center(child: Text(_selectedEvents[i]['name'].substring(0,1), style: TextStyle(fontSize: 20)))
-                            // ),
                             Padding(padding: EdgeInsets.all(5)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -957,7 +945,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                   ]
                                 ),
                                 Text(_selectedEvents[i]['package']),
-                                Text('\$' + (int.parse(_selectedEvents[i]['price']) + (int.parse(_selectedEvents[i]['tip']))).toString()),
+                                Text('\$' + (_selectedEvents[i]['price'] + (_selectedEvents[i]['tip'])).toString()),
                               ]
                             ),
                           ]

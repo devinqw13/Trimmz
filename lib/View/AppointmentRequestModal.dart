@@ -229,6 +229,7 @@ class _AppointmentRequestBottomSheet extends State<AppointmentRequestBottomSheet
                                             var res2 = await getBarberAppointments(context, globals.token);
                                             progressHUD();
                                             widget.updateAppointments(res2);
+                                            widget.updateAppointmentRequests(res);
 
                                             if(requests.length == 0) {
                                               Navigator.pop(context);

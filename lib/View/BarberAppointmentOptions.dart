@@ -142,7 +142,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                   ),
                                 ),
                                 Text(
-                                  df2.format(DateTime.parse(appointment['full_time'])) + ' - ' + df2.format(DateTime.parse(appointment['full_time']).add(Duration(minutes: int.parse(appointment['duration'])))),
+                                  df2.format(DateTime.parse(appointment['full_time'])) + ' - ' + df2.format(DateTime.parse(appointment['full_time']).add(Duration(minutes: appointment['duration']))),
                                   style: TextStyle(
                                     color: Colors.grey
                                   ),
@@ -168,7 +168,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             )
                                           ),
                                           Text(
-                                            '\$'+appointment['price'],
+                                            '\$'+appointment['price'].toString(),
                                             style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.grey
@@ -187,7 +187,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             )
                                           ),
                                           Text(
-                                            '\$'+appointment['tip'],
+                                            '\$'+appointment['tip'].toString(),
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.grey
@@ -225,7 +225,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             )
                                           ),
                                           Text(
-                                            globals.spPayoutMethod == 'standard' ? '- \$' + ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .025).toStringAsFixed(2) : '- \$' + ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .03).toStringAsFixed(2),
+                                            globals.spPayoutMethod == 'standard' ? '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .025).toStringAsFixed(2) : '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .03).toStringAsFixed(2),
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.grey
@@ -248,7 +248,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             globals.userType != 2 ?
                                             '\$' + (int.parse(appointment['price']) + int.parse(appointment['tip']) + 1).toString() :
                                             globals.spPayoutMethod == 'standard' ?
-                                            '\$' + (double.parse(appointment['price']) + double.parse(appointment['tip']) -  ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .025)).toStringAsFixed(2) :
+                                            '\$' + (double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString()) -  ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .025)).toStringAsFixed(2) :
                                             '\$' + (double.parse(appointment['price']) + double.parse(appointment['tip']) -  ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .03)).toStringAsFixed(2),
                                             style: TextStyle(
                                               fontSize: 17,
@@ -264,7 +264,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                         width: MediaQuery.of(context).size.width * .7,
                                         height: 1
                                       ),
-                                      appointment['status'] == '0' && globals.userType == 2 ? Container(
+                                      appointment['status'] == 0 && globals.userType == 2 ? Container(
                                         child: Column(
                                           children: <Widget>[
                                             DateTime.now().isAfter(DateTime.parse(appointment['full_time'])) ? Row(
@@ -342,7 +342,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             ) : Container()
                                           ]
                                         )
-                                      ): (globals.userType != 2 && appointment['status'] == '0' && DateTime.now().isAfter(DateTime.parse(appointment['full_time']))) ? Container(
+                                      ): (globals.userType != 2 && appointment['status'] == 0 && DateTime.now().isAfter(DateTime.parse(appointment['full_time']))) ? Container(
                                         child: RichText(
                                           softWrap: true,
                                           text: new TextSpan(
@@ -352,7 +352,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             ]
                                           )
                                         )
-                                      ) : (globals.userType != 2 && appointment['status'] == '0' && DateTime.now().isBefore(DateTime.parse(appointment['full_time']))) ? Row(
+                                      ) : (globals.userType != 2 && appointment['status'] == 0 && DateTime.now().isBefore(DateTime.parse(appointment['full_time']))) ? Row(
                                       children: <Widget> [
                                         Expanded(
                                           child: Container(
@@ -365,7 +365,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                           )
                                         )
                                       ]
-                                    ) : (globals.userType != 2 && appointment['status'] == '3') ? Container(
+                                    ) : (globals.userType != 2 && appointment['status'] == 3) ? Container(
                                         child: RichText(
                                           softWrap: true,
                                           text: new TextSpan(
@@ -387,9 +387,9 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                           text: new TextSpan(
                                             children: <TextSpan>[
                                               new TextSpan(text: 'Marked ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-                                              appointment['status'] == '2' ?
+                                              appointment['status'] == 2 ?
                                               new TextSpan(text: 'cancelled on: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)):
-                                              appointment['status'] == '1' ?
+                                              appointment['status'] == 1 ?
                                               new TextSpan(text: 'completed on: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)) :
                                               new TextSpan(text: 'no-show on: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
                                               new TextSpan(text: df.format(DateTime.parse(appointment['updated'])), style: TextStyle(fontStyle: FontStyle.italic)),
