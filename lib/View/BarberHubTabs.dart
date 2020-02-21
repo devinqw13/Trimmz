@@ -651,7 +651,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
   }
 
   setupChecks() {
-    if(globals.spPayoutId == null) {
+    if(globals.spPayoutId == null || packages.length == 0) {
       return ExpandableNotifier(
         child: Card(
           child: Column(
