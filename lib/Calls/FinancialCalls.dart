@@ -307,6 +307,49 @@ Future<Map> spCreateConnectAccount(BuildContext context) async {
   }
 }
 
+Future<Map> spTransferToConnectAccount(BuildContext context, int amount, String accountId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  Map jsonMap = {
+    "amount": "$amount",
+    "currency": "USD",
+    "destination": "$accountId",
+    "source_type": "card",
+  };
+  String url = "${globals.stripeURL}transfers";
+
+  try {
+    response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (P07)", "Please try again. If this error continues to occur, please contact support.");
+    return {};
+  } 
+  print(response.body);
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (P07)", "Please try again.");
+    return {};
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(!jsonResponse.containsKey('error')) {
+    return jsonResponse;
+  }else {
+    return {};
+  }
+}
+
 Future<Map> spPayout(BuildContext context, int amount, String payoutId, String accountId) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
@@ -359,7 +402,18 @@ Future<bool> spChargeCard(BuildContext context, int total, String paymentId, Str
 
   var res = await spCreatePaymentIntent(context, paymentId, customerId, chargeTotal.toString());
   if(res.length > 0) {
-    var res2 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
+    var res2 = await spTransferToConnectAccount(context, payoutTotal, globals.spAccountId);
+    if(res2.length > 0) {
+      var res3 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
+      if(res3.length > 0){
+        return true;
+      }else {
+        return false;
+      }
+    }else {
+      return false;
+    }
+  }else {
+    return false;
   }
-  return false;
 }

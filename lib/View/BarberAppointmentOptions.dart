@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:trimmz/Calls/FinancialCalls.dart';
 import 'package:trimmz/Model/BarberPolicies.dart';
 import '../globals.dart' as globals;
 import '../Calls/GeneralCalls.dart';
@@ -24,6 +25,9 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
 
+  String standardBarberPrice = '';
+  String instantBarberPrice = '';
+
   @override
   void initState() {
     appointment = widget.appointment;
@@ -34,6 +38,10 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
       loading: false,
       text: 'Loading...'
     );
+
+    standardBarberPrice = (((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) - ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .025)) * 100).toStringAsFixed(0);
+
+    instantBarberPrice = (((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) - ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .03))).toStringAsFixed(2);
     super.initState();
   }
 
@@ -248,8 +256,8 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             globals.userType != 2 ?
                                             '\$' + (int.parse(appointment['price']) + int.parse(appointment['tip']) + 1).toString() :
                                             globals.spPayoutMethod == 'standard' ?
-                                            '\$' + (double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString()) -  ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .025)).toStringAsFixed(2) :
-                                            '\$' + (double.parse(appointment['price']) + double.parse(appointment['tip']) -  ((double.parse(appointment['price']) + double.parse(appointment['tip'])) * .03)).toStringAsFixed(2),
+                                            '\$' + (double.parse(standardBarberPrice) / 100).toString() :
+                                            '\$' + (double.parse(instantBarberPrice) / 100).toString(),
                                             style: TextStyle(
                                               fontSize: 17,
                                               color: Colors.white,
@@ -273,22 +281,26 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                   child: Container(
                                                     child: RaisedButton(
                                                       onPressed: () async {
-                                                        //TODO: MARK STATUS COMPLETE(1) AND CHARGE CUSTOMER(PRICE + TIP + 1), ALSO DO PAYOUT BASED ON METHOD (Price + tip - fees(method))
-
-                                                        List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
-                                                        for(var token in tokens){
-                                                          Map<String, dynamic> dataMap =  {
-                                                            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                                                            'action': 'APPOINTMENT',
-                                                            'title': 'Appointment Completed',
-                                                            'body': '${globals.username} has cancelled your appointment',
-                                                            'sender': '${globals.token}',
-                                                            'recipient': '${appointment['clientid']}',
-                                                            'appointment': appointment,
-                                                          };
-                                                          await sendPushNotification(context, 'Appointment Completed', '${globals.username} has completed your appointment.', int.parse(appointment['clientid']), token, dataMap);
+                                                        int total = appointment['price'] + appointment['tip'];
+                                                        var res = await spChargeCard(context, total, appointment['paymentid'], appointment['customerid']);
+                                                        if(res) {
+                                                          var res2 = await updateAppointmentStatus(context, appointment['id'], 1);
+                                                          if(res2) {
+                                                            List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
+                                                            for(var token in tokens){
+                                                              Map<String, dynamic> dataMap =  {
+                                                                'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                                                'action': 'APPOINTMENT',
+                                                                'title': 'Appointment Completed',
+                                                                'body': '${globals.username} has cancelled your appointment',
+                                                                'sender': '${globals.token}',
+                                                                'recipient': '${appointment['clientid']}',
+                                                                'appointment': appointment,
+                                                              };
+                                                              await sendPushNotification(context, 'Appointment Completed', '${globals.username} has completed your appointment.', int.parse(appointment['clientid']), token, dataMap);
+                                                            }
+                                                          }
                                                         }
-
                                                       },
                                                       child: Text('Complete Appointment'),
                                                     )
@@ -414,7 +426,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                     height: 1
                   ),
                   Expanded(
-                    child: Text('MESSAGES')
+                    child: Container()
                   ),
                   Row(
                     children: <Widget>[
