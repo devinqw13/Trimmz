@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trimmz/Calls/FinancialCalls.dart';
+import '../Controller/MobileTransactionSetup.dart';
 import 'package:trimmz/Controller/ReviewController.dart';
 import '../CustomCupertinoSettings.dart';
 import '../Controller/AboutController.dart';
@@ -32,7 +33,7 @@ logout(BuildContext context) async {
 settingsWidget(BuildContext context) {
   CupertinoSettings settings = new CupertinoSettings(<Widget>[
     new CSLink('TESTING', () async {
-      var res = await spPayout(context, 100, '', '');
+      // var res = await spPayout(context, 100, '', '');
       // var res = await spCreateConnectAccount(context);
       // print(res);
       // if(res.length > 0) {
@@ -52,7 +53,10 @@ settingsWidget(BuildContext context) {
 
     globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
     //globals.userType == 2 ? CSLink('Client Book', () {}, style: CSWidgetStyle(icon: Icon(LineIcons.book))) : Container(),
-    globals.userType == 2 ? CSLink('Mobile Transactions', () {final mobileTransaction = new MobileTransactionScreen(); Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));}, style: CSWidgetStyle(icon: Icon(LineIcons.money))) : Container(),
+    globals.userType == 2 ? CSLink('Mobile Pay', () {
+      final mobileTransaction = globals.spPayoutMethod == null || globals.spPayoutId == null ? new MobileTransactionSetup() : new MobileTransactionScreen();
+      Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));
+      }, style: CSWidgetStyle(icon: Icon(LineIcons.money))) : Container(),
 
     new CSHeader('Payment'),
     new CSLink('Payment Method', () {final paymentMethodScreen = new PaymentMethodScreen(signup: false); Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodScreen));}, style: CSWidgetStyle(icon: Icon(Icons.credit_card))),

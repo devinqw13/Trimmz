@@ -249,7 +249,7 @@ Future<Map> spAttachCustomerToPM(BuildContext context, String paymentId, String 
   }
 }
 
-Future<Map> spCreateConnectAccount(BuildContext context) async {
+Future<Map> spCreateConnectAccount(BuildContext context, String firstName, String lastName, String expMonth, String expYear, String number) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
@@ -266,14 +266,14 @@ Future<Map> spCreateConnectAccount(BuildContext context) async {
     'email': '${globals.email}',
     'business_type': 'individual',
     'requested_capabilities[]': 'transfers',
-    'individual[first_name]': '${globals.name}',
-    'individual[last_name]': '${globals.name}',
+    'individual[first_name]': '$firstName',
+    'individual[last_name]': '$lastName',
     'business_profile[url]': 'https://trimmz.app/${globals.username}',
     'external_account[object]': 'card',
     'external_account[currency]': 'USD',
-    'external_account[number]': '4000056655665556',
-    'external_account[exp_month]': '02',
-    'external_account[exp_year]': '21',
+    'external_account[number]': '$number',
+    'external_account[exp_month]': '$expMonth',
+    'external_account[exp_year]': '$expYear',
     'settings[payouts][schedule][interval]': 'manual',
     'tos_acceptance[date]': '$currentTime',
     'tos_acceptance[ip]': '8.8.8.8'

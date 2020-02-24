@@ -11,6 +11,7 @@ import '../Calls/GeneralCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../Model/PayoutDetails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'MobileTransactionSettings.dart';
 
 class MobileTransactionScreen extends StatefulWidget {
   MobileTransactionScreen({Key key}) : super (key: key);
@@ -25,7 +26,6 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
   List<PayoutDetails> payoutDetails = [];
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
-  String _payoutMethod = globals.spPayoutMethod;
 
   void initState() {
     super.initState();
@@ -259,93 +259,24 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
     }
   }
 
-  payoutMethod() {
-    if(payoutCard != null){
-      return Container(
-        width: MediaQuery.of(context).size.width,
+  payoutSettings() {
+    return GestureDetector(
+      onTap: () async {
+        final mobileTransSettingsScreen = new MobileTransactionSettingsScreen();
+        Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransSettingsScreen));
+      },
+      child: Container(
         margin: EdgeInsets.all(5.0),
-        padding: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          gradient: new LinearGradient(
-            begin: Alignment(0.0, -2.0),
-            colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
-          )
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Transfer Method', style: TextStyle(fontWeight: FontWeight.bold)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _payoutMethod = 'standard';
-                        });
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        child: Row(
-                          children: <Widget>[
-                            Radio(
-                              activeColor: Colors.blue,
-                              groupValue: _payoutMethod,
-                              value: 'standard',
-                              onChanged: (value) {
-                                setState(() {
-                                  _payoutMethod = value;
-                                });
-                              },
-                            ),
-                            Text('Standard')
-                          ]
-                        )
-                      )
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _payoutMethod = 'instant';
-                        });
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        child: Row(
-                          children: <Widget>[
-                            Radio(
-                              activeColor: Colors.blue,
-                              groupValue: _payoutMethod,
-                              value: 'instant',
-                              onChanged: (value) {
-                                setState(() {
-                                  _payoutMethod = value;
-                                });
-                              },
-                            ),
-                            Text('Instant')
-                          ]
-                        )
-                      )
-                    )
-                  ]
-                ),
-                IconButton(
-                  onPressed: () {
-                    showPayoutInfoModalSheet(context);
-                  },
-                  icon: Icon(LineIcons.info_circle),
-                )
-              ]
-            )
+        padding: EdgeInsets.all(10),
+        width: MediaQuery.of(context).size.width,
+        color: Colors.grey[850],
+        child: Row(
+          children: <Widget> [
+            Text('Settings', style: TextStyle(fontWeight: FontWeight.bold))
           ]
         )
-      );
-    }else {
-      return Container();
-    }
+      )
+    );
   }
 
   transactionHistory() {
@@ -394,7 +325,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
               child: Column(
                 children: <Widget>[
                   payoutOptions(),
-                  payoutMethod(),
+                  payoutSettings(),
                 ],
               ),
             )
@@ -425,22 +356,6 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
         backgroundColor: Colors.black,
         appBar: AppBar(
           title: Text("Mobile Transactions"),
-          actions: <Widget>[
-            FlatButton(
-              textColor: _payoutMethod != globals.spPayoutMethod ? Colors.white : Colors.grey,
-              onPressed: () async {
-                var res = await updatePayoutSettings(context, globals.token, null, _payoutMethod);
-                if(res) {
-                  setState(() {
-                    globals.spPayoutMethod = _payoutMethod;
-                  });
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString('spPayoutMethod', _payoutMethod);
-                }
-              },
-              child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
-            )
-          ],
         ),
         body: new Stack(
           children: <Widget> [
