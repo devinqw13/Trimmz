@@ -57,7 +57,7 @@ void main() async {
         '/': (context) => token == null ? new LoginScreen() : globals.userType == 2 ? BarberHubScreen(packages: packages, events: events, selectedEvents: selectedEvents, availability: availability, appointmentReq: appointmentReq, policies: policies) : HomeHubScreen(),
       },
       theme: new ThemeData(
-        primaryColor: Colors.blue,
+        primaryColor: globals.userColor,
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.black87
       )

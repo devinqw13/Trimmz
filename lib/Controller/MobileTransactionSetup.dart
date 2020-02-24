@@ -5,6 +5,9 @@ import 'package:line_icons/line_icons.dart';
 import '../View/ModalSheets.dart';
 import '../Model/ClientPaymentMethod.dart';
 import 'package:stripe_payment/stripe_payment.dart';
+import 'package:credit_card_type_detector/credit_card_type_detector.dart';
+import '../View/TextFieldFormatter.dart';
+import 'package:flutter/services.dart';
 
 class MobileTransactionSetup extends StatefulWidget {
   MobileTransactionSetup({Key key}) : super (key: key);
@@ -14,10 +17,17 @@ class MobileTransactionSetup extends StatefulWidget {
 }
 
 class MobileTransactionSetupState extends State<MobileTransactionSetup> {
+  TextEditingController cardNumber = new TextEditingController();
+  TextEditingController expDate = new TextEditingController();
+  TextEditingController ccv = new TextEditingController();
+  final expDateFocus = new FocusNode();
+  final ccvFocus = new FocusNode();
   ProgressHUD _progressHUD;
   ClientPaymentMethod payoutCard;
   bool _loadingInProgress = false;
   String _payoutMethod = 'standard';
+  bool addCard = true;
+  var type = CreditCardType.unknown;
 
   void initState() {
     super.initState();
@@ -66,8 +76,22 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
     }).catchError(setError);
   }
 
+  getCardIcon() {
+    if(type == CreditCardType.visa) {
+      return Tab(icon: Container(child: Image(image: AssetImage('ccimages/visa1.png'),fit: BoxFit.cover),height: 25));
+    }else if(type == CreditCardType.discover){
+      return Tab(icon: Container(child: Image(image: AssetImage('ccimages/discover1.png'),fit: BoxFit.cover),height: 25));
+    }else if(type == CreditCardType.amex){
+      return Tab(icon: Container(child: Image(image: AssetImage('ccimages/amex1.png'),fit: BoxFit.cover),height: 25));
+    }else if(type == CreditCardType.mastercard){
+      return Tab(icon: Container(child: Image(image: AssetImage('ccimages/mastercard1.png'),fit: BoxFit.cover),height: 25));
+    }else {
+      return Container(child: Text(''));
+    }
+  }
+
   payoutOptions() {
-    if(payoutCard != null) {
+    if(!addCard) {
       return new Container(
         width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.all(5.0),
@@ -140,10 +164,77 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
                 onTap: () {
                   addPayoutCard();
                 },
-                child: Row(
-                  children: <Widget> [
-                    Icon(LineIcons.plus, size: 15, color: Colors.blue),
-                    Text('Add Card', style: TextStyle(color: Colors.blue))
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      controller: cardNumber,
+                      inputFormatters: [
+                        MaskedTextInputFormatter(
+                          mask: 'xxxx xxxx xxxx xxxx',
+                          separator: ' ',
+                        ),
+                      ],
+                      onChanged: (value) async {
+                        var t = detectCCType(value);
+                        setState(() {
+                          type = t;
+                        });
+
+                        if(value.length == 19) {
+                          FocusScope.of(context).requestFocus(expDateFocus);
+                        }
+                      },
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Card Number",
+                        suffixIcon: getCardIcon()
+                      ),
+                      autocorrect: false,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextFormField(
+                            focusNode: expDateFocus,
+                            controller: expDate,
+                            inputFormatters: [
+                              MaskedTextInputFormatter(
+                                mask: 'xx/xx',
+                                separator: '/',
+                              ),
+                            ],
+                            onChanged: (value) {
+                              if(value.length == 5) {
+                                FocusScope.of(context).requestFocus(ccvFocus);
+                              }
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Expiration Date",
+                            ),
+                            autocorrect: false,
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.all(10)),
+                        Expanded(
+                          child: TextFormField(
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(type == CreditCardType.amex ? 4 : 3),
+                            ],
+                            focusNode: ccvFocus,
+                            controller: ccv,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelStyle: TextStyle(
+                                fontSize: 18
+                              ),
+                              labelText: "Security Code"
+                            ),
+                            autocorrect: false,
+                          ),
+                        )
+                      ]
+                    )
                   ]
                 )
               )
