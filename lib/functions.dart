@@ -17,6 +17,7 @@ setGlobals(Map results) async {
   user.userType = results['user'][0]['type'];
   user.spCustomerId = results['user'][0]['sp_customerid'];
   user.spPayoutId = results['user'][0]['payoutId'];
+  user.spAccountId = results['user'][0]['sp_account'];
   user.spPaymentId = results['user'][0]['sp_paymentid'];
   user.spPayoutMethod = results['user'][0]['payoutMethod'] ?? 'standard';
   user.profilePic = results['user'][0]['profile_picture'];
@@ -35,6 +36,7 @@ setGlobals(Map results) async {
   globals.userType = user.userType;
   globals.spCustomerId = user.spCustomerId;
   globals.spPayoutId = user.spPayoutId;
+  globals.spAccountId = user.spAccountId;
   globals.spPaymentId = user.spPaymentId;
   globals.spPayoutMethod = user.spPayoutMethod;
 
@@ -64,6 +66,7 @@ setGlobals(Map results) async {
   prefs.setInt('userType', globals.user.userType);
   prefs.setString('spCustomerId', globals.user.spCustomerId);
   prefs.setString('spPayoutId', globals.user.spPayoutId);
+  prefs.setString('spAccountId', globals.user.spAccountId);
   prefs.setString('spPaymentId', globals.user.spPaymentId);
   prefs.setString('spPayoutMethod', globals.user.spPayoutMethod);
 

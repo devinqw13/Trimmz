@@ -185,12 +185,12 @@ Future<Map> spDetachCustomerFromPM(BuildContext context, String paymentId) async
   try {
     response = await http.post(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (P01)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (P03)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (P01)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (P03)", "Please try again.");
     return {};
   }
 
@@ -226,12 +226,12 @@ Future<Map> spAttachCustomerToPM(BuildContext context, String paymentId, String 
   try {
     response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (P01)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (P04)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
   
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (P01)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (P04)", "Please try again.");
     return {};
   }
 
@@ -247,4 +247,119 @@ Future<Map> spAttachCustomerToPM(BuildContext context, String paymentId, String 
   }else {
     return {};
   }
+}
+
+Future<Map> spCreateConnectAccount(BuildContext context) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var unixTime = DateTime.now().toUtc().millisecondsSinceEpoch;
+  var currentTime = (unixTime / 1000).round();
+
+  var jsonMap = {
+    'type': 'custom',
+    'email': '${globals.email}',
+    'business_type': 'individual',
+    'requested_capabilities[]': 'transfers',
+    'individual[first_name]': '${globals.name}',
+    'individual[last_name]': '${globals.name}',
+    'business_profile[url]': 'https://trimmz.app/${globals.username}',
+    'external_account[object]': 'card',
+    'external_account[currency]': 'USD',
+    'external_account[number]': '4000056655665556',
+    'external_account[exp_month]': '02',
+    'external_account[exp_year]': '21',
+    'settings[payouts][schedule][interval]': 'manual',
+    'tos_acceptance[date]': '$currentTime',
+    'tos_acceptance[ip]': '8.8.8.8'
+  };
+
+  String url = "${globals.stripeURL}accounts";
+
+  try {
+    response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (P05)", "Please try again. If this error continues to occur, please contact support.");
+    return {};
+  } 
+  print(response.body);
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (P05)", "Please try again.");
+    return {};
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(!jsonResponse.containsKey('error')) {
+    return jsonResponse;
+  }else {
+    return {};
+  }
+}
+
+Future<Map> spPayout(BuildContext context, int amount, String payoutId, String accountId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}',
+    'Stripe-Account': '$accountId'
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  Map jsonMap = {
+    "amount": "$amount",
+    "currency": "USD",
+    "destination": "$payoutId",
+    "method": "${globals.spPayoutMethod}",
+    "source_type": "card",
+  };
+  String url = "${globals.stripeURL}payouts";
+
+  try {
+    response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (P07)", "Please try again. If this error continues to occur, please contact support.");
+    return {};
+  } 
+  print(response.body);
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (P07)", "Please try again.");
+    return {};
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(!jsonResponse.containsKey('error')) {
+    return jsonResponse;
+  }else {
+    return {};
+  }
+}
+
+Future<bool> spChargeCard(BuildContext context, int total, String paymentId, String customerId) async {
+  var chargeTotal = (total + 1) * 100;
+  double dbl = globals.spPayoutMethod == 'standard' ? 0.025 : 0.03;
+  var payoutTotal = int.parse(((double.parse(total.toString()) - (double.parse(total.toString()) * dbl)) * 100).toStringAsFixed(0));
+
+  var res = await spCreatePaymentIntent(context, paymentId, customerId, chargeTotal.toString());
+  if(res.length > 0) {
+    var res2 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
+  }
+  return false;
 }
