@@ -249,7 +249,7 @@ Future<Map> spAttachCustomerToPM(BuildContext context, String paymentId, String 
   }
 }
 
-Future<Map> spCreateConnectAccount(BuildContext context, String firstName, String lastName, String expMonth, String expYear, String number, String method) async {
+Future<Map> spCreateConnectAccount(BuildContext context, String firstName, String lastName, String expMonth, String expYear, String number, String method, List dob) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
@@ -261,20 +261,32 @@ Future<Map> spCreateConnectAccount(BuildContext context, String firstName, Strin
   var unixTime = DateTime.now().toUtc().millisecondsSinceEpoch;
   var currentTime = (unixTime / 1000).round();
 
+  String payoutSchedule = method == 'standard' ? 'daily' : 'instant';
+
   var jsonMap = {
     'type': 'custom',
     'email': '${globals.email}',
     'business_type': 'individual',
-    'requested_capabilities[]': 'transfers',
+    'requested_capabilities[0]': 'transfers',
+    'requested_capabilities[1]': 'card_payments',
     'individual[first_name]': '$firstName',
     'individual[last_name]': '$lastName',
-    'business_profile[url]': 'https://trimmz.app/${globals.username}',
+    'individual[email]': '${globals.email}',
+    'individual[dob][day]': '${dob[2]}',
+    'individual[dob][month]': '${dob[1]}',
+    'individual[dob][year]': '${dob[0]}',
+    'individual[address][city]': '${globals.city}',
+    'individual[address][state]': '${globals.state}',
+    //'individual[address][postal_code]': '${globals.zipcode}',
+    'individual[address][line1]': '${globals.shopAddress}',
+    'individual[address][country]': 'US',
+    // 'business_profile[url]': 'https://book.trimmz.app/${globals.username}',
     'external_account[object]': 'card',
     'external_account[currency]': 'USD',
     'external_account[number]': '$number',
     'external_account[exp_month]': '$expMonth',
     'external_account[exp_year]': '$expYear',
-    'settings[payouts][schedule][interval]': '$method',
+    'settings[payouts][schedule][interval]': '$payoutSchedule',
     'tos_acceptance[date]': '$currentTime',
     'tos_acceptance[ip]': '8.8.8.8'
   };

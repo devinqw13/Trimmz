@@ -4,12 +4,13 @@ import '../globals.dart' as globals;
 import 'package:progress_hud/progress_hud.dart';
 import 'package:line_icons/line_icons.dart';
 import '../View/ModalSheets.dart';
-import '../Model/ClientPaymentMethod.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import 'package:credit_card_type_detector/credit_card_type_detector.dart';
 import '../View/TextFieldFormatter.dart';
 import 'package:flutter/services.dart';
 import '../Calls/FinancialCalls.dart';
+import '../View/DatePicker.dart';
+import 'package:intl/intl.dart';
 
 class MobileTransactionSetup extends StatefulWidget {
   MobileTransactionSetup({Key key}) : super (key: key);
@@ -24,12 +25,14 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
   TextEditingController ccv = new TextEditingController();
   TextEditingController firstName = new TextEditingController();
   TextEditingController lastName = new TextEditingController();
+  TextEditingController dobController = new TextEditingController();
   final expDateFocus = new FocusNode();
   final ccvFocus = new FocusNode();
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
   String _payoutMethod = 'standard';
   var type = CreditCardType.unknown;
+  String dob = '';
 
   void initState() {
     super.initState();
@@ -55,10 +58,11 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
   }
 
   submitMobileTransaction() async {
-    if(firstName.text != '' && lastName.text != '' && cardNumber.text != '' && expDate.text != '' && ccv.text != '') {
+    if(firstName.text != '' && lastName.text != '' && cardNumber.text != '' && expDate.text != '' && ccv.text != '' && dob != '') {
       var number = cardNumber.text.replaceAll(new RegExp(r"\s\b|\b\s"), "");
       var exp = expDate.text.split('/');
-      var res = await spCreateConnectAccount(context, firstName.text, lastName.text, exp[0], exp[1], number, _payoutMethod);
+      var dob2 = DateFormat('yyyy/MM/dd').format(DateTime.parse(dob)).split('/');
+      var res = await spCreateConnectAccount(context, firstName.text, lastName.text, exp[0], exp[1], number, _payoutMethod, dob2);
     }else {
       showErrorDialog(context, "Missing Fields", "Missing required information. Enter all required fields.");
     }
@@ -114,7 +118,6 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
         children: <Widget>[
           Text('Direct Deposit', style: TextStyle(fontWeight: FontWeight.bold)),
           Container(
-            padding: EdgeInsets.all(10),
             child: GestureDetector(
               onTap: () {
                 addPayoutCard();
@@ -191,9 +194,6 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
                           },
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            labelStyle: TextStyle(
-                              fontSize: 18
-                            ),
                             labelText: "Security Code"
                           ),
                           autocorrect: false,
@@ -231,9 +231,6 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
                 child: TextFormField(
                   controller: firstName,
                   decoration: InputDecoration(
-                    labelStyle: TextStyle(
-                      fontSize: 18
-                    ),
                     labelText: "First Name"
                   ),
                   autocorrect: false,
@@ -244,9 +241,6 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
                 child: TextFormField(
                   controller: lastName,
                   decoration: InputDecoration(
-                    labelStyle: TextStyle(
-                      fontSize: 18
-                    ),
                     labelText: "Last Name"
                   ),
                   autocorrect: false,
@@ -254,6 +248,54 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
               )
             ]
           )
+        ]
+      )
+    );
+  }
+
+  dateOfBirth() {
+    final DateFormat dateFormat = new DateFormat('MM/dd/yyyy');
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        gradient: new LinearGradient(
+          begin: Alignment(0.0, -2.0),
+          colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+        )
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget> [
+          Text('Date of Birth', style: TextStyle(fontWeight: FontWeight.bold)),
+          DateTimeField(
+            onShowPicker: (context, currentValue) {
+              return showDatePicker(
+                context: context,
+                firstDate: DateTime(1900),
+                lastDate: DateTime(2100),
+                initialDate: currentValue ?? DateTime.now()
+              );
+            },
+            readOnly: true,
+            enabled: true,
+            initialValue: dob.length == 0 ? null : DateFormat('yyyy/MM/dd').parse(dob.split(' ')[0].replaceAll('-', '/')),
+            format: dateFormat,
+            autofocus: false,
+            controller: dobController,
+            decoration: InputDecoration(
+              labelText: "Date of Birth",
+            ),
+            onChanged: (value) {
+              if (value != null) {
+                dob = value.toString();
+              }
+              else {
+                dob = "";
+              }
+            },
+          ),
         ]
       )
     );
@@ -361,8 +403,8 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
           softWrap: true,
           text: new TextSpan(
             children: <TextSpan>[
-              new TextSpan(text: 'By clicking \'submit\', you agree to stripe\'s '),
-              new TextSpan(text: 'Services Agreement ', style: TextStyle(color: Colors.blue)),
+              new TextSpan(text: 'By clicking \'submit\', you agree to '),
+              new TextSpan(text: 'Stripe Services Agreement ', style: TextStyle(color: Colors.blue)),
               new TextSpan(text: 'and the '),
               new TextSpan(text: 'Stripe Connected Account Agreement', style: TextStyle(color: Colors.blue)),
             ],
@@ -381,6 +423,7 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
               child: Column(
                 children: <Widget>[
                   accountName(),
+                  dateOfBirth(),
                   payoutOptions(),
                   payoutMethod(),
                   agreement()
