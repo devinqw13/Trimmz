@@ -282,6 +282,7 @@ Future<Map> spCreateConnectAccount(BuildContext context, String firstName, Strin
     'individual[address][line1]': '${globals.shopAddress}',
     'individual[address][country]': 'US',
     'business_profile[url]': 'https://book.trimmz.app/${globals.username}',
+    'business_profile[mcc]': '7230',
     'external_account[object]': 'card',
     'external_account[currency]': 'USD',
     'external_account[number]': '$number',
