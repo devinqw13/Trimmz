@@ -65,7 +65,7 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
       var exp = expDate.text.split('/');
       var dob2 = DateFormat('yyyy/MM/dd').format(DateTime.parse(dob)).split('/');
       progressHUD();
-      var res = await spCreateConnectAccount(context, firstName.text, lastName.text, exp[0], exp[1], number, _payoutMethod, dob2, last4SSN.text);
+      var res = await spCreateConnectAccount(context, firstName.text, lastName.text, exp[0], exp[1], number, _payoutMethod, dob2, last4SSN.text, ccv.text);
       if(res.length > 0) {
         var res2 = await updatePayoutSettings(context, globals.token, res['external_accounts']['data'][0]['id'], _payoutMethod, res['external_accounts']['data'][0]['account']);
         progressHUD();

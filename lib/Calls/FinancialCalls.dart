@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../Model/ClientPaymentMethod.dart';
 import '../globals.dart' as globals;
+import '../Model/PayoutDetails.dart';
 
 Future<dynamic> spGetClientPaymentMethod(BuildContext context, String customerId, int type) async {
   Map<String, String> headers = {
@@ -254,7 +255,7 @@ Future<Map> spAttachCustomerToPM(BuildContext context, String paymentId, String 
   }
 }
 
-Future<Map> spCreateConnectAccount(BuildContext context, String firstName, String lastName, String expMonth, String expYear, String number, String method, List dob, String ssn) async {
+Future<Map> spCreateConnectAccount(BuildContext context, String firstName, String lastName, String expMonth, String expYear, String number, String method, List dob, String ssn, String cvc) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
@@ -294,6 +295,7 @@ Future<Map> spCreateConnectAccount(BuildContext context, String firstName, Strin
     'external_account[number]': '$number',
     'external_account[exp_month]': '$expMonth',
     'external_account[exp_year]': '$expYear',
+    'external_account[cvc]': '$cvc',
     'settings[payouts][schedule][interval]': '$payoutSchedule',
     'tos_acceptance[date]': '$currentTime',
     'tos_acceptance[ip]': '8.8.8.8'
@@ -565,7 +567,7 @@ Future<dynamic> spGetPayouts(BuildContext context, String accountId) async {
   }
 }
 
-Future<List> spGetPayoutHistory(BuildContext context, String accountId) async {
+Future<List<PayoutDetails>> spGetPayoutHistory(BuildContext context, String accountId) async {
   var res = await spGetTransfers(context, accountId);
   var res2 = await spGetPayouts(context, accountId);
   print(res);
