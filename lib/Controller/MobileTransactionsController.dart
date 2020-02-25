@@ -272,7 +272,14 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
         );
       }
     }else {
-      return new Container();
+      return new Container(
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.all(5.0),
+        padding: EdgeInsets.all(5),
+        child: LinearProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue)
+        )
+      );
     }
   }
 

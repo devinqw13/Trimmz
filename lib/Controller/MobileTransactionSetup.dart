@@ -74,8 +74,6 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
             globals.spPayoutId = res['external_accounts']['data'][0]['id'];
             globals.spAccountId = res['external_accounts']['data'][0]['account'];
           });
-          print(globals.spPayoutId);
-          print(globals.spAccountId);
           final mobileTransaction = new MobileTransactionScreen();
           Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));
         }
