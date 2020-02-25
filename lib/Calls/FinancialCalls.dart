@@ -126,7 +126,7 @@ Future<Map> spCreateCustomer(BuildContext context, String paymentId) async {
   }
 }
 
-Future<Map> spCreatePaymentIntent(BuildContext context, String paymentId, String customerId, String amount) async {
+Future<Map> spCreatePaymentIntent(BuildContext context, String paymentId, String customerId, String amount, [String email]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
@@ -140,9 +140,14 @@ Future<Map> spCreatePaymentIntent(BuildContext context, String paymentId, String
     "currency": "USD",
     "confirm": "true",
     "customer": "$customerId",
-    "payment_method": "$paymentId"
+    "payment_method": "$paymentId",
+    'capture_method': 'automatic'
   };
 
+  if(email != null) {
+    jsonMap['email'] = '$email';
+  }
+  
   String url = "${globals.stripeURL}payment_intents";
 
   try {
@@ -261,7 +266,7 @@ Future<Map> spCreateConnectAccount(BuildContext context, String firstName, Strin
   var unixTime = DateTime.now().toUtc().millisecondsSinceEpoch;
   var currentTime = (unixTime / 1000).round();
 
-  String payoutSchedule = method == 'standard' ? 'daily' : 'instant';
+  String payoutSchedule = method == 'standard' ? 'daily' : 'manual';
 
   var jsonMap = {
     'type': 'custom',
@@ -345,7 +350,6 @@ Future<Map> spTransferToConnectAccount(BuildContext context, int amount, String 
     showErrorDialog(context, "The Server is not responding (P06)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
-  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (P06)", "Please try again.");
     return {};
@@ -410,20 +414,24 @@ Future<Map> spPayout(BuildContext context, int amount, String payoutId, String a
   }
 }
 
-Future<bool> spChargeCard(BuildContext context, int total, String paymentId, String customerId) async {
+Future<bool> spChargeCard(BuildContext context, int total, String paymentId, String customerId, String cusEmail) async {
   var chargeTotal = (total + 1) * 100;
   double dbl = globals.spPayoutMethod == 'standard' ? 0.025 : 0.03;
   var payoutTotal = int.parse(((double.parse(total.toString()) - (double.parse(total.toString()) * dbl)) * 100).toStringAsFixed(0));
 
-  var res = await spCreatePaymentIntent(context, paymentId, customerId, chargeTotal.toString());
+  var res = await spCreatePaymentIntent(context, paymentId, customerId, chargeTotal.toString(), cusEmail);
   if(res.length > 0) {
     var res2 = await spTransferToConnectAccount(context, payoutTotal, globals.spAccountId);
     if(res2.length > 0) {
-      var res3 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
-      if(res3.length > 0){
-        return true;
+      if(globals.spPayoutMethod == 'instant') {
+        var res3 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
+        if(res3.length > 0){
+          return true;
+        }else {
+          return false;
+        }
       }else {
-        return false;
+        return true;
       }
     }else {
       return false;

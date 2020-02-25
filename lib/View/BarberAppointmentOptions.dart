@@ -281,11 +281,15 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                   child: Container(
                                                     child: RaisedButton(
                                                       onPressed: () async {
+                                                        progressHUD();
                                                         int total = appointment['price'] + appointment['tip'];
-                                                        var res = await spChargeCard(context, total, appointment['paymentid'], appointment['customerid']);
+                                                        var res = await spChargeCard(context, total, appointment['paymentid'], appointment['customerid'], appointment['email']);
                                                         if(res) {
                                                           var res2 = await updateAppointmentStatus(context, appointment['id'], 1);
                                                           if(res2) {
+                                                            setState(() {
+                                                              appointment['status'] = 1;
+                                                            });
                                                             List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
                                                             for(var token in tokens){
                                                               Map<String, dynamic> dataMap =  {
@@ -301,6 +305,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                             }
                                                           }
                                                         }
+                                                        progressHUD();
                                                       },
                                                       child: Text('Complete Appointment'),
                                                     )
