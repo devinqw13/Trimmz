@@ -39,7 +39,6 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
 
   void initState() {
     super.initState();
-    print(globals.zipcode);
     _progressHUD = new ProgressHUD(
       color: Colors.white,
       containerColor: Color.fromRGBO(21, 21, 21, 0.4),

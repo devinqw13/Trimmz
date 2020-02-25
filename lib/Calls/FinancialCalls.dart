@@ -449,7 +449,6 @@ Future<dynamic> spGetAccountPayoutCard(BuildContext context, String accountId, S
     showErrorDialog(context, "The Server is not responding (P00)", "Please try again. If this error continues to occur, please contact support.");
     return null;
   } 
-  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (P00)", "Please try again.");
     return null;
