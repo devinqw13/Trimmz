@@ -273,6 +273,7 @@ Future<Map> spCreateConnectAccount(BuildContext context, String firstName, Strin
     'individual[last_name]': '$lastName',
     'individual[ssn_last_4]': '$ssn',
     'individual[email]': '${globals.email}',
+    'individual[phone]': '5135077135',
     'individual[dob][day]': '${dob[2]}',
     'individual[dob][month]': '${dob[1]}',
     'individual[dob][year]': '${dob[0]}',

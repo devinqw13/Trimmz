@@ -255,8 +255,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
                           },
                           child: Text('Cancel')
                         ),
-                        FlatButton(
-                          textColor: Colors.blue,
+                        RaisedButton(
                           onPressed: () {
 
                           },
@@ -360,7 +359,9 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
             child: Text('Transfer History', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           Expanded(
-            child: transactionHistory()
+            child: SingleChildScrollView(
+              child: transactionHistory()
+            )
           )
         ]
       )
