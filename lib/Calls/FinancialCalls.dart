@@ -249,7 +249,7 @@ Future<Map> spAttachCustomerToPM(BuildContext context, String paymentId, String 
   }
 }
 
-Future<Map> spCreateConnectAccount(BuildContext context, String firstName, String lastName, String expMonth, String expYear, String number, String method, List dob) async {
+Future<Map> spCreateConnectAccount(BuildContext context, String firstName, String lastName, String expMonth, String expYear, String number, String method, List dob, String ssn) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
@@ -271,6 +271,7 @@ Future<Map> spCreateConnectAccount(BuildContext context, String firstName, Strin
     'requested_capabilities[1]': 'card_payments',
     'individual[first_name]': '$firstName',
     'individual[last_name]': '$lastName',
+    'individual[ssn_last_4]': '$ssn',
     'individual[email]': '${globals.email}',
     'individual[dob][day]': '${dob[2]}',
     'individual[dob][month]': '${dob[1]}',

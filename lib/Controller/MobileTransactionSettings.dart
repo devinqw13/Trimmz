@@ -160,7 +160,7 @@ class MobileTransactionSettingsScreenState extends State<MobileTransactionSettin
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          title: Text("Mobile Transactions"),
+          title: Text("Mobile Pay Settings"),
           actions: <Widget>[
             FlatButton(
               textColor: _payoutMethod != globals.spPayoutMethod ? Colors.white : Colors.grey,

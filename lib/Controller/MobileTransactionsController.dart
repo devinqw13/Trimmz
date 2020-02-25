@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:trimmz/Model/ClientPaymentMethod.dart';
-import 'package:trimmz/View/ModalSheets.dart';
 import '../globals.dart' as globals;
 import '../Calls/StripeConfig.dart';
 import '../Calls/FinancialCalls.dart';
-import 'package:stripe_payment/stripe_payment.dart';
+// import 'package:stripe_payment/stripe_payment.dart';
 import '../functions.dart';
 import '../Calls/GeneralCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../Model/PayoutDetails.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:credit_card_type_detector/credit_card_type_detector.dart';
 import 'MobileTransactionSettings.dart';
+import '../View/TextFieldFormatter.dart';
+import 'package:flutter/services.dart';
 
 class MobileTransactionScreen extends StatefulWidget {
   MobileTransactionScreen({Key key}) : super (key: key);
@@ -21,11 +22,18 @@ class MobileTransactionScreen extends StatefulWidget {
 }
 
 class MobileTransactionScreenState extends State<MobileTransactionScreen> {
+  TextEditingController cardNumber = new TextEditingController();
+  TextEditingController expDate = new TextEditingController();
+  TextEditingController ccv = new TextEditingController();
   List<ClientPaymentMethod> payoutCards = [];
   ClientPaymentMethod payoutCard;
   List<PayoutDetails> payoutDetails = [];
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
+  bool changePayoutCard = false;
+  final expDateFocus = new FocusNode();
+  final ccvFocus = new FocusNode();
+  var type = CreditCardType.unknown;
 
   void initState() {
     super.initState();
@@ -63,188 +71,208 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
   }
 
   getPayoutHistory() {
+
   }
 
   void setError() {
 
   }
 
-  addPayoutCard() async {
-    await StripePayment.paymentRequestWithCardForm(
-      CardFormPaymentRequest(),
-    ).then((PaymentMethod paymentMethod) async {
-        progressHUD();
-        if(globals.spCustomerId != null){
-          var res2 = await spAttachCustomerToPM(context, paymentMethod.id, globals.spCustomerId);
-          if(res2.length > 0) {
-            var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2); // return list of cards
-            if(res4 != null) {
-              for(var item in res4) {
-                if(item.id == paymentMethod.id) {
-                  var res = await updatePayoutSettings(context, globals.token, item.id, null);
-                  if(res) {
-                    setState(() {
-                      globals.spPayoutId = paymentMethod.id;
-                      payoutCard = item;
-                    });
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                    prefs.setString('spPayoutId', paymentMethod.id);
-                  }
-                }
-              }
-            }
-          }
-        }else {
-          var res1 = await spCreateCustomer(context, paymentMethod.id);
-          if(res1.length > 0) {
-            String spCustomerId = res1['id'];
-            var res2 = await spCreatePaymentIntent(context, paymentMethod.id, spCustomerId, '100');
-            if(res2.length > 0) {
-              var res3 = await updateSettings(context, globals.token, 1, '', '', spCustomerId);
-              if(res3.length > 0) {
-                setGlobals(res3);
-                var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2);
-                if(res != null) {
-                  for(var item in res) {
-                    if(item.id == paymentMethod.id) {
-                      var res = await updatePayoutSettings(context, globals.token, item.id, null);
-                      if(res) {
-                        setState(() {
-                          globals.spPayoutId = paymentMethod.id;
-                          payoutCard = item;
-                        });
-                        SharedPreferences prefs = await SharedPreferences.getInstance();
-                        prefs.setString('spPayoutId', paymentMethod.id);
-                      }
-                    }
-                  }
-                }
-              }
-            }else {
-              // payment wasn't able to be authorized
-            }
-          }
-        }
-        progressHUD();
-    }).catchError(setError);
-  }
-
-  changePayoutCard() async {
-    await StripePayment.paymentRequestWithCardForm(
-      CardFormPaymentRequest(),
-    ).then((PaymentMethod paymentMethod) async {
-      progressHUD();
-      var res1 = await spDetachCustomerFromPM(context, payoutCard.id);
-      if(res1.length > 0) {
-        var res2 = await spAttachCustomerToPM(context, paymentMethod.id, globals.spCustomerId);
-        if(res2.length > 0) {
-          var res4 = await spGetClientPaymentMethod(context, globals.spCustomerId, 2); // return list of cards
-          if(res4 != null) {
-            for(var item in res4) {
-              var res3 = await updatePayoutSettings(context, globals.token, paymentMethod.id, null);
-              if(res3){
-                if(item.id == paymentMethod.id) {
-                  setState(() {
-                    globals.spPayoutId = paymentMethod.id;
-                    payoutCard = item;
-                  });
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString('spPayoutId', paymentMethod.id);
-                }
-              }
-            }
-          }
-        }
-      }
-      progressHUD();
-    }).catchError(setError);
+  getCardIcon() {
+    if(type == CreditCardType.visa) {
+      return Tab(icon: Container(child: Image(image: AssetImage('ccimages/visa1.png'),fit: BoxFit.cover),height: 25));
+    }else if(type == CreditCardType.discover){
+      return Tab(icon: Container(child: Image(image: AssetImage('ccimages/discover1.png'),fit: BoxFit.cover),height: 25));
+    }else if(type == CreditCardType.amex){
+      return Tab(icon: Container(child: Image(image: AssetImage('ccimages/amex1.png'),fit: BoxFit.cover),height: 25));
+    }else if(type == CreditCardType.mastercard){
+      return Tab(icon: Container(child: Image(image: AssetImage('ccimages/mastercard1.png'),fit: BoxFit.cover),height: 25));
+    }else {
+      return Container(child: Text(''));
+    }
   }
 
   payoutOptions() {
     if(payoutCard != null) {
-      return new Container(
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.all(5.0),
-        padding: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          gradient: new LinearGradient(
-            begin: Alignment(0.0, -2.0),
-            colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+      if(!changePayoutCard) {
+        return new Container(
+          width: MediaQuery.of(context).size.width,
+          margin: EdgeInsets.all(5.0),
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            gradient: new LinearGradient(
+              begin: Alignment(0.0, -2.0),
+              colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+            )
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Direct Deposit', style: TextStyle(fontWeight: FontWeight.bold)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      payoutCard.icon,
+                      Padding(padding: EdgeInsets.all(10)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Padding(padding: EdgeInsets.all(3)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Padding(padding: EdgeInsets.all(3)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Padding(padding: EdgeInsets.all(3)),
+                      Text(payoutCard.lastFour)
+                    ]
+                  ),
+                  FlatButton(
+                    textColor: Colors.blue,
+                    onPressed: () {
+                      setState(() {
+                        changePayoutCard = true;
+                      });
+                    },
+                    child: Text('Change')
+                  )
+                ]
+              ),
+            ]
           )
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Direct Deposit', style: TextStyle(fontWeight: FontWeight.bold)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
+        );
+      }else {
+        return new Container(
+          width: MediaQuery.of(context).size.width,
+          margin: EdgeInsets.all(5.0),
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            gradient: new LinearGradient(
+              begin: Alignment(0.0, -2.0),
+              colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+            )
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Direct Deposit', style: TextStyle(fontWeight: FontWeight.bold)),
+              Container(
+                child: Column(
                   children: <Widget>[
-                    payoutCard.icon,
-                    Padding(padding: EdgeInsets.all(10)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Padding(padding: EdgeInsets.all(3)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Padding(padding: EdgeInsets.all(3)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                    Padding(padding: EdgeInsets.all(3)),
-                    Text(payoutCard.lastFour)
-                  ]
-                ),
-                FlatButton(
-                  textColor: Colors.blue,
-                  onPressed: () {
-                    changePayoutCard();
-                  },
-                  child: Text('Change')
-                )
-              ]
-            ),
-          ]
-        )
-      );
-    }else {
-      return new Container(
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.all(5.0),
-        padding: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          gradient: new LinearGradient(
-            begin: Alignment(0.0, -2.0),
-            colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
-          )
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Direct Deposit', style: TextStyle(fontWeight: FontWeight.bold)),
-            Container(
-              padding: EdgeInsets.all(10),
-              child: GestureDetector(
-                onTap: () {
-                  addPayoutCard();
-                },
-                child: Row(
-                  children: <Widget> [
-                    Icon(LineIcons.plus, size: 15, color: Colors.blue),
-                    Text('Add Card', style: TextStyle(color: Colors.blue))
+                    TextFormField(
+                      controller: cardNumber,
+                      inputFormatters: [
+                        MaskedTextInputFormatter(
+                          mask: 'xxxx xxxx xxxx xxxx',
+                          separator: ' ',
+                        ),
+                      ],
+                      onChanged: (value) async {
+                        var t = detectCCType(value);
+                        setState(() {
+                          type = t;
+                        });
+
+                        if(value.length == 19) {
+                          FocusScope.of(context).requestFocus(expDateFocus);
+                        }
+                      },
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Card Number",
+                        suffixIcon: getCardIcon()
+                      ),
+                      autocorrect: false,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextFormField(
+                            focusNode: expDateFocus,
+                            controller: expDate,
+                            inputFormatters: [
+                              MaskedTextInputFormatter(
+                                mask: 'xx/xx',
+                                separator: '/',
+                              ),
+                            ],
+                            onChanged: (value) {
+                              if(value.length == 5) {
+                                FocusScope.of(context).requestFocus(ccvFocus);
+                              }
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Expiration Date",
+                            ),
+                            autocorrect: false,
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.all(10)),
+                        Expanded(
+                          child: TextFormField(
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(type == CreditCardType.amex ? 4 : 3),
+                            ],
+                            focusNode: ccvFocus,
+                            controller: ccv,
+                            onChanged: (value) {
+                              if(type == CreditCardType.amex) {
+                                if(value.length == 4) {
+                                  FocusScope.of(context).requestFocus(new FocusNode());
+                                }
+                              }else {
+                                if(value.length == 3) {
+                                  FocusScope.of(context).requestFocus(new FocusNode());
+                                }
+                              }
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Security Code"
+                            ),
+                            autocorrect: false,
+                          ),
+                        )
+                      ]
+                    ),
+                    Padding(padding: EdgeInsets.all(5)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        FlatButton(
+                          onPressed: () {
+                            setState(() {
+                              changePayoutCard = false;
+                            });
+                          },
+                          child: Text('Cancel')
+                        ),
+                        FlatButton(
+                          textColor: Colors.blue,
+                          onPressed: () {
+
+                          },
+                          child: Text('Save'),
+                        )
+                      ]
+                    )
                   ]
                 )
               )
-            )
-          ]
-        )
-      );
+            ]
+          )
+        );
+      }
+    }else {
+      return new Container();
     }
   }
 
@@ -344,7 +372,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          title: Text("Mobile Transactions"),
+          title: Text("Mobile Pay"),
         ),
         body: new Stack(
           children: <Widget> [
