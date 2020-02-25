@@ -26,6 +26,7 @@ setGlobals(Map results) async {
   user.shopAddress = results['user'][0]['shop_address'];
   user.city = results['user'][0]['city'];
   user.state = results['user'][0]['state'];
+  user.zipcode = results['user'][0]['zipcode'];
 
   globals.user = user;
   globals.token = user.token;
@@ -44,6 +45,7 @@ setGlobals(Map results) async {
   globals.shopAddress = user.shopAddress;
   globals.city = user.city;
   globals.state = user.state;
+  globals.zipcode = user.zipcode;
 
   globals.profilePic = user.profilePic;
 
@@ -74,6 +76,7 @@ setGlobals(Map results) async {
   prefs.setString('shopAddress', globals.user.shopAddress);
   prefs.setString('city', globals.user.city);
   prefs.setString('state', globals.user.state);
+  prefs.setString('zipcode', globals.user.zipcode);
 
   prefs.setString('profilePic', globals.user.profilePic);
 }

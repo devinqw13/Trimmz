@@ -21,6 +21,7 @@ String shopName;
 String shopAddress;
 String city;
 String state;
+String zipcode;
 
 LoginUser user;
 
@@ -51,5 +52,6 @@ class LoginUser {
   String shopAddress;
   String city;
   String state;
+  String zipcode;
   String profilePic;
 }
