@@ -146,7 +146,7 @@ Future<Map> spCreatePaymentIntent(BuildContext context, String paymentId, String
   };
 
   if(email != null) {
-    jsonMap['email'] = '$email';
+    jsonMap['receipt_email'] = '$email';
   }
 
   String url = "${globals.stripeURL}payment_intents";
@@ -568,8 +568,13 @@ Future<dynamic> spGetPayouts(BuildContext context, String accountId) async {
 }
 
 Future<List<PayoutDetails>> spGetPayoutHistory(BuildContext context, String accountId) async {
+  List<PayoutDetails> payoutDetails = [];
   var res = await spGetTransfers(context, accountId);
   var res2 = await spGetPayouts(context, accountId);
-  print(res);
-  print(res2);
+  
+  for(var item in res) {
+
+  }
+
+  return payoutDetails;
 }

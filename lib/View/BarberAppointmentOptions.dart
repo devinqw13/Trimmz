@@ -102,7 +102,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
         //   setState(() {
         //     appointment['status'] = 4;
         //   });
-        //   List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
+        //   List tokens = await getNotificationTokens(context, appointment['clientid']);
         //   for(var token in tokens){
         //     Map<String, dynamic> dataMap =  {
         //       'click_action': 'FLUTTER_NOTIFICATION_CLICK',
@@ -121,7 +121,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
       }
     }else {
       updateAppointmentStatus(context, appointment['id'], 4);
-      List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
+      List tokens = await getNotificationTokens(context, appointment['clientid']);
       for(var token in tokens){
         Map<String, dynamic> dataMap =  {
           'click_action': 'FLUTTER_NOTIFICATION_CLICK',
@@ -339,7 +339,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                             setState(() {
                                                               appointment['status'] = 1;
                                                             });
-                                                            List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
+                                                            List tokens = await getNotificationTokens(context, appointment['clientid']);
                                                             for(var token in tokens){
                                                               Map<String, dynamic> dataMap =  {
                                                                 'click_action': 'FLUTTER_NOTIFICATION_CLICK',

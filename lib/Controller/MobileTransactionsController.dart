@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:trimmz/Model/ClientPaymentMethod.dart';
+import '../Calls/FinancialCalls.dart';
 import '../globals.dart' as globals;
 import '../Calls/StripeConfig.dart';
 import '../Calls/FinancialCalls.dart';
@@ -70,8 +71,11 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
     }
   }
 
-  getPayoutHistory() {
-
+  getPayoutHistory() async {
+    var res = await spGetPayoutHistory(context, globals.spAccountId);
+    setState(() {
+      payoutDetails = res;
+    });
   }
 
   void setError() {
