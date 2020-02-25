@@ -1246,7 +1246,7 @@ Future<bool> updateAppointmentStatus(BuildContext context, int appointmentId, in
   }
 }
 
-Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payoutId, String payoutMethod]) async {
+Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payoutId, String payoutMethod, String accountId]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Accept': 'application/json',
@@ -1259,6 +1259,7 @@ Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payo
     "token" : userid,
     "payoutId": payoutId != null ? payoutId : null,
     "payoutMethod": payoutMethod != null ? payoutMethod : null,
+    "accountId": accountId != null ? accountId : null,
   };
 
   String url = "${globals.baseUrl}updatePayoutSettings/";
@@ -1269,7 +1270,7 @@ Future<bool> updatePayoutSettings(BuildContext context, int userid, [String payo
     showErrorDialog(context, "The Server is not responding (027)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   }
-  
+  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (027)", "Please try again.");
     return false;

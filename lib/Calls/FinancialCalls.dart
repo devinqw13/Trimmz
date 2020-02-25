@@ -339,12 +339,12 @@ Future<Map> spTransferToConnectAccount(BuildContext context, int amount, String 
   try {
     response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (P07)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (P06)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
   print(response.body);
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (P07)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (P06)", "Please try again.");
     return {};
   }
 
@@ -427,5 +427,58 @@ Future<bool> spChargeCard(BuildContext context, int total, String paymentId, Str
     }
   }else {
     return false;
+  }
+}
+
+Future<dynamic> spGetAccountPayoutCard(BuildContext context, String accountId, String payoutId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.stripeURL}accounts/$accountId/external_accounts/$payoutId";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (P00)", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  } 
+  print(response.body);
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (P00)", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(!jsonResponse.containsKey('error')) {
+    ClientPaymentMethod paymentMethod = new ClientPaymentMethod();
+    paymentMethod.id = jsonResponse['id'];
+    paymentMethod.brand = jsonResponse['brand'].toString().toLowerCase();
+    paymentMethod.lastFour = jsonResponse['last4'];
+    paymentMethod.fingerprint = jsonResponse['fingerprint'];
+
+    if(paymentMethod.brand == 'visa') {
+      paymentMethod.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/visa1.png'),fit: BoxFit.cover),height: 25));
+    }else if(paymentMethod.brand == 'discover'){
+      paymentMethod.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/discover1.png'),fit: BoxFit.cover),height: 25));
+    }else if(paymentMethod.brand == 'amex'){
+      paymentMethod.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/amex1.png'),fit: BoxFit.cover),height: 25));
+    }else if(paymentMethod.brand == 'mastercard'){
+      paymentMethod.icon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/mastercard1.png'),fit: BoxFit.cover),height: 25));
+    }
+
+    return paymentMethod;
+  }else {
+    return null;
   }
 }

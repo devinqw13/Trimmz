@@ -54,26 +54,15 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
   }
 
   getPayoutOptions() async {
-    if(globals.spCustomerId != null && (globals.spPayoutId != null && globals.spPayoutId != '')) {
-      if(globals.spCustomerId != '') {
-        var res = await spGetClientPaymentMethod(context, globals.spCustomerId, 2); // return list of cards
-        if(res != null) {
-          for(var item in res) {
-            if(item.id == globals.spPayoutId) {
-              setState(() {
-                payoutCard = item;
-              });
-            }
-          }
-        }
-      }
+    var res = await spGetAccountPayoutCard(context, globals.spAccountId, globals.spPayoutId);
+    if(res != null) {
+      setState(() {
+        payoutCard = res;
+      });
     }
   }
 
   getPayoutHistory() {
-    if(globals.spCustomerId != null) {
-
-    }
   }
 
   void setError() {

@@ -76,7 +76,7 @@ setGlobals(Map results) async {
   prefs.setString('shopAddress', globals.user.shopAddress);
   prefs.setString('city', globals.user.city);
   prefs.setString('state', globals.user.state);
-  prefs.setString('zipcode', globals.user.zipcode);
+  prefs.setInt('zipcode', globals.user.zipcode);
 
   prefs.setString('profilePic', globals.user.profilePic);
 }

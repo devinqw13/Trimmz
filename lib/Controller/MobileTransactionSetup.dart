@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import '../Calls/FinancialCalls.dart';
 import '../View/DatePicker.dart';
 import 'package:intl/intl.dart';
+import '../Calls/GeneralCalls.dart';
 
 class MobileTransactionSetup extends StatefulWidget {
   MobileTransactionSetup({Key key}) : super (key: key);
@@ -36,7 +37,7 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
 
   void initState() {
     super.initState();
-
+    print(globals.zipcode);
     _progressHUD = new ProgressHUD(
       color: Colors.white,
       containerColor: Color.fromRGBO(21, 21, 21, 0.4),
@@ -62,7 +63,22 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
       var number = cardNumber.text.replaceAll(new RegExp(r"\s\b|\b\s"), "");
       var exp = expDate.text.split('/');
       var dob2 = DateFormat('yyyy/MM/dd').format(DateTime.parse(dob)).split('/');
+      progressHUD();
       var res = await spCreateConnectAccount(context, firstName.text, lastName.text, exp[0], exp[1], number, _payoutMethod, dob2);
+      if(res.length > 0) {
+        var res2 = await updatePayoutSettings(context, globals.token, res['external_accounts']['data'][0]['id'], _payoutMethod, res['external_accounts']['data'][0]['account']);
+        progressHUD();
+        if(res2){
+          setState(() {
+            globals.spPayoutId = res['external_accounts']['data'][0]['id'];
+            globals.spAccountId = res['external_accounts']['data'][0]['account'];
+          });
+          print(globals.spPayoutId);
+          print(globals.spAccountId);
+          // final mobileTransaction = new MobileTransactionScreen();
+          // Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));
+        }
+      }
     }else {
       showErrorDialog(context, "Missing Fields", "Missing required information. Enter all required fields.");
     }

@@ -54,7 +54,7 @@ settingsWidget(BuildContext context) {
     globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
     //globals.userType == 2 ? CSLink('Client Book', () {}, style: CSWidgetStyle(icon: Icon(LineIcons.book))) : Container(),
     globals.userType == 2 ? CSLink('Mobile Pay', () {
-      final mobileTransaction = globals.spPayoutMethod == null || globals.spPayoutId == null ? new MobileTransactionSetup() : new MobileTransactionScreen();
+      final mobileTransaction = globals.spPayoutMethod == null || globals.spPayoutId == null || globals.spAccountId == null ? new MobileTransactionSetup() : new MobileTransactionScreen();
       Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));
       }, style: CSWidgetStyle(icon: Icon(LineIcons.money))) : Container(),
 
