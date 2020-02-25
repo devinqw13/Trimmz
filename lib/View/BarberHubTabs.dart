@@ -17,7 +17,7 @@ import '../Controller/MarketplaceCartController.dart';
 import '../Controller/SelectBarberController.dart';
 import '../Controller/NotificationController.dart';
 import 'package:expandable/expandable.dart';
-import '../Controller/MobileTransactionsController.dart';
+import '../Controller/MobileTransactionSetup.dart';
 import '../Model/Packages.dart';
 import 'AddPackageModal.dart';
 import '../Model/AppointmentRequests.dart';
@@ -741,7 +741,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                         children: <Widget>[
                           globals.spPayoutId == null ? new GestureDetector(
                             onTap: () {
-                              final mobileTransaction = new MobileTransactionScreen();
+                              final mobileTransaction = new MobileTransactionSetup();
                               Navigator.push(context, new MaterialPageRoute(builder: (context) => mobileTransaction));
                             },
                             child: RichText(
