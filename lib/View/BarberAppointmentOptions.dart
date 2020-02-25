@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:trimmz/Calls/FinancialCalls.dart';
 import 'package:trimmz/Model/BarberPolicies.dart';
+import '../Calls/FinancialCalls.dart';
 import '../globals.dart' as globals;
 import '../Calls/GeneralCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
@@ -31,6 +32,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
   @override
   void initState() {
     appointment = widget.appointment;
+    print(appointment);
     _progressHUD = new ProgressHUD(
       color: Colors.white,
       containerColor: Color.fromRGBO(21, 21, 21, 0.4),
@@ -84,6 +86,53 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
         var res1 = await getUserAppointments(context, globals.token);
         progressHUD();
         widget.updateAppointments(res1);
+      }
+    }
+  }
+
+  markNoShow() async {
+    //TODO: MARK STATUS AS NO-SHOW(4) AND CHARGE CUSTOMER IF BARBER HAS NO-SHOW POLICY
+    var res = await getBarberPolicies(context, appointment['barberid']) ?? new BarberPolicies();
+    if(res.noShowEnabled) {
+      if(res.noShowFee.contains('\$')){
+        var stringList = res.noShowFee.split('\$');
+        print(stringList);
+        // var res2 = await spChargeCard(context, int.parse(stringList[1]), appointment['paymentid'], appointment['customerid'], appointment['email']);
+        // if(res2) {
+        //   setState(() {
+        //     appointment['status'] = 4;
+        //   });
+        //   List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
+        //   for(var token in tokens){
+        //     Map<String, dynamic> dataMap =  {
+        //       'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+        //       'action': 'APPOINTMENT',
+        //       'title': 'No-Show Appointment',
+        //       'body': '${globals.username} has marked your appointment as a no-show',
+        //       'sender': '${globals.token}',
+        //       'recipient': '${appointment['clientid']}',
+        //       'appointment': appointment,
+        //     };
+        //     await sendPushNotification(context, 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', int.parse(appointment['clientid']), token, dataMap);
+        //   }
+        // }
+      }else {
+
+      }
+    }else {
+      updateAppointmentStatus(context, appointment['id'], 4);
+      List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
+      for(var token in tokens){
+        Map<String, dynamic> dataMap =  {
+          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          'action': 'APPOINTMENT',
+          'title': 'No-Show Appointment',
+          'body': '${globals.username} has marked your appointment as a no-show',
+          'sender': '${globals.token}',
+          'recipient': '${appointment['clientid']}',
+          'appointment': appointment,
+        };
+        await sendPushNotification(context, 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', int.parse(appointment['clientid']), token, dataMap);
       }
     }
   }
@@ -333,23 +382,8 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                 Expanded(
                                                   child: Container(
                                                     child: RaisedButton(
-                                                      onPressed: () async {
-                                                        //TODO: MARK STATUS AS NO-SHOW(4) AND CHARGE CUSTOMER IF BARBER HAS NO-SHOW POLICY
-
-                                                        List tokens = await getNotificationTokens(context, int.parse(appointment['clientid']));
-                                                        for(var token in tokens){
-                                                          Map<String, dynamic> dataMap =  {
-                                                            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                                                            'action': 'APPOINTMENT',
-                                                            'title': 'No-Show Appointment',
-                                                            'body': '${globals.username} has marked your appointment as a no-show',
-                                                            'sender': '${globals.token}',
-                                                            'recipient': '${appointment['clientid']}',
-                                                            'appointment': appointment,
-                                                          };
-                                                          await sendPushNotification(context, 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', int.parse(appointment['clientid']), token, dataMap);
-                                                        }
-                                                        
+                                                      onPressed: () {
+                                                        markNoShow();
                                                       },
                                                       child: Text('Mark as no-show appointment'),
                                                     )

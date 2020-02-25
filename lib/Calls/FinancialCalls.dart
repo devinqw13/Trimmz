@@ -147,7 +147,7 @@ Future<Map> spCreatePaymentIntent(BuildContext context, String paymentId, String
   if(email != null) {
     jsonMap['email'] = '$email';
   }
-  
+
   String url = "${globals.stripeURL}payment_intents";
 
   try {
@@ -491,4 +491,83 @@ Future<dynamic> spGetAccountPayoutCard(BuildContext context, String accountId, S
   }else {
     return null;
   }
+}
+
+Future<dynamic> spGetTransfers(BuildContext context, String accountId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.stripeURL}transfers?destination=$accountId";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (P00)", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (P00)", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(!jsonResponse.containsKey('error')) {
+    return jsonResponse['data'];
+  }else {
+    return null;
+  }
+}
+
+Future<dynamic> spGetPayouts(BuildContext context, String accountId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.stripeURL}payouts";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (P00)", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (P00)", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(!jsonResponse.containsKey('error')) {
+    return jsonResponse['data'];
+  }else {
+    return null;
+  }
+}
+
+Future<List> spGetPayoutHistory(BuildContext context, String accountId) async {
+  var res = await spGetTransfers(context, accountId);
+  var res2 = await spGetPayouts(context, accountId);
+  print(res);
+  print(res2);
 }
