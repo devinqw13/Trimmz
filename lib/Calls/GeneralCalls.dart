@@ -2085,7 +2085,7 @@ Future<List<BarberClients>> getBarberClients(BuildContext context, int token, in
     List<BarberClients> clients = [];
     for(var item in jsonResponse['clients']) {
       BarberClients client = new BarberClients();
-      client.token = int.parse(item['id']);
+      client.token = item['id'];
       client.name = item['name'];
       client.username = item['username'];
 
