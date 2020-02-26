@@ -196,7 +196,10 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
                           Map map = {'id': items.token, 'username': items.username};
                           var res = recipients.where((item) => item.containsValue(items.username));
                           if(res.length > 0) {
-                            recipients.removeWhere((item) => item.containsValue(items.username));
+                            if(_allSelected == false) {
+                              recipients.removeWhere((item) => item.containsValue(items.username));
+                            }
+                            // recipients.removeWhere((item) => item.containsValue(items.username));
                           }else {
                             recipients.add(map);
                             searchRecipientController.clear();
