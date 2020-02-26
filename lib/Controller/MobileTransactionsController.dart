@@ -339,7 +339,6 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
         )
       );
     }
-
   }
 
   buildBody() {
