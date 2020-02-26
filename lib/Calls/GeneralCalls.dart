@@ -2136,7 +2136,6 @@ Future<String> uploadImage(BuildContext context, String filePath, int type, [Str
     showErrorDialog(context, "An error has occurred (042)", "Please try again.");
     return null;
   }
-  print(jsonResponse);
   if(jsonResponse['error'] == 'false'){
     return jsonResponse['results'];
   }else {
