@@ -3,6 +3,7 @@ import 'package:trimmz/Model/availability.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
+import 'Widgets.dart';
 
 class FullCalendarModal extends StatefulWidget {
   FullCalendarModal({@required this.appointments, this.showAppointmentOptions, this.selectDate, this.showManualAddAppointment});
@@ -120,17 +121,23 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
                       children: <Widget>[
-                        Text(
-                          _selectedEvents[i]['name'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold
-                          )
+                        buildProfilePictures(context, _selectedEvents[i]['client_pp'], _selectedEvents[i]['name'], 25),
+                        Padding(padding: EdgeInsets.all(2)),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              _selectedEvents[i]['name'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold
+                              )
+                            ),
+                            Text(_selectedEvents[i]['package']),
+                            Text('\$'+(_selectedEvents[i]['price'] + _selectedEvents[i]['tip']).toString())
+                          ]
                         ),
-                        Text(_selectedEvents[i]['package']),
-                        Text('\$'+(_selectedEvents[i]['price'] + _selectedEvents[i]['tip']).toString())
                       ]
                     ),
                     Column(

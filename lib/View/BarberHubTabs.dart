@@ -920,7 +920,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                       Container(
                         child: Row(
                           children: <Widget>[
-                            buildProfilePictures(context, _selectedEvents[i]['profile_picture'], _selectedEvents[i]['name'], 30),
+                            buildProfilePictures(context, _selectedEvents[i]['client_pp'], _selectedEvents[i]['name'], 30),
                             Padding(padding: EdgeInsets.all(5)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

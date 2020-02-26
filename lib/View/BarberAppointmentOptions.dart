@@ -6,6 +6,7 @@ import '../Calls/FinancialCalls.dart';
 import '../globals.dart' as globals;
 import '../Calls/GeneralCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
+import '../View/Widgets.dart';
 
 class AppointmentOptionsBottomSheet extends StatefulWidget {
   AppointmentOptionsBottomSheet({@required this.appointment, @required this.showCancel, this.showFullCalendar, this.showFull, this.updateAppointments});
@@ -166,20 +167,23 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Container(
-                              width: 50.0,
-                              height: 50.0,
-                              decoration: new BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.purple,
-                                gradient: new LinearGradient(
-                                  colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
-                                )
-                              ),
-                              child: globals.userType != 2 ? Center(
-                                child: Text(appointment['barber_name'].substring(0,1), style: TextStyle(fontSize: 20))
-                              ) : Center(child: Text(appointment['name'].substring(0,1), style: TextStyle(fontSize: 20)))
-                            ),
+                            // Container(
+                            //   width: 50.0,
+                            //   height: 50.0,
+                            //   decoration: new BoxDecoration(
+                            //     shape: BoxShape.circle,
+                            //     color: Colors.purple,
+                            //     gradient: new LinearGradient(
+                            //       colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
+                            //     )
+                            //   ),
+                            //   child: globals.userType != 2 ? Center(
+                            //     child: Text(appointment['barber_name'].substring(0,1), style: TextStyle(fontSize: 20))
+                            //   ) : Center(child: Text(appointment['name'].substring(0,1), style: TextStyle(fontSize: 20)))
+                            // ),
+                            globals.userType != 2 ?
+                            buildProfilePictures(context, appointment['barber_pp'], appointment['barber_name'], 25) :
+                            buildProfilePictures(context, appointment['client_pp'], appointment['name'], 25),
                             Padding(padding: EdgeInsets.all(5)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
