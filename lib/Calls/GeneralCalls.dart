@@ -1322,10 +1322,10 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userId) async
     BarberPolicies policies = new BarberPolicies();
     if(jsonResponse['policies'].length > 0){
       for(var item in jsonResponse['policies']){
-        policies.cancelEnabled = item['cancel_enabled'] == '0' ? false : true;
-        policies.noShowEnabled = item['noshow_enabled'] == '0' ? false : true;
+        policies.cancelEnabled = item['cancel_enabled'] == 0 ? false : true;
+        policies.noShowEnabled = item['noshow_enabled'] == 0 ? false : true;
         policies.cancelFee = item['cancel_fee'];
-        policies.cancelWithinTime = int.parse(item['cancel_time']);
+        policies.cancelWithinTime = item['cancel_time'] ?? 0;
         policies.noShowFee = item['noshow_fee'];
       }
       return policies;
@@ -1646,12 +1646,23 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
 
   Map jsonMap = {
     "token": userId,
-    "cancelFee": cancelFee != null ? '${isCancelPercent ? '' : '\$'}$cancelFee${isCancelPercent ? '%' : ''}' : null,
-    "cancelTime": cancelTime != null ? cancelTime : null,
-    "noShowFee": noShowFee != null ? '${isNoShowPercent ? '' : '\$'}$noShowFee${isNoShowPercent ? '%' : ''}' : null,
-    "cancelEnabled": cancelEnabled != null ? cancelEnabled ? 1 : 0 : null,
-    "noShowEnabled": noShowEnabled != null ? noShowEnabled ? 1 : 0 : null,
   };
+
+  if(cancelFee != null) {
+    jsonMap['cancelFee'] = isCancelPercent ? '$cancelFee%' : '\$$cancelFee';
+  }
+  if(cancelTime != null) {
+    jsonMap['cancelTime'] = cancelTime;
+  }
+  if(cancelEnabled != null) {
+    jsonMap['cancelEnabled'] = cancelEnabled;
+  }
+  if(noShowEnabled != null) {
+    jsonMap['noShowEnabled'] = noShowEnabled;
+  }
+  if(noShowFee != null) {
+    jsonMap['noShowFee'] = isNoShowPercent ? '$noShowFee%' : '\$$noShowFee';
+  }
 
   String url = "${globals.baseUrl}updatePolicies/";
 
@@ -1661,7 +1672,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
     showErrorDialog(context, "The Server is not responding (033)", "Please try again. If this error continues to occur, please contact support.");
     return null;
   } 
-  
+  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (033)", "Please try again.");
     return null;
