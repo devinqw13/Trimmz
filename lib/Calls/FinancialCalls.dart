@@ -309,7 +309,52 @@ Future<Map> spCreateConnectAccount(BuildContext context, String firstName, Strin
     showErrorDialog(context, "The Server is not responding (P05)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
-  print(response.body);
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (P05)", "Please try again.");
+    return {};
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(!jsonResponse.containsKey('error')) {
+    return jsonResponse;
+  }else {
+    return {};
+  }
+}
+
+Future<Map> spUpdateConnectAccount(BuildContext context, String accountId, [String payoutMethod]) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+
+  };
+
+  String payoutSchedule = payoutMethod == 'standard' ? 'daily' : 'manual';
+
+  if(payoutMethod != null) {
+    jsonMap['settings[payouts][schedule][interval]'] = '$payoutSchedule';
+  }
+
+  String url = "${globals.stripeURL}accounts/$accountId";
+
+  try {
+    response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (P05)", "Please try again. If this error continues to occur, please contact support.");
+    return {};
+  } 
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (P05)", "Please try again.");
     return {};
@@ -531,11 +576,15 @@ Future<dynamic> spGetTransfers(BuildContext context, String accountId) async {
   }
 }
 
-Future<dynamic> spGetPayouts(BuildContext context, String accountId) async {
+Future<dynamic> spGetPayouts(BuildContext context, [String accountId]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
-    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}',
   };
+
+  if(accountId != null) {
+    headers['Stripe-Account'] = '$accountId';
+  }
 
   Map jsonResponse = {};
   http.Response response;
@@ -571,10 +620,6 @@ Future<List<PayoutDetails>> spGetPayoutHistory(BuildContext context, String acco
   List<PayoutDetails> payoutDetails = [];
   var res = await spGetTransfers(context, accountId);
   var res2 = await spGetPayouts(context, accountId);
-  
-  for(var item in res) {
-
-  }
 
   return payoutDetails;
 }
