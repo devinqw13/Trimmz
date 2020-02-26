@@ -1324,9 +1324,9 @@ Future<BarberPolicies> getBarberPolicies(BuildContext context, int userId) async
       for(var item in jsonResponse['policies']){
         policies.cancelEnabled = item['cancel_enabled'] == 0 ? false : true;
         policies.noShowEnabled = item['noshow_enabled'] == 0 ? false : true;
-        policies.cancelFee = item['cancel_fee'];
+        policies.cancelFee = item['cancel_fee'] ?? '0%';
         policies.cancelWithinTime = item['cancel_time'] ?? 0;
-        policies.noShowFee = item['noshow_fee'];
+        policies.noShowFee = item['noshow_fee'] ?? '0%';
       }
       return policies;
     } else {
@@ -1655,10 +1655,10 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
     jsonMap['cancelTime'] = cancelTime;
   }
   if(cancelEnabled != null) {
-    jsonMap['cancelEnabled'] = cancelEnabled;
+    jsonMap['cancelEnabled'] = cancelEnabled == true ? 1 : 0;
   }
   if(noShowEnabled != null) {
-    jsonMap['noShowEnabled'] = noShowEnabled;
+    jsonMap['noShowEnabled'] = noShowEnabled == true ? 1 : 0;
   }
   if(noShowFee != null) {
     jsonMap['noShowFee'] = isNoShowPercent ? '$noShowFee%' : '\$$noShowFee';
@@ -1672,7 +1672,6 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
     showErrorDialog(context, "The Server is not responding (033)", "Please try again. If this error continues to occur, please contact support.");
     return null;
   } 
-  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (033)", "Please try again.");
     return null;
@@ -1689,11 +1688,11 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
     BarberPolicies policies = new BarberPolicies();
     if(jsonResponse['policies'].length > 0){
       for(var item in jsonResponse['policies']){
-        policies.cancelEnabled = item['cancel_enabled'] == '0' ? false : true;
-        policies.noShowEnabled = item['noshow_enabled'] == '0' ? false : true;
-        policies.cancelFee = item['cancel_fee'];
-        policies.cancelWithinTime = int.parse(item['cancel_time']);
-        policies.noShowFee = item['noshow_fee'];
+        policies.cancelEnabled = item['cancel_enabled'] == 0 ? false : true;
+        policies.noShowEnabled = item['noshow_enabled'] == 0 ? false : true;
+        policies.cancelFee = item['cancel_fee'] ?? '0%';
+        policies.cancelWithinTime = item['cancel_time'] ?? 0;
+        policies.noShowFee = item['noshow_fee'] ?? '0%';
       }
       return policies;
     } else {
