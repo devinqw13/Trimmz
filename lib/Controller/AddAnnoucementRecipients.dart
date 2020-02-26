@@ -32,6 +32,7 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
   List<Map<dynamic, dynamic>> recipients = [];
   List<BarberClients> suggested = [];
   List<BarberClients> searched = [];
+  bool _allSelected = false;
 
   void initState() {
     super.initState();
@@ -182,11 +183,26 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
                     Text('Select All Clients'),
                     CircularCheckBox(
                       activeColor: Colors.blue,
-                      value: false,
+                      value: _allSelected,
                       onChanged: (value) {
                         setState(() {
-                          
+                          _allSelected = value;
                         });
+                        for(var items in suggested){
+                          setState(() {
+                            items.selected = value;
+                          });
+
+                          Map map = {'id': items.token, 'username': items.username};
+                          var res = recipients.where((item) => item.containsValue(items.username));
+                          if(res.length > 0) {
+                            recipients.removeWhere((item) => item.containsValue(items.username));
+                          }else {
+                            recipients.add(map);
+                            searchRecipientController.clear();
+                            searched = [];
+                          }
+                        }
                       }
                     )
                   ],
@@ -314,6 +330,11 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
                               var res = recipients.where((item) => item.containsValue(suggested[i].username));
                               if(res.length > 0) {
                                 recipients.removeWhere((item) => item.containsValue(suggested[i].username));
+                                if(_allSelected == true) {
+                                  setState(() {
+                                    _allSelected = false;
+                                  });
+                                }
                               }else {
                                 recipients.add(map);
                               }
