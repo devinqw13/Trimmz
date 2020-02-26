@@ -1440,6 +1440,7 @@ Future<List<BarberClients>> getSearchClients(BuildContext context, String userna
       client.token = item['id'];
       client.name = item['name'];
       client.username = item['username'];
+      client.profile = item['profile_picture'];
       clients.add(client);
     }
 
@@ -2098,7 +2099,7 @@ Future<List<BarberClients>> getBarberClients(BuildContext context, int token, in
       client.token = item['id'];
       client.name = item['name'];
       client.username = item['username'];
-
+      client.profile = item['profile_picture'];
       clients.add(client);
     }
     return clients;

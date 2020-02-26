@@ -11,6 +11,7 @@ import '../Model/availability.dart';
 import '../Model/AppointmentRequests.dart';
 import '../Model/BarberPolicies.dart';
 import 'SendAnnoucementController.dart';
+import '../View/Widgets.dart';
 
 class AddAnnoucementRecipients extends StatefulWidget {
   final List selectedEvents;
@@ -59,7 +60,7 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
   }
 
   _searchValue(String string) async {
-    if(searchRecipientController.text.length > 2) {
+    if(searchRecipientController.text.length > 0) {
       var res = await getSearchClients(context, searchRecipientController.text);
       setState(() {
         searched = res;
@@ -73,7 +74,7 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
         }
       }
     }
-    if(searchRecipientController.text.length <= 2) {
+    if(searchRecipientController.text.length == 0) {
       setState(() {
         searched = [];
       });
@@ -170,7 +171,28 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
           ),
           Container(
             margin: EdgeInsets.only(bottom: 10),
-            child: searched.length > 0 ? Text('Searched', style: TextStyle(fontWeight: FontWeight.bold)) : Text('Your Clients', style: TextStyle(fontWeight: FontWeight.bold))
+            child: searched.length > 0 ? Text('Searched', style: TextStyle(fontWeight: FontWeight.bold)) : 
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text('Your Clients', style: TextStyle(fontWeight: FontWeight.bold)),
+                Row(
+                  children: <Widget>[
+                    Text('Select All Clients'),
+                    CircularCheckBox(
+                      activeColor: Colors.blue,
+                      value: false,
+                      onChanged: (value) {
+                        setState(() {
+                          
+                        });
+                      }
+                    )
+                  ],
+                )
+              ],
+            )
           ),
           searched.length > 0 ? Expanded(
             child: SingleChildScrollView(
@@ -205,18 +227,7 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Container(
-                                width: 50.0,
-                                height: 50.0,
-                                decoration: new BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.purple,
-                                  gradient: new LinearGradient(
-                                    colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-                                  )
-                                ),
-                                child: Center(child:Text(searched[i].username.substring(0,1), style: TextStyle(fontSize: 20)))
-                              ),
+                              buildProfilePictures(context, searched[i].profile, searched[i].username, 25),
                               Padding(padding: EdgeInsets.all(5)),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,18 +295,7 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Container(
-                                width: 50.0,
-                                height: 50.0,
-                                decoration: new BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.purple,
-                                  gradient: new LinearGradient(
-                                    colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-                                  )
-                                ),
-                                child: Center(child:Text(suggested[i].username.substring(0,1), style: TextStyle(fontSize: 20)))
-                              ),
+                              buildProfilePictures(context, suggested[i].profile, suggested[i].username, 25),
                               Padding(padding: EdgeInsets.all(5)),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

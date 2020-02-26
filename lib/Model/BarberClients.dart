@@ -3,4 +3,5 @@ class BarberClients {
   String name;
   String username;
   bool selected = false;
+  String profile;
 }
