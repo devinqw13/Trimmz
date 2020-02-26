@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:trimmz/View/ModalSheets.dart';
+import '../Calls/FinancialCalls.dart';
 import '../globals.dart' as globals;
 import '../Calls/StripeConfig.dart';
-import '../Calls/FinancialCalls.dart';
 import '../Calls/GeneralCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MobileTransactionSettingsScreen extends StatefulWidget {
   MobileTransactionSettingsScreen({Key key}) : super (key: key);
@@ -165,13 +164,16 @@ class MobileTransactionSettingsScreenState extends State<MobileTransactionSettin
             FlatButton(
               textColor: _payoutMethod != globals.spPayoutMethod ? Colors.white : Colors.grey,
               onPressed: () async {
-                var res = await updatePayoutSettings(context, globals.token, null, _payoutMethod);
-                if(res) {
-                  setState(() {
-                    globals.spPayoutMethod = _payoutMethod;
-                  });
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString('spPayoutMethod', _payoutMethod);
+                progressHUD();
+                var res = await spUpdateConnectAccount(context, globals.spAccountId, _payoutMethod);
+                if(res.length > 0) {
+                  var res2 = await updatePayoutSettings(context, globals.token, null, _payoutMethod);
+                  progressHUD();
+                  if(res2) {
+                    setState(() {
+                      globals.spPayoutMethod = _payoutMethod;
+                    });
+                  }
                 }
               },
               child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
