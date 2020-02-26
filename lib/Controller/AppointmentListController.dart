@@ -303,7 +303,7 @@ class AppointmentListState extends State<AppointmentList> {
                               )
                             ),
                             Text(past[i]['package']),
-                            Text('\$'+(int.parse(past[i]['price']) + int.parse(past[i]['tip'])).toString())
+                            Text('\$'+(past[i]['price'] + past[i]['tip']).toString())
                           ]
                         ),
                         Column(

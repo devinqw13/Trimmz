@@ -303,7 +303,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                           ),
                                           Text(
                                             globals.userType != 2 ?
-                                            '\$' + (int.parse(appointment['price']) + int.parse(appointment['tip']) + 1).toString() :
+                                            '\$' + (appointment['price'] + appointment['tip'] + 1).toString() :
                                             globals.spPayoutMethod == 'standard' ?
                                             '\$' + (double.parse(standardBarberPrice) / 100).toString() :
                                             '\$' + (double.parse(instantBarberPrice) / 100).toString(),
