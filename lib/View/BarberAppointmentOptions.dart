@@ -409,7 +409,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                           child: Container(
                                             child: RaisedButton(
                                               onPressed: () {
-                                                clientCancel(int.parse(appointment['barberid']), int.parse(appointment['id']));
+                                                clientCancel(appointment['barberid'], appointment['id']);
                                               },
                                               child: Text('Cancel Appointment'),
                                             )
