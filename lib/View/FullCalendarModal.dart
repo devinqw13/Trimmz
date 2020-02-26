@@ -130,7 +130,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
                           )
                         ),
                         Text(_selectedEvents[i]['package']),
-                        Text('\$'+(int.parse(_selectedEvents[i]['price']) + int.parse(_selectedEvents[i]['tip'])).toString())
+                        Text('\$'+(_selectedEvents[i]['price'] + _selectedEvents[i]['tip']).toString())
                       ]
                     ),
                     Column(
