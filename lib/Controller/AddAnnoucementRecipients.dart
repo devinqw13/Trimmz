@@ -178,7 +178,7 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Text('Your Clients', style: TextStyle(fontWeight: FontWeight.bold)),
-                Row(
+                suggested.length > 0 ? Row(
                   children: <Widget>[
                     Text('Select All Clients'),
                     CircularCheckBox(
@@ -209,7 +209,7 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
                       }
                     )
                   ],
-                )
+                ) : Container()
               ],
             )
           ),
