@@ -15,11 +15,14 @@ import 'Model/AppointmentRequests.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  globals.baseUrl = "https://trimmz.app/dev_api/";
+  //================PRODUCTION APIS==============//
+  globals.baseUrl = "https://api.trimmz.app/";
+  globals.baseUrlImage = "https://trimmz.s3.us-east-2.amazonaws.com/";
   globals.stripeURL = "https://api.stripe.com/v1/";
   globals.stripeSecretKey = "sk_test_v867iJx7k2BI56g7y9pmPFS60073BdgDOz";
   globals.stripePublishablekey = "pk_test_7UVBKGuzATDdteCuYSFPkGoY00jTaym2fZ";
   globals.stripeMerchantId = "";
+  //============================================//
   SharedPreferences prefs = await SharedPreferences.getInstance();
   BuildContext context;
   List selectedEvents = [];
@@ -54,7 +57,7 @@ void main() async {
         '/': (context) => token == null ? new LoginScreen() : globals.userType == 2 ? BarberHubScreen(packages: packages, events: events, selectedEvents: selectedEvents, availability: availability, appointmentReq: appointmentReq, policies: policies) : HomeHubScreen(),
       },
       theme: new ThemeData(
-        primaryColor: Colors.blue,
+        primaryColor: globals.userColor,
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.black87
       )
