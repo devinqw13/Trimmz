@@ -363,20 +363,20 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text('Appointment Total', style: TextStyle(color: Colors.grey)),
-                            Text('\$1', style: TextStyle(color: Colors.grey))
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text('Fees', style: TextStyle(color: Colors.grey)),
-                            Text('\$0.03', style: TextStyle(color: Colors.grey))
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: <Widget>[
+                        //     Text('Appointment Total', style: TextStyle(color: Colors.grey)),
+                        //     Text('\$1', style: TextStyle(color: Colors.grey))
+                        //   ],
+                        // ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: <Widget>[
+                        //     Text('Fees', style: TextStyle(color: Colors.grey)),
+                        //     Text('\$0.03', style: TextStyle(color: Colors.grey))
+                        //   ],
+                        // ),
                         Divider(color: Colors.grey[100]),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
