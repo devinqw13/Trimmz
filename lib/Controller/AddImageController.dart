@@ -42,6 +42,7 @@ class _CameraAppState extends State<CameraApp> {
   int selectedCameraId = 0;
   double controllerAspect = 0.0;
   String takenPhoto = '';
+  String selectedAsset = '';
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _CameraAppState extends State<CameraApp> {
       var list = await PhotoManager.getAssetPathList();
       var imageList = await list[0].assetList;
       setState(() {
+        selectedAsset = list[0].name;
         galleryList = list;
         defaultGallery = list[0];
         defaultGalleryImageList = imageList;
@@ -179,7 +181,38 @@ class _CameraAppState extends State<CameraApp> {
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: new AppBar(
-          title: _currentIndex == 0 ? Text('Photo') : Text('Gallery'),
+          title: _currentIndex == 0 ? Text('Photo') :
+          galleryList.length > 0 ? 
+          Container(
+            child: DropdownButton(
+              underline: Container(),
+              icon: Icon(Icons.keyboard_arrow_down),
+              isExpanded: true,
+              value: selectedAsset,
+              onChanged: (value) async {
+                int index = galleryList.indexWhere((d) => d.name == value);
+                var imageList = await galleryList[index].assetList;
+                setState(() {
+                  selectedAsset = value;
+                  defaultGalleryImageList = imageList;
+                  gallerySelectedImage = defaultGalleryImageList[0];
+                });
+              },
+              items: galleryList.map((AssetPathEntity asset) {
+                return DropdownMenuItem<String>(
+                  value: asset.name,
+                  child: RichText(
+                    text: new TextSpan(
+                      children: <TextSpan> [
+                        new TextSpan(text: asset.name+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                        new TextSpan(text: '(${asset.assetCount})', style: TextStyle(color: Colors.grey)),
+                      ]
+                    )
+                  )
+                );
+              }).toList()
+            )
+          ): Text('gallery'),
           actions: <Widget>[
             widget.uploadType == 2 ?
             takenPhoto != '' || (_currentIndex == 1 && gallerySelectedImage != null) ? new FlatButton(
