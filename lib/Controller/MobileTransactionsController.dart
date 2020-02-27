@@ -6,14 +6,13 @@ import '../globals.dart' as globals;
 import '../Calls/StripeConfig.dart';
 import '../Calls/FinancialCalls.dart';
 // import 'package:stripe_payment/stripe_payment.dart';
-import '../functions.dart';
-import '../Calls/GeneralCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../Model/PayoutDetails.dart';
 import 'package:credit_card_type_detector/credit_card_type_detector.dart';
 import 'MobileTransactionSettings.dart';
 import '../View/TextFieldFormatter.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class MobileTransactionScreen extends StatefulWidget {
   MobileTransactionScreen({Key key}) : super (key: key);
@@ -308,7 +307,93 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
 
   transactionHistory() {
     if(payoutDetails.length > 0) {
-
+      return Container(
+        child: ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: payoutDetails.length,
+          itemBuilder: (context, i) {
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.all(5.0),
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                gradient: new LinearGradient(
+                  begin: Alignment(0.0, -2.0),
+                  colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+                )
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 2.0, bottom: 2.0),
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.all(Radius.circular(20.0))
+                              ),
+                              child: Text(payoutDetails[i].status, style: TextStyle(fontWeight: FontWeight.bold))
+                            ),
+                            Padding(padding: EdgeInsets.all(5)),
+                            Container(
+                              padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 2.0, bottom: 2.0),
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.all(Radius.circular(20.0))
+                              ),
+                              child: Text(payoutDetails[i].method, style: TextStyle(fontWeight: FontWeight.bold))
+                            ),
+                          ]
+                        ),
+                        Padding(padding: EdgeInsets.all(5)),
+                        Text(DateFormat("EEE, MMM d, yyyy").format(payoutDetails[i].arrivalDate), style: TextStyle(fontWeight: FontWeight.bold)),
+                        // Text('Txn #: '+payoutDetails[i].id.split("po_")[1], style: TextStyle(color: Colors.grey)),
+                      ]
+                    )
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text('Appointment Total', style: TextStyle(color: Colors.grey)),
+                            Text('\$1', style: TextStyle(color: Colors.grey))
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text('Fees', style: TextStyle(color: Colors.grey)),
+                            Text('\$0.03', style: TextStyle(color: Colors.grey))
+                          ],
+                        ),
+                        Divider(color: Colors.grey[100]),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text('Total Deposit', style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text('\$${payoutDetails[i].amount}', style: TextStyle(fontWeight: FontWeight.bold))
+                          ],
+                        )
+                      ]
+                    )
+                  )
+                ]
+              )
+            );
+          },
+        )
+      );
     }else {
       return new Container(
         width: MediaQuery.of(context).size.width,

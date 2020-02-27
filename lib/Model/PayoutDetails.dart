@@ -2,7 +2,7 @@ class PayoutDetails {
   String id;
   String amount;
   String destination;
-  String arrivalDate;
+  DateTime arrivalDate;
   String method;
   String status;
   String description;

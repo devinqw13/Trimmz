@@ -618,15 +618,21 @@ Future<dynamic> spGetPayouts(BuildContext context, [String accountId]) async {
 
 Future<List<PayoutDetails>> spGetPayoutHistory(BuildContext context, String accountId) async {
   List<PayoutDetails> payoutDetails = [];
-  var res = await spGetTransfers(context, accountId);
-  print(res);
+  // var res = await spGetTransfers(context, accountId);
+  // print(res);
   var res2 = await spGetPayouts(context, accountId);
-  print(res2);
 
   for(var item in res2) {
+    var currentTime = (item['arrival_date'] * 1000).round();
+    var unixTime = DateTime.fromMillisecondsSinceEpoch(currentTime, isUtc: true);
     PayoutDetails payoutDetail = new PayoutDetails();
     payoutDetail.id = item['id'];
     payoutDetail.status = item['status'];
+    payoutDetail.arrivalDate = unixTime;
+    payoutDetail.amount = (item['amount'] / 100).toString();
+    payoutDetail.method = item['method'];
+
+    payoutDetails.add(payoutDetail);
   }
 
   return payoutDetails;
