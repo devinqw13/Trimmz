@@ -4,7 +4,6 @@ import 'package:trimmz/Model/ClientPaymentMethod.dart';
 import '../Calls/FinancialCalls.dart';
 import '../globals.dart' as globals;
 import '../Calls/StripeConfig.dart';
-import '../Calls/FinancialCalls.dart';
 // import 'package:stripe_payment/stripe_payment.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../Model/PayoutDetails.dart';

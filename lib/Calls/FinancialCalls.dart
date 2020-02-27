@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../Model/ClientPaymentMethod.dart';
 import '../globals.dart' as globals;
-import '../Model/PayoutDetails.dart';
 
 Future<dynamic> spGetClientPaymentMethod(BuildContext context, String customerId, int type) async {
   Map<String, String> headers = {
