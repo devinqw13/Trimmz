@@ -347,6 +347,7 @@ Future<List<ClientBarbers>> getUserBarbers(BuildContext context, int userid) asy
       clientBarber.state = item['state'];
       clientBarber.zipcode = item['zipcode'].toString();
       clientBarber.rating = item['rating'];
+      clientBarber.profilePicture = item['profile_picture'];
       clientBarbers.add(clientBarber);
     }
 

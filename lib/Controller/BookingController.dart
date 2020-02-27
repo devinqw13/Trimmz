@@ -4,6 +4,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:trimmz/Model/ClientPaymentMethod.dart';
 import 'package:trimmz/dialogs.dart';
 import '../Model/ClientBarbers.dart';
+import '../View/Widgets.dart';
 import '../globals.dart' as globals;
 import 'package:table_calendar/table_calendar.dart';
 import 'HomeHubController.dart';
@@ -470,18 +471,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            Container(
-                              width: 50.0,
-                              height: 50.0,
-                              decoration: new BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.purple,
-                                gradient: new LinearGradient(
-                                  colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-                                )
-                              ),
-                              child: Center(child:Text(barber.name.substring(0,1), style: TextStyle(fontSize: 20)))
-                            ),
+                            buildProfilePictures(context, barber.profilePicture, barber.name, 25),
                             Container(
                               margin: EdgeInsets.only(left: 10.0),
                               child: Text(barber.name, style: TextStyle(fontSize: 18))

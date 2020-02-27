@@ -11,6 +11,7 @@ import '../Model/Packages.dart';
 import '../Model/availability.dart';
 import '../Model/AppointmentRequests.dart';
 import '../Model/BarberPolicies.dart';
+import '../View/Widgets.dart';
 
 class SelectBarberScreen extends StatefulWidget {
   final List<ClientBarbers> clientBarbers;
@@ -71,17 +72,7 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
                   child: new Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Container(
-                        width: 100.0,
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: new LinearGradient(
-                            colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-                          )
-                        ),
-                        child: Center(child:Text(barber.name.substring(0,1), style: TextStyle(fontSize: 30))),
-                      ),
+                      buildProfilePictures(context, barber.profilePicture, barber.name, 50),
                       Text(
                         barber.name,
                         style: TextStyle(
