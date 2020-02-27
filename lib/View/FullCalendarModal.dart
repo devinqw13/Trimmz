@@ -91,16 +91,16 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
           itemCount: _selectedEvents.length,
           itemBuilder: (context, i) {
             Color statusColor;
-            if(_selectedEvents[i]['status'] == '0'){
+            if(_selectedEvents[i]['status'] == 0){
               var time = _selectedEvents[i]['full_time'];
               if(DateTime.now().isAfter(DateTime.parse(time))) {
                 statusColor = Colors.grey;
               }else {
                 statusColor = Colors.blue;
               }
-            }else if(_selectedEvents[i]['status'] == '1'){
+            }else if(_selectedEvents[i]['status'] == 1){
               statusColor = Colors.green;
-            }else if(_selectedEvents[i]['status'] == '2'){
+            }else if(_selectedEvents[i]['status'] == 2){
               statusColor = Colors.red;
             }
             return new GestureDetector(
