@@ -41,9 +41,9 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
       text: 'Loading...'
     );
 
-    standardBarberPrice = (((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) - ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .025)) * 100).toStringAsFixed(0);
+    standardBarberPrice = (((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) - num.parse(((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .025).toStringAsFixed(2))) * 100).toStringAsFixed(0);
 
-    instantBarberPrice = (((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) - ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .03))).toStringAsFixed(2);
+    instantBarberPrice = (((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) - num.parse(((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .03).toStringAsFixed(2))) * 100).toStringAsFixed(0);
     super.initState();
   }
 
@@ -167,20 +167,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            // Container(
-                            //   width: 50.0,
-                            //   height: 50.0,
-                            //   decoration: new BoxDecoration(
-                            //     shape: BoxShape.circle,
-                            //     color: Colors.purple,
-                            //     gradient: new LinearGradient(
-                            //       colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
-                            //     )
-                            //   ),
-                            //   child: globals.userType != 2 ? Center(
-                            //     child: Text(appointment['barber_name'].substring(0,1), style: TextStyle(fontSize: 20))
-                            //   ) : Center(child: Text(appointment['name'].substring(0,1), style: TextStyle(fontSize: 20)))
-                            // ),
                             globals.userType != 2 ?
                             buildProfilePictures(context, appointment['barber_pp'], appointment['barber_name'], 25) :
                             buildProfilePictures(context, appointment['client_pp'], appointment['name'], 25),
@@ -285,7 +271,8 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             )
                                           ),
                                           Text(
-                                            globals.spPayoutMethod == 'standard' ? '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .025).toStringAsFixed(2) : '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .03).toStringAsFixed(2),
+                                            globals.spPayoutMethod == 'standard' ? '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .025).toStringAsFixed(2) :
+                                            '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .03).toStringAsFixed(2),
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.grey

@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import '../Model/PayoutDetails.dart';
 import '../dialogs.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -441,7 +442,6 @@ Future<Map> spPayout(BuildContext context, int amount, String payoutId, String a
     showErrorDialog(context, "The Server is not responding (P07)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
-  print(response.body);
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (P07)", "Please try again.");
     return {};
@@ -464,7 +464,7 @@ Future<Map> spPayout(BuildContext context, int amount, String payoutId, String a
 Future<bool> spChargeCard(BuildContext context, int total, String paymentId, String customerId, String cusEmail) async {
   var chargeTotal = (total + 1) * 100;
   double dbl = globals.spPayoutMethod == 'standard' ? 0.025 : 0.03;
-  var payoutTotal = int.parse(((double.parse(total.toString()) - (double.parse(total.toString()) * dbl)) * 100).toStringAsFixed(0));
+  var payoutTotal = int.parse(((double.parse(total.toString()) - num.parse((double.parse(total.toString()) * dbl).toStringAsFixed(2))) * 100).toStringAsFixed(0));
 
   var res = await spCreatePaymentIntent(context, paymentId, customerId, chargeTotal.toString(), cusEmail);
   if(res.length > 0) {
@@ -596,7 +596,7 @@ Future<dynamic> spGetPayouts(BuildContext context, [String accountId]) async {
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding (P00)", "Please try again. If this error continues to occur, please contact support.");
     return null;
-  } 
+  }
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (P00)", "Please try again.");
     return null;
@@ -619,7 +619,15 @@ Future<dynamic> spGetPayouts(BuildContext context, [String accountId]) async {
 Future<List<PayoutDetails>> spGetPayoutHistory(BuildContext context, String accountId) async {
   List<PayoutDetails> payoutDetails = [];
   var res = await spGetTransfers(context, accountId);
+  print(res);
   var res2 = await spGetPayouts(context, accountId);
+  print(res2);
+
+  for(var item in res2) {
+    PayoutDetails payoutDetail = new PayoutDetails();
+    payoutDetail.id = item['id'];
+    payoutDetail.status = item['status'];
+  }
 
   return payoutDetails;
 }
