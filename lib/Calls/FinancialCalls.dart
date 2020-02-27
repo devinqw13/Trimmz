@@ -352,11 +352,11 @@ Future<Map> spUpdateConnectAccount(BuildContext context, String accountId, [Stri
   try {
     response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (P05)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (P06)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (P05)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (P06)", "Please try again.");
     return {};
   }
 
@@ -394,11 +394,11 @@ Future<Map> spTransferToConnectAccount(BuildContext context, int amount, String 
   try {
     response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (P06)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (P07)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (P06)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (P07)", "Please try again.");
     return {};
   }
 
@@ -438,11 +438,11 @@ Future<Map> spPayout(BuildContext context, int amount, String payoutId, String a
   try {
     response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (P07)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (P08)", "Please try again. If this error continues to occur, please contact support.");
     return {};
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (P07)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (P08)", "Please try again.");
     return {};
   }
 
@@ -501,11 +501,11 @@ Future<dynamic> spGetAccountPayoutCard(BuildContext context, String accountId, S
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (P00)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (P09)", "Please try again. If this error continues to occur, please contact support.");
     return null;
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (P00)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (P09)", "Please try again.");
     return null;
   }
 
@@ -553,11 +553,11 @@ Future<dynamic> spGetTransfers(BuildContext context, String accountId) async {
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (P00)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (P10)", "Please try again. If this error continues to occur, please contact support.");
     return null;
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (P00)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (P10)", "Please try again.");
     return null;
   }
 
@@ -593,11 +593,11 @@ Future<dynamic> spGetPayouts(BuildContext context, [String accountId]) async {
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (P00)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (P11)", "Please try again. If this error continues to occur, please contact support.");
     return null;
   }
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (P00)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (P11)", "Please try again.");
     return null;
   }
 
