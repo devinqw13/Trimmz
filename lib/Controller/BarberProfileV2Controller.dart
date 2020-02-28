@@ -17,6 +17,8 @@ import 'package:marquee/marquee.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import '../Model/FeedItems.dart';
+import 'package:camera/camera.dart';
+import 'AddImageController.dart';
 
 class BarberProfileV2Screen extends StatefulWidget {
   final token;
@@ -74,15 +76,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
     return new Container(
       child: Stack(
         children: <Widget>[
-          new Container(
-            height: MediaQuery.of(context).size.width * .6,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              gradient: new LinearGradient(
-                colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-              )
-            ),
-          ),
+          buildProfileHeader(context, user.headerImage),
           new Center(
             child: new ClipRect(
               child: new BackdropFilter(
@@ -220,10 +214,35 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                 ),
               ]
             )
-          ): Container(),
+          ): Container(
+            padding: EdgeInsets.all(5),
+            color: Color.fromRGBO(0, 0, 0, 0.2),
+            child: Center(
+              child: GestureDetector(
+                onTap: () async {
+                  changeProfilePicture();
+                },
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: Text('Edit Header')
+                )
+              )
+            )
+          ),
         ],
       )
     );
+  }
+
+  changeProfilePicture() async {
+    var cameras = await availableCameras();
+    final cameraScreen = new CameraApp(uploadType: 3, cameras: cameras);
+    var res = await Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
+    if(res != null) {
+      setState(() {
+        user.headerImage = res;
+      });
+    }
   }
 
   profileSummary() {

@@ -285,6 +285,8 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
         suggestedBarber.zipcode = item['zipcode'].toString();
         suggestedBarber.rating = item['rating'] ?? '0';
         suggestedBarber.profilePicture = item['profile_picture'];
+        suggestedBarber.headerImage = item['header_image'];
+        print(item['header_image']);
         List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
         for(var item2 in clientBarbers) {
           if(item2.id.contains(item['id'].toString())){

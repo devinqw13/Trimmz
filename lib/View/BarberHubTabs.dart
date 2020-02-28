@@ -390,6 +390,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                     barber.state = searchedBarbers[i].state;
                     barber.zipcode = searchedBarbers[i].zipcode;
                     barber.profilePicture = suggestedBarbers[i].profilePicture;
+                    barber.headerImage = suggestedBarbers[i].headerImage;
                     // barber.created = suggestedBarbers[i].created;
                     final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                     Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));

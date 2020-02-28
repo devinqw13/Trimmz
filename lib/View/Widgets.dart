@@ -239,3 +239,26 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
       );
     }
   }
+
+  buildProfileHeader(BuildContext context, String headerPicture) {
+    if(headerPicture != null && headerPicture != '') {
+      return Container(
+        height: MediaQuery.of(context).size.width * .6,
+        width: MediaQuery.of(context).size.width,
+        child: Image.network(
+          '${globals.baseUrlImage}$headerPicture',
+          fit: BoxFit.cover,
+        ),
+      );
+    }else {
+      return new Container(
+        height: MediaQuery.of(context).size.width * .6,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: new LinearGradient(
+            colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
+          )
+        ),
+      );
+    }
+  }

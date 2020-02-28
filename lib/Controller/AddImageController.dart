@@ -227,7 +227,7 @@ class _CameraAppState extends State<CameraApp> {
               }
             ) : Container()
             : 
-            new FlatButton(
+            takenPhoto != '' || (_currentIndex == 1 && gallerySelectedImage != null) ? new FlatButton(
               child: new Text('Use', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
               onPressed: () async {
                 if(_currentIndex == 1 && gallerySelectedImage != null) {
@@ -237,7 +237,7 @@ class _CameraAppState extends State<CameraApp> {
                   Navigator.pop(context, res);
                 }
               },
-            )
+            ) : Container()
           ]
         ),
         body: _currentIndex == 0 ? Column(
