@@ -1486,12 +1486,12 @@ Future<List<BarberReviews>> getUserReviews(BuildContext context, int userId) asy
       List<BarberReviews> reviews = [];
       for(var item in jsonResponse['reviews']){
         BarberReviews review = new BarberReviews();
-        review.barberId = int.parse(item['barber_id']);
-        review.clientId = int.parse(item['user_id']);
+        review.barberId = item['barber_id'];
+        review.clientId = item['user_id'];
         review.clientName = item['client_name'];
         review.comment = item['comment'];
-        review.id = int.parse(item['id']);
-        review.rating = double.parse(item['rating']);
+        review.id = item['id'];
+        review.rating = double.parse(item['rating'].toString());
         review.created = DateTime.parse(item['created']);
         reviews.add(review);
       }
@@ -1566,7 +1566,7 @@ Future<bool> submitReview(BuildContext context, String comment, int barberId, in
     showErrorDialog(context, "The Server is not responding (031)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   } 
-  
+
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (031)", "Please try again.");
     return false;
@@ -1580,7 +1580,7 @@ Future<bool> submitReview(BuildContext context, String comment, int barberId, in
   }
 
   if(jsonResponse['error'] == 'false'){
-    return jsonResponse['results'];
+    return jsonResponse['results'] == "true" ? true : false;
   }else {
     return false;
   }
