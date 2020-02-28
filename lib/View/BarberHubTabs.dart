@@ -366,35 +366,26 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               return new GestureDetector(
                 onTap: () async {
                   FocusScope.of(context).requestFocus(new FocusNode());
-                  if(globals.token == int.parse(searchedBarbers[i].id)) {
-                    progressHUD();
-                    var res = await getUserDetailsPost(globals.token, context);
-                    var res2 = await getBarberPolicies(context, globals.token);
-                    progressHUD();
-                    final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: res, barberPolicies: res2);
-                    Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
-                  }else {
-                    progressHUD();
-                    var res = await getBarberPolicies(context, int.parse(searchedBarbers[i].id));
-                    progressHUD();
-                    ClientBarbers barber = new ClientBarbers();
-                    barber.id = searchedBarbers[i].id;
-                    barber.name = searchedBarbers[i].name;
-                    barber.username = searchedBarbers[i].username;
-                    barber.phone = searchedBarbers[i].phone;
-                    barber.email = searchedBarbers[i].email;
-                    barber.rating = searchedBarbers[i].rating;
-                    barber.shopAddress = searchedBarbers[i].shopAddress;
-                    barber.shopName = searchedBarbers[i].shopName;
-                    barber.city = searchedBarbers[i].city;
-                    barber.state = searchedBarbers[i].state;
-                    barber.zipcode = searchedBarbers[i].zipcode;
-                    barber.profilePicture = suggestedBarbers[i].profilePicture;
-                    barber.headerImage = suggestedBarbers[i].headerImage;
-                    // barber.created = suggestedBarbers[i].created;
-                    final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
-                    Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
-                  }
+                  progressHUD();
+                  var res = await getBarberPolicies(context, int.parse(searchedBarbers[i].id));
+                  progressHUD();
+                  ClientBarbers barber = new ClientBarbers();
+                  barber.id = searchedBarbers[i].id;
+                  barber.name = searchedBarbers[i].name;
+                  barber.username = searchedBarbers[i].username;
+                  barber.phone = searchedBarbers[i].phone;
+                  barber.email = searchedBarbers[i].email;
+                  barber.rating = searchedBarbers[i].rating;
+                  barber.shopAddress = searchedBarbers[i].shopAddress;
+                  barber.shopName = searchedBarbers[i].shopName;
+                  barber.city = searchedBarbers[i].city;
+                  barber.state = searchedBarbers[i].state;
+                  barber.zipcode = searchedBarbers[i].zipcode;
+                  barber.profilePicture = suggestedBarbers[i].profilePicture;
+                  barber.headerImage = suggestedBarbers[i].headerImage;
+                  // barber.created = suggestedBarbers[i].created;
+                  final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                 },
                 child: Column(
                   children: <Widget> [ 
@@ -537,6 +528,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                   barber.state = suggestedBarbers[i].state;
                   barber.zipcode = suggestedBarbers[i].zipcode;
                   barber.profilePicture = suggestedBarbers[i].profilePicture;
+                  barber.headerImage = suggestedBarbers[i].headerImage;
                   // barber.created = suggestedBarbers[i].created;
                   final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));

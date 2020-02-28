@@ -224,6 +224,7 @@ Future<ClientBarbers> getUserDetailsPost(int token, BuildContext context) async 
       userDetails.zipcode = item1['zipcode'].toString();
       userDetails.rating = item1['rating'] ?? '0';
       userDetails.profilePicture = item1['profile_picture'];
+      userDetails.headerImage = item1['header_image'];
     }
 
     return userDetails;
@@ -286,7 +287,6 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
         suggestedBarber.rating = item['rating'] ?? '0';
         suggestedBarber.profilePicture = item['profile_picture'];
         suggestedBarber.headerImage = item['header_image'];
-        print(item['header_image']);
         List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
         for(var item2 in clientBarbers) {
           if(item2.id.contains(item['id'].toString())){
