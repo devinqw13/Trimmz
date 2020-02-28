@@ -81,7 +81,7 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
         _noshowEnabled = policy.noShowEnabled;
       });
     }else {
-      //TODO: error when submitting only the percent/dollar change
+      //TODO: error when setting policies REDO THIS CALL
       var res = await updateBarberPolicies(context, globals.token, _cancelFeeAmount.text != policy.cancelFee.replaceAll(new RegExp('[\$\\%]'), '') ? _cancelFeeAmount.text : null, _isCancelPercent != policy.cancelFee.contains('\%') ? _isCancelPercent : null, _cancelChargeTime.text != policy.cancelWithinTime.toString() ? int.parse(_cancelChargeTime.text) : null, _noShowFeeAmount.text != policy.noShowFee.replaceAll(new RegExp('[\$\\%]'), '') ? _noShowFeeAmount.text : null, _isNoShowPercent != policy.noShowFee.contains('\%') ? _isNoShowPercent : null, _cancellationEnabled != policy.cancelEnabled ? _cancellationEnabled : null, _noshowEnabled != policy.noShowEnabled ? _noshowEnabled : null);
 
       setState(() {
