@@ -16,6 +16,7 @@ import '../Model/Packages.dart';
 import '../Model/availability.dart';
 import '../Model/AppointmentRequests.dart';
 import '../Model/BarberPolicies.dart';
+import 'package:progress_hud/progress_hud.dart';
 
 class CameraApp extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -43,6 +44,8 @@ class _CameraAppState extends State<CameraApp> {
   double controllerAspect = 0.0;
   String takenPhoto = '';
   String selectedAsset = '';
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
   @override
   void initState() {
@@ -56,12 +59,31 @@ class _CameraAppState extends State<CameraApp> {
         controllerAspect = controller.value.aspectRatio;
       });
     });
+
+    _progressHUD = new ProgressHUD(
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
+      borderRadius: 8.0,
+      loading: false,
+      text: 'Loading...'
+    );
   }
 
   @override
   void dispose() {
     controller?.dispose();
     super.dispose();
+  }
+
+  void progressHUD() {
+    setState(() {
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
+    });
   }
 
   void onNavTapTapped(int index) async {
@@ -144,7 +166,7 @@ class _CameraAppState extends State<CameraApp> {
   }
 
   createCropImage(BuildContext context) async {
-    //progressHUD();
+    // progressHUD();
     final format = ThumbFormat.jpeg;
     var req = await gallerySelectedImage.thumbDataWithSize(600, 600, format: format);
     var tempDir = await getTemporaryDirectory();
