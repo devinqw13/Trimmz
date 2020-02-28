@@ -852,6 +852,11 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
     showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
       return AppointmentOptionsBottomSheet(
         appointment: appointment,
+        updateAppointments: (value) {
+          setState(() {
+            _events = value;
+          });
+        },
         showCancel: (val) async {
           if(val){
             showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
@@ -900,6 +905,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                 statusColor = Colors.green;
               }else if(_selectedEvents[i]['status'] == 2){
                 statusColor = Colors.red;
+              }else if(_selectedEvents[i]['status'] == 4){
+                statusColor = Colors.indigo;
               }
               return GestureDetector(
                 onTap: () {
@@ -929,7 +936,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                         borderRadius: BorderRadius.circular(50.0),
                                       ),
                                       child: Text(
-                                        statusColor == Colors.grey ? 'Pending' : statusColor == Colors.blue ? 'Upcoming' : statusColor == Colors.green ? 'Completed' : 'Cancelled',
+                                        statusColor == Colors.grey ? 'Pending' : statusColor == Colors.blue ? 'Upcoming' : statusColor == Colors.green ? 'Completed' : statusColor == Colors.indigo ? 'No-Show' : 'Cancelled',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold
                                         )
