@@ -93,12 +93,14 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
   markNoShow() async {
     var res = await getBarberPolicies(context, appointment['barberid']) ?? new BarberPolicies();
     if(res.noShowEnabled) {
-      var amountFee = res.noShowFee.contains('\$') ? res.noShowFee.split('\$')[1] : res.noShowFee.split('%')[0];
-      print(amountFee);
-      // if(res.noShowFee.contains('\$')){
-      //   var stringList = res.noShowFee.split('\$');
-      //   print(stringList);
-      // }
+      print(res.noShowFee);
+      if(res.noShowFee.contains('\$')){
+        var amountFee = res.noShowFee.split('\$')[1];
+        
+      }else {
+        var amountFee = res.noShowFee.split('%')[0];
+        
+      }
 
     }else {
       progressHUD();

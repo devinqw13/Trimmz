@@ -93,7 +93,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
           ),
           int.parse(user.id) != globals.token ? Container(
             padding: EdgeInsets.all(5),
-            color: Color.fromRGBO(0, 0, 0, 0.2),
+            color: Color.fromRGBO(0, 0, 0, 0.5),
             child: Column(
               children: <Widget> [
                 Row(
@@ -216,7 +216,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
             )
           ): Container(
             padding: EdgeInsets.all(5),
-            color: Color.fromRGBO(0, 0, 0, 0.2),
+            color: Color.fromRGBO(0, 0, 0, 0.5),
             child: Center(
               child: GestureDetector(
                 onTap: () async {
@@ -224,7 +224,12 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                 },
                 child: Container(
                   padding: EdgeInsets.all(5),
-                  child: Text('Edit Header')
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget> [
+                      Text('Edit Header')
+                    ]
+                  )
                 )
               )
             )
