@@ -41,7 +41,6 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
   void initState() {
     super.initState();
     user = widget.userInfo;
-    print(user.headerImage);
     policies = widget.barberPolicies ?? new BarberPolicies();
     setUserInfo();
   }
