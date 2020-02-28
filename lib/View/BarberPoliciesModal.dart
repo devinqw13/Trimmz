@@ -81,8 +81,19 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
         _noshowEnabled = policy.noShowEnabled;
       });
     }else {
-      //TODO: error when setting policies REDO THIS CALL
-      var res = await updateBarberPolicies(context, globals.token, _cancelFeeAmount.text != policy.cancelFee.replaceAll(new RegExp('[\$\\%]'), '') ? _cancelFeeAmount.text : null, _isCancelPercent != policy.cancelFee.contains('\%') ? _isCancelPercent : null, _cancelChargeTime.text != policy.cancelWithinTime.toString() ? int.parse(_cancelChargeTime.text) : null, _noShowFeeAmount.text != policy.noShowFee.replaceAll(new RegExp('[\$\\%]'), '') ? _noShowFeeAmount.text : null, _isNoShowPercent != policy.noShowFee.contains('\%') ? _isNoShowPercent : null, _cancellationEnabled != policy.cancelEnabled ? _cancellationEnabled : null, _noshowEnabled != policy.noShowEnabled ? _noshowEnabled : null);
+      var newCancelFee = _isCancelPercent ? '${_cancelFeeAmount.text}%' : '\$${_cancelFeeAmount.text}';
+      var newNoShowFee = _isNoShowPercent ? '${_noShowFeeAmount.text}%' : '\$${_noShowFeeAmount.text}';
+      var newCancelTime = int.parse(_cancelChargeTime.text);
+
+      var res = await updateBarberPolicies(
+        context, 
+        globals.token,
+        newCancelFee != policy.cancelFee ? newCancelFee : null,
+        newCancelTime != policy.cancelWithinTime ? newCancelTime : null,
+        newNoShowFee != policy.noShowFee ? newNoShowFee : null,
+        _cancellationEnabled != policy.cancelEnabled ? _cancellationEnabled : null,
+        _noshowEnabled != policy.noShowEnabled ? _noshowEnabled : null
+      );
 
       setState(() {
         policy = res;

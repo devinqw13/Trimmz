@@ -1639,7 +1639,7 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
   }
 }
 
-Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [String cancelFee, bool isCancelPercent, int cancelTime, String noShowFee, bool isNoShowPercent, bool cancelEnabled, bool noShowEnabled]) async {
+Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [String cancelFee, int cancelTime, String noShowFee, bool cancelEnabled, bool noShowEnabled]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Accept': 'application/json',
@@ -1653,7 +1653,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
   };
 
   if(cancelFee != null) {
-    jsonMap['cancelFee'] = isCancelPercent ? '$cancelFee%' : '\$$cancelFee';
+    jsonMap['cancelFee'] = '$cancelFee';
   }
   if(cancelTime != null) {
     jsonMap['cancelTime'] = cancelTime;
@@ -1665,7 +1665,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
     jsonMap['noShowEnabled'] = noShowEnabled == true ? 1 : 0;
   }
   if(noShowFee != null) {
-    jsonMap['noShowFee'] = isNoShowPercent ? '$noShowFee%' : '\$$noShowFee';
+    jsonMap['noShowFee'] = '$noShowFee';
   }
 
   String url = "${globals.baseUrl}updatePolicies/";
