@@ -19,8 +19,8 @@ void main() async {
   globals.baseUrl = "https://api.trimmz.app/";
   globals.baseUrlImage = "https://trimmz.s3.us-east-2.amazonaws.com/";
   globals.stripeURL = "https://api.stripe.com/v1/";
-  globals.stripeSecretKey = "sk_test_v867iJx7k2BI56g7y9pmPFS60073BdgDOz";
-  globals.stripePublishablekey = "pk_test_7UVBKGuzATDdteCuYSFPkGoY00jTaym2fZ";
+  globals.stripeSecretKey = "sk_live_W9HM81Ah3tqpz8GBKb9cA4my00eJMrVVLc";
+  globals.stripePublishablekey = "pk_live_S9zlIINJ6Q5IjPOy4ew7rymX00cYd4jpaI";
   globals.stripeMerchantId = "";
   //============================================//
   SharedPreferences prefs = await SharedPreferences.getInstance();
