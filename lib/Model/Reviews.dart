@@ -3,6 +3,7 @@ class BarberReviews {
   int barberId;
   int clientId;
   String clientName;
+  String clientProfilePicture;
   double rating;
   String comment;
   DateTime created;

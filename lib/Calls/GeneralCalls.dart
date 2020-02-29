@@ -1491,6 +1491,7 @@ Future<List<BarberReviews>> getUserReviews(BuildContext context, int userId) asy
         review.barberId = item['barber_id'];
         review.clientId = item['user_id'];
         review.clientName = item['client_name'];
+        review.clientProfilePicture = item['profile_picture'];
         review.comment = item['comment'];
         review.id = item['id'];
         review.rating = double.parse(item['rating'].toString());
@@ -1627,9 +1628,9 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(!apt.containsKey(date)) {
-        apt[date] = [{'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']}];
+        apt[date] = [{'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'profile_picture': item['profile_picture']}];
       }else {
-        apt[date].add({'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated']});
+        apt[date].add({'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'profile_picture': item['profile_picture']});
       }
     }
 

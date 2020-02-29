@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/View/Widgets.dart';
 import '../globals.dart' as globals;
 import '../Model/Reviews.dart';
 import 'package:line_icons/line_icons.dart';
@@ -199,18 +200,7 @@ class ReviewControllerState extends State<ReviewController> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Container(
-                          width: 50.0,
-                          height: 50.0,
-                          decoration: new BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.purple,
-                            gradient: new LinearGradient(
-                              colors: [Color(0xFFF9F295), Color(0xFFB88A44)],
-                            )
-                          ),
-                          child: Center(child: Text(reviews[i].clientName.substring(0,1), style: TextStyle(fontSize: 20)))
-                        ),
+                        buildProfilePictures(context, reviews[i].clientProfilePicture, reviews[i].clientName, 25),
                         Padding(padding: EdgeInsets.all(5)),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/View/Widgets.dart';
 import '../globals.dart' as globals;
 import 'package:line_icons/line_icons.dart';
 import '../Calls/GeneralCalls.dart';
@@ -39,9 +40,9 @@ class AppointmentListState extends State<AppointmentList> {
 
     res.forEach((key, value) {
       for(var item in value) {
-        if(item['status'] == '3' || (item['status'] == '0' && DateTime.now().isAfter(DateTime.parse(item['full_time'])))){
+        if(item['status'] == 3 || (item['status'] == 0 && DateTime.now().isAfter(DateTime.parse(item['full_time'])))){
           pending.add(item);
-        }else if(item['status'] == '0' && DateTime.now().isBefore(DateTime.parse(item['full_time']))) {
+        }else if(item['status'] == 0 && DateTime.now().isBefore(DateTime.parse(item['full_time']))) {
           upcoming.add(item);
         }else {
           past.add(item);
@@ -105,17 +106,23 @@ class AppointmentListState extends State<AppointmentList> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              upcoming[i]['barber_name'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
+                        Row(
+                          children: <Widget> [
+                            buildProfilePictures(context, upcoming[i]['profile_picture'], upcoming[i]['barber_name'], 25),
+                            Padding(padding: EdgeInsets.all(5)),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  upcoming[i]['barber_name'],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
+                                Text(upcoming[i]['package']),
+                                Text('\$'+(upcoming[i]['price'] + upcoming[i]['tip']).toString())
+                              ]
                             ),
-                            Text(upcoming[i]['package']),
-                            Text('\$'+(int.parse(upcoming[i]['price']) + int.parse(upcoming[i]['tip'])).toString())
                           ]
                         ),
                         Column(
@@ -169,16 +176,16 @@ class AppointmentListState extends State<AppointmentList> {
               shrinkWrap: true,
               itemBuilder: (context, i) {
                 Color statusColor;
-                if(pending[i]['status'] == '0'){
+                if(pending[i]['status'] == 0){
                   var time = pending[i]['full_time'];
                   if(DateTime.now().isAfter(DateTime.parse(time))) {
                     statusColor = Colors.grey;
                   }else {
                     statusColor = Colors.blue;
                   }
-                }else if(pending[i]['status'] == '1'){
+                }else if(pending[i]['status'] == 1){
                   statusColor = Colors.green;
-                }else if(pending[i]['status'] == '2'){
+                }else if(pending[i]['status'] == 2){
                   statusColor = Colors.red;
                 }else {
                   statusColor = Colors.grey;
@@ -200,17 +207,23 @@ class AppointmentListState extends State<AppointmentList> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              pending[i]['barber_name'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
+                        Row(
+                          children: <Widget> [
+                            buildProfilePictures(context, pending[i]['profile_picture'], pending[i]['barber_name'], 25),
+                            Padding(padding: EdgeInsets.all(5)),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  pending[i]['barber_name'],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
+                                Text(pending[i]['package']),
+                                Text('\$'+(pending[i]['price'] + pending[i]['tip']).toString())
+                              ]
                             ),
-                            Text(pending[i]['package']),
-                            Text('\$'+(int.parse(pending[i]['price']) + int.parse(pending[i]['tip'])).toString())
                           ]
                         ),
                         Column(
@@ -264,16 +277,16 @@ class AppointmentListState extends State<AppointmentList> {
               shrinkWrap: true,
               itemBuilder: (context, i) {
                 Color statusColor;
-                if(past[i]['status'] == '0'){
+                if(past[i]['status'] == 0){
                   var time = past[i]['full_time'];
                   if(DateTime.now().isAfter(DateTime.parse(time))) {
                     statusColor = Colors.grey;
                   }else {
                     statusColor = Colors.blue;
                   }
-                }else if(past[i]['status'] == '1'){
+                }else if(past[i]['status'] == 1){
                   statusColor = Colors.green;
-                }else if(past[i]['status'] == '2'){
+                }else if(past[i]['status'] == 2){
                   statusColor = Colors.red;
                 }
                 return new GestureDetector(
@@ -293,17 +306,23 @@ class AppointmentListState extends State<AppointmentList> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              past[i]['barber_name'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
+                        Row(
+                          children: <Widget> [
+                            buildProfilePictures(context, past[i]['profile_picture'], past[i]['barber_name'], 25),
+                            Padding(padding: EdgeInsets.all(5)),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  past[i]['barber_name'],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
+                                Text(past[i]['package']),
+                                Text('\$'+(past[i]['price'] + past[i]['tip']).toString())
+                              ]
                             ),
-                            Text(past[i]['package']),
-                            Text('\$'+(past[i]['price'] + past[i]['tip']).toString())
                           ]
                         ),
                         Column(

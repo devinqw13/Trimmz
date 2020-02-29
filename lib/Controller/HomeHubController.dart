@@ -223,6 +223,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                   barber.state = searchedBarbers[i].state;
                   barber.zipcode = searchedBarbers[i].zipcode;
                   barber.profilePicture = suggestedBarbers[i].profilePicture;
+                  barber.headerImage = suggestedBarbers[i].headerImage;
                   final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                 },
@@ -366,6 +367,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                 barber.state = suggestedBarbers[i].state;
                 barber.zipcode = suggestedBarbers[i].zipcode;
                 barber.profilePicture = suggestedBarbers[i].profilePicture;
+                barber.headerImage = suggestedBarbers[i].headerImage;
                 final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                 Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
               },
