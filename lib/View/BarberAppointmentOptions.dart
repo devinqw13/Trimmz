@@ -101,7 +101,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
         var amountFee = res.noShowFee.split('%')[0];
         
       }
-
     }else {
       progressHUD();
       var res = await updateAppointmentStatus(context, appointment['id'], 4);
