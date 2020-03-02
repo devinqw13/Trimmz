@@ -1119,7 +1119,7 @@ Future<Map> updateSettings(BuildContext context, int userid, int type, [String n
   }
 }
 
-Future<Map> updateBarberSettings(BuildContext context, int userid, [String shopName, String address, String state, String city]) async {
+Future<Map> updateBarberSettings(BuildContext context, int userid, [String shopName, String address, String state, String city, int zipcode]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Accept': 'application/json',
@@ -1128,13 +1128,25 @@ Future<Map> updateBarberSettings(BuildContext context, int userid, [String shopN
   Map jsonResponse = {};
   http.Response response;
 
-  var jsonMap = {
+  Map jsonMap = {
     "token" : userid,
-    "shop_name": shopName != null ? shopName : null,
-    "address": address != null ? address : null,
-    "city": city != null ? city : null,
-    "state": state != null ? state : null
   };
+
+  if(shopName != null) {
+    jsonMap["shop_name"] = shopName;
+  }
+  if(address != null) {
+    jsonMap["address"] = address;
+  }
+  if(city != null) {
+    jsonMap["city"] = city;
+  }
+  if(state != null) {
+    jsonMap["state"] = state;
+  }
+  if(zipcode != null) {
+    jsonMap["zipcode"] = zipcode;
+  }
 
   String url = "${globals.baseUrl}updateBarberSettings/";
 

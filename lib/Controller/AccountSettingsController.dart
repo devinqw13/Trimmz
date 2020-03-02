@@ -554,8 +554,8 @@ class AccountSettingsState extends State<AccountSettings> {
         var res = await validateAddress('${_streetAddressController.text}, ${_cityController.text}, $stateAbr');
         if(res){
           Map result = await updateBarberSettings(context, globals.token, shopNameChanged ? _shopNameController.text : null, addressChanged ? _streetAddressController.text : null, stateChanged ? stateAbr : null, cityChanged ? _cityController.text : null);
-          if(result['error'] == false && result['user'].length > 0) {
-            setGlobals(result);
+          if(result['error'] == 'false' && result['user']['user'].length > 0) {
+            setGlobals(result['user']);
             progressHUD();
             Flushbar(
               flushbarPosition: FlushbarPosition.BOTTOM,
