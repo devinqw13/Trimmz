@@ -1843,11 +1843,11 @@ Future<List<Notifications>> getUnreadNotifications(BuildContext context, int use
     List<Notifications> notifications = [];
     for(var item in jsonResponse['notifications']) {
       Notifications notify = new Notifications();
-      notify.from = int.parse(item['from']);
-      notify.recipient = int.parse(item['recipient']);
+      notify.from = item['from'];
+      notify.recipient = item['recipient'];
       notify.title = item['title'];
       notify.message = item['message'];
-      notify.read = int.parse(item['read']) == 0 ? false : true;
+      notify.read = item['read'] == 0 ? false : true;
       notify.created = item['created'];
 
       notifications.add(notify);
@@ -1892,11 +1892,11 @@ Future<List<Notifications>> getAllNotifications(BuildContext context, int userId
     List<Notifications> notifications = [];
     for(var item in jsonResponse['notifications']) {
       Notifications notify = new Notifications();
-      notify.from = int.parse(item['from']);
-      notify.recipient = int.parse(item['recipient']);
+      notify.from = item['from'];
+      notify.recipient = item['recipient'];
       notify.title = item['title'];
       notify.message = item['message'];
-      notify.read = int.parse(item['read']) == 0 ? false : true;
+      notify.read = item['read'] == 0 ? false : true;
       notify.created = item['created'];
 
       notifications.add(notify);

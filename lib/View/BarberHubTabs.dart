@@ -381,8 +381,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                   barber.city = searchedBarbers[i].city;
                   barber.state = searchedBarbers[i].state;
                   barber.zipcode = searchedBarbers[i].zipcode;
-                  barber.profilePicture = suggestedBarbers[i].profilePicture;
-                  barber.headerImage = suggestedBarbers[i].headerImage;
+                  barber.profilePicture = searchedBarbers[i].profilePicture;
+                  barber.headerImage = searchedBarbers[i].headerImage;
                   // barber.created = suggestedBarbers[i].created;
                   final profileScreen = new BarberProfileV2Screen(token: globals.token, userInfo: barber, barberPolicies: res);
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
@@ -396,7 +396,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                         subtitle: new Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            searchedBarbers[i].shopName != null ?
+                            searchedBarbers[i].shopName != null && searchedBarbers[i].shopName != '' ?
                             Text(
                               searchedBarbers[i].shopName,
                               style: TextStyle(
@@ -542,7 +542,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                         subtitle: new Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            suggestedBarbers[i].shopName != null ?
+                            suggestedBarbers[i].shopName != null && suggestedBarbers[i].shopName != '' ?
                             Text(
                               suggestedBarbers[i].shopName,
                               style: TextStyle(
