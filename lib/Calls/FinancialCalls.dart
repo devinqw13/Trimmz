@@ -462,7 +462,7 @@ Future<Map> spPayout(BuildContext context, int amount, String payoutId, String a
 
 Future<bool> spChargeCard(BuildContext context, int total, String paymentId, String customerId, String cusEmail) async {
   var chargeTotal = (total + 1) * 100;
-  double dbl = globals.spPayoutMethod == 'standard' ? 0.025 : 0.03;
+  double dbl = globals.spPayoutMethod == 'standard' ? globals.stdRateFee : globals.intRateFee;
   var payoutTotal = int.parse(((double.parse(total.toString()) - num.parse((double.parse(total.toString()) * dbl).toStringAsFixed(2))) * 100).toStringAsFixed(0));
 
   var res = await spCreatePaymentIntent(context, paymentId, customerId, chargeTotal.toString(), cusEmail);

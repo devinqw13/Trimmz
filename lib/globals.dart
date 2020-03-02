@@ -3,6 +3,8 @@ import 'package:geolocator/geolocator.dart';
 
 String baseUrl = "";
 String baseUrlImage = "";
+double stdRateFee = 0.028;
+double intRateFee = 0.032;
 int token;
 String username;
 String name;

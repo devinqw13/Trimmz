@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../globals.dart' as globals;
 
 showPayoutInfoModalSheet(BuildContext context) async {
   showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, builder: (builder) {
@@ -34,7 +35,7 @@ showPayoutInfoModalSheet(BuildContext context) async {
                             text: new TextSpan(
                               children: <TextSpan>[
                                 new TextSpan(text: 'Standard Transfer: ', style: new TextStyle(fontWeight: FontWeight.bold)),
-                                new TextSpan(text: 'The standard transfer fee is 2.5% of the appointment amount. Standard transfer usually takes about 1-3 business days to deposit.'),
+                                new TextSpan(text: 'The standard transfer fee is ${(globals.stdRateFee * 100).toStringAsFixed(1)}% of the appointment amount. Standard transfer usually takes about 1-3 business days to deposit.'),
                               ],
                             ),
                           ),
@@ -47,7 +48,7 @@ showPayoutInfoModalSheet(BuildContext context) async {
                             text: new TextSpan(
                               children: <TextSpan>[
                                 new TextSpan(text: 'Instant Transfer: ', style: new TextStyle(fontWeight: FontWeight.bold)),
-                                new TextSpan(text: 'The instant transfer fee is 3% of the appointment amount.'),
+                                new TextSpan(text: 'The instant transfer fee is ${(globals.intRateFee * 100).toStringAsFixed(1)}% of the appointment amount.'),
                               ],
                             ),
                           ),

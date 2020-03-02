@@ -41,9 +41,9 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
       text: 'Loading...'
     );
 
-    standardBarberPrice = (((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) - num.parse(((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .025).toStringAsFixed(2))) * 100).toStringAsFixed(0);
+    standardBarberPrice = (((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) - num.parse(((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * globals.stdRateFee).toStringAsFixed(2))) * 100).toStringAsFixed(0);
 
-    instantBarberPrice = (((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) - num.parse(((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .03).toStringAsFixed(2))) * 100).toStringAsFixed(0);
+    instantBarberPrice = (((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) - num.parse(((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * globals.intRateFee).toStringAsFixed(2))) * 100).toStringAsFixed(0);
     super.initState();
   }
 
@@ -256,15 +256,15 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
                                           Text(
-                                            globals.spPayoutMethod == 'standard' ? 'Fees (2.5%)' : 'Fees (3%)',
+                                            globals.spPayoutMethod == 'standard' ? 'Fees (${(globals.stdRateFee * 100).toStringAsFixed(1)}%)' : 'Fees (${(globals.intRateFee * 100).toStringAsFixed(1)}%)',
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.grey
                                             )
                                           ),
                                           Text(
-                                            globals.spPayoutMethod == 'standard' ? '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .025).toStringAsFixed(2) :
-                                            '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * .03).toStringAsFixed(2),
+                                            globals.spPayoutMethod == 'standard' ? '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * globals.stdRateFee).toStringAsFixed(2) :
+                                            '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * globals.intRateFee).toStringAsFixed(2),
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.grey
