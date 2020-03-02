@@ -1567,13 +1567,13 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                             ),
                             Row(
                               children: <Widget>[
-                                buildTimeAgo(feedItems[i].created.toString()),
-                                IconButton(
-                                  onPressed: () {
+                                buildTimeAgo(feedItems[i].created.toLocal().toString()),
+                                // IconButton(
+                                //   onPressed: () {
 
-                                  },
-                                  icon: Icon(Icons.more_horiz)
-                                )
+                                //   },
+                                //   icon: Icon(Icons.more_horiz)
+                                // )
                               ]
                             )
                           ]

@@ -246,13 +246,13 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                             ),
                             Row(
                               children: <Widget>[
-                                buildTimeAgo(feedItems[i].created.toString()),
-                                IconButton(
-                                  onPressed: () {
+                                buildTimeAgo(feedItems[i].created.toLocal().toString()),
+                                // IconButton(
+                                //   onPressed: () {
 
-                                  },
-                                  icon: Icon(Icons.more_horiz)
-                                )
+                                //   },
+                                //   icon: Icon(Icons.more_horiz)
+                                // )
                               ]
                             )
                           ]

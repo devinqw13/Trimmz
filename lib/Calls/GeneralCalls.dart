@@ -2238,7 +2238,14 @@ Future<List<FeedItem>> getPosts(BuildContext context, int userId, int type) asyn
       feedItem.imageUrl = '${globals.baseUrlImage}${item['url']}';
       feedItem.name = item['name'];
       feedItem.username = item['username'];
-      feedItem.created = DateTime.parse(item['created']);
+      feedItem.created = DateTime.utc(
+                          DateTime.parse(item['created']).year,
+                          DateTime.parse(item['created']).month,
+                          DateTime.parse(item['created']).day,
+                          DateTime.parse(item['created']).hour,
+                          DateTime.parse(item['created']).minute,
+                          DateTime.parse(item['created']).second
+                        );
       feedItem.caption = item['caption'];
       feedItem.profilePic = item['profile_picture'];
       feed.add(feedItem);
