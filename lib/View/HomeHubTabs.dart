@@ -261,7 +261,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                     ]
                   ),
                   Padding(padding: EdgeInsets.all(5)),
-                  feedItems[i].caption != null &&  feedItems[i].caption != null ? Container(
+                  feedItems[i].caption != null && feedItems[i].caption != '' ? Container(
                     padding: EdgeInsets.only(left: 10, right: 10),
                     child: RichText(
                       softWrap: true,
