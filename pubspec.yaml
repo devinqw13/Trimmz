@@ -28,7 +28,9 @@ dependencies:
   expandable: ^3.0.0+1
   badges: ^1.1.0
   flutter_rating_bar: ^3.0.0
-  flushbar: ^1.9.0
+  # flushbar: ^1.9.0
+  flushbar:
+    git: https://github.com/valterh4ck3r/flushbar
   table_calendar: ^2.1.0
   flutter_time_picker_spinner: ^1.0.6
   flutter_launcher_icons: ^0.7.4
