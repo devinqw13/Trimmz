@@ -123,6 +123,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
   showBookingSuccess(Map message) {
     return Flushbar(
       flushbarPosition: FlushbarPosition.BOTTOM,
+      flushbarStyle: FlushbarStyle.GROUNDED,
       title: "Appointment Requested",
       message: "Your appointment has been requested.",
       duration: Duration(seconds: 2),
@@ -284,6 +285,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                               });
                               Flushbar(
                                 flushbarPosition: FlushbarPosition.BOTTOM,
+                                flushbarStyle: FlushbarStyle.GROUNDED,
                                 title: "Barber Added",
                                 message: "You can now book an appointment with this barber",
                                 duration: Duration(seconds: 2),
@@ -302,6 +304,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                               });
                               Flushbar(
                                 flushbarPosition: FlushbarPosition.BOTTOM,
+                                flushbarStyle: FlushbarStyle.GROUNDED,
                                 title: "Barber Removed",
                                 message: "This babrber has been removed from your list",
                                 duration: Duration(seconds: 2),
@@ -425,6 +428,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                           if(res) {
                             Flushbar(
                               flushbarPosition: FlushbarPosition.BOTTOM,
+                              flushbarStyle: FlushbarStyle.GROUNDED,
                               title: "Barber Added",
                               message: "You can now book an appointment with this barber",
                               duration: Duration(seconds: 2),
@@ -443,6 +447,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                           if(res) {
                             Flushbar(
                               flushbarPosition: FlushbarPosition.BOTTOM,
+                              flushbarStyle: FlushbarStyle.GROUNDED,
                               title: "Barber Removed",
                               message: "This babrber has been removed from your list",
                               duration: Duration(seconds: 2),

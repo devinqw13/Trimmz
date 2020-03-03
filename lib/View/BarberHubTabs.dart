@@ -444,6 +444,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                               });
                               Flushbar(
                                 flushbarPosition: FlushbarPosition.BOTTOM,
+                                flushbarStyle: FlushbarStyle.GROUNDED,
                                 title: "Barber Added",
                                 message: "You can now book an appointment with this barber",
                                 duration: Duration(seconds: 2),
@@ -462,6 +463,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                               });
                               Flushbar(
                                 flushbarPosition: FlushbarPosition.BOTTOM,
+                                flushbarStyle: FlushbarStyle.GROUNDED,
                                 title: "Barber Removed",
                                 message: "This babrber has been removed from your list",
                                 duration: Duration(seconds: 2),
@@ -587,6 +589,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                             if(res) {
                               Flushbar(
                                 flushbarPosition: FlushbarPosition.BOTTOM,
+                                flushbarStyle: FlushbarStyle.GROUNDED,
                                 title: "Barber Added",
                                 message: "You can now book an appointment with this barber",
                                 duration: Duration(seconds: 2),
@@ -605,6 +608,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                             if(res) {
                               Flushbar(
                                 flushbarPosition: FlushbarPosition.BOTTOM,
+                                flushbarStyle: FlushbarStyle.GROUNDED,
                                 title: "Barber Removed",
                                 message: "This babrber has been removed from your list",
                                 duration: Duration(seconds: 2),

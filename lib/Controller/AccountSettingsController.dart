@@ -459,6 +459,7 @@ class AccountSettingsState extends State<AccountSettings> {
           if(result){
             Flushbar(
               flushbarPosition: FlushbarPosition.BOTTOM,
+              flushbarStyle: FlushbarStyle.GROUNDED,
               title: "Password Changed",
               message: "Your password was succesfully changed.",
               duration: Duration(seconds: 5),
@@ -532,6 +533,7 @@ class AccountSettingsState extends State<AccountSettings> {
         progressHUD();
         Flushbar(
           flushbarPosition: FlushbarPosition.BOTTOM,
+          flushbarStyle: FlushbarStyle.GROUNDED,
           title: "Account Updated",
           message: "Your account has been updated.",
           duration: Duration(seconds: 3),
@@ -559,6 +561,7 @@ class AccountSettingsState extends State<AccountSettings> {
             progressHUD();
             Flushbar(
               flushbarPosition: FlushbarPosition.BOTTOM,
+              flushbarStyle: FlushbarStyle.GROUNDED,
               title: "Account Updated",
               message: "Your account has been updated.",
               duration: Duration(seconds: 3),

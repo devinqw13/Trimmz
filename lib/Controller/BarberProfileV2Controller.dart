@@ -106,6 +106,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                           if(res) {
                             Flushbar(
                               flushbarPosition: FlushbarPosition.BOTTOM,
+                              flushbarStyle: FlushbarStyle.GROUNDED,
                               title: "Barber Added",
                               message: "You can now book an appointment with this barber",
                               duration: Duration(seconds: 2),
@@ -119,6 +120,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                           if(res) {
                             Flushbar(
                               flushbarPosition: FlushbarPosition.BOTTOM,
+                              flushbarStyle: FlushbarStyle.GROUNDED,
                               title: "Barber Removed",
                               message: "This barber has been removed from your list",
                               duration: Duration(seconds: 2),
