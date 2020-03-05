@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>359276155405-u1a0vadjamahvcukk6o26e0rq8b8t5p5.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.359276155405-u1a0vadjamahvcukk6o26e0rq8b8t5p5</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD7_r1KKER5y77yPDkAgNg5oZcKMXPzu0U</string>
+	<key>GCM_SENDER_ID</key>
+	<string>359276155405</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.trimmz</string>
+	<key>PROJECT_ID</key>
+	<string>trimmz-63a11</string>
+	<key>STORAGE_BUCKET</key>
+	<string>trimmz-63a11.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:359276155405:ios:dac366df8f69c793d4bb44</string>
+	<key>DATABASE_URL</key>
+	<string>https://trimmz-63a11.firebaseio.com</string>
+</dict>
+</plist>
