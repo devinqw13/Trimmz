@@ -130,10 +130,12 @@ packages:
   flushbar:
     dependency: "direct main"
     description:
-      name: flushbar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.9.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: "681425d7e1177dbd714c13af5460ee4e836edac9"
+      url: "https://github.com/valterh4ck3r/flushbar"
+    source: git
+    version: "1.9.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -219,13 +221,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.4"
-  image_picker:
-    dependency: "direct main"
-    description:
-      name: image_picker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.2+3"
   intl:
     dependency: transitive
     description:
@@ -310,6 +305,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.8"
+  photo_view:
+    dependency: "direct main"
+    description:
+      name: photo_view
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.2"
   platform:
     dependency: transitive
     description:

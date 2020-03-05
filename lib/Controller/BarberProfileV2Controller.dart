@@ -19,6 +19,7 @@ import 'dart:io';
 import '../Model/FeedItems.dart';
 import 'package:camera/camera.dart';
 import 'AddImageController.dart';
+import '../View/ImageViewer.dart';
 
 class BarberProfileV2Screen extends StatefulWidget {
   final token;
@@ -468,7 +469,9 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
 
   _buildGridTile(var item) {
     return new GestureDetector(
-      onTap: () {},
+      onTap: () {
+        showImageDialog(context, item.imageUrl);
+      },
       child: Container(
         child: new Column(
           children: <Widget>[
