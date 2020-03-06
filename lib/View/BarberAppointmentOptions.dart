@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:trimmz/Calls/FinancialCalls.dart';
 import 'package:trimmz/Model/BarberPolicies.dart';
 import '../Calls/FinancialCalls.dart';
+import '../functions.dart';
 import '../globals.dart' as globals;
 import '../Calls/GeneralCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
@@ -111,18 +112,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
           appointment['status'] = 4;
         });
         List tokens = await getNotificationTokens(context, appointment['clientid']);
-        for(var token in tokens){
-          Map<String, dynamic> dataMap =  {
-            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-            'action': 'APPOINTMENT',
-            'title': 'No-Show Appointment',
-            'body': '${globals.username} has marked your appointment as a no-show',
-            'sender': '${globals.token}',
-            'recipient': '${appointment['clientid']}',
-            'appointment': appointment,
-          };
-          await sendPushNotification(context, 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', appointment['clientid'], token, dataMap);
-        }
+        sendNotifications(context, tokens, appointment['clientid'], 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', 'APPOINTMENT', appointment, 'appointment');
       }
       progressHUD();
     }

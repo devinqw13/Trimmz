@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
+import 'Calls/GeneralCalls.dart';
 
 final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
@@ -186,5 +187,20 @@ validateAddress(String address) async {
   } on Exception {
     print(Exception);
     return false;
+  }
+}
+
+sendNotifications(BuildContext context, List tokens, int recipient, String title, String body, [String action, var content, var contentName]) async {
+  for(var token in tokens){
+    Map<String, dynamic> dataMap =  {
+      'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+      'action': action,
+      'title': title,
+      'body': body,
+      'sender': '${globals.token}',
+      'recipient': '$recipient',
+      '$contentName': content,
+    };
+    await sendPushNotification(context, title, body, recipient, token, dataMap);
   }
 }
