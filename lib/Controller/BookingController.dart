@@ -829,13 +829,13 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: <Widget> [
                               Text(
-                                '\$' + (finalTip + finalPackagePrice + 1).toString(),
+                                '\$' + (finalTip + finalPackagePrice + globals.cusProcessFee).toStringAsFixed(2),
                                 style: TextStyle(
                                   fontSize: 25.0
                                 )
                               ),
                               Text(
-                                'Includes Tip + Processing Fee: \$1.00',
+                                'Includes Tip + Processing Fee: \$${globals.cusProcessFee.toStringAsFixed(2)}',
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 12
