@@ -79,17 +79,6 @@ class SendAnnoucementState extends State<SendAnnoucement> {
     for(var item in recipients) {
       List tokens = await getNotificationTokens(context, item['id']);
       sendNotifications(context, tokens, item['id'], '${globals.username}', '$message', 'BOOK_APPOINTMENT');
-      // for(var token in tokens){
-      //   Map<String, dynamic> dataMap =  {
-      //     'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-      //     'action': 'BOOK_APPOINTMENT',
-      //     'title': '${globals.username}',
-      //     'body': '$message',
-      //     'sender': '${globals.token}',
-      //     'recipient': '$token',
-      //   };
-      //   await sendPushNotification(context, '${globals.username}', '$message', item['id'], token, dataMap);
-      // }
     }
     progressHUD();
 
