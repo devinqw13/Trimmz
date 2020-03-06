@@ -158,7 +158,15 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
           }
         }
       },
+      onBackgroundMessage: myBackgroundMessageHandler
     );
+  }
+
+  Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
+    var res = await submitNotification(context, int.parse(message['sender']), int.parse(message['recipient']), message['notification']['title'], message['notification']['body']);
+    if(res) {
+      checkNotificiations();
+    }
   }
 
   void iOSPermission() {
