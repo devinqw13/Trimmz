@@ -5,6 +5,7 @@ String baseUrl = "";
 String baseUrlImage = "";
 double stdRateFee = 0.028;
 double intRateFee = 0.032;
+double cusProcessFee = 1.00;
 int token;
 String username;
 String name;

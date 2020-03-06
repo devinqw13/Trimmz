@@ -557,7 +557,7 @@ Future<bool> spChargeCard(BuildContext context, int total, String paymentId, Str
   var chargeTotal = (total + 1) * 100;
   double dbl = globals.spPayoutMethod == 'standard' ? globals.stdRateFee : globals.intRateFee;
   // var payoutTotal = int.parse(((double.parse(total.toString()) - num.parse((double.parse(total.toString()) * dbl).toStringAsFixed(2))) * 100).toStringAsFixed(0));
-  var appFee = ((double.parse(total.toString()) * dbl) * 100).toStringAsFixed(0);
+  var appFee = (((double.parse(total.toString()) * dbl) + globals.cusProcessFee) * 100).toStringAsFixed(0);
 
   //Charge client directly through connected account (barber)
   var res = await spDirectPay(context, paymentId, customerId, chargeTotal.toString(), cusEmail, appFee.toString());
