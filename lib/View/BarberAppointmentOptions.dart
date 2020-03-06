@@ -92,9 +92,9 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
   }
 
   markNoShow() async {
+    progressHUD();
     var res = await getBarberPolicies(context, appointment['barberid']) ?? new BarberPolicies();
     if(res.noShowEnabled) {
-      print(res.noShowFee);
       if(res.noShowFee.contains('\$')){
         var amountFee = res.noShowFee.split('\$')[1];
         
@@ -103,7 +103,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
         
       }
     }else {
-      progressHUD();
       var res = await updateAppointmentStatus(context, appointment['id'], 4);
       if(res) {
         var res1 = await getBarberAppointments(context, globals.token);
@@ -111,11 +110,11 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
         setState(() {
           appointment['status'] = 4;
         });
-        List tokens = await getNotificationTokens(context, appointment['clientid']);
-        sendNotifications(context, tokens, appointment['clientid'], 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', 'APPOINTMENT', appointment, 'appointment');
       }
-      progressHUD();
     }
+    List tokens = await getNotificationTokens(context, appointment['clientid']);
+    sendNotifications(context, tokens, appointment['clientid'], 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', 'APPOINTMENT', appointment, 'appointment');
+    progressHUD();
   }
 
   @override
