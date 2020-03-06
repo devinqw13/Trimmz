@@ -81,12 +81,12 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
           new Center(
             child: new ClipRect(
               child: new BackdropFilter(
-                filter: new ImageFilter.blur(sigmaX: 1.0, sigmaY: 1.0),
+                filter: new ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
                 child: new Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.width * .6,
                   decoration: new BoxDecoration(
-                    color: Colors.black.withOpacity(0.4)
+                    color: Colors.black.withOpacity(0.2)
                   ),
                 ),
               ),
