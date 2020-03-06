@@ -1,10 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../dialogs.dart';
 import '../globals.dart' as globals;
 import 'package:progress_hud/progress_hud.dart';
 import 'package:line_icons/line_icons.dart';
 import '../View/ModalSheets.dart';
-// import 'package:stripe_payment/stripe_payment.dart';
 import 'package:credit_card_type_detector/credit_card_type_detector.dart';
 import '../View/TextFieldFormatter.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +13,7 @@ import '../View/DatePicker.dart';
 import 'package:intl/intl.dart';
 import '../Calls/GeneralCalls.dart';
 import 'MobileTransactionsController.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MobileTransactionSetup extends StatefulWidget {
   MobileTransactionSetup({Key key}) : super (key: key);
@@ -36,9 +37,17 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
   String _payoutMethod = 'standard';
   var type = CreditCardType.unknown;
   String dob = '';
+  TapGestureRecognizer _serviceRecognizer;
+  TapGestureRecognizer _connectRecognizer;
 
   void initState() {
     super.initState();
+    _serviceRecognizer = TapGestureRecognizer()
+      ..onTap = goToServiceAgreement;
+
+    _connectRecognizer = TapGestureRecognizer()
+      ..onTap = goToConnectAgreement;
+
     _progressHUD = new ProgressHUD(
       color: Colors.white,
       containerColor: Color.fromRGBO(21, 21, 21, 0.4),
@@ -46,6 +55,24 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
       loading: false,
       text: 'Loading...'
     );
+  }
+
+  void goToServiceAgreement() async {
+    String url = 'https://stripe.com/legal';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch';
+    }
+  }
+
+  void goToConnectAgreement() async {
+    String url = 'https://stripe.com/connect-account/legal';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch';
+    }
   }
 
   void progressHUD() {
@@ -445,9 +472,9 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
           text: new TextSpan(
             children: <TextSpan>[
               new TextSpan(text: 'By clicking \'submit\', you agree to '),
-              new TextSpan(text: 'Stripe Services Agreement ', style: TextStyle(color: Colors.blue)),
+              new TextSpan(text: 'Stripe Services Agreement ', style: TextStyle(color: Colors.blue), recognizer: _serviceRecognizer),
               new TextSpan(text: 'and the '),
-              new TextSpan(text: 'Stripe Connected Account Agreement', style: TextStyle(color: Colors.blue)),
+              new TextSpan(text: 'Stripe Connected Account Agreement', style: TextStyle(color: Colors.blue), recognizer: _connectRecognizer),
             ],
           ),
         ),
