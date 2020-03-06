@@ -556,38 +556,24 @@ Future<Map> spPayout(BuildContext context, int amount, String payoutId, String a
 Future<bool> spChargeCard(BuildContext context, int total, String paymentId, String customerId, String cusEmail) async {
   var chargeTotal = (total + 1) * 100;
   double dbl = globals.spPayoutMethod == 'standard' ? globals.stdRateFee : globals.intRateFee;
-  // var payoutTotal = int.parse(((double.parse(total.toString()) - num.parse((double.parse(total.toString()) * dbl).toStringAsFixed(2))) * 100).toStringAsFixed(0));
+  var payoutTotal = int.parse(((double.parse(total.toString()) - num.parse((double.parse(total.toString()) * dbl).toStringAsFixed(2))) * 100).toStringAsFixed(0));
   var appFee = (((double.parse(total.toString()) * dbl) + globals.cusProcessFee) * 100).toStringAsFixed(0);
 
-  //Charge client directly through connected account (barber)
   var res = await spDirectPay(context, paymentId, customerId, chargeTotal.toString(), cusEmail, appFee.toString());
   if(res.length > 0) {
-    return true;
+    if(globals.spPayoutMethod == 'instant') {
+      var res3 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
+      if(res3.length > 0){
+        return true;
+      }else {
+        return false;
+      }
+    }else {
+      return true;
+    }
   }else {
     return false;
   }
-
-  // Charge client and then transfer calculated compensation to barber
-  // var res = await spCreatePaymentIntent(context, paymentId, customerId, chargeTotal.toString(), cusEmail);
-  // if(res.length > 0) {
-  //   var res2 = await spTransferToConnectAccount(context, payoutTotal, globals.spAccountId);
-  //   if(res2.length > 0) {
-  //     if(globals.spPayoutMethod == 'instant') {
-  //       var res3 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
-  //       if(res3.length > 0){
-  //         return true;
-  //       }else {
-  //         return false;
-  //       }
-  //     }else {
-  //       return true;
-  //     }
-  //   }else {
-  //     return false;
-  //   }
-  // }else {
-  //   return false;
-  // }
 }
 
 Future<dynamic> spGetAccountPayoutCard(BuildContext context, String accountId, String payoutId) async {
