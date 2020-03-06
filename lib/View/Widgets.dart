@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../Calls/FinancialCalls.dart';
 import '../Controller/MobileTransactionSetup.dart';
 import 'package:trimmz/Controller/ReviewController.dart';
 import '../CustomCupertinoSettings.dart';
@@ -31,6 +32,10 @@ logout(BuildContext context) async {
 
 settingsWidget(BuildContext context) {
   CupertinoSettings settings = new CupertinoSettings(<Widget>[
+    // new CSLink('TESTING', () async {
+    //   var res = await spCaptureCharge(context, 'pi_1GJjV1KkfPGAYb3BEliaidPm');
+    // }),
+    
     new CSHeader('Account'),
     new CSLink('Account Settings', () async {
       final accountSettingsScreen = new AccountSettings();

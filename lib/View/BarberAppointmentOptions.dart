@@ -77,7 +77,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
             'recipient': '$barberId',
             'appointment': appointment,
           };
-          await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled their appointment with you.', int.parse(appointment['clientid']), token, dataMap);
+          await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled their appointment with you.', appointment['clientid'], token, dataMap);
         }
         setState(() {
           appointment['updated'] = DateTime.now().toString();
@@ -121,7 +121,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
             'recipient': '${appointment['clientid']}',
             'appointment': appointment,
           };
-          await sendPushNotification(context, 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', int.parse(appointment['clientid']), token, dataMap);
+          await sendPushNotification(context, 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', appointment['clientid'], token, dataMap);
         }
       }
       progressHUD();
@@ -333,7 +333,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                                 'recipient': '${appointment['clientid']}',
                                                                 'appointment': appointment,
                                                               };
-                                                              await sendPushNotification(context, 'Appointment Completed', '${globals.username} has completed your appointment.', int.parse(appointment['clientid']), token, dataMap);
+                                                              await sendPushNotification(context, 'Appointment Completed', '${globals.username} has completed your appointment.', appointment['clientid'], token, dataMap);
                                                             }
                                                           }
                                                         }

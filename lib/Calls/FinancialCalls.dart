@@ -177,6 +177,99 @@ Future<Map> spCreatePaymentIntent(BuildContext context, String paymentId, String
   }
 }
 
+Future<Map> spDirectPay(BuildContext context, String paymentId, String customerId, String amount, [String email, String appFee]) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/x-www-form-urlencoded',
+    'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  Map jsonMap = {
+    "amount": "$amount",
+    "currency": "USD",
+    "confirm": "true",
+    "customer": "$customerId",
+    "payment_method": "$paymentId",
+    "application_fee_amount": "$appFee",
+    "transfer_data[destination]": "${globals.spAccountId}",
+    "capture_method": "automatic"
+  };
+
+  if(email != null) {
+    jsonMap['receipt_email'] = '$email';
+  }
+
+  String url = "${globals.stripeURL}payment_intents";
+
+  try {
+    response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (P02)", "Please try again. If this error continues to occur, please contact support.");
+    return {};
+  } 
+  print(response.body);
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (P02)", "Please try again.");
+    return {};
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(!jsonResponse.containsKey('error')) {
+    return jsonResponse;
+  }else {
+    return {};
+  }
+}
+
+// Future<Map> spCaptureCharge(BuildContext context, String chargeId) async {
+//   Map<String, String> headers = {
+//     'Content-Type' : 'application/x-www-form-urlencoded',
+//     'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
+//   };
+
+//   Map jsonResponse = {};
+//   http.Response response;
+
+//   Map jsonMap = {
+    
+//   };
+
+//   String url = "${globals.stripeURL}payment_intents/$chargeId/capture";
+
+//   try {
+//     response = await http.post(url, body: jsonMap, headers: headers).timeout(Duration(seconds: 60));
+//   } catch (Exception) {
+//     showErrorDialog(context, "The Server is not responding (P02)", "Please try again. If this error continues to occur, please contact support.");
+//     return {};
+//   } 
+//   print(response.body);
+//   if (response == null || response.statusCode != 200) {
+//     showErrorDialog(context, "An error has occurred (P02)", "Please try again.");
+//     return {};
+//   }
+
+//   if (json.decode(response.body) is List) {
+//     var responseBody = response.body.substring(1, response.body.length - 1);
+//     jsonResponse = json.decode(responseBody);
+//   } else {
+//     jsonResponse = json.decode(response.body);
+//   }
+  
+//   if(!jsonResponse.containsKey('error')) {
+//     return jsonResponse;
+//   }else {
+//     return {};
+//   }
+// }
+
 Future<Map> spDetachCustomerFromPM(BuildContext context, String paymentId) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
@@ -463,28 +556,38 @@ Future<Map> spPayout(BuildContext context, int amount, String payoutId, String a
 Future<bool> spChargeCard(BuildContext context, int total, String paymentId, String customerId, String cusEmail) async {
   var chargeTotal = (total + 1) * 100;
   double dbl = globals.spPayoutMethod == 'standard' ? globals.stdRateFee : globals.intRateFee;
-  var payoutTotal = int.parse(((double.parse(total.toString()) - num.parse((double.parse(total.toString()) * dbl).toStringAsFixed(2))) * 100).toStringAsFixed(0));
+  // var payoutTotal = int.parse(((double.parse(total.toString()) - num.parse((double.parse(total.toString()) * dbl).toStringAsFixed(2))) * 100).toStringAsFixed(0));
+  var appFee = ((double.parse(total.toString()) * dbl) * 100).toStringAsFixed(0);
 
-  var res = await spCreatePaymentIntent(context, paymentId, customerId, chargeTotal.toString(), cusEmail);
+  //Charge client directly through connected account (barber)
+  var res = await spDirectPay(context, paymentId, customerId, chargeTotal.toString(), cusEmail, appFee.toString());
   if(res.length > 0) {
-    var res2 = await spTransferToConnectAccount(context, payoutTotal, globals.spAccountId);
-    if(res2.length > 0) {
-      if(globals.spPayoutMethod == 'instant') {
-        var res3 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
-        if(res3.length > 0){
-          return true;
-        }else {
-          return false;
-        }
-      }else {
-        return true;
-      }
-    }else {
-      return false;
-    }
+    return true;
   }else {
     return false;
   }
+
+  // Charge client and then transfer calculated compensation to barber
+  // var res = await spCreatePaymentIntent(context, paymentId, customerId, chargeTotal.toString(), cusEmail);
+  // if(res.length > 0) {
+  //   var res2 = await spTransferToConnectAccount(context, payoutTotal, globals.spAccountId);
+  //   if(res2.length > 0) {
+  //     if(globals.spPayoutMethod == 'instant') {
+  //       var res3 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
+  //       if(res3.length > 0){
+  //         return true;
+  //       }else {
+  //         return false;
+  //       }
+  //     }else {
+  //       return true;
+  //     }
+  //   }else {
+  //     return false;
+  //   }
+  // }else {
+  //   return false;
+  // }
 }
 
 Future<dynamic> spGetAccountPayoutCard(BuildContext context, String accountId, String payoutId) async {
