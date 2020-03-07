@@ -215,7 +215,13 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                 children: <Widget>[
                   Stack(
                     children: <Widget>[
-                      Image.network(feedItems[i].imageUrl),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Image.network(
+                          feedItems[i].imageUrl,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                       Container(
                         padding: EdgeInsets.all(5),
                         color: Color.fromRGBO(21, 21, 21, 0.6),
