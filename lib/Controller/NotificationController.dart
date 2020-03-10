@@ -65,6 +65,7 @@ class NotificationScreenState extends State<NotificationScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
+                //TODO: SHOW NOTIFIERS PROFILE PICTURE
                 Container(
                   margin: EdgeInsets.all(10),
                   width: 50.0,
@@ -127,9 +128,9 @@ class NotificationScreenState extends State<NotificationScreen> {
             )
           ) : 
           Expanded(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                child: Column(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget> [
                   Icon(LineIcons.frown_o, size: MediaQuery.of(context).size.height * .2, color: Colors.grey[600]),
