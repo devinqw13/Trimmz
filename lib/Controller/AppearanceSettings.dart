@@ -12,8 +12,6 @@ class AppearanceSettings extends StatefulWidget {
 }
 
 class AppearanceSettingsState extends State<AppearanceSettings> {
-  CupertinoSettings settings;
-
   void initState() {
     super.initState();
   }
