@@ -1708,7 +1708,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
             actions: <Widget>[
               Badge(
                 showBadge: badgeNotifications == 0 ? false : true,
-                badgeContent: Text(badgeNotifications.toString()),
+                badgeContent: Text(badgeNotifications.toString(), style: TextStyle(color: Colors.white)),
                 position: BadgePosition.topLeft(top:0, left: 7),
                 animationType: BadgeAnimationType.scale,
                 animationDuration: const Duration(milliseconds: 300),
