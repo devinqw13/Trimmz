@@ -40,6 +40,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import '../Controller/AddImageController.dart';
 import '../Model/FeedItems.dart';
+import 'SettingsTab.dart';
 
 class BarberHubTabWidget extends StatefulWidget{
   final int widgetItem;
@@ -390,7 +391,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                 child: Column(
                   children: <Widget> [ 
                     Container(
-                      color: Colors.black87,
+                      color: globals.darkModeEnabled ? Colors.black87 : Colors.white10,
                       child: ListTile(
                         leading: buildProfilePictures(context, searchedBarbers[i].profilePicture, searchedBarbers[i].username, 30.0),
                         subtitle: new Column(
@@ -400,7 +401,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                             Text(
                               searchedBarbers[i].shopName,
                               style: TextStyle(
-                                fontWeight: FontWeight.bold
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic
                               )
                             ) : Container(),
                             Text(searchedBarbers[i].shopAddress + ', ' + searchedBarbers[i].city+', '+searchedBarbers[i].state),
@@ -422,7 +424,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                           softWrap: true,
                                           text: new TextSpan(
                                             children: <TextSpan> [
-                                              new TextSpan(text: searchedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              new TextSpan(text: searchedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold, color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                                               new TextSpan(text: '@'+searchedBarbers[i].username, style: TextStyle(fontSize: 12,color: Colors.grey)),
                                             ]
                                           )
@@ -491,7 +493,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
             width: 50,
             height: 50,
             child: CircularProgressIndicator(
-              valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+              valueColor: new AlwaysStoppedAnimation<Color>(globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400]),
             )
           )
         ],
@@ -538,7 +540,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                 child: Column(
                   children: <Widget> [
                     Container(
-                      color: Colors.black87,
+                      color: globals.darkModeEnabled ? Colors.black87 : Colors.white10,
                       child: ListTile(
                         leading: buildProfilePictures(context, suggestedBarbers[i].profilePicture, suggestedBarbers[i].username, 30.0),
                         subtitle: new Column(
@@ -548,7 +550,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                             Text(
                               suggestedBarbers[i].shopName,
                               style: TextStyle(
-                                fontWeight: FontWeight.bold
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic
                               )
                             ) : Container(),
                             Text(suggestedBarbers[i].shopAddress + ', ' + suggestedBarbers[i].city+', '+suggestedBarbers[i].state),
@@ -570,7 +573,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                           softWrap: true,
                                           text: new TextSpan(
                                             children: <TextSpan> [
-                                              new TextSpan(text: suggestedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              new TextSpan(text: suggestedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold, color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                                               new TextSpan(text: '@'+suggestedBarbers[i].username, style: TextStyle(fontSize: 12,color: Colors.grey)),
                                             ]
                                           )
@@ -676,12 +679,12 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                             overflow: TextOverflow.ellipsis,
                             text: new TextSpan(
                               children: <TextSpan> [
-                                new TextSpan(text: 'Actions Required ', style: new TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                                new TextSpan(text: 'Actions Required ', style: new TextStyle(fontWeight: FontWeight.bold, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])),
                               ]
                             )
                           )
                         ),
-                        Icon(Icons.arrow_drop_down, color: Colors.blue)
+                        Icon(Icons.arrow_drop_down, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
                       ],
                     ),
                   ),
@@ -710,12 +713,12 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                 overflow: TextOverflow.ellipsis,
                                 text: new TextSpan(
                                   children: <TextSpan> [
-                                    new TextSpan(text: 'Actions Required', style: new TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                                    new TextSpan(text: 'Actions Required', style: new TextStyle(fontWeight: FontWeight.bold, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])),
                                   ]
                                 )
                               )
                             ),
-                            Icon(Icons.arrow_drop_up, color: Colors.blue)
+                            Icon(Icons.arrow_drop_up, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
                           ],
                         ),
                       ),
@@ -745,7 +748,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                               softWrap: true,
                               text: new TextSpan(
                                 children: <TextSpan> [
-                                  new TextSpan(text: 'Connect Direct Deposit: ', style: TextStyle(color: Colors.blue)),
+                                  new TextSpan(text: 'Connect Direct Deposit: ', style: TextStyle(color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])),
                                   new TextSpan(text: 'required before taking any appointments.', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
                                 ]
                               )
@@ -768,7 +771,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                               softWrap: true,
                               text: new TextSpan(
                                 children: <TextSpan> [
-                                  new TextSpan(text: 'Add Services: ', style: TextStyle(color: Colors.blue)),
+                                  new TextSpan(text: 'Add Services: ', style: TextStyle(color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])),
                                   new TextSpan(text: 'required before taking any appointments.', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
                                 ]
                               )
@@ -942,7 +945,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                       child: Text(
                                         statusColor == Colors.grey ? 'Pending' : statusColor == Colors.blue ? 'Upcoming' : statusColor == Colors.green ? 'Completed' : statusColor == Colors.indigo ? 'No-Show' : 'Cancelled',
                                         style: TextStyle(
-                                          fontWeight: FontWeight.bold
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white
                                         )
                                       )
                                     )
@@ -967,7 +971,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.all(Radius.circular(20.0))
                               ),
-                              child: Text(_selectedEvents[i]['time'], style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500))
+                              child: Text(_selectedEvents[i]['time'], style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500, color: Colors.white))
                             )
                           ]
                         )
@@ -1021,7 +1025,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       children: <Widget>[
         Row(
           children: <Widget>[
-            Icon(LineIcons.times, color: Colors.white),
+            Icon(LineIcons.times, color: globals.darkModeEnabled ? Colors.white : Colors.black),
             Padding(padding: EdgeInsets.all(5)),
             policies.cancelEnabled ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1044,7 +1048,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
         ),
         Row(
           children: <Widget>[
-            Icon(LineIcons.minus, color: Colors.white),
+            Icon(LineIcons.minus, color: globals.darkModeEnabled ? Colors.white : Colors.black),
             Padding(padding: EdgeInsets.all(5)),
             policies.noShowEnabled ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1166,7 +1170,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                       padding: EdgeInsets.all(9),
                       decoration: new BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.blue
+                        color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400]
                       ),
                       child: Center(child:Text(appointmentReq.length.toString(), textAlign: TextAlign.center))
                     )
@@ -1178,8 +1182,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 gradient: new LinearGradient(
-                  begin: Alignment(0.0, -2.0),
-                  colors: [Colors.black, Colors.grey[900]]
+                  begin: Alignment(0.0, -5.0),
+                  colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[600], Colors.grey[50]]
                 )
               ),
               margin: EdgeInsets.all(5.0),
@@ -1194,16 +1198,16 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                         initialSelectedDay: _calendarSelectDay,
                         availableGestures: AvailableGestures.horizontalSwipe,
                         daysOfWeekStyle: DaysOfWeekStyle(
-                          weekdayStyle: const TextStyle(color: const Color(0xFFf2f2f2)),
-                          weekendStyle: const TextStyle(color: const Color(0xFFf2f2f2))
+                          weekdayStyle: TextStyle(color: globals.darkModeEnabled ? Color(0xFFf2f2f2) : Colors.black),
+                          weekendStyle: TextStyle(color: globals.darkModeEnabled ?  Color(0xFFf2f2f2) : Colors.black)
                         ),
                         headerStyle: HeaderStyle(
                           formatButtonVisible: false,
-                          leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.blue),
-                          rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.blue)
+                          leftChevronIcon: Icon(Icons.chevron_left, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400]),
+                          rightChevronIcon: Icon(Icons.chevron_right, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
                         ),
                         calendarStyle: CalendarStyle(
-                          weekendStyle: const TextStyle(color: Colors.white),
+                          weekendStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                           outsideWeekendStyle: TextStyle(color: Color(0xFF9E9E9E))
                         ),
                         headerVisible: true,
@@ -1269,7 +1273,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                           onTap: () {
                             showFullCalendar();
                           },
-                          child: Icon(Icons.menu, color: Colors.blue)
+                          child: Icon(Icons.menu, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
                         )
                       ),
                     ]
@@ -1284,8 +1288,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 gradient: new LinearGradient(
-                  begin: Alignment(0.0, -2.0),
-                  colors: [Colors.black, Colors.grey[900]]
+                  begin: Alignment(0.0, -5.0),
+                  colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[500], Colors.grey[50]]
                 )
               ),
               child: Column(
@@ -1300,14 +1304,14 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                             'Services',
                             style: TextStyle(
                               fontSize: 17.0,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w400
                             ),
                           ),
                           Padding(padding: EdgeInsets.all(2),),
                           Container(
                             margin: EdgeInsets.only(top: 4),
-                            padding: EdgeInsets.all(5),
-                            child: Center(child: Text(packages.length.toString(), textAlign: TextAlign.center)),
+                            padding: EdgeInsets.all(7),
+                            child: Center(child: Text(packages.length.toString(), textAlign: TextAlign.center, style: TextStyle(color: Colors.white))),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.grey[800]
@@ -1323,7 +1327,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                               onTap: () async {
                                 showFullPackageList(packages);
                               },
-                              child: Icon(Icons.menu, color: Colors.blue)
+                              child: Icon(Icons.menu, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
                             )
                           ),
                           Container(
@@ -1340,7 +1344,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                   );
                                 });
                               },
-                              child: Icon(LineIcons.plus, color: Colors.blue)
+                              child: Icon(LineIcons.plus, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
                             )
                           )
                         ]
@@ -1410,9 +1414,9 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                     children: <Widget>[
                                       Container(
                                         padding: EdgeInsets.all(12),
-                                        child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
+                                        child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0, color: Colors.white)),
                                         decoration: BoxDecoration(
-                                          color: Colors.grey[900],
+                                          color: globals.darkModeEnabled ? Colors.grey[900] : Colors.grey[500],
                                           shape: BoxShape.circle
                                         ),
                                       )
@@ -1435,8 +1439,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 gradient: new LinearGradient(
-                  begin: Alignment(0.0, -2.0),
-                  colors: [Colors.black, Colors.grey[900]]
+                  begin: Alignment(0.0, -5.0),
+                  colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[500], Colors.grey[50]]
                 )
               ),
               child: Column(
@@ -1449,7 +1453,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                         'Policies',
                         style: TextStyle(
                           fontSize: 17.0,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w400
                         )
                       ),
                       Container(
@@ -1467,7 +1471,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                               );
                             });
                           },
-                          child: Icon(LineIcons.pencil, color: Colors.blue)
+                          child: Icon(LineIcons.pencil, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
                         )
                       ),
                     ]
@@ -1485,8 +1489,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 gradient: new LinearGradient(
-                  begin: Alignment(0.0, -2.0),
-                  colors: [Colors.black, Colors.grey[900]]
+                  begin: Alignment(0.0, -5.0),
+                  colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[500], Colors.grey[50]]
                 )
               ),
               child: Column(
@@ -1526,7 +1530,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
   feedList() {
     if (feedItems.length > 0) {
       return new RefreshIndicator(
-        color: Colors.blue,
+        color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400],
         onRefresh: refreshFeedList,
         key: refreshKey,
         child: new ListView.builder(
@@ -1549,7 +1553,13 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                       ),
                       Container(
                         padding: EdgeInsets.all(5),
-                        color: Color.fromRGBO(21, 21, 21, 0.6),
+                        decoration: BoxDecoration(
+                          color: globals.darkModeEnabled ? Color.fromRGBO(21, 21, 21, 0.6) : Color.fromRGBO(100, 100, 100, 0.3),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10)
+                          )
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -1569,7 +1579,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                   Text(
                                     feedItems[i].name,
                                     style: TextStyle(
-                                      fontWeight: FontWeight.bold
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white
                                     )
                                   )
                                 ]
@@ -1643,7 +1654,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
           new Container(
             margin: EdgeInsets.all(5),
             width: MediaQuery.of(context).size.width,
-            color: Colors.black45,
+            color: globals.darkModeEnabled ? Colors.black45 : Colors.white10,
             child: new FlatButton(
               padding: EdgeInsets.all(0),
               textColor: Colors.blue,
@@ -1671,7 +1682,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       return new DefaultTabController(
         length: 2,
         child: Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
           floatingActionButton: new Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
@@ -1684,7 +1695,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                   },
                   child: new Icon(LineIcons.plus),
                   tooltip: "Add",
-                  backgroundColor: Colors.blue,
+                  backgroundColor: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400],
                   foregroundColor: Colors.white,
                   heroTag: null,
                 )
@@ -1716,7 +1727,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
               )
             ],
             bottom: TabBar(
-              indicatorColor: Colors.white,
+              indicatorColor: globals.darkModeEnabled ? Colors.white : Colors.black,
               tabs: <Widget>[
                 Tab(text: "Dashboard"),
                 Tab(text: "Feed")
@@ -1743,7 +1754,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       );
     }else if(widget.widgetItem == 1){
       return new Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
         appBar: new AppBar(
           automaticallyImplyLeading: false,
           title: Text('Marketplace'),
@@ -1795,7 +1806,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       return new DefaultTabController(
         length: 2,
         child: Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
           appBar: new AppBar(
             automaticallyImplyLeading: false,
             title: TextField(
@@ -1838,7 +1849,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                   });
                 }
               },
-              indicatorColor: Colors.white,
+              indicatorColor: globals.darkModeEnabled ? Colors.white : Colors.black,
               tabs: <Widget>[
                 Tab(text: "Barbers"),
                 Tab(text: "Marketplace")
@@ -1865,7 +1876,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       );
     }else {
       return new Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
         appBar: new AppBar(
           automaticallyImplyLeading: false,
           title: Text('Settings'),
@@ -1876,7 +1887,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
           },
           child: new Stack(
             children: <Widget> [
-              settingsWidget(context),
+              SettingsTab(),
+              //settingsWidget(context),
               _progressHUD
             ]
           )

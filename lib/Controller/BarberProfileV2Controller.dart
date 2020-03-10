@@ -136,8 +136,8 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                         padding: EdgeInsets.all(5),
                         child: Row(
                           children: <Widget>[
-                            !hasAdded ? Icon(Icons.add, size: 18) : Icon(LineIcons.minus, size: 18),
-                            !hasAdded ? Text('Add') : Text('Remove')
+                            !hasAdded ? Icon(Icons.add, size: 18, color: Colors.white) : Icon(LineIcons.minus, size: 18, color: Colors.white),
+                            !hasAdded ? Text('Add', style: TextStyle(color: Colors.white)) : Text('Remove', style: TextStyle(color: Colors.white))
                           ],
                         ),
                       ),
@@ -162,9 +162,9 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                         padding: EdgeInsets.all(5),
                         child: Row(
                           children: <Widget>[
-                            Icon(Icons.calendar_today, size: 18),
+                            Icon(Icons.calendar_today, size: 18, color: Colors.white),
                             Padding(padding: EdgeInsets.all(2)),
-                            Text('Book')
+                            Text('Book', style: TextStyle(color: Colors.white))
                           ],
                         ),
                       ),
@@ -181,9 +181,9 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                         padding: EdgeInsets.all(5),
                         child: Row(
                           children: <Widget>[
-                            Icon(Icons.chat_bubble_outline, size: 18),
+                            Icon(Icons.chat_bubble_outline, size: 18, color: Colors.white),
                             Padding(padding: EdgeInsets.all(2)),
-                            Text('Reviews')
+                            Text('Reviews', style: TextStyle(color: Colors.white))
                           ],
                         ),
                       ),
@@ -206,9 +206,9 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                         padding: EdgeInsets.all(5),
                         child: Row(
                           children: <Widget>[
-                            Icon(FontAwesomeIcons.share, size: 17),
+                            Icon(FontAwesomeIcons.share, size: 17, color: Colors.white),
                             Padding(padding: EdgeInsets.all(2)),
-                            Text('Share')
+                            Text('Share', style: TextStyle(color: Colors.white))
                           ],
                         ),
                       ),
@@ -230,7 +230,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget> [
-                      Text('Edit Header')
+                      Text('Edit Header', style: TextStyle(color: Colors.white))
                     ]
                   )
                 )
@@ -258,7 +258,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
       width: MediaQuery.of(context).size.width * .95,
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 21, 21, 21),
+        color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color.fromARGB(255, 235, 235, 235),
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Row(
@@ -337,7 +337,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                 )
               ),
               Padding(padding: EdgeInsets.all(2)),
-              returnDistanceFutureBuilder('${user.shopAddress}, ${user.city}, ${user.state} ${user.zipcode}', Colors.white),
+              returnDistanceFutureBuilder('${user.shopAddress}, ${user.city}, ${user.state} ${user.zipcode}', globals.darkModeEnabled ? Colors.white : Colors.black87),
               Padding(padding: EdgeInsets.all(2)),
               getRatingWidget(context, double.parse(user.rating))
             ]
@@ -379,7 +379,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
                         child: Text('\$'+packages[i].price),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color.fromARGB(255, 21, 21, 21)
+                          color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color.fromARGB(255, 225, 225, 225)
                         ),
                       ),
                       Padding(padding: EdgeInsets.all(5)),
@@ -402,7 +402,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
         children: <Widget>[
           Row(
           children: <Widget>[
-            Icon(LineIcons.times, color: Colors.white),
+            Icon(LineIcons.times, color: globals.darkModeEnabled ? Colors.white : Colors.black87),
             Padding(padding: EdgeInsets.all(5)),
             policies.cancelEnabled ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,7 +425,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
         ),
         Row(
           children: <Widget>[
-            Icon(LineIcons.minus, color: Colors.white),
+            Icon(LineIcons.minus, color: globals.darkModeEnabled ? Colors.white : Colors.black87),
             Padding(padding: EdgeInsets.all(5)),
             policies.noShowEnabled ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -560,7 +560,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: new Text('@'+user.username)
         ),

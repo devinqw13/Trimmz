@@ -460,7 +460,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                     decoration: BoxDecoration(
                       gradient: new LinearGradient(
                         begin: Alignment(0.0, -8.0),
-                        colors: [Colors.black, Colors.grey[850]]
+                        colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[850]] : [Colors.grey[500], Colors.grey[50]]
                       )
                     ),
                     padding: EdgeInsets.all(10.0),
@@ -495,8 +495,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       gradient: new LinearGradient(
-                        begin: Alignment(0.0, -2.0),
-                        colors: [Colors.black, Colors.grey[850]]
+                        begin: Alignment(0.0, -8.0),
+                        colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[850]] : [Colors.grey[500], Colors.grey[50]]
                       )
                     ),
                     margin: EdgeInsets.all(5.0),
@@ -584,7 +584,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                         child: Center(child: Text('\$' + packages[i].price, textAlign: TextAlign.center,)),
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: Colors.grey[800]
+                                          color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[500]
                                         ),
                                       )
                                     ]
@@ -602,8 +602,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       gradient: new LinearGradient(
-                        begin: Alignment(0.0, -2.0),
-                        colors: [Colors.black, Colors.grey[850]]
+                        begin: Alignment(0.0, -3.0),
+                        colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[850]] : [Colors.grey[500], Colors.grey[50]]
                       )
                     ),
                     margin: EdgeInsets.all(5.0),
@@ -624,16 +624,16 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                           onDaySelected: _onDaySelected,
                           availableGestures: AvailableGestures.horizontalSwipe,
                           daysOfWeekStyle: DaysOfWeekStyle(
-                            weekdayStyle: const TextStyle(color: const Color(0xFFf2f2f2)),
-                            weekendStyle: const TextStyle(color: const Color(0xFFf2f2f2))
+                            weekdayStyle: TextStyle(color: globals.darkModeEnabled ? Color(0xFFf2f2f2) : Colors.black),
+                            weekendStyle: TextStyle(color: globals.darkModeEnabled ? Color(0xFFf2f2f2) : Colors.black)
                           ),
                           headerStyle: HeaderStyle(
                             formatButtonVisible: false,
-                            leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.white),
-                            rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.white)
+                            leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.blue),
+                            rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.blue)
                           ),
                           calendarStyle: CalendarStyle(
-                            weekendStyle: const TextStyle(color: Colors.white),
+                            weekendStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                             outsideWeekendStyle: TextStyle(color: Color(0xFF9E9E9E))
                           ),
                           headerVisible: true,
@@ -665,7 +665,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                   margin: const EdgeInsets.all(6.0),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Colors.grey[800]
+                                    color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[500]
                                   ),
                                   child: Center(
                                     child: Text(
@@ -691,8 +691,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       gradient: new LinearGradient(
-                        begin: Alignment(0.0, -2.0),
-                        colors: [Colors.black, Colors.grey[850]]
+                        begin: Alignment(0.0, -4.0),
+                        colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[850]] : [Colors.grey[500], Colors.grey[50]]
                       )
                     ),
                     margin: EdgeInsets.all(5.0),
@@ -803,74 +803,77 @@ class BookingControllerState extends State<BookingController> with TickerProvide
           Row(
             children: <Widget>[
               Expanded(
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text('Review', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20, color: Colors.blue)),
-                              Text(barberInfo.name),
-                              packageName != '' ? Text(packageName) : Container(),
-                              finalDateTime != null ?
+                child: Container(
+                  color: globals.darkModeEnabled ? Colors.black : Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text('Review', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20, color: Colors.blue)),
+                                Text(barberInfo.name),
+                                packageName != '' ? Text(packageName) : Container(),
+                                finalDateTime != null ?
+                                  Text(
+                                    DateFormat('Md').format(DateTime.parse(finalDateTime.toString())) + ' at ' + DateFormat('hh:mm a').format(DateTime.parse(finalDateTime.toString()))
+                                  ) : Container()
+                              ],
+                            )
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(right: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget> [
                                 Text(
-                                  DateFormat('Md').format(DateTime.parse(finalDateTime.toString())) + ' at ' + DateFormat('hh:mm a').format(DateTime.parse(finalDateTime.toString()))
-                                ) : Container()
-                            ],
+                                  '\$' + (finalTip + finalPackagePrice + globals.cusProcessFee).toStringAsFixed(2),
+                                  style: TextStyle(
+                                    fontSize: 25.0
+                                  )
+                                ),
+                                Text(
+                                  'Includes Tip + Processing Fee: \$${globals.cusProcessFee.toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12
+                                  )
+                                )
+                              ]
+                            )
                           )
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(right: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: <Widget> [
-                              Text(
-                                '\$' + (finalTip + finalPackagePrice + globals.cusProcessFee).toStringAsFixed(2),
-                                style: TextStyle(
-                                  fontSize: 25.0
-                                )
-                              ),
-                              Text(
-                                'Includes Tip + Processing Fee: \$${globals.cusProcessFee.toStringAsFixed(2)}',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12
-                                )
+                        ]
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          bookingAppointment(globals.token, barberInfo.id, finalPackagePrice, finalDateTime, _packageId, finalTip);
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+                          constraints: const BoxConstraints(maxHeight: 35.0, minWidth: 200.0, minHeight: 35.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5.0),
+                            gradient: new LinearGradient(
+                              colors: globals.darkModeEnabled ? [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent] : [Color.fromARGB(255, 54, 121, 255), Colors.lightBlueAccent],
+                            )
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Book Appointment',
+                              style: new TextStyle(
+                                fontSize: 19.0,
+                                fontWeight: FontWeight.w300
                               )
-                            ]
-                          )
-                        )
-                      ]
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        bookingAppointment(globals.token, barberInfo.id, finalPackagePrice, finalDateTime, _packageId, finalTip);
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-                        constraints: const BoxConstraints(maxHeight: 35.0, minWidth: 200.0, minHeight: 35.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5.0),
-                          gradient: new LinearGradient(
-                            colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
-                          )
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Book Appointment',
-                            style: new TextStyle(
-                              fontSize: 19.0,
-                              fontWeight: FontWeight.w300
                             )
                           )
                         )
                       )
-                    )
-                  ]
+                    ]
+                  )
                 )
               )
             ]
@@ -891,7 +894,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: new Text('Booking Appointment')
         ),

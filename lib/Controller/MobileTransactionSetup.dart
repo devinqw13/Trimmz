@@ -514,7 +514,7 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.0),
                       gradient: new LinearGradient(
-                        colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
+                        colors: globals.darkModeEnabled ? [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent] : [Color.fromARGB(255, 54, 121, 255), Colors.lightBlueAccent],
                       )
                     ),
                     child: Center(
@@ -547,7 +547,7 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: new Text('Mobile Pay Setup')
         ),

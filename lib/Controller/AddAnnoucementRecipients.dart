@@ -387,7 +387,7 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: new Text('New Annoucement'),
           actions: <Widget>[

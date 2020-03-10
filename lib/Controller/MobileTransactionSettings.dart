@@ -50,8 +50,8 @@ class MobileTransactionSettingsScreenState extends State<MobileTransactionSettin
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
         gradient: new LinearGradient(
-          begin: Alignment(0.0, -2.0),
-          colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+          begin: Alignment(0.0, -5.0),
+          colors: globals.darkModeEnabled ? [Colors.black, Color.fromRGBO(45, 45, 45, 1)] : [Colors.grey[500], Colors.grey[50]]
         )
       ),
       child: Column(
@@ -157,12 +157,12 @@ class MobileTransactionSettingsScreenState extends State<MobileTransactionSettin
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: AppBar(
           title: Text("Mobile Pay Settings"),
           actions: <Widget>[
             FlatButton(
-              textColor: _payoutMethod != globals.spPayoutMethod ? Colors.white : Colors.grey,
+              textColor: _payoutMethod != globals.spPayoutMethod ? globals.darkModeEnabled ? Colors.white : Colors.black : Colors.grey,
               onPressed: () async {
                 progressHUD();
                 var res = await spUpdateConnectAccount(context, globals.spAccountId, _payoutMethod);

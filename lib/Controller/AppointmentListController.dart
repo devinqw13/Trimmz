@@ -99,7 +99,7 @@ class AppointmentListState extends State<AppointmentList> {
                     decoration: BoxDecoration(
                       gradient: new LinearGradient(
                         begin: Alignment(1.0, .5),
-                        colors: [Colors.black, Colors.grey[900]]
+                        colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[300], Colors.grey[100]]
                       )
                     ),
                     child: Row(
@@ -200,7 +200,7 @@ class AppointmentListState extends State<AppointmentList> {
                     decoration: BoxDecoration(
                       gradient: new LinearGradient(
                         begin: Alignment(1.0, .5),
-                        colors: [Colors.black, Colors.grey[900]]
+                        colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[300], Colors.grey[100]]
                       )
                     ),
                     child: Row(
@@ -299,7 +299,7 @@ class AppointmentListState extends State<AppointmentList> {
                     decoration: BoxDecoration(
                       gradient: new LinearGradient(
                         begin: Alignment(1.0, .5),
-                        colors: [Colors.black, Colors.grey[900]]
+                        colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[300], Colors.grey[100]]
                       )
                     ),
                     child: Row(
@@ -412,7 +412,7 @@ class AppointmentListState extends State<AppointmentList> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: new Text('Appointments'),
         ),

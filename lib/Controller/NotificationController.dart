@@ -105,7 +105,7 @@ class NotificationScreenState extends State<NotificationScreen> {
           globals.userType == 2 ? Container(
             margin: EdgeInsets.all(5),
             width: MediaQuery.of(context).size.width,
-            color: Colors.black45,
+            color: globals.darkModeEnabled ? Colors.black45 : Colors.white10,
             child: new FlatButton(
               padding: EdgeInsets.all(0),
               textColor: Colors.blue,
@@ -159,7 +159,7 @@ class NotificationScreenState extends State<NotificationScreen> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: new Text('Notifications')
         ),

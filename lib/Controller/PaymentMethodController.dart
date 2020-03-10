@@ -170,7 +170,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
             margin: EdgeInsets.all(5),
             width: MediaQuery.of(context).size.width,
             child: FlatButton(
-              color: Color.fromARGB(255, 21, 21, 21),
+              color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color.fromARGB(255, 225, 225, 225),
               onPressed: () {
                 addPaymentMethod();
               },
@@ -184,7 +184,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
         children: <Widget>[
           Container(
             padding: EdgeInsets.only(left: 10),
-            color: Color.fromARGB(255, 21, 21, 21),
+            color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color.fromARGB(255, 225, 225, 225),
             margin: EdgeInsets.all(5),
             width: MediaQuery.of(context).size.width,
             child: Row(
@@ -237,7 +237,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: AppBar(
           automaticallyImplyLeading: widget.signup ? false : true,
           title: Text("Payment Method"),

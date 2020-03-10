@@ -201,7 +201,7 @@ class _CameraAppState extends State<CameraApp> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: _currentIndex == 0 ? Text('Photo') :
           galleryList.length > 0 ? 
@@ -308,7 +308,7 @@ class _CameraAppState extends State<CameraApp> {
                       takenPhoto == '' ? CustomCameraButton(
                         strokeWidth: 5,
                         radius: 50,
-                        gradient: LinearGradient(colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent]),
+                        gradient: LinearGradient(colors: globals.darkModeEnabled ? [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent] : [Color.fromARGB(255, 54, 121, 255), Colors.lightBlueAccent]),
                         child: Container(),
                         onPressed: () async {
                           var res = await takePhoto();

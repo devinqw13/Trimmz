@@ -235,7 +235,7 @@ class AccountSettingsState extends State<AccountSettings> {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        usernameEmpty ? Container() : Text('Username', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        usernameEmpty ? Container() : Text('Username', style: TextStyle(fontWeight: FontWeight.bold)),
         TextField(
           controller: _usernameController,
           keyboardType: TextInputType.text,
@@ -259,18 +259,17 @@ class AccountSettingsState extends State<AccountSettings> {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        nameEmpty ? Container() : Text('Name', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        nameEmpty ? Container() : Text('Name', style: TextStyle(fontWeight: FontWeight.bold)),
         TextField(
           controller: _nameController,
           keyboardType: TextInputType.text,
           autocorrect: false,
           style: new TextStyle(
             fontSize: 13.0,
-            color: Colors.white
           ),
           decoration: new InputDecoration(
             hintText: 'Name',
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white70 : Colors.black54),
             border: InputBorder.none
           ),
         )
@@ -282,18 +281,17 @@ class AccountSettingsState extends State<AccountSettings> {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        emailEmpty ? Container() : Text('Email', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        emailEmpty ? Container() : Text('Email', style: TextStyle(fontWeight: FontWeight.bold)),
         TextField(
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           autocorrect: false,
           style: new TextStyle(
-            fontSize: 13.0,
-            color: Colors.white
+            fontSize: 13.0
           ),
           decoration: new InputDecoration(
             hintText: 'Email',
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white70 : Colors.black54),
             border: InputBorder.none
           ),
         )
@@ -305,18 +303,17 @@ class AccountSettingsState extends State<AccountSettings> {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        shopNameEmpty ? Container() : Text('Shop Name', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        shopNameEmpty ? Container() : Text('Shop Name', style: TextStyle(fontWeight: FontWeight.bold)),
         TextField(
           controller: _shopNameController,
           keyboardType: TextInputType.text,
           autocorrect: false,
           style: new TextStyle(
-            fontSize: 13.0,
-            color: Colors.white
+            fontSize: 13.0
           ),
           decoration: new InputDecoration(
             hintText: 'Shop Name',
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white70 : Colors.black54),
             border: InputBorder.none
           ),
         )
@@ -328,18 +325,17 @@ class AccountSettingsState extends State<AccountSettings> {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        streetAddressEmpty ? Container() : Text('Street Address', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        streetAddressEmpty ? Container() : Text('Street Address', style: TextStyle(fontWeight: FontWeight.bold)),
         TextField(
           controller: _streetAddressController,
           keyboardType: TextInputType.text,
           autocorrect: false,
           style: new TextStyle(
-            fontSize: 13.0,
-            color: Colors.white
+            fontSize: 13.0
           ),
           decoration: new InputDecoration(
             hintText: 'Street Address',
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white70 : Colors.black54),
             border: InputBorder.none
           ),
         )
@@ -351,18 +347,17 @@ class AccountSettingsState extends State<AccountSettings> {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        cityEmpty ? Container() : Text('City', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        cityEmpty ? Container() : Text('City', style: TextStyle(fontWeight: FontWeight.bold)),
         TextField(
           controller: _cityController,
           keyboardType: TextInputType.text,
           autocorrect: false,
           style: new TextStyle(
-            fontSize: 13.0,
-            color: Colors.white
+            fontSize: 13.0
           ),
           decoration: new InputDecoration(
             hintText: 'City',
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white70 : Colors.black54),
             border: InputBorder.none
           ),
         )
@@ -374,7 +369,7 @@ class AccountSettingsState extends State<AccountSettings> {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        cityEmpty ? Container() : Text('State', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        cityEmpty ? Container() : Text('State', style: TextStyle(fontWeight: FontWeight.bold)),
         GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(new FocusNode());
@@ -398,8 +393,8 @@ class AccountSettingsState extends State<AccountSettings> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(stateStr == '' ? 'State' : stateStr, style: TextStyle(color: stateStr == '' ? Colors.grey[400] : Colors.white, fontSize: 15)),
-                    Icon(Icons.keyboard_arrow_down, color: stateStr == '' ? Colors.grey[400] : Colors.white)
+                    Text(stateStr == '' ? 'State' : stateStr, style: TextStyle(color: stateStr == '' ? Colors.grey[400] : globals.darkModeEnabled ? Colors.white : Colors.black, fontSize: 15)),
+                    Icon(Icons.keyboard_arrow_down, color: stateStr == '' ? Colors.grey[400] : globals.darkModeEnabled ? Colors.white : Colors.black)
                   ]
                 ),
               ]
@@ -418,7 +413,7 @@ class AccountSettingsState extends State<AccountSettings> {
       decoration: BoxDecoration(
         gradient: new LinearGradient(
           begin: Alignment(0.0, -2.0),
-          colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+          colors: globals.darkModeEnabled ? [Colors.black, Color.fromRGBO(45, 45, 45, 1)] : [Colors.grey[500], Colors.grey[50]]
         )
       ),
       child: Column(
@@ -471,7 +466,7 @@ class AccountSettingsState extends State<AccountSettings> {
         margin: EdgeInsets.all(5.0),
         padding: EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width,
-        color: Colors.grey[850],
+        color: globals.darkModeEnabled ? Colors.grey[850] : Color.fromARGB(255, 225, 225, 225),
         child: Text('Password', style: TextStyle(fontWeight: FontWeight.bold))
       )
     );
@@ -484,8 +479,8 @@ class AccountSettingsState extends State<AccountSettings> {
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
         gradient: new LinearGradient(
-          begin: Alignment(0.0, -2.0),
-          colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+          begin: Alignment(0.0, -5.0),
+          colors: globals.darkModeEnabled ? [Colors.black, Color.fromRGBO(45, 45, 45, 1)] : [Colors.grey[500], Colors.grey[50]]
         )
       ),
       child: Column(
@@ -605,7 +600,7 @@ class AccountSettingsState extends State<AccountSettings> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.0),
                       gradient: new LinearGradient(
-                        colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
+                        colors: globals.darkModeEnabled ? [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent] : [Color.fromARGB(255, 54, 121, 255), Colors.lightBlueAccent],
                       )
                     ),
                     child: Center(
@@ -637,7 +632,7 @@ class AccountSettingsState extends State<AccountSettings> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.0),
                       gradient: new LinearGradient(
-                        colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
+                        colors: globals.darkModeEnabled ? [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent] : [Color.fromARGB(255, 54, 121, 255), Colors.lightBlueAccent],
                       )
                     ),
                     child: Center(
@@ -670,7 +665,7 @@ class AccountSettingsState extends State<AccountSettings> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: new Text('Account Settings')
         ),

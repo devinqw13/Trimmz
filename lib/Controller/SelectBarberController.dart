@@ -83,7 +83,7 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
                   ),
                 ),
                 decoration: new BoxDecoration(
-                  color: Color.fromARGB(255, 21, 21, 21),
+                  color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color.fromARGB(255, 225, 225, 225),
                   shape: BoxShape.rectangle,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(2.0), topRight: Radius.circular(2.0))
                 ),
@@ -224,7 +224,7 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA), //Colors.grey
         appBar: AppBar(
           title: Text("Select Barber"),
           bottom: clientBarbers.length > 0 ? PreferredSize(preferredSize: const Size.fromHeight(0.0), child: Container()) : PreferredSize(

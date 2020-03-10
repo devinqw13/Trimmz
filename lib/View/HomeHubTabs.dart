@@ -13,6 +13,7 @@ import '../Model/FeedItems.dart';
 import 'dart:async';
 import '../functions.dart';
 import '../Controller/BarberProfileV2Controller.dart';
+import '../View/SettingsTab.dart';
 
 class HomeHubTabWidget extends StatefulWidget{
   final int widgetItem;
@@ -224,7 +225,13 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                       ),
                       Container(
                         padding: EdgeInsets.all(5),
-                        color: Color.fromRGBO(21, 21, 21, 0.6),
+                        decoration: BoxDecoration(
+                          color: globals.darkModeEnabled ? Color.fromRGBO(21, 21, 21, 0.6) : Color.fromRGBO(100, 100, 100, 0.3),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10)
+                          )
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -322,7 +329,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
               new Container(
                 margin: EdgeInsets.all(0),
                 width: MediaQuery.of(context).size.width,
-                color: Colors.black45,
+                color: globals.darkModeEnabled ? Colors.black45 : Colors.white10,
                 child: new FlatButton(
                   padding: EdgeInsets.all(0),
                   textColor: Colors.blue,
@@ -364,7 +371,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
     }else if(widget.widgetItem == 2){
       return new Container();
     }else {
-      return settingsWidget(context);
+      return SettingsTab();
     }
   }
 }

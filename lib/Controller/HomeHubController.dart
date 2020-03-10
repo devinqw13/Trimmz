@@ -229,9 +229,9 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => profileScreen));
                 },
                 child: Column(
-                  children: <Widget> [ 
+                  children: <Widget> [
                     Container(
-                      color: Colors.black87,
+                      color: globals.darkModeEnabled ? Colors.black87 : Colors.white10,
                       child: ListTile(
                         leading: buildProfilePictures(context, searchedBarbers[i].profilePicture, searchedBarbers[i].username, 30.0),
                         subtitle: new Column(
@@ -241,7 +241,8 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                             Text(
                               searchedBarbers[i].shopName,
                               style: TextStyle(
-                                fontWeight: FontWeight.bold
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic
                               )
                             ) : Container(),
                             Text(searchedBarbers[i].shopAddress + ', ' + searchedBarbers[i].city+', '+searchedBarbers[i].state),
@@ -263,7 +264,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                                           softWrap: true,
                                           text: new TextSpan(
                                             children: <TextSpan> [
-                                              new TextSpan(text: searchedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              new TextSpan(text: searchedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold, color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                                               new TextSpan(text: '@'+searchedBarbers[i].username, style: TextStyle(fontSize: 12,color: Colors.grey)),
                                             ]
                                           )
@@ -377,7 +378,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
               child: Column(
                 children: <Widget> [ 
                   Container(
-                    color: Colors.black87,
+                    color: globals.darkModeEnabled ? Colors.black87 : Colors.white10,
                     child: ListTile(
                       leading: buildProfilePictures(context, suggestedBarbers[i].profilePicture, suggestedBarbers[i].username, 30.0),
                       subtitle: new Column(
@@ -387,7 +388,8 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                           Text(
                             suggestedBarbers[i].shopName,
                             style: TextStyle(
-                              fontWeight: FontWeight.bold
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic
                             )
                           ) : Container(),
                           Text(suggestedBarbers[i].shopAddress + ', ' + suggestedBarbers[i].city+', '+suggestedBarbers[i].state),
@@ -409,7 +411,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                                         softWrap: true,
                                         text: new TextSpan(
                                           children: <TextSpan> [
-                                            new TextSpan(text: suggestedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            new TextSpan(text: suggestedBarbers[i].name+' ', style: TextStyle(fontWeight: FontWeight.bold, color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                                             new TextSpan(text: '@'+suggestedBarbers[i].username, style: TextStyle(fontSize: 12,color: Colors.grey)),
                                           ]
                                         )
@@ -542,7 +544,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
       child: DefaultTabController(
         length: 2,
         child: new Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
           appBar: new AppBar(
             automaticallyImplyLeading: false,
             centerTitle: true,

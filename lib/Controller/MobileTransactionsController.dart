@@ -103,8 +103,8 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
           padding: EdgeInsets.all(5),
           decoration: BoxDecoration(
             gradient: new LinearGradient(
-              begin: Alignment(0.0, -2.0),
-              colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+              begin: Alignment(0.0, -5.0),
+              colors: globals.darkModeEnabled ? [Colors.black, Color.fromRGBO(45, 45, 45, 1)] : [Colors.grey[500], Colors.grey[50]]
             )
           ),
           child: Column(
@@ -118,20 +118,20 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
                     children: <Widget>[
                       payoutCard.icon,
                       Padding(padding: EdgeInsets.all(10)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                       Padding(padding: EdgeInsets.all(3)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                       Padding(padding: EdgeInsets.all(3)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                       Padding(padding: EdgeInsets.all(3)),
                       Text(payoutCard.lastFour)
                     ]
@@ -294,7 +294,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
         margin: EdgeInsets.all(5.0),
         padding: EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width,
-        color: Colors.grey[850],
+        color: globals.darkModeEnabled ? Colors.grey[850] : Color.fromARGB(255, 225, 225, 225),
         child: Row(
           children: <Widget> [
             Text('Settings', style: TextStyle(fontWeight: FontWeight.bold))
@@ -318,8 +318,8 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 gradient: new LinearGradient(
-                  begin: Alignment(0.0, -2.0),
-                  colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+                  begin: Alignment(0.0, -5.0),
+                  colors: globals.darkModeEnabled ? [Colors.black, Color.fromRGBO(45, 45, 45, 1)] : [Colors.grey[500], Colors.grey[50]]
                 )
               ),
               child: Row(
@@ -334,7 +334,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
                             Container(
                               padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 2.0, bottom: 2.0),
                               decoration: BoxDecoration(
-                                color: Colors.blue,
+                                color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlue,
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.all(Radius.circular(20.0))
                               ),
@@ -344,7 +344,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
                             Container(
                               padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 2.0, bottom: 2.0),
                               decoration: BoxDecoration(
-                                color: Colors.green,
+                                color: globals.darkModeEnabled ? Colors.green : Colors.greenAccent[400],
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.all(Radius.circular(20.0))
                               ),
@@ -465,7 +465,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: AppBar(
           title: Text("Mobile Pay"),
         ),

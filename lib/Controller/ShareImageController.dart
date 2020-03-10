@@ -115,7 +115,7 @@ class ShareImageState extends State<ShareImage> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: new Text('Share'),
           actions: <Widget>[

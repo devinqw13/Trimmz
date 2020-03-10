@@ -75,7 +75,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
         brightness: globals.userBrightness,
       ),
       child: new Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         body: Container(
           child: new WillPopScope(
             onWillPop: () async {
@@ -99,7 +99,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
           )
         ),
         bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: globals.userColor,
+          backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
           type: BottomNavigationBarType.fixed,
           onTap: onNavTapTapped,
           currentIndex: _currentIndex,

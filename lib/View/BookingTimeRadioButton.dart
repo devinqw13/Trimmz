@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../globals.dart' as globals;
 
 class RadioItem extends StatelessWidget {
   final RadioModel _item;
@@ -11,16 +12,15 @@ class RadioItem extends StatelessWidget {
       child: new Center(
         child: new Text(_item.buttonText,
           style: new TextStyle(
-            color: Colors.white,//_item.isSelected ? Colors.white : Colors.black,
             fontSize: 16.0
           )
         ),
       ),
       decoration: new BoxDecoration(
-        color: _item.isSelected ? Colors.blue : Colors.grey[700],
+        color: _item.isSelected ? Colors.blue : globals.darkModeEnabled ? Colors.grey[700] : Colors.grey[400],
         border: new Border.all(
           width: 1.0,
-          color: _item.isSelected ? Colors.blue : Colors.grey[700]),
+          color: _item.isSelected ? Colors.blue : globals.darkModeEnabled ? Colors.grey[700] : Colors.grey[400]),
         borderRadius: const BorderRadius.all(const Radius.circular(5.0)),
       ),
     );

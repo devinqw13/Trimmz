@@ -139,7 +139,7 @@ class ReviewControllerState extends State<ReviewController> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5.0),
                         gradient: new LinearGradient(
-                          colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
+                          colors: globals.darkModeEnabled ? [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent] : [Color.fromARGB(255, 54, 121, 255), Colors.lightBlueAccent],
                         )
                       ),
                       child: Center(
@@ -263,8 +263,8 @@ class ReviewControllerState extends State<ReviewController> {
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
         gradient: new LinearGradient(
-          begin: Alignment(0.0, -2.0),
-          colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+          begin: Alignment(0.0, -5.0),
+          colors: globals.darkModeEnabled ? [Colors.black, Color.fromRGBO(45, 45, 45, 1)] : [Colors.grey[500], Colors.grey[50]]
         )
       ),
       child: Column(
@@ -272,6 +272,7 @@ class ReviewControllerState extends State<ReviewController> {
         children: <Widget>[
           RichText(
             text: new TextSpan(
+              style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
               children: <TextSpan>[
                 new TextSpan(text: 'Reviews ', style: new TextStyle(fontWeight: FontWeight.bold)),
                 new TextSpan(text: '(${reviews.length.toString()})'),
@@ -313,7 +314,7 @@ class ReviewControllerState extends State<ReviewController> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: new Text('@${widget.username}\'s Reviews')
         ),

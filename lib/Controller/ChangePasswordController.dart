@@ -112,7 +112,7 @@ class ChangePasswordState extends State<ChangePassword> {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('Password', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        Text('Password', style: TextStyle(fontWeight: FontWeight.bold)),
         TextField(
           controller: _oldPasswordController,
           onChanged: (val) {
@@ -122,12 +122,11 @@ class ChangePasswordState extends State<ChangePassword> {
           obscureText: true,
           autocorrect: false,
           style: new TextStyle(
-            fontSize: 13.0,
-            color: Colors.white
+            fontSize: 13.0
           ),
           decoration: new InputDecoration(
             hintText: 'Password',
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white70 : Colors.black54),
             border: InputBorder.none,
             suffix: showPasswordIndicator ? (!passwordValid ? Icon(LineIcons.times, color: Colors.red) : Icon(LineIcons.check, color: Colors.green)) : null,
           ),
@@ -140,7 +139,7 @@ class ChangePasswordState extends State<ChangePassword> {
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('New Password', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        Text('New Password', style: TextStyle(fontWeight: FontWeight.bold)),
         TextField(
           controller: _newPasswordController,
           onChanged: (val) {
@@ -150,12 +149,11 @@ class ChangePasswordState extends State<ChangePassword> {
           obscureText: true,
           autocorrect: false,
           style: new TextStyle(
-            fontSize: 13.0,
-            color: Colors.white
+            fontSize: 13.0
           ),
           decoration: new InputDecoration(
             hintText: 'New Password',
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white70 : Colors.black54),
             border: InputBorder.none,
             suffix: showNewPasswordIndicator ? (!newPasswordValid ? Icon(LineIcons.times, color: Colors.red) : Icon(LineIcons.check, color: Colors.green)) : null,
           )
@@ -171,7 +169,7 @@ class ChangePasswordState extends State<ChangePassword> {
             )
           )
         ) : Container(),
-        Text('Confirm Password', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        Text('Confirm Password', style: TextStyle(fontWeight: FontWeight.bold)),
         TextField(
           controller: _confirmPasswordController,
           onChanged: (val) {
@@ -181,12 +179,11 @@ class ChangePasswordState extends State<ChangePassword> {
           obscureText: true,
           autocorrect: false,
           style: new TextStyle(
-            fontSize: 13.0,
-            color: Colors.white
+            fontSize: 13.0
           ),
           decoration: new InputDecoration(
             hintText: 'Confirm Password',
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white70 : Colors.black54),
             border: InputBorder.none,
             suffix: showConfirmPasswordIndicator ? (!confirmPasswordValid ? Icon(LineIcons.times, color: Colors.red) : Icon(LineIcons.check, color: Colors.green)) : null,
           )
@@ -228,12 +225,12 @@ class ChangePasswordState extends State<ChangePassword> {
                     decoration: BoxDecoration(
                       gradient: new LinearGradient(
                         begin: Alignment(0.0, -2.0),
-                        colors: [Colors.black, Colors.grey[850]]
+                        colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[850]] : [Colors.grey[500], Colors.grey[50]]
                       )
                     ),
                     child: Column(
                       children: <Widget>[
-                        Center(child:Text('Enter old password and set new password', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey))),
+                        Center(child:Text('Enter old password and set new password', style: TextStyle(fontStyle: FontStyle.italic, color: globals.darkModeEnabled ? Colors.grey : Colors.black54))),
                         Padding(padding: EdgeInsets.all(10)),
                         oldPassword(),
                         Divider(
@@ -263,7 +260,7 @@ class ChangePasswordState extends State<ChangePassword> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.0),
                       gradient: new LinearGradient(
-                        colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
+                        colors: globals.darkModeEnabled ? [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent] : [Color.fromARGB(255, 54, 121, 255), Colors.lightBlueAccent],
                       )
                     ),
                     child: Center(
@@ -295,7 +292,7 @@ class ChangePasswordState extends State<ChangePassword> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           title: new Text('Change Password')
         ),

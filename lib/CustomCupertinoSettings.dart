@@ -37,7 +37,7 @@ class CupertinoSettings extends StatelessWidget {
     csTextColor = Colors.white;
     csHeaderTextColor = Colors.white70;
     csRowColor = Color.fromARGB(255, 21, 21, 21);
-    csArrowColor = Colors.white70;
+    csArrowColor = Colors.white30;
   }
 
   void setLightMode() {

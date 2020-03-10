@@ -54,7 +54,8 @@ setGlobals(Map results) async {
   globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
   if (globals.darkModeEnabled) {
     globals.userBrightness = Brightness.dark;
-    globals.userColor = Color.fromARGB(255, 0, 0, 0); //20
+    globals.userColor = Color.fromARGB(255, 0, 0, 0);
+    
   }
   else {
     globals.userBrightness = Brightness.light;
@@ -150,33 +151,33 @@ buildTimeAgo(String dateString, {bool numericDates = true}) {
   final difference = date2.difference(date);
 
   if ((difference.inDays / 365).floor() >= 2) {
-    return Text('${(difference.inDays / 365).floor()}yr', style: TextStyle(fontSize: 13));
+    return Text('${(difference.inDays / 365).floor()}yr', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if ((difference.inDays / 365).floor() >= 1) {
-    return (numericDates) ? Text('1yr', style: TextStyle(fontSize: 13)) : Text('Last year', style: TextStyle(fontSize: 13));
+    return (numericDates) ? Text('1yr', style: TextStyle(fontSize: 13, color: Colors.white)) : Text('Last year', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if ((difference.inDays / 30).floor() >= 2) {
-    return Text('${((difference.inDays / 365) * 10).floor()}mo', style: TextStyle(fontSize: 13));
+    return Text('${((difference.inDays / 365) * 10).floor()}mo', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if ((difference.inDays / 30).floor() >= 1) {
-    return (numericDates) ? Text('1mo', style: TextStyle(fontSize: 13)) : Text('Last month', style: TextStyle(fontSize: 13));
+    return (numericDates) ? Text('1mo', style: TextStyle(fontSize: 13, color: Colors.white)) : Text('Last month', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if ((difference.inDays / 7).floor() >= 2) {
-    return Text('${(difference.inDays / 7).floor()}w', style: TextStyle(fontSize: 13));
+    return Text('${(difference.inDays / 7).floor()}w', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if ((difference.inDays / 7).floor() >= 1) {
-    return (numericDates) ? Text('1w', style: TextStyle(fontSize: 13)) : Text('Last week', style: TextStyle(fontSize: 13));
+    return (numericDates) ? Text('1w', style: TextStyle(fontSize: 13, color: Colors.white)) : Text('Last week', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if (difference.inDays >= 2) {
-    return Text('${difference.inDays}d', style: TextStyle(fontSize: 13));
+    return Text('${difference.inDays}d', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if (difference.inDays >= 1) {
-    return (numericDates) ? Text('1d', style: TextStyle(fontSize: 13)) : Text('Yesterday', style: TextStyle(fontSize: 13));
+    return (numericDates) ? Text('1d', style: TextStyle(fontSize: 13, color: Colors.white)) : Text('Yesterday', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if (difference.inHours >= 2) {
-    return Text('${difference.inHours}h', style: TextStyle(fontSize: 13));
+    return Text('${difference.inHours}h', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if (difference.inHours >= 1) {
-    return (numericDates) ? Text('1h', style: TextStyle(fontSize: 13)) : Text('An hour ago', style: TextStyle(fontSize: 13));
+    return (numericDates) ? Text('1h', style: TextStyle(fontSize: 13, color: Colors.white)) : Text('An hour ago', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if (difference.inMinutes >= 2) {
-    return Text('${difference.inMinutes}m', style: TextStyle(fontSize: 13));
+    return Text('${difference.inMinutes}m', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if (difference.inMinutes >= 1) {
-    return (numericDates) ? Text('1m', style: TextStyle(fontSize: 13)) : Text('A minute ago', style: TextStyle(fontSize: 13));
+    return (numericDates) ? Text('1m', style: TextStyle(fontSize: 13, color: Colors.white)) : Text('A minute ago', style: TextStyle(fontSize: 13, color: Colors.white));
   } else if (difference.inSeconds >= 3) {
-    return Text('${difference.inSeconds}s', style: TextStyle(fontSize: 13));
+    return Text('${difference.inSeconds}s', style: TextStyle(fontSize: 13, color: Colors.white));
   } else {
-    return Text('Just now', style: TextStyle(fontSize: 13));
+    return Text('Just now', style: TextStyle(fontSize: 13, color: Colors.white));
   }
 }
 

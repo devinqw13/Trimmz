@@ -672,7 +672,7 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.0),
                       gradient: new LinearGradient(
-                        colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
+                        colors: globals.darkModeEnabled ? [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent] : [Color.fromARGB(255, 54, 121, 255), Colors.lightBlueAccent],
                       )
                     ),
                     child: Center(
@@ -706,7 +706,7 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
         brightness: globals.userBrightness,
       ),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: Text("Additional Setup"),
