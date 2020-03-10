@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../CustomCupertinoSettings.dart';
 
 class AppearanceSettings extends StatefulWidget {
-  CupertinoSettings settings;
+  final CupertinoSettings settings;
   AppearanceSettings({Key key, this.settings}) : super (key: key);
 
   @override
