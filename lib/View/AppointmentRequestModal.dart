@@ -57,7 +57,7 @@ class _AppointmentRequestBottomSheet extends State<AppointmentRequestBottomSheet
         height: MediaQuery.of(context).size.height * .5,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 21, 21, 21),
+          color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color(0xFFFAFAFA),
           borderRadius: BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
@@ -111,7 +111,7 @@ class _AppointmentRequestBottomSheet extends State<AppointmentRequestBottomSheet
                                         )
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.grey[800],
+                                        color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[300],
                                         shape: BoxShape.circle
                                       ),
                                     ),
@@ -254,6 +254,8 @@ class _AppointmentRequestBottomSheet extends State<AppointmentRequestBottomSheet
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: RaisedButton(
+                            color: Colors.blue,
+                            textColor: Colors.white,
                             onPressed: () {
                               Navigator.pop(context);
                             },

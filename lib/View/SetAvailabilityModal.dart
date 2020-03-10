@@ -48,7 +48,7 @@ class _AvailabilityBottomSheet extends State<AvailabilityBottomSheet> {
         height: 355,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
-            color: Color.fromARGB(255, 21, 21, 21),
+            color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color(0xFFFAFAFA),
             borderRadius: BorderRadius.all(Radius.circular(15)),
             boxShadow: [
               BoxShadow(
@@ -76,7 +76,7 @@ class _AvailabilityBottomSheet extends State<AvailabilityBottomSheet> {
                     fontSize: 20.0
                   ),
                   highlightedTextStyle: TextStyle(
-                    color: _switchValue ? Colors.grey : Colors.white,
+                    color: _switchValue ? Colors.grey : globals.darkModeEnabled ? Colors.white : Colors.black,
                     fontSize: 30.0
                   ),
                   spacing: 0.0,
@@ -87,14 +87,14 @@ class _AvailabilityBottomSheet extends State<AvailabilityBottomSheet> {
                     start = dateTime;
                   },
                 ),
-                Text(' to ', style: TextStyle(fontSize: 20.0, color: _switchValue ? Colors.grey : Colors.white)),
+                Text(' to ', style: TextStyle(fontSize: 20.0, color: _switchValue ? Colors.grey : globals.darkModeEnabled ? Colors.white : Colors.black)),
                 TimePickerSpinner(
                   normalTextStyle: TextStyle(
                     color: Colors.grey,
                     fontSize: 20.0
                   ),
                   highlightedTextStyle: TextStyle(
-                    color: _switchValue ? Colors.grey : Colors.white,
+                    color: _switchValue ? Colors.grey : globals.darkModeEnabled ? Colors.white : Colors.black,
                     fontSize: 30.0
                   ),
                   spacing: 0.0,
@@ -130,6 +130,7 @@ class _AvailabilityBottomSheet extends State<AvailabilityBottomSheet> {
                   Expanded(
                     child: FlatButton(
                       color: Colors.blue,
+                      textColor: Colors.white,
                       onPressed: () async {
                         Navigator.pop(context);
                       },
@@ -140,6 +141,7 @@ class _AvailabilityBottomSheet extends State<AvailabilityBottomSheet> {
                   Expanded(
                     child: FlatButton(
                       color: Colors.blue,
+                      textColor: Colors.white,
                       onPressed: () async {
                         var res = await setTimeAvailability(context, globals.token, aDay.day, start, end, _switchValue);
                         if(res){

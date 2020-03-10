@@ -115,7 +115,7 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
           height: 415,
           margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
           decoration: BoxDecoration(
-            color: Color.fromARGB(255, 21, 21, 21),
+            color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color(0xFFFAFAFA),
             borderRadius: BorderRadius.all(Radius.circular(15)),
             boxShadow: [
               BoxShadow(
@@ -317,6 +317,7 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: FlatButton(
                             color: Colors.blue,
+                            textColor: Colors.white,
                             onPressed: () async {
                               Navigator.pop(context);
                             },

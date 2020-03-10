@@ -125,6 +125,7 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
   buildProfilePictures(BuildContext context, String profilePicture, String name, double radius) {
     if(profilePicture != null && profilePicture != '') {
       return CircleAvatar(
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
         radius: radius,
         backgroundImage: NetworkImage('${globals.baseUrlImage}$profilePicture'),
       );
@@ -137,7 +138,7 @@ availabilityWidget(BuildContext context, List<Availability> availability) {
         ),
         decoration: new BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.purple,
+          color: globals.darkModeEnabled ? Colors.black : Colors.white,
           gradient: new LinearGradient(
             colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
           )

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Model/Packages.dart';
+import '../globals.dart' as globals;
 
 class FullPackagesBottomSheet extends StatefulWidget {
   FullPackagesBottomSheet({@required this.packages, this.showPackageOptions});
@@ -31,7 +32,7 @@ class _FullPackagesBottomSheet extends State<FullPackagesBottomSheet> {
         height: packages.length > 0 ? 600 : 200,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 21, 21, 21),
+          color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color(0xFFFAFAFA),
           borderRadius: BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
@@ -87,7 +88,7 @@ class _FullPackagesBottomSheet extends State<FullPackagesBottomSheet> {
                                           padding: EdgeInsets.all(12),
                                           child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
                                           decoration: BoxDecoration(
-                                            color: Colors.grey[900],
+                                            color: globals.darkModeEnabled ? Colors.grey[900] : Colors.grey[500],
                                             shape: BoxShape.circle
                                           ),
                                         ),
@@ -109,6 +110,8 @@ class _FullPackagesBottomSheet extends State<FullPackagesBottomSheet> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: RaisedButton(
+                            color: Colors.blue,
+                            textColor: Colors.white,
                             onPressed: () {
                               Navigator.pop(context);
                             },

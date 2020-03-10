@@ -30,7 +30,7 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
         height: 355,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 21, 21, 21),
+          color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color(0xFFFAFAFA),
           borderRadius: BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
@@ -51,6 +51,8 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                         Container(
                           width: MediaQuery.of(context).size.width,
                           child: RaisedButton(
+                            color: Colors.blue,
+                            textColor: Colors.white,
                             onPressed: () async {
                               //TODO: Cancel appointment and charge customer the price amount
                               List tokens = await getNotificationTokens(context, appointment['clientid']);
@@ -73,6 +75,8 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                         Container(
                           width: MediaQuery.of(context).size.width,
                           child: RaisedButton(
+                            color: Colors.blue,
+                            textColor: Colors.white,
                             onPressed: () async {
                               var res1 = await updateAppointmentStatus(context, appointment['id'], 2);
                               if(res1) {
@@ -112,6 +116,8 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: RaisedButton(
+                            color: Colors.blue,
+                            textColor: Colors.white,
                             onPressed: () {
                               Navigator.pop(context);
                               widget.showAppointmentDetails(appointment);

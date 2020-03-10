@@ -597,7 +597,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
                   });
                 }
               },
-              indicatorColor: Colors.white,
+              indicatorColor: globals.darkModeEnabled ? Colors.white : Colors.black,
               tabs: <Widget>[
                 Tab(text: "Barbers"),
                 Tab(text: "Marketplace")

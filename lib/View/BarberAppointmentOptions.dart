@@ -126,7 +126,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
         height: 655,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 21, 21, 21),
+          color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color(0xFFFAFAFA),
           borderRadius: BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
@@ -158,19 +158,21 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                   globals.userType != 2 ? appointment['barber_name'] : appointment['name'], 
                                   style: TextStyle(
                                     fontSize: 25,
-                                    fontWeight: FontWeight.bold
+                                    fontWeight: FontWeight.bold,
+                                    color: globals.darkModeEnabled ? Colors.white : Colors.black
                                   )
                                 ),
                                 Text(
                                   df.format(DateTime.parse(appointment['full_time'])),
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold
+                                    fontWeight: FontWeight.bold,
+                                    color: globals.darkModeEnabled ? Colors.white : Colors.black
                                   ),
                                 ),
                                 Text(
                                   df2.format(DateTime.parse(appointment['full_time'])) + ' - ' + df2.format(DateTime.parse(appointment['full_time']).add(Duration(minutes: appointment['duration']))),
                                   style: TextStyle(
-                                    color: Colors.grey
+                                    color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
                                   ),
                                 ),
                                 Container(
@@ -190,14 +192,14 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             'Amount',
                                             style: TextStyle(
                                               fontSize: 16,
-                                              color: Colors.grey
+                                              color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
                                             )
                                           ),
                                           Text(
                                             '\$'+appointment['price'].toString(),
                                             style: TextStyle(
                                               fontSize: 16,
-                                              color: Colors.grey
+                                              color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
                                             )
                                           )
                                         ]
@@ -209,14 +211,14 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             'Tip',
                                             style: TextStyle(
                                               fontSize: 14,
-                                              color: Colors.grey
+                                              color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
                                             )
                                           ),
                                           Text(
                                             '\$'+appointment['tip'].toString(),
                                             style: TextStyle(
                                               fontSize: 14,
-                                              color: Colors.grey
+                                              color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
                                             )
                                           )
                                         ]
@@ -228,14 +230,14 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             'Processing Fees',
                                             style: TextStyle(
                                               fontSize: 14,
-                                              color: Colors.grey
+                                              color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
                                             )
                                           ),
                                           Text(
                                             '\$1',
                                             style: TextStyle(
                                               fontSize: 14,
-                                              color: Colors.grey
+                                              color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
                                             )
                                           )
                                         ]
@@ -247,7 +249,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             globals.spPayoutMethod == 'standard' ? 'Fees (${(globals.stdRateFee * 100).toStringAsFixed(1)}%)' : 'Fees (${(globals.intRateFee * 100).toStringAsFixed(1)}%)',
                                             style: TextStyle(
                                               fontSize: 14,
-                                              color: Colors.grey
+                                              color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
                                             )
                                           ),
                                           Text(
@@ -255,7 +257,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             '- \$' + ((double.parse(appointment['price'].toString()) + double.parse(appointment['tip'].toString())) * globals.intRateFee).toStringAsFixed(2),
                                             style: TextStyle(
                                               fontSize: 14,
-                                              color: Colors.grey
+                                              color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
                                             )
                                           )
                                         ]
@@ -267,8 +269,8 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             'Total',
                                             style: TextStyle(
                                               fontSize: 17,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold
+                                              color: globals.darkModeEnabled ? Colors.white : Colors.black,
+                                              fontWeight: FontWeight.bold,
                                             )
                                           ),
                                           Text(
@@ -279,7 +281,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                             '\$' + (double.parse(instantBarberPrice) / 100).toString(),
                                             style: TextStyle(
                                               fontSize: 17,
-                                              color: Colors.white,
+                                              color: globals.darkModeEnabled ? Colors.white : Colors.black,
                                               fontWeight: FontWeight.bold
                                             )
                                           )
@@ -299,6 +301,8 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                 Expanded(
                                                   child: Container(
                                                     child: RaisedButton(
+                                                      color: Colors.blue,
+                                                      textColor: Colors.white,
                                                       onPressed: () async {
                                                         progressHUD();
                                                         int total = appointment['price'] + appointment['tip'];
@@ -339,6 +343,8 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                 Expanded(
                                                   child: Container(
                                                     child: RaisedButton(
+                                                      color: Colors.blue,
+                                                      textColor: Colors.white,
                                                       onPressed: () {
                                                         Navigator.pop(context);
                                                         widget.showCancel(true);
@@ -354,6 +360,8 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                 Expanded(
                                                   child: Container(
                                                     child: RaisedButton(
+                                                      color: Colors.blue,
+                                                      textColor: Colors.white,
                                                       onPressed: () {
                                                         markNoShow();
                                                       },
@@ -369,6 +377,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                         child: RichText(
                                           softWrap: true,
                                           text: new TextSpan(
+                                            style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                                             children: <TextSpan> [
                                               new TextSpan(text: 'Pending: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
                                               new TextSpan(text: 'waiting for barber to update appointment', style: TextStyle(fontStyle: FontStyle.italic)),
@@ -392,6 +401,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                         child: RichText(
                                           softWrap: true,
                                           text: new TextSpan(
+                                            style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                                             children: <TextSpan> [
                                               DateTime.now().isBefore(DateTime.parse(appointment['full_time'])) ?
                                               new TextSpan(text: 'Pending: ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)) :
@@ -408,6 +418,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                         RichText(
                                           softWrap: true,
                                           text: new TextSpan(
+                                            style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                                             children: <TextSpan>[
                                               new TextSpan(text: 'Marked ', style: new TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
                                               appointment['status'] == 2 ?
@@ -445,6 +456,8 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: RaisedButton(
+                            color: Colors.blue,
+                            textColor: Colors.white,
                             onPressed: () {
                               if(widget.showFull == null){
                                 Navigator.pop(context);

@@ -129,7 +129,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
           height: MediaQuery.of(context).size.height * .55,
           margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
           decoration: BoxDecoration(
-            color: Color.fromARGB(255, 21, 21, 21),
+            color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color(0xFFFAFAFA),
             borderRadius: BorderRadius.all(Radius.circular(15)),
             boxShadow: [
               BoxShadow(
@@ -224,7 +224,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                           overflow: TextOverflow.ellipsis,
                           text: new TextSpan(
                             children: <TextSpan> [
-                              new TextSpan(text: 'Duration ', style: TextStyle(fontSize: 18)),
+                              new TextSpan(text: 'Duration ', style: TextStyle(fontSize: 18, color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                               TextSpan(text: '15 min increments', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic))
                             ]
                           )
@@ -260,6 +260,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               child: FlatButton(
                                 color: Colors.red,
+                                textColor: Colors.white,
                                 onPressed: () async {
                                   bool res = await removePackage(context, globals.token, int.parse(package.id));
                                   if(res) {
@@ -306,6 +307,7 @@ class _PackageOptionsBottomSheet extends State<PackageOptionsBottomSheet> {
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: FlatButton(
                             color: Colors.blue,
+                            textColor: Colors.white,
                             onPressed: () async {
                               Navigator.pop(context);
                               widget.showPackagesList(true);

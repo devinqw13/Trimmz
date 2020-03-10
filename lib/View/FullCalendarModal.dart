@@ -4,6 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 import 'Widgets.dart';
+import '../globals.dart' as globals;
 
 class FullCalendarModal extends StatefulWidget {
   FullCalendarModal({@required this.appointments, this.showAppointmentOptions, this.selectDate, this.showManualAddAppointment});
@@ -67,7 +68,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
-        color: Colors.blue[700]
+        color: globals.darkModeEnabled ? Colors.blue[700] : Colors.lightBlue
       ),
       width: 20.0,
       height: 20.0,
@@ -114,7 +115,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
                 decoration: BoxDecoration(
                   gradient: new LinearGradient(
                     begin: Alignment(1.0, .5),
-                    colors: [Colors.black, Colors.black26]
+                    colors: globals.darkModeEnabled ? [Colors.black, Colors.black26] : [Colors.grey[300], Colors.grey[100]]
                   )
                 ),
                 child: Row(
@@ -193,7 +194,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
         height: MediaQuery.of(context).size.height * .9,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 21, 21, 21),
+          color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color(0xFFFAFAFA),
           borderRadius: BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
@@ -207,8 +208,8 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
               onDaySelected: _onDaySelected,
               availableGestures: AvailableGestures.horizontalSwipe,
               daysOfWeekStyle: DaysOfWeekStyle(
-                weekdayStyle: const TextStyle(color: const Color(0xFFf2f2f2)),
-                weekendStyle: const TextStyle(color: const Color(0xFFf2f2f2))
+                weekdayStyle: TextStyle(color: globals.darkModeEnabled ? Color(0xFFf2f2f2) : Colors.black),
+                weekendStyle: TextStyle(color: globals.darkModeEnabled ?  Color(0xFFf2f2f2) : Colors.black)
               ),
               headerStyle: HeaderStyle(
                 formatButtonVisible: false,
@@ -216,8 +217,8 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
                 rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.blue)
               ),
               calendarStyle: CalendarStyle(
-                weekendStyle: const TextStyle(color: Colors.white),
-                outsideWeekendStyle: TextStyle(color: Color(0xFF9E9E9E)),
+                weekendStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
+                outsideWeekendStyle: TextStyle(color: Color(0xFF9E9E9E))
               ),
               headerVisible: true,
               calendarController: _calendarController,
@@ -231,7 +232,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
                       margin: const EdgeInsets.all(6.0),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.blue[500]
+                        color: globals.darkModeEnabled ? Colors.blue[500] : Colors.lightBlueAccent[400]
                       ),
                       child: Center(
                         child: Text(
@@ -249,7 +250,7 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
                       margin: const EdgeInsets.all(6.0),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.grey[800]
+                        color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[400]
                       ),
                       child: Center(
                         child: Text(
@@ -295,6 +296,8 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: RaisedButton(
+                      textColor: Colors.white,
+                      color: Colors.blue,
                       onPressed: () {
                         Navigator.pop(context);
                       },

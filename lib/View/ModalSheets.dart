@@ -10,7 +10,7 @@ showPayoutInfoModalSheet(BuildContext context) async {
         height: 255,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 21, 21, 21),
+          color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color(0xFFFAFAFA),
           borderRadius: BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
@@ -33,6 +33,7 @@ showPayoutInfoModalSheet(BuildContext context) async {
                           child: RichText(
                             softWrap: true,
                             text: new TextSpan(
+                              style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                               children: <TextSpan>[
                                 new TextSpan(text: 'Standard Transfer: ', style: new TextStyle(fontWeight: FontWeight.bold)),
                                 new TextSpan(text: 'The standard transfer fee is ${(globals.stdRateFee * 100).toStringAsFixed(1)}% of the appointment amount. Standard transfer usually takes about 1-3 business days to deposit.'),
@@ -46,6 +47,7 @@ showPayoutInfoModalSheet(BuildContext context) async {
                           child: RichText(
                             softWrap: true,
                             text: new TextSpan(
+                              style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                               children: <TextSpan>[
                                 new TextSpan(text: 'Instant Transfer: ', style: new TextStyle(fontWeight: FontWeight.bold)),
                                 new TextSpan(text: 'The instant transfer fee is ${(globals.intRateFee * 100).toStringAsFixed(1)}% of the appointment amount.'),
@@ -62,6 +64,8 @@ showPayoutInfoModalSheet(BuildContext context) async {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: RaisedButton(
+                            color: Colors.blue,
+                            textColor: Colors.white,
                             onPressed: () {
                               Navigator.pop(context);
                             },
