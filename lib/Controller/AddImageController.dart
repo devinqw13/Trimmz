@@ -226,7 +226,7 @@ class _CameraAppState extends State<CameraApp> {
                   child: RichText(
                     text: new TextSpan(
                       children: <TextSpan> [
-                        new TextSpan(text: asset.name+' ', style: TextStyle(fontWeight: FontWeight.bold)),
+                        new TextSpan(text: asset.name+' ', style: TextStyle(fontWeight: FontWeight.bold, color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                         new TextSpan(text: '(${asset.assetCount})', style: TextStyle(color: Colors.grey)),
                       ]
                     )
