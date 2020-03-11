@@ -59,7 +59,6 @@ void main() async {
       theme: new ThemeData(
         primaryColor: globals.userColor,
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.black87
       )
     )
   );

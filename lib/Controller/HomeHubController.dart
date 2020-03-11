@@ -12,20 +12,22 @@ class HomeHubScreen extends StatefulWidget {
   HomeHubScreenState createState() => new HomeHubScreenState();
 }
 
-class HomeHubScreenState extends State<HomeHubScreen> {
+class HomeHubScreenState extends State<HomeHubScreen> with TickerProviderStateMixin {
   int _currentIndex = 0;
-  List<Widget> _children = [
-    HomeHubTabWidget(0),
-    HomeHubTabWidget(1),
-    HomeHubTabWidget(2),
-    HomeHubTabWidget(3)
-  ];
+  List<Widget> _children = [];
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
 
   @override
   void initState() {
     super.initState();
+    
+    _children = [
+      HomeHubTabWidget(0),
+      HomeHubTabWidget(1),
+      HomeHubTabWidget(2),
+      HomeHubTabWidget(3)
+    ];
 
     _progressHUD = new ProgressHUD(
       color: Colors.white,
