@@ -103,7 +103,8 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
                   child: Row(
                     children: <Widget>[
                       Text(
-                        recipients[i]['username']
+                        recipients[i]['username'],
+                        style: TextStyle(color: Colors.white),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -127,7 +128,7 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
                             recipients.removeWhere((item) => item.containsValue(recipients[i]['username']));
                           });
                         },
-                        child: Icon(LineIcons.close, size: 15),
+                        child: Icon(LineIcons.close, size: 15, color: Colors.white),
                       )
                     ]
                   )
