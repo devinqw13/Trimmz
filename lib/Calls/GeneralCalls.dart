@@ -967,16 +967,16 @@ Future<Appointment> getUpcomingAppointment(BuildContext context, int userId) asy
     if(jsonResponse['appointment'].length > 0) {
       Appointment appointment = new Appointment();
       for(var item in jsonResponse['appointment']){
-        appointment.clientId = int.parse(item['client_id']);
-        appointment.barberId = int.parse(item['barber_id']);
+        appointment.clientId = item['client_id'];
+        appointment.barberId = item['barber_id'];
         appointment.barberName = item['barber_name'];
         appointment.dateTime = DateTime.parse(item['date']);
-        appointment.status = int.parse(item['status']);
+        appointment.status = item['status'];
         appointment.packageId = int.parse(item['package_id']);
         appointment.packageName = item['package_name'];
         appointment.locationAddress = item['shop_address'];
         appointment.geoAddress = item['geo'];
-        appointment.price = int.parse(item['price']);
+        appointment.price = item['price'];
         appointment.updated = item['updated'];
       }
       return appointment;

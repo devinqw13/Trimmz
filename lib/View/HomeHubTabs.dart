@@ -90,6 +90,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                             softWrap: true,
                             overflow: TextOverflow.ellipsis,
                             text: new TextSpan(
+                              style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                               children: <TextSpan> [
                                 new TextSpan(text: 'Upcoming Appointment: ', style: new TextStyle(fontWeight: FontWeight.bold)),
                                 new TextSpan(text: appointmentTime),
@@ -119,6 +120,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                                 softWrap: true,
                                 overflow: TextOverflow.ellipsis,
                                 text: new TextSpan(
+                                  style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                                   children: <TextSpan> [
                                     new TextSpan(text: 'Upcoming Appointment', style: new TextStyle(fontWeight: FontWeight.bold)),
                                   ]
@@ -147,6 +149,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                             softWrap: true,
                             overflow: TextOverflow.ellipsis,
                             text: new TextSpan(
+                              style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                               children: <TextSpan> [
                                 new TextSpan(text: 'Time: ', style: TextStyle(fontWeight: FontWeight.bold)),
                                 TextSpan(text: appointmentTime)
@@ -157,6 +160,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                             softWrap: true,
                             overflow: TextOverflow.ellipsis,
                             text: new TextSpan(
+                              style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                               children: <TextSpan> [
                                 new TextSpan(text: 'Barber: ', style: TextStyle(fontWeight: FontWeight.bold)),
                                 TextSpan(text: upcomingAppointment.barberName)
@@ -167,6 +171,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                             softWrap: true,
                             overflow: TextOverflow.ellipsis,
                             text: new TextSpan(
+                              style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
                               children: <TextSpan> [
                                 new TextSpan(text: 'Location: ', style: TextStyle(fontWeight: FontWeight.bold)),
                                 TextSpan(text: '${upcomingAppointment.locationAddress}, ${upcomingAppointment.geoAddress}')

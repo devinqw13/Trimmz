@@ -258,6 +258,7 @@ class _AddPackageBottomSheet extends State<AddPackageBottomSheet> {
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: FlatButton(
                             color: Colors.blue,
+                            textColor: Colors.white,
                             onPressed: () async {
                               submitService();
                             },
