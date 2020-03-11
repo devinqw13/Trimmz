@@ -967,11 +967,11 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                             Container(
                               padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 2.0, bottom: 2.0),
                               decoration: BoxDecoration(
-                                color: Colors.grey[700],
+                                color: globals.darkModeEnabled ? Colors.grey[700] : Colors.grey[300],
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.all(Radius.circular(20.0))
                               ),
-                              child: Text(_selectedEvents[i]['time'], style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500, color: Colors.white))
+                              child: Text(_selectedEvents[i]['time'], style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500, color: globals.darkModeEnabled ? Colors.white : Colors.black))
                             )
                           ]
                         )
@@ -1876,7 +1876,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       );
     }else {
       return new Scaffold(
-        backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           automaticallyImplyLeading: false,
           title: Text('Settings'),

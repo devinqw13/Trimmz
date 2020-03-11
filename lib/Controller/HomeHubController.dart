@@ -683,7 +683,7 @@ class HomeHubScreenState extends State<HomeHubScreen> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
-            backgroundColor: globals.userColor,
+            backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
             onTap: onNavTapTapped,
             currentIndex: _currentIndex,
             unselectedItemColor: globals.darkModeEnabled ? Colors.white : Colors.black,
