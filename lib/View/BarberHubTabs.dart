@@ -1682,7 +1682,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       return new DefaultTabController(
         length: 2,
         child: Scaffold(
-          backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
+          backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
           floatingActionButton: new Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
@@ -1754,7 +1754,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       );
     }else if(widget.widgetItem == 1){
       return new Scaffold(
-        backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
+        backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           automaticallyImplyLeading: false,
           title: Text('Marketplace'),
@@ -1806,7 +1806,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       return new DefaultTabController(
         length: 2,
         child: Scaffold(
-          backgroundColor: globals.darkModeEnabled ? Colors.black : Colors.white,
+          backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
           appBar: new AppBar(
             automaticallyImplyLeading: false,
             title: TextField(
