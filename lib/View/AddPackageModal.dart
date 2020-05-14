@@ -92,8 +92,8 @@ class _AddPackageBottomSheet extends State<AddPackageBottomSheet> {
   }
 
   submitService() async {
-    if(!(int.parse(durationController.text) % 15 == 0)) {
-      showErrorDialog(context, 'Invalid Duration', 'The duration of the service must be in increments of 15 minutes, e.g: 15, 30.');
+    if(!(int.parse(durationController.text) % 5 == 0)) {
+      showErrorDialog(context, 'Invalid Duration', 'The duration of the service must be in increments of 5 minutes, e.g: 5, 10, 15.');
       return;
     }
 
@@ -216,7 +216,7 @@ class _AddPackageBottomSheet extends State<AddPackageBottomSheet> {
                           text: new TextSpan(
                             children: <TextSpan> [
                               new TextSpan(text: 'Duration ', style: TextStyle(fontSize: 18, color: globals.darkModeEnabled ? Colors.white : Colors.black)),
-                              TextSpan(text: '15 min increments', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic))
+                              TextSpan(text: '5 min intervals', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic))
                             ]
                           )
                         )
