@@ -106,7 +106,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   KeyboardActionsConfig _buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
       keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
-      keyboardBarColor: Color.fromARGB(255, 21, 21, 21),
+      keyboardBarColor: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color.fromARGB(255, 225, 225, 225),
       nextFocus: true,
       actions: [
         KeyboardAction(
@@ -120,7 +120,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
           focusNode: _numberFocus,
           closeWidget: Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text('Done'),
+            child: Text('Done', style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black)),
           ),
         ),
       ],
@@ -584,7 +584,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                         child: Center(child: Text('\$' + packages[i].price, textAlign: TextAlign.center,)),
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[500]
+                                          color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[350]
                                         ),
                                       )
                                     ]
@@ -665,7 +665,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                   margin: const EdgeInsets.all(6.0),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[500]
+                                    color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[350]
                                   ),
                                   child: Center(
                                     child: Text(
@@ -717,20 +717,20 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                     children: <Widget>[
                                       paymentCard.icon,
                                       Padding(padding: EdgeInsets.all(10)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                                       Padding(padding: EdgeInsets.all(3)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                                       Padding(padding: EdgeInsets.all(3)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
-                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: Colors.white)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                                      Container(margin:EdgeInsets.all(1),width:5,height:5,decoration:BoxDecoration(shape:BoxShape.circle,color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                                       Padding(padding: EdgeInsets.all(3)),
                                       Text(paymentCard.lastFour)
                                     ]
