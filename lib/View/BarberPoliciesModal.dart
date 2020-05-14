@@ -40,28 +40,28 @@ class _BarberPoliciesModal extends State<BarberPoliciesModal> {
   KeyboardActionsConfig _buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
       keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
-      keyboardBarColor: Color.fromARGB(255, 21, 21, 21),
+      keyboardBarColor: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color.fromARGB(255, 225, 225, 225),
       nextFocus: true,
       actions: [
         KeyboardAction(
           focusNode: _number1Focus,
           closeWidget: Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text('Done'),
+            child: Text('Done', style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black)),
           ),
         ),
         KeyboardAction(
           focusNode: _number2Focus,
           closeWidget: Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text('Done'),
+            child: Text('Done', style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black)),
           ),
         ),
         KeyboardAction(
           focusNode: _number3Focus,
           closeWidget: Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text('Done'),
+            child: Text('Done', style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black)),
           ),
         ),
       ],

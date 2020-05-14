@@ -16,6 +16,7 @@ import '../Controller/LoginController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../Controller/AppearanceSettings.dart';
+import '../Controller/AdminPortalController.dart';
 
 class SettingsTab extends StatefulWidget {
   SettingsTab();
@@ -86,9 +87,11 @@ class SettingsTabState extends State<SettingsTab> {
   @override
   Widget build(BuildContext context) {
     settings = new CupertinoSettings(<Widget>[
-      // new CSLink('TESTING', () async {
-      //   var res = await spCaptureCharge(context, 'pi_1GJjV1KkfPGAYb3BEliaidPm');
-      // }),
+      globals.userType == 3 ? new CSHeader('Admin Settings') : Container(),
+      globals.userType == 3 ? new CSLink('Admin Portal', () async {
+        final adminPortal = new AdminPortal();
+        Navigator.push(context, new MaterialPageRoute(builder: (context) => adminPortal));
+      }, style: CSWidgetStyle(icon: Icon(LineIcons.cog, color: globals.darkModeEnabled ? Colors.white : Colors.black54))) : Container(),
       new CSHeader('Appearance'),
       // new CSControl(
       //   'Dark Mode',

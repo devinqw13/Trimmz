@@ -2214,11 +2214,11 @@ Future<List<FeedItem>> getPosts(BuildContext context, int userId, int type) asyn
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (028)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding (043)", "Please try again. If this error continues to occur, please contact support.");
     return [];
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (028)", "Please try again.");
+    showErrorDialog(context, "An error has occurred (043)", "Please try again.");
     return [];
   }
 
@@ -2255,4 +2255,40 @@ Future<List<FeedItem>> getPosts(BuildContext context, int userId, int type) asyn
     return [];
   }
 
+}
+
+Future<List> getAllUsers(BuildContext context) async {
+  Map<String, String> headers = {
+    'Content-type' : 'application/json', 
+    'Accept': 'application/json',
+  };
+
+  String url = "${globals.baseUrl}getAllUsers";
+
+  Map jsonResponse = {};
+  http.Response response;
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (044)", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (044)", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == 'false'){
+    return jsonResponse['users'];
+  }else {
+    return [];
+  }
 }

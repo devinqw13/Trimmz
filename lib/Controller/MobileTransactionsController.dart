@@ -158,7 +158,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
           decoration: BoxDecoration(
             gradient: new LinearGradient(
               begin: Alignment(0.0, -2.0),
-              colors: [Colors.black, Color.fromRGBO(45, 45, 45, 1)]
+              colors: globals.darkModeEnabled ? [Colors.black, Color.fromRGBO(45, 45, 45, 1)] : [Colors.grey[500], Colors.grey[50]]
             )
           ),
           child: Column(
