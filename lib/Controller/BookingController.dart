@@ -278,7 +278,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                 Map<String, String> appointmentTimes = {};
                 for(var appointment in value) {
                   var time = DateFormat('Hms').format(DateTime.parse(DateFormat('hh:mm a', 'en_US').parse(appointment['time']).toString()));
-                  appointmentTimes[time] = appointment['duration'];
+                  appointmentTimes[time] = appointment['duration'].toString();
                 }
 
                 if(!appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {

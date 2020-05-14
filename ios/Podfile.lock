@@ -64,9 +64,9 @@ PODS:
   - Flutter (1.0.0)
   - flutter_native_image (0.0.1):
     - Flutter
-  - geolocator (5.1.5):
+  - geolocator (5.3.1):
     - Flutter
-  - google_api_availability (2.0.1):
+  - google_api_availability (2.0.4):
     - Flutter
   - GoogleAppMeasurement (6.5.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
@@ -97,7 +97,7 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (6.6.0):
     - GoogleUtilities/Logger
-  - location_permissions (2.0.3):
+  - location_permissions (2.0.5):
     - Flutter
   - nanopb (1.30905.0):
     - nanopb/decode (= 1.30905.0)
@@ -219,13 +219,13 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 58cb17277641a0084d98d4951ba1f1fb0588c8c6
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_native_image: 9c0b7451838484458e5b0fae007b86a4c2d4bdfe
-  geolocator: 80aba2bb48f8c7dfc5a8b70b9d13fc3edc8399c4
-  google_api_availability: 163b30f802e6148c67f092aa4501c90ddd8eec8d
+  geolocator: 460cc8e850b616f8c0e90944c86517d91ccbb686
+  google_api_availability: 15fa42a8cd83c0a6738507ffe6e87096f12abcb8
   GoogleAppMeasurement: 4c644d86835d827bab30ab6aabb9ecaf1f500735
   GoogleDataTransport: f6f8eba931df03ebd2232ff4645aa85f8f47b5ab
   GoogleDataTransportCCTSupport: d70a561f7d236af529fee598835caad5e25f6d3d
   GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
-  location_permissions: 195ff2a1182fa9029ef3f2653156961ee5a1e40b
+  location_permissions: 4a49d4e5bec5b653643e551ab77963cc99bb0e4a
   nanopb: c43f40fadfe79e8b8db116583945847910cbabc9
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
   photo_manager: f7c619c2cc8c2adb8d85c63363babac477de9c67
