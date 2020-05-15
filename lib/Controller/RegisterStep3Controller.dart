@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:trimmz/dialogs.dart';
 import '../Calls/GeneralCalls.dart';
 import 'dart:ui';
 import 'BarberHubController.dart';
@@ -10,6 +11,7 @@ import '../globals.dart' as globals;
 import 'package:line_icons/line_icons.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'dart:async';
+import 'package:progress_hud/progress_hud.dart';
 
 class RegisterStep3Screen extends StatefulWidget {
   final String username;
@@ -37,13 +39,34 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
   bool upperLetter = false;
   bool number = false;
   bool specChar = false;
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
   void initState() {
     super.initState();
 
     passwordStreamController.stream
-    .debounce(Duration(seconds: 1))
+    .debounce(Duration(milliseconds: 100))
     .listen((s) => _passwordCheck(s));
+
+    _progressHUD = new ProgressHUD(
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
+      borderRadius: 8.0,
+      loading: false,
+      text: 'Loading...'
+    );
+  }
+
+  void progressHUD() {
+    setState(() {
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
+    });
   }
 
   _passwordCheck(String string) async {
@@ -178,6 +201,7 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
     return new GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(new FocusNode());
+        progressHUD();
         _submitPassword(context, _registerUserPasswordController.text, _registerUserPassword2Controller.text);
       },
       child: Container(
@@ -373,6 +397,8 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
         final barberHubScreen = new BarberHubScreen(availability: availability);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberHubScreen));
       }
+    }else {
+      showErrorDialog(context, 'Error has occured', 'An error has occurred. Try again.');
     }
   }
 
@@ -509,7 +535,8 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
           return false;
         }, child: Stack(
           children: <Widget>[
-            _buildRegisterBody()
+            _buildRegisterBody(),
+            _progressHUD
           ]
         )
       )
