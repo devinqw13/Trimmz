@@ -831,6 +831,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
           setState(() {
             _events = value;
           });
+          print(_events);
         },
         showFullCalendar: (value) {
           showFullCalendar(value);
@@ -927,14 +928,14 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                       Container(
                         child: Row(
                           children: <Widget>[
-                            buildProfilePictures(context, _selectedEvents[i]['client_pp'], _selectedEvents[i]['name'], 30),
+                            buildProfilePictures(context, _selectedEvents[i]['client_pp'], _selectedEvents[i]['clientid'] == 0 ? _selectedEvents[i]['manual_client_name'] : _selectedEvents[i]['name'], 30),
                             Padding(padding: EdgeInsets.all(5)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Text(_selectedEvents[i]['name'], style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                                    Text(_selectedEvents[i]['clientid'] == 0 ? _selectedEvents[i]['manual_client_name'] : _selectedEvents[i]['name'], style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                                     Padding(padding: EdgeInsets.all(5)),
                                     Container(
                                       padding: EdgeInsets.only(bottom: 1, top: 1, right: 6, left: 6),

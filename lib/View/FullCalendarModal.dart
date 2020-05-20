@@ -124,13 +124,13 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        buildProfilePictures(context, _selectedEvents[i]['client_pp'], _selectedEvents[i]['name'], 25),
+                        buildProfilePictures(context, _selectedEvents[i]['client_pp'], _selectedEvents[i]['clientid'] == 0 ? _selectedEvents[i]['manual_client_name'] : _selectedEvents[i]['name'], 25),
                         Padding(padding: EdgeInsets.all(2)),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              _selectedEvents[i]['name'],
+                              _selectedEvents[i]['clientid'] == 0 ? _selectedEvents[i]['manual_client_name'] : _selectedEvents[i]['name'],
                               style: TextStyle(
                                 fontWeight: FontWeight.bold
                               )
@@ -277,18 +277,18 @@ class _FullCalendarModal extends State<FullCalendarModal> with TickerProviderSta
                 },
               ),
             ),
-            // Row(
-            //   children: <Widget>[
-            //     GestureDetector(
-            //       onTap: () {
-            //         Navigator.pop(context);
-            //         widget.showManualAddAppointment(selectedDate);
-            //       },
-            //       child: Icon(LineIcons.calendar_plus_o, color: Colors.blue, size: 30)
-            //     )
-            //   ],
-            // ),
-            // Padding(padding: EdgeInsets.all(5)),
+            Row(
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    widget.showManualAddAppointment(selectedDate);
+                  },
+                  child: Icon(LineIcons.calendar_plus_o, color: Colors.blue, size: 30)
+                )
+              ],
+            ),
+            Padding(padding: EdgeInsets.all(5)),
             buildList(),
             Row(
               children: <Widget>[

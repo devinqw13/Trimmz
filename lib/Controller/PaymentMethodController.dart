@@ -176,6 +176,10 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
               },
               child: Text('Add Payment Method')
             )
+          ),
+          Container(
+            margin: EdgeInsets.all(5),
+            child: Text('Your card will be charged \$1 for authorization when adding a payment method', style: TextStyle(color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[600], fontStyle: FontStyle.italic, fontSize: 12))
           )
         ]
       );
@@ -221,6 +225,10 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 )
               ]
             )
+          ),
+          Container(
+            margin: EdgeInsets.all(5),
+            child: Text('Your card will be charged \$1 for authorization when changing a payment method', style: TextStyle(color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[600], fontStyle: FontStyle.italic, fontSize: 12))
           )
         ]
       );

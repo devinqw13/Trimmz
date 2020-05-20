@@ -149,13 +149,13 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                           children: <Widget>[
                             globals.userType != 2 ?
                             buildProfilePictures(context, appointment['barber_pp'], appointment['barber_name'], 25) :
-                            buildProfilePictures(context, appointment['client_pp'], appointment['name'], 25),
+                            buildProfilePictures(context, appointment['client_pp'], appointment['clientid'] == 0 ? appointment['manual_client_name'] : appointment['name'], 25),
                             Padding(padding: EdgeInsets.all(5)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  globals.userType != 2 ? appointment['barber_name'] : appointment['name'], 
+                                  globals.userType != 2 ? appointment['barber_name'] : appointment['clientid'] == 0 ? appointment['manual_client_name'] : appointment['name'], 
                                   style: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold,

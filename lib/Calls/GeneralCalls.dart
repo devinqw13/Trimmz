@@ -572,9 +572,9 @@ Future<Map<DateTime, List<dynamic>>> getBarberAppointments(BuildContext context,
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(!apt.containsKey(date)) {
-        apt[date] = [{'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'paymentid': item['sp_paymentid'], 'customerid': item['sp_customerid'], 'email': item['email'], 'barber_pp': item['barber_pp'], 'client_pp': item['client_pp']}];
+        apt[date] = [{'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'paymentid': item['sp_paymentid'], 'customerid': item['sp_customerid'], 'email': item['email'], 'barber_pp': item['barber_pp'], 'client_pp': item['client_pp'], 'manual_client_name': item['manual_client_name'], 'manual_client_phone': item['manual_client_phone']}];
       }else {
-        apt[date].add({'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'paymentid': item['sp_paymentid'], 'customerid': item['sp_customerid'], 'email': item['email'], 'barber_pp': item['barber_pp'], 'client_pp': item['client_pp']});
+        apt[date].add({'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'paymentid': item['sp_paymentid'], 'customerid': item['sp_customerid'], 'email': item['email'], 'barber_pp': item['barber_pp'], 'client_pp': item['client_pp'], 'manual_client_name': item['manual_client_name'], 'manual_client_phone': item['manual_client_phone']});
       }
     }
 
@@ -794,7 +794,7 @@ Future<bool> setTimeAvailability(BuildContext context, int userid, String day, D
   }
 }
 
-Future<bool> bookAppointment(BuildContext context, int userId, String barberId, int price, DateTime time, String packageId, int tip) async {
+Future<bool> bookAppointment(BuildContext context, int userId, String barberId, int price, DateTime time, String packageId, int tip, [String name, String phone]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Accept': 'application/json',
@@ -809,8 +809,16 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
     "price": price,
     "time": time.toString(),
     "packageid" : packageId,
-    "tip": tip
+    "tip": tip,
   };
+
+  if(name != null) {
+    print('here');
+    jsonMap['client_name'] = '$name';
+  }
+  if(phone != null) {
+    jsonMap['client_phone'] = '$phone';
+  }
 
   String url = "${globals.baseUrl}bookAppointment/";
 

@@ -7,6 +7,8 @@ import '../globals.dart' as globals;
 import '../Calls/GeneralCalls.dart';
 import 'package:intl/intl.dart';
 import '../Model/availability.dart';
+import '../View/TextFieldFormatter.dart';
+import 'package:progress_hud/progress_hud.dart';
 
 class AddManualAppointmentModal extends StatefulWidget {
   AddManualAppointmentModal({@required this.selectedDate, this.updateAppointmentList, this.showFullCalendar, this.packages, this.appointments});
@@ -33,6 +35,10 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
   List<RadioModel> _availableTimes = new List<RadioModel>();
   DateTime finalDateTime;
   Map<DateTime, List<dynamic>> appointments;
+  TextEditingController nameTextController = new TextEditingController();
+  TextEditingController phoneTextController = new TextEditingController();
+  ProgressHUD _progressHUD;
+  bool _loadingInProgress = false;
 
   void initState() {
     super.initState();
@@ -47,6 +53,38 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
     );
 
     _animationController.forward();
+
+    getInitDate();
+
+    _progressHUD = new ProgressHUD(
+      color: Colors.white,
+      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
+      borderRadius: 8.0,
+      loading: false,
+      text: 'Loading...'
+    );
+  }
+
+  void progressHUD() {
+    setState(() {
+      if (_loadingInProgress) {
+        _progressHUD.state.dismiss();
+      } else {
+        _progressHUD.state.show();
+      }
+      _loadingInProgress = !_loadingInProgress;
+    });
+  }
+
+  getInitDate() async {
+    final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
+    var res = await getBarberAvailability(context, globals.token);
+    var res2 = await getBarberAppointments(context, globals.token);
+    var newTimes = await calculateTime(res, res2, _selectedDay);
+    setState(() {
+      _availableTimes = newTimes;
+      selectedDate = _selectedDay;
+    });
   }
 
   buildClient() {
@@ -64,12 +102,32 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            'Client',
+            'Client Information',
             style: TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.w400,
             ),
           ),
+          TextFormField(
+            controller: nameTextController,
+            decoration: InputDecoration(
+              labelText: "Name",
+              border: InputBorder.none
+            ),
+          ),
+          TextFormField(
+            controller: phoneTextController,
+            inputFormatters: [
+              MaskedTextInputFormatter(
+                mask: 'xxx-xxx-xxxx',
+                separator: '-',
+              ),
+            ],
+            decoration: InputDecoration(
+              labelText: "Phone",
+              border: InputBorder.none
+            ),
+          )
         ]
       )
     );
@@ -201,7 +259,7 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
                 Map<String, String> appointmentTimes = {};
                 for(var appointment in value) {
                   var time = DateFormat('Hms').format(DateTime.parse(DateFormat('hh:mm a', 'en_US').parse(appointment['time']).toString()));
-                  appointmentTimes[time] = appointment['duration'];
+                  appointmentTimes[time] = appointment['duration'].toString();
                 }
 
                 if(!appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
@@ -430,6 +488,42 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
                   ),
                   Column(
                     children: <Widget> [
+                      Container(
+                        margin: EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text('Review', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20, color: Colors.blue)),
+                                  packageName != '' ? Text(packageName) : Container(),
+                                  finalDateTime != null ?
+                                    Text(
+                                      DateFormat('Md').format(DateTime.parse(finalDateTime.toString())) + ' at ' + DateFormat('hh:mm a').format(DateTime.parse(finalDateTime.toString()))
+                                    ) : Container()
+                                ],
+                              )
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget> [
+                                  Text(
+                                    '\$' + (packagePrice).toStringAsFixed(2),
+                                    style: TextStyle(
+                                      fontSize: 25.0
+                                    )
+                                  ),
+                                ]
+                              )
+                            )
+                          ]
+                        )
+                      ),
                       (!show) ? Row(
                         children: <Widget>[
                           Expanded(
@@ -438,10 +532,19 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
                               child: FlatButton(
                                 color: Colors.blue,
                                 onPressed: () async {
-                                  if(_packageId != '' && finalDateTime != null) {
-                                    //Navigator.pop(context);
-                                    //widget.updateAppointmentList();
-                                    //widget.showFullCalendar(widget.selectedDate);
+                                  if(_packageId != '' || finalDateTime != null || nameTextController.text != '' || phoneTextController.text != '') {
+                                    progressHUD();
+                                    var res = await bookAppointment(context, 0, globals.token.toString(), packagePrice, finalDateTime, _packageId, 0, nameTextController.text, phoneTextController.text);
+                                    if(res) {
+                                      var res2 = await getBarberAppointments(context, globals.token);
+                                      progressHUD();
+                                      Navigator.pop(context);
+                                      widget.updateAppointmentList(res2);
+                                      widget.showFullCalendar(widget.selectedDate);
+                                    }else {
+                                      progressHUD();
+                                      showErrorDialog(context, 'Error', 'Was not able to book appointment. Try again.');
+                                    }
                                   }else {
                                     showErrorDialog(context, 'Missing Information', 'Enter or select all fields');
                                   }
@@ -474,6 +577,7 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
                 ]
               )
             ),
+            _progressHUD
           ]
         ),
       )

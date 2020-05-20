@@ -375,6 +375,8 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
       return;
     }
 
+    progressHUD();
+
     bool result;
     if(widget.accountType == ''){
       result = await registerUser(context, widget.name, widget.username, widget.email, widget.accountType, password);
