@@ -305,9 +305,8 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                       textColor: Colors.white,
                                                       onPressed: () async {
                                                         progressHUD();
-                                                        int total = appointment['price'] + appointment['tip'];
-                                                        var res = await spChargeCard(context, total, appointment['paymentid'], appointment['customerid'], appointment['email']);
-                                                        if(res) {
+                                                        if(appointment['clientid'] == 0) {
+                                                          print('here');
                                                           var res2 = await updateAppointmentStatus(context, appointment['id'], 1);
                                                           if(res2) {
                                                             var res1 = await getBarberAppointments(context, globals.token);
@@ -315,18 +314,31 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                             setState(() {
                                                               appointment['status'] = 1;
                                                             });
-                                                            List tokens = await getNotificationTokens(context, appointment['clientid']);
-                                                            for(var token in tokens){
-                                                              Map<String, dynamic> dataMap =  {
-                                                                'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                                                                'action': 'APPOINTMENT',
-                                                                'title': 'Appointment Completed',
-                                                                'body': '${globals.username} has cancelled your appointment',
-                                                                'sender': '${globals.token}',
-                                                                'recipient': '${appointment['clientid']}',
-                                                                'appointment': appointment,
-                                                              };
-                                                              await sendPushNotification(context, 'Appointment Completed', '${globals.username} has completed your appointment.', appointment['clientid'], token, dataMap);
+                                                          }
+                                                        }else {
+                                                          int total = appointment['price'] + appointment['tip'];
+                                                          var res = await spChargeCard(context, total, appointment['paymentid'], appointment['customerid'], appointment['email']);
+                                                          if(res) {
+                                                            var res2 = await updateAppointmentStatus(context, appointment['id'], 1);
+                                                            if(res2) {
+                                                              var res1 = await getBarberAppointments(context, globals.token);
+                                                              widget.updateAppointments(res1);
+                                                              setState(() {
+                                                                appointment['status'] = 1;
+                                                              });
+                                                              List tokens = await getNotificationTokens(context, appointment['clientid']);
+                                                              for(var token in tokens){
+                                                                Map<String, dynamic> dataMap =  {
+                                                                  'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                                                  'action': 'APPOINTMENT',
+                                                                  'title': 'Appointment Completed',
+                                                                  'body': '${globals.username} has cancelled your appointment',
+                                                                  'sender': '${globals.token}',
+                                                                  'recipient': '${appointment['clientid']}',
+                                                                  'appointment': appointment,
+                                                                };
+                                                                await sendPushNotification(context, 'Appointment Completed', '${globals.username} has completed your appointment.', appointment['clientid'], token, dataMap);
+                                                              }
                                                             }
                                                           }
                                                         }
@@ -345,9 +357,21 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                     child: RaisedButton(
                                                       color: Colors.blue,
                                                       textColor: Colors.white,
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                        widget.showCancel(true);
+                                                      onPressed: () async {
+                                                        if(appointment['clientid'] == 0) {
+                                                          progressHUD();
+                                                          var res1 = await updateAppointmentStatus(context, appointment['id'], 2);
+                                                          if(res1) {
+                                                            var res1 = await getBarberAppointments(context, globals.token);
+                                                            widget.updateAppointments(res1);
+                                                            setState(() {
+                                                              appointment['status'] = 2;
+                                                            });
+                                                          }
+                                                          progressHUD();
+                                                        }else {
+                                                          widget.showCancel(true);
+                                                        }
                                                       },
                                                       child: Text('Cancel Appointment'),
                                                     )
