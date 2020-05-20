@@ -376,7 +376,6 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
     }
 
     progressHUD();
-
     bool result;
     if(widget.accountType == ''){
       result = await registerUser(context, widget.name, widget.username, widget.email, widget.accountType, password);
@@ -390,16 +389,19 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
       setGlobals(userInfo);
 
       if(widget.accountType == '1') {
+        progressHUD();
         final paymentMethod = new PaymentMethodScreen(signup: true);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => paymentMethod));
       }else {
         // final barberSalesSetup = new BarberSalesSetup(address: widget.shopAddress, city: widget.city, state: widget.state, zipcode: widget.zipcode, stateValue: widget.stateValue);
         // Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberSalesSetup));
         var availability = await getBarberAvailability(context, globals.token);
+        progressHUD();
         final barberHubScreen = new BarberHubScreen(availability: availability);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberHubScreen));
       }
     }else {
+      progressHUD();
       showErrorDialog(context, 'Error has occured', 'An error has occurred. Try again.');
     }
   }
