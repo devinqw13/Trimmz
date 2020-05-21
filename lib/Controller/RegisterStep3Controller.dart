@@ -41,6 +41,7 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
   bool specChar = false;
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
+  bool canClick = true;
 
   void initState() {
     super.initState();
@@ -200,9 +201,11 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
   buildSubmitButton(double size) {
     return new GestureDetector(
       onTap: () {
-        FocusScope.of(context).requestFocus(new FocusNode());
-        progressHUD();
-        _submitPassword(context, _registerUserPasswordController.text, _registerUserPassword2Controller.text);
+        if(canClick) {
+          FocusScope.of(context).requestFocus(new FocusNode());
+          progressHUD();
+         _submitPassword(context, _registerUserPasswordController.text, _registerUserPassword2Controller.text);
+        }
       },
       child: Container(
         padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
@@ -375,7 +378,9 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
       return;
     }
 
-    progressHUD();
+    setState(() {
+      canClick = false;
+    });
     bool result;
     if(widget.accountType == ''){
       result = await registerUser(context, widget.name, widget.username, widget.email, widget.accountType, password);

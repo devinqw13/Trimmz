@@ -58,6 +58,7 @@ class BarberHubTabWidget extends StatefulWidget{
 
 class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProviderStateMixin {
   final GlobalKey<RefreshIndicatorState> refreshKey = new GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> refreshKey2 = new GlobalKey<RefreshIndicatorState>();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool isSearching = false;
   List<SuggestedBarbers> suggestedBarbers = [];
@@ -1131,390 +1132,416 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
 
   Widget dashboardTab() {
     return Container(
-      child: SingleChildScrollView(
-        child: new Column(
-          children: <Widget>[
-            setupChecks(),
-            appointmentReq.length > 0 ? 
-            GestureDetector(
-              onTap: () async {
-                showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                  return AppointmentRequestBottomSheet(
-                    requests: appointmentReq,
-                    updateAppointments: (value) {
-                      setState(() {
-                        _events = value;
-                      });
-                    },
-                    updateAppointmentRequests: (value) {
-                      setState(() {
-                        appointmentReq = value;
-                      });
-                    }
-                  );
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.only(left: 5, right: 20, bottom: 5, top: 5),
+      child: new RefreshIndicator(
+        onRefresh: refreshDashboardList,
+        key: refreshKey2,
+        child: SingleChildScrollView(
+          child: new Column(
+            children: <Widget>[
+              setupChecks(),
+              appointmentReq.length > 0 ? 
+              GestureDetector(
+                onTap: () async {
+                  showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                    return AppointmentRequestBottomSheet(
+                      requests: appointmentReq,
+                      updateAppointments: (value) {
+                        setState(() {
+                          _events = value;
+                        });
+                      },
+                      updateAppointmentRequests: (value) {
+                        setState(() {
+                          appointmentReq = value;
+                        });
+                      }
+                    );
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.only(left: 5, right: 20, bottom: 5, top: 5),
+                  decoration: BoxDecoration(
+                    gradient: new LinearGradient(
+                      begin: Alignment(0.0, -2.0),
+                      colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[400], Colors.grey[50]]
+                    )
+                  ),
+                  margin: EdgeInsets.all(5.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text('Appointment Requests', style: TextStyle(fontWeight: FontWeight.w400)),
+                      Container(
+                        padding: EdgeInsets.all(9),
+                        decoration: new BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400]
+                        ),
+                        child: Center(child:Text(appointmentReq.length.toString(), textAlign: TextAlign.center))
+                      )
+                    ],
+                  )
+                )
+              ): Container(),
+              Container(
+                padding: EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   gradient: new LinearGradient(
-                    begin: Alignment(0.0, -2.0),
-                    colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[400], Colors.grey[50]]
+                    begin: Alignment(0.0, -5.0),
+                    colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[600], Colors.grey[50]]
                   )
                 ),
                 margin: EdgeInsets.all(5.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Appointment Requests', style: TextStyle(fontWeight: FontWeight.w400)),
-                    Container(
-                      padding: EdgeInsets.all(9),
-                      decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400]
-                      ),
-                      child: Center(child:Text(appointmentReq.length.toString(), textAlign: TextAlign.center))
-                    )
-                  ],
-                )
-              )
-            ): Container(),
-            Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                gradient: new LinearGradient(
-                  begin: Alignment(0.0, -5.0),
-                  colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[600], Colors.grey[50]]
-                )
-              ),
-              margin: EdgeInsets.all(5.0),
-              child: Column(
-                children: <Widget> [
-                  Stack(
-                    children: <Widget> [
-                      TableCalendar(
-                        locale: 'en_US',
-                        events: _events,
-                        onDaySelected: _onDaySelected,
-                        initialSelectedDay: _calendarSelectDay,
-                        availableGestures: AvailableGestures.horizontalSwipe,
-                        daysOfWeekStyle: DaysOfWeekStyle(
-                          weekdayStyle: TextStyle(color: globals.darkModeEnabled ? Color(0xFFf2f2f2) : Colors.black),
-                          weekendStyle: TextStyle(color: globals.darkModeEnabled ?  Color(0xFFf2f2f2) : Colors.black)
-                        ),
-                        headerStyle: HeaderStyle(
-                          formatButtonVisible: false,
-                          leftChevronIcon: Icon(Icons.chevron_left, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400]),
-                          rightChevronIcon: Icon(Icons.chevron_right, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
-                        ),
-                        calendarStyle: CalendarStyle(
-                          weekendStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
-                          outsideWeekendStyle: TextStyle(color: Color(0xFF9E9E9E))
-                        ),
-                        headerVisible: true,
-                        calendarController: _calendarController,
-                        initialCalendarFormat: CalendarFormat.week,
-                        builders: CalendarBuilders(
-                          selectedDayBuilder: (context, date, _) {
-                            return FadeTransition(
-                              opacity: Tween(begin: 0.0, end: 1.0).animate(_animationController),
-                              child: Container(
-                                margin: const EdgeInsets.all(6.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: globals.darkModeEnabled ? Colors.blue[500] : Colors.lightBlueAccent[400]
-                                ),
-                                child: Center(
-                                  child: Text(
-                                  '${date.day}',
-                                  style: TextStyle().copyWith(fontSize: 16.0),
-                                ),
-                                )
-                              ),
-                            );
-                          },
-                          todayDayBuilder: (context, date, _) {
-                            return FadeTransition(
-                              opacity: Tween(begin: 0.0, end: 1.0).animate(_animationController),
-                              child: Container(
-                                margin: const EdgeInsets.all(6.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[400]
-                                ),
-                                child: Center(
-                                  child: Text(
-                                  '${date.day}',
-                                  style: TextStyle().copyWith(fontSize: 16.0),
-                                ),
-                                )
-                              ),
-                            );
-                          },
-                          markersBuilder: (context, date, events, holidays) {
-                            final children = <Widget>[];
-
-                            if (events.isNotEmpty) {
-                              children.add(
-                                Positioned(
-                                  right: 1,
-                                  bottom: 1,
-                                  child: _buildEventsMarker(date, events),
+                child: Column(
+                  children: <Widget> [
+                    Stack(
+                      children: <Widget> [
+                        TableCalendar(
+                          locale: 'en_US',
+                          events: _events,
+                          onDaySelected: _onDaySelected,
+                          initialSelectedDay: _calendarSelectDay,
+                          availableGestures: AvailableGestures.horizontalSwipe,
+                          daysOfWeekStyle: DaysOfWeekStyle(
+                            weekdayStyle: TextStyle(color: globals.darkModeEnabled ? Color(0xFFf2f2f2) : Colors.black),
+                            weekendStyle: TextStyle(color: globals.darkModeEnabled ?  Color(0xFFf2f2f2) : Colors.black)
+                          ),
+                          headerStyle: HeaderStyle(
+                            formatButtonVisible: false,
+                            leftChevronIcon: Icon(Icons.chevron_left, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400]),
+                            rightChevronIcon: Icon(Icons.chevron_right, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
+                          ),
+                          calendarStyle: CalendarStyle(
+                            weekendStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
+                            outsideWeekendStyle: TextStyle(color: Color(0xFF9E9E9E))
+                          ),
+                          headerVisible: true,
+                          calendarController: _calendarController,
+                          initialCalendarFormat: CalendarFormat.week,
+                          builders: CalendarBuilders(
+                            selectedDayBuilder: (context, date, _) {
+                              return FadeTransition(
+                                opacity: Tween(begin: 0.0, end: 1.0).animate(_animationController),
+                                child: Container(
+                                  margin: const EdgeInsets.all(6.0),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: globals.darkModeEnabled ? Colors.blue[500] : Colors.lightBlueAccent[400]
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                    '${date.day}',
+                                    style: TextStyle().copyWith(fontSize: 16.0),
+                                  ),
+                                  )
                                 ),
                               );
-                            }
-                            return children;
-                          },
+                            },
+                            todayDayBuilder: (context, date, _) {
+                              return FadeTransition(
+                                opacity: Tween(begin: 0.0, end: 1.0).animate(_animationController),
+                                child: Container(
+                                  margin: const EdgeInsets.all(6.0),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[400]
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                    '${date.day}',
+                                    style: TextStyle().copyWith(fontSize: 16.0),
+                                  ),
+                                  )
+                                ),
+                              );
+                            },
+                            markersBuilder: (context, date, events, holidays) {
+                              final children = <Widget>[];
+
+                              if (events.isNotEmpty) {
+                                children.add(
+                                  Positioned(
+                                    right: 1,
+                                    bottom: 1,
+                                    child: _buildEventsMarker(date, events),
+                                  ),
+                                );
+                              }
+                              return children;
+                            },
+                          ),
                         ),
-                      ),
-                      Positioned(
-                        right: MediaQuery.of(context).size.width * .15,
-                        top: MediaQuery.of(context).size.width * .046,
-                        child: GestureDetector(
-                          onTap: () {
-                            showFullCalendar();
-                          },
-                          child: Icon(Icons.menu, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
-                        )
-                      ),
-                    ]
-                  ),
-                  buildAppointmentList()
-                ]
-              )
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              margin: EdgeInsets.all(5.0),
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                gradient: new LinearGradient(
-                  begin: Alignment(0.0, -5.0),
-                  colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[500], Colors.grey[50]]
+                        Positioned(
+                          right: MediaQuery.of(context).size.width * .15,
+                          top: MediaQuery.of(context).size.width * .046,
+                          child: GestureDetector(
+                            onTap: () {
+                              showFullCalendar();
+                            },
+                            child: Icon(Icons.menu, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
+                          )
+                        ),
+                      ]
+                    ),
+                    buildAppointmentList()
+                  ]
                 )
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            'Services',
-                            style: TextStyle(
-                              fontSize: 17.0,
-                              fontWeight: FontWeight.w400
+              Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.all(5.0),
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  gradient: new LinearGradient(
+                    begin: Alignment(0.0, -5.0),
+                    colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[500], Colors.grey[50]]
+                  )
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Text(
+                              'Services',
+                              style: TextStyle(
+                                fontSize: 17.0,
+                                fontWeight: FontWeight.w400
+                              ),
                             ),
-                          ),
-                          Padding(padding: EdgeInsets.all(2),),
-                          Container(
-                            margin: EdgeInsets.only(top: 4),
-                            padding: EdgeInsets.all(7),
-                            child: Center(child: Text(packages.length.toString(), textAlign: TextAlign.center, style: TextStyle(color: Colors.white))),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.grey[800]
-                            ),
-                          )
-                        ]
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.only(top: 5, right: 10.0),
-                            child: GestureDetector(
-                              onTap: () async {
-                                showFullPackageList(packages);
-                              },
-                              child: Icon(Icons.menu, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
+                            Padding(padding: EdgeInsets.all(2),),
+                            Container(
+                              margin: EdgeInsets.only(top: 4),
+                              padding: EdgeInsets.all(7),
+                              child: Center(child: Text(packages.length.toString(), textAlign: TextAlign.center, style: TextStyle(color: Colors.white))),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey[800]
+                              ),
                             )
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(top: 5, right: 10.0),
-                            child: GestureDetector(
-                              onTap: () async {
+                          ]
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.only(top: 5, right: 10.0),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  showFullPackageList(packages);
+                                },
+                                child: Icon(Icons.menu, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
+                              )
+                            ),
+                            Container(
+                              padding: EdgeInsets.only(top: 5, right: 10.0),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+                                    return AddPackageBottomSheet(
+                                      updatePackages: (value) {
+                                        setState(() {
+                                          packages = value;
+                                        });
+                                      },
+                                    );
+                                  });
+                                },
+                                child: Icon(LineIcons.plus, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
+                              )
+                            )
+                          ]
+                        )
+                      ],
+                    ),
+                    packages.length == 0 ?
+                    Container(
+                      margin: EdgeInsets.all(10.0),
+                      child: Center(
+                        child: Text(
+                          'You don\'t have any packages',
+                          style: TextStyle(
+                            fontSize: 17.0
+                          )
+                        )
+                      )
+                    ): Container(
+                      child: ListView.builder(
+                        reverse: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: packages.length > 3 ? 5 * 1 : packages.length * 2,
+                        padding: const EdgeInsets.all(5.0),
+                        itemBuilder: (context, index) {
+                          if (index.isOdd) {
+                            return new Divider();
+                          }
+                          else {
+                            final i = index ~/ 2;
+                            return new GestureDetector(
+                              onTap: () {
                                 showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                                  return AddPackageBottomSheet(
+                                  return PackageOptionsBottomSheet(
+                                    package: packages[i],
                                     updatePackages: (value) {
                                       setState(() {
                                         packages = value;
                                       });
                                     },
+                                    showPackagesList: (value) {
+
+                                    },
                                   );
                                 });
                               },
-                              child: Icon(LineIcons.plus, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
-                            )
-                          )
-                        ]
-                      )
-                    ],
-                  ),
-                  packages.length == 0 ?
-                  Container(
-                    margin: EdgeInsets.all(10.0),
-                    child: Center(
-                      child: Text(
-                        'You don\'t have any packages',
-                        style: TextStyle(
-                          fontSize: 17.0
-                        )
+                              child: ListTile(
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget> [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget> [
+                                        Text(packages[i].name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500
+                                          )
+                                        ),
+                                        Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
+                                          style: TextStyle(
+                                            color: Colors.grey
+                                          )
+                                        )
+                                      ]
+                                    ),
+                                    Row(
+                                      children: <Widget>[
+                                        Container(
+                                          padding: EdgeInsets.all(12),
+                                          child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
+                                          decoration: BoxDecoration(
+                                            color: globals.darkModeEnabled ? Colors.grey[900] : Colors.grey[300],
+                                            shape: BoxShape.circle
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  ]
+                                )
+                              )
+                            );
+                          }
+                        }
                       )
                     )
-                  ): Container(
-                    child: ListView.builder(
-                      reverse: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: packages.length > 3 ? 5 * 1 : packages.length * 2,
-                      padding: const EdgeInsets.all(5.0),
-                      itemBuilder: (context, index) {
-                        if (index.isOdd) {
-                          return new Divider();
-                        }
-                        else {
-                          final i = index ~/ 2;
-                          return new GestureDetector(
-                            onTap: () {
+                  ],
+                )
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.all(5.0),
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  gradient: new LinearGradient(
+                    begin: Alignment(0.0, -5.0),
+                    colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[500], Colors.grey[50]]
+                  )
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget> [
+                        Text(
+                          'Policies',
+                          style: TextStyle(
+                            fontSize: 17.0,
+                            fontWeight: FontWeight.w400
+                          )
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(top: 5, right: 10.0),
+                          child: GestureDetector(
+                            onTap: () async {
                               showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                                return PackageOptionsBottomSheet(
-                                  package: packages[i],
-                                  updatePackages: (value) {
+                                return BarberPoliciesModal(
+                                  policies: policies ?? new BarberPolicies(),
+                                  setPolicies: (value) {
                                     setState(() {
-                                      packages = value;
+                                      policies = value;
                                     });
-                                  },
-                                  showPackagesList: (value) {
-
                                   },
                                 );
                               });
                             },
-                            child: ListTile(
-                              title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget> [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget> [
-                                      Text(packages[i].name,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500
-                                        )
-                                      ),
-                                      Text(packages[i].duration + (int.parse(packages[i].duration) > 1 ? ' Mins' : ' Min'),
-                                        style: TextStyle(
-                                          color: Colors.grey
-                                        )
-                                      )
-                                    ]
-                                  ),
-                                  Row(
-                                    children: <Widget>[
-                                      Container(
-                                        padding: EdgeInsets.all(12),
-                                        child: Text('\$' + packages[i].price, style: TextStyle(fontSize: 17.0)),
-                                        decoration: BoxDecoration(
-                                          color: globals.darkModeEnabled ? Colors.grey[900] : Colors.grey[300],
-                                          shape: BoxShape.circle
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ]
-                              )
-                            )
-                          );
-                        }
-                      }
+                            child: Icon(LineIcons.pencil, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
+                          )
+                        ),
+                      ]
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 10.0, left: 10.0, bottom: 10.0, right: 20.0),
+                      child: barberPolicies()
                     )
-                  )
-                ],
-              )
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              margin: EdgeInsets.all(5.0),
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                gradient: new LinearGradient(
-                  begin: Alignment(0.0, -5.0),
-                  colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[500], Colors.grey[50]]
+                  ],
                 )
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget> [
-                      Text(
-                        'Policies',
-                        style: TextStyle(
-                          fontSize: 17.0,
-                          fontWeight: FontWeight.w400
-                        )
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(top: 5, right: 10.0),
-                        child: GestureDetector(
-                          onTap: () async {
-                            showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
-                              return BarberPoliciesModal(
-                                policies: policies ?? new BarberPolicies(),
-                                setPolicies: (value) {
-                                  setState(() {
-                                    policies = value;
-                                  });
-                                },
-                              );
-                            });
-                          },
-                          child: Icon(LineIcons.pencil, color: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400])
-                        )
-                      ),
-                    ]
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 10.0, left: 10.0, bottom: 10.0, right: 20.0),
-                    child: barberPolicies()
+              Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.all(5.0),
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  gradient: new LinearGradient(
+                    begin: Alignment(0.0, -5.0),
+                    colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[500], Colors.grey[50]]
                   )
-                ],
-              )
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              margin: EdgeInsets.all(5.0),
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                gradient: new LinearGradient(
-                  begin: Alignment(0.0, -5.0),
-                  colors: globals.darkModeEnabled ? [Colors.black, Colors.grey[900]] : [Colors.grey[500], Colors.grey[50]]
-                )
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Availability',
-                    style: TextStyle(
-                      fontSize: 17.0,
-                      fontWeight: FontWeight.w400,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Availability',
+                      style: TextStyle(
+                        fontSize: 17.0,
+                        fontWeight: FontWeight.w400,
+                      )
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 10.0, left: 10.0, bottom: 10.0, right: 20.0),
+                      child: barberDBAvailability(context)
                     )
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 10.0, left: 10.0, bottom: 10.0, right: 20.0),
-                    child: barberDBAvailability(context)
-                  )
-                ],
+                  ],
+                )
               )
-            )
-          ]
+            ]
+          )
         )
       )
     );
+  }
+
+  Future<Null> refreshDashboardList() async {
+    Completer<Null> completer = new Completer<Null>();
+    refreshKey2.currentState.show();
+    var p = await getBarberPkgs(context, globals.token);
+    final sd = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
+    var e = await getBarberAppointments(context, globals.token);
+    var se = e[sd] ?? [];
+    var a = await getBarberAvailability(context, globals.token);
+    var ar = await getBarberAppointmentRequests(context, globals.token);
+    var po = await getBarberPolicies(context, globals.token) ?? new BarberPolicies();
+    completer.complete();
+    setState(() {
+      packages = p;
+      _events = e;
+      _selectedEvents = se;
+      availability = a;
+      appointmentReq = ar;
+      policies = po;
+    });
+    return completer.future;
   }
 
   Future<Null> refreshFeedList() async {
@@ -1684,28 +1711,29 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
         length: 2,
         child: Scaffold(
           backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
-          floatingActionButton: new Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              new Container(
-                child: new FloatingActionButton(
-                  onPressed: () async {
-                    var cameras = await availableCameras();
-                    final cameraScreen = new CameraApp(uploadType: 2, cameras: cameras, selectedEvents: _selectedEvents, packages: packages, events: _events, availability: availability, appointmentReq: appointmentReq, policies: policies);
-                    Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
-                  },
-                  child: new Icon(LineIcons.plus),
-                  tooltip: "Add",
-                  backgroundColor: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400],
-                  foregroundColor: Colors.white,
-                  heroTag: null,
-                )
-              ),
-            ]
-          ),
+          // floatingActionButton: new Row(
+          //   mainAxisAlignment: MainAxisAlignment.end,
+          //   children: <Widget>[
+          //     new Container(
+          //       child: new FloatingActionButton(
+          //         onPressed: () async {
+          //           var cameras = await availableCameras();
+          //           final cameraScreen = new CameraApp(uploadType: 2, cameras: cameras, selectedEvents: _selectedEvents, packages: packages, events: _events, availability: availability, appointmentReq: appointmentReq, policies: policies);
+          //           Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
+          //         },
+          //         child: new Icon(LineIcons.plus),
+          //         tooltip: "Add",
+          //         backgroundColor: globals.darkModeEnabled ? Colors.blue : Colors.lightBlueAccent[400],
+          //         foregroundColor: Colors.white,
+          //         heroTag: null,
+          //       )
+          //     ),
+          //   ]
+          // ),
           appBar: new AppBar(
             automaticallyImplyLeading: false,
-            title: Text('Home'),
+            centerTitle: true,
+            title: Text('Home', textAlign: TextAlign.center,),
             actions: <Widget>[
               Badge(
                 showBadge: badgeNotifications == 0 ? false : true,
@@ -1725,6 +1753,16 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                   },
                   icon: Icon(LineIcons.bell, size: 25.0),
                 ) 
+              ),
+              Badge(
+                child: IconButton(
+                  onPressed: () async {
+                    var cameras = await availableCameras();
+                    final cameraScreen = new CameraApp(uploadType: 2, cameras: cameras, selectedEvents: _selectedEvents, packages: packages, events: _events, availability: availability, appointmentReq: appointmentReq, policies: policies);
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
+                  },
+                  icon: Icon(LineIcons.plus, size: 25.0),
+                )
               )
             ],
             bottom: TabBar(
