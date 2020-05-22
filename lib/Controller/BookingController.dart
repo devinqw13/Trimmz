@@ -264,7 +264,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
 
     for(var item in list) {
       if(item.day == weekday) {
-        if((item.start != null && item.end != null) && (item.start != '00:00:00' && item.end != '00:00:00')){
+        if((item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00'))){
           var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
           var end = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.end).toString());
           var startDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(day.toString()));
@@ -282,19 +282,26 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                 }
 
                 if(!appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
-                  timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
+                  if(newTime.isAfter(DateTime.now())){
+                    timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
+                  }
                 }
 
-                for (int i = 0; i <= end.difference(start.add(Duration(minutes: 45))).inMinutes; i+=15) {
-                  if(newTime.isAfter(DateTime.now())){
+                int iterate = end.difference(start).inMinutes - 15;
+                DateTime startingTime = newTime;
+
+                for (int i = 0; i <= end.difference(start).inMinutes; i+=15) {
+                  if(newTime.isAfter(DateTime.now()) && newTime.isBefore(startingTime.add(Duration(minutes: iterate)))){
                     if(appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
                       appointmentTimes.forEach((k,v){
                         if(k == DateFormat('Hms').format(newTime).toString()) {
+                          timesList.removeWhere((element) => element.buttonText == df.format(DateTime.parse(newTime.toString())));
                           newTime = newTime.add(Duration(minutes: int.parse(v)));
                           return;
                         }
                       });
                     }else {
+                      // ADDS AVAILABLE TIMES HERE //
                       newTime = newTime.add(Duration(minutes: 15));
                       var convertTime = df.format(DateTime.parse(newTime.toString()));
                       timesList.add(new RadioModel(false, convertTime));
@@ -329,7 +336,6 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   getInitDate() async {
     final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
     var res = await getBarberAvailability(context, int.parse(barberInfo.id));
-    // var res2 = await getBarberAppointments(context, int.parse(barberInfo.id));
     var res2 = await getBarberBookAppointments(context, int.parse(barberInfo.id));
     var newTimes = await calculateTime(res, res2, _selectedDay);
     setState(() {
@@ -346,10 +352,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     });
     if(newDay.isAfter(currentDay) || newDay.isAtSameMomentAs(currentDay)){
       var res = await getBarberAvailability(context, int.parse(barberInfo.id));
-      // var res2 = await getBarberAppointments(context, int.parse(barberInfo.id));
       var res2 = await getBarberBookAppointments(context, int.parse(barberInfo.id));
       var newTimes = await calculateTime(res, res2, day);
-
       setState(() {
         _availableTimes = newTimes;
       });

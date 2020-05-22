@@ -1133,6 +1133,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
   Widget dashboardTab() {
     return Container(
       child: new RefreshIndicator(
+        color: Colors.blue,
         onRefresh: refreshDashboardList,
         key: refreshKey2,
         child: SingleChildScrollView(
