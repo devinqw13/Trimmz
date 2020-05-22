@@ -87,7 +87,6 @@ class AppointmentListState extends State<AppointmentList> {
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               itemCount: upcoming.length,
-              reverse: true,
               shrinkWrap: true,
               itemBuilder: (context, i) {
                 return new GestureDetector(
