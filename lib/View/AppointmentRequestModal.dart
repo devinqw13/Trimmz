@@ -145,7 +145,7 @@ class _AppointmentRequestBottomSheet extends State<AppointmentRequestBottomSheet
                                               'sender': '${globals.token}',
                                               'recipient': requests[i].clientId,
                                             };
-                                            await sendPushNotification(context, 'Appointment Request Expired', '${globals.username} has dismissed your appointment request because it has expired.', requests[i].clientId, token, dataMap);
+                                            await sendPushNotification(context, 'Appointment Request Expired', '${globals.username} has dismissed your appointment request because it has expired.', token, dataMap);
                                           }
 
                                           var res = await getBarberAppointmentRequests(context, globals.token);
@@ -181,7 +181,7 @@ class _AppointmentRequestBottomSheet extends State<AppointmentRequestBottomSheet
                                               'sender': '${globals.token}',
                                               'recipient': requests[i].clientId,
                                             };
-                                            await sendPushNotification(context, 'Appointment Declined', '${globals.username} has declined your appointment request.', requests[i].clientId, token, dataMap);
+                                            await sendPushNotification(context, 'Appointment Declined', '${globals.username} has declined your appointment request.', token, dataMap);
                                           }
 
                                           var res = await getBarberAppointmentRequests(context, globals.token);
@@ -219,7 +219,7 @@ class _AppointmentRequestBottomSheet extends State<AppointmentRequestBottomSheet
                                                 'sender': '${globals.token}',
                                                 'recipient': requests[i].clientId,
                                               };
-                                              await sendPushNotification(context, 'Appointment Confirmed', '${globals.username} has confirmed your appointment request.', requests[i].clientId, token, dataMap);
+                                              await sendPushNotification(context, 'Appointment Confirmed', '${globals.username} has confirmed your appointment request.', token, dataMap);
                                             }
 
                                             var res = await getBarberAppointmentRequests(context, globals.token);

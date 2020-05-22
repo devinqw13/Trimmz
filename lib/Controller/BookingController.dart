@@ -428,7 +428,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
           'sender': '${globals.token}',
           'recipient': '$barberId',
         };
-        await sendPushNotification(context, 'Appointment Requested', '${globals.username} has requested an appointment', int.parse(barberId), token, dataMap);
+        await sendPushNotification(context, 'Appointment Requested', '${globals.username} has requested an appointment', token, dataMap);
       }
       progressHUD();
 

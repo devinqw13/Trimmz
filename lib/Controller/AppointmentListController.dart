@@ -87,6 +87,7 @@ class AppointmentListState extends State<AppointmentList> {
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               itemCount: upcoming.length,
+              reverse: true,
               shrinkWrap: true,
               itemBuilder: (context, i) {
                 return new GestureDetector(
@@ -173,6 +174,7 @@ class AppointmentListState extends State<AppointmentList> {
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               itemCount: pending.length,
+              reverse: true,
               shrinkWrap: true,
               itemBuilder: (context, i) {
                 Color statusColor;
@@ -274,6 +276,7 @@ class AppointmentListState extends State<AppointmentList> {
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               itemCount: past.length,
+              reverse: true,
               shrinkWrap: true,
               itemBuilder: (context, i) {
                 Color statusColor;

@@ -66,7 +66,7 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                                   'recipient': appointment['clientid'],
                                   'appointment': appointment,
                                 };
-                                await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment with a cancellation fee', appointment['clientid'], token, dataMap);
+                                await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment with a cancellation fee', token, dataMap);
                               }
                             },
                             child: Text('Cancel with payment'),
@@ -91,7 +91,7 @@ class _CancelOptionsBottomSheet extends State<CancelOptionsBottomSheet> {
                                     'recipient': '${appointment['clientid']}',
                                     'appointment': appointment,
                                   };
-                                  await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', appointment['clientid'], token, dataMap);
+                                  await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', token, dataMap);
                                 }
 
                                 var res2 = await getBarberAppointments(context, globals.token);

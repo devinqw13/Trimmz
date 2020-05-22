@@ -202,6 +202,6 @@ sendNotifications(BuildContext context, List tokens, int recipient, String title
       'recipient': '$recipient',
       '$contentName': content,
     };
-    await sendPushNotification(context, title, body, recipient, token, dataMap);
+    await sendPushNotification(context, title, body, token, dataMap);
   }
 }

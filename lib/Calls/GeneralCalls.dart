@@ -1648,9 +1648,9 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(!apt.containsKey(date)) {
-        apt[date] = [{'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'profile_picture': item['profile_picture']}];
+        apt[date] = [{'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'profile_picture': item['profile_picture'], 'barberSPID': item['sp_account'], 'barberSPMethod': item['payoutMethod'], 'barberSPPayout': item['payoutId']}];
       }else {
-        apt[date].add({'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'profile_picture': item['profile_picture']});
+        apt[date].add({'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'profile_picture': item['profile_picture'], 'barberSPID': item['sp_account'], 'barberSPMethod': item['payoutMethod'], 'barberSPPayout': item['payoutId']});
       }
     }
 
@@ -1728,7 +1728,7 @@ Future<BarberPolicies> updateBarberPolicies(BuildContext context, int userId, [S
   }
 }
 
-Future<Map> sendPushNotification(BuildContext context, String title, String body, int toUserId, String token, [Map<String, dynamic> data]) async {
+Future<Map> sendPushNotification(BuildContext context, String title, String body, String token, [Map<String, dynamic> data]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Authorization': 'key=AAAAU6aHEg0:APA91bGeJLiMB3qRqmbAKzEfg9M3d-I6Ear-WQ8l7PmVJMA8xcCLklLVfzOp8zZOTCbZ1WzrJbq1pLG7aAxE_aXke6WThoejom1QREterliWuN0k7fDdbw9gCwanXKWzxR2WlJW5O-pv'

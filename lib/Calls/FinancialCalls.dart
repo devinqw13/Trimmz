@@ -177,7 +177,7 @@ Future<Map> spCreatePaymentIntent(BuildContext context, String paymentId, String
   }
 }
 
-Future<Map> spDirectPay(BuildContext context, String paymentId, String customerId, String amount, [String email, String appFee]) async {
+Future<Map> spDirectPay(BuildContext context, String paymentId, String customerId, String amount, [String email, String appFee, String barberAccount]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Authorization' : 'Bearer ${globals.stripeSecretKey}', 
@@ -193,7 +193,7 @@ Future<Map> spDirectPay(BuildContext context, String paymentId, String customerI
     "customer": "$customerId",
     "payment_method": "$paymentId",
     "application_fee_amount": "$appFee",
-    "transfer_data[destination]": "${globals.spAccountId}",
+    "transfer_data[destination]": "${barberAccount == null ? globals.spAccountId : barberAccount}",
     "capture_method": "automatic"
   };
 
@@ -509,7 +509,7 @@ Future<Map> spTransferToConnectAccount(BuildContext context, int amount, String 
   }
 }
 
-Future<Map> spPayout(BuildContext context, int amount, String payoutId, String accountId) async {
+Future<Map> spPayout(BuildContext context, int amount, String payoutId, String accountId, [String spPayoutMethod]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/x-www-form-urlencoded',
     'Authorization' : 'Bearer ${globals.stripeSecretKey}',
@@ -523,7 +523,7 @@ Future<Map> spPayout(BuildContext context, int amount, String payoutId, String a
     "amount": "$amount",
     "currency": "USD",
     "destination": "$payoutId",
-    "method": "${globals.spPayoutMethod}",
+    "method": "${spPayoutMethod == null ? globals.spPayoutMethod : spPayoutMethod}",
     "source_type": "card",
   };
   String url = "${globals.stripeURL}payouts";
@@ -553,23 +553,43 @@ Future<Map> spPayout(BuildContext context, int amount, String payoutId, String a
   }
 }
 
-Future<bool> spChargeCard(BuildContext context, int total, String paymentId, String customerId, String cusEmail) async {
-  var chargeTotal = (total + 1) * 100;
-  double dbl = globals.spPayoutMethod == 'standard' ? globals.stdRateFee : globals.intRateFee;
+Future<bool> spChargeCard(BuildContext context, var total, String paymentId, String customerId, String cusEmail, [String barberAccount, String barberSPMethod, String barberSPPayout]) async {
+  var chargeTotal;
+  if(total.toString().contains('.')) {
+    var vtotal = (total + 1) * 100;
+    String result = vtotal.toString().substring(0, vtotal.toString().indexOf('.'));
+    chargeTotal = int.parse(result);
+  }else {
+    chargeTotal = (total + 1) * 100;
+  }
+  double dbl = barberSPMethod == null ? globals.spPayoutMethod == 'standard' ? globals.stdRateFee : globals.intRateFee : barberSPMethod == 'standard' ? globals.stdRateFee : globals.intRateFee;
   var payoutTotal = int.parse(((double.parse(total.toString()) - num.parse((double.parse(total.toString()) * dbl).toStringAsFixed(2))) * 100).toStringAsFixed(0));
   var appFee = (((double.parse(total.toString()) * dbl) + globals.cusProcessFee) * 100).toStringAsFixed(0);
 
-  var res = await spDirectPay(context, paymentId, customerId, chargeTotal.toString(), cusEmail, appFee.toString());
+  var res = await spDirectPay(context, paymentId, customerId, chargeTotal.toString(), cusEmail, appFee.toString(), barberAccount == null ? null : barberAccount);
   if(res.length > 0) {
-    if(globals.spPayoutMethod == 'instant') {
-      var res3 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
-      if(res3.length > 0){
-        return true;
+    if(barberSPMethod == null) {
+      if(globals.spPayoutMethod == 'instant') {
+        var res3 = await spPayout(context, payoutTotal, globals.spPayoutId, globals.spAccountId);
+        if(res3.length > 0){
+          return true;
+        }else {
+          return false;
+        }
       }else {
-        return false;
+        return true;
       }
     }else {
-      return true;
+      if(barberSPMethod == 'instant') {
+        var res3 = await spPayout(context, payoutTotal, barberSPPayout, barberAccount, barberSPMethod);
+        if(res3.length > 0){
+          return true;
+        }else {
+          return false;
+        }
+      }else {
+        return true;
+      }
     }
   }else {
     return false;
