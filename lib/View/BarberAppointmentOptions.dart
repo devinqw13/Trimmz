@@ -147,6 +147,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
       )
     );
   }
+  
   clientCancel(int barberId, int appointmentId) async {
     progressHUD();
     var res = await getBarberPolicies(context, barberId) ?? new BarberPolicies();

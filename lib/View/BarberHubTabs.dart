@@ -1532,6 +1532,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
     var a = await getBarberAvailability(context, globals.token);
     var ar = await getBarberAppointmentRequests(context, globals.token);
     var po = await getBarberPolicies(context, globals.token) ?? new BarberPolicies();
+    checkNotificiations();
     completer.complete();
     setState(() {
       packages = p;

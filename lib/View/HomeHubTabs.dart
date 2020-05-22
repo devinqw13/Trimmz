@@ -301,6 +301,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
    Completer<Null> completer = new Completer<Null>();
     refreshKey.currentState.show();
     var results = await getPosts(context, globals.token, 1);
+    checkNotificiations();
     completer.complete();
     setState(() {
       feedItems = results;
