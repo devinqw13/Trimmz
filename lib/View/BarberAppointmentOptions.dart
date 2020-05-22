@@ -61,92 +61,92 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
   }
 
   showWarningDialog(BuildContext context, BarberPolicies policy, int barberId) {
-  return showDialog(
-    context: context,
-    builder: (context) => new AlertDialog(
-      title: new Center(child: Text('Cancel Appointment',
-        style: TextStyle(fontSize: 19.0),)),
-      content: new Container(
-        child: new Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            new Text("You will be charged ${policy.cancelFee.contains('\$') ? '${policy.cancelFee}' : '${policy.cancelFee} of the appointment amount'} for violating the barber\'s cancel policy",
-              style: new TextStyle(
-                fontSize: 13.0
+    return showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Center(child: Text('Cancel Appointment',
+          style: TextStyle(fontSize: 19.0),)),
+        content: new Container(
+          child: new Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              new Text("You will be charged ${policy.cancelFee.contains('\$') ? '${policy.cancelFee}' : '${policy.cancelFee} of the appointment amount'} for violating the barber\'s cancel policy",
+                style: new TextStyle(
+                  fontSize: 13.0
+                ),
+                textAlign: TextAlign.left,
               ),
-              textAlign: TextAlign.left,
-            ),
-            new Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-            ),
-            new Row(
-              children: <Widget>[
-                new Expanded(
-                  child: new RaisedButton(
-                    child: new Text("OK",
-                    textAlign: TextAlign.center),
-                    onPressed: () async {
-                      if(canPress) {
-                        setState(() {
-                          canPress = false;
-                        });
+              new Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+              ),
+              new Row(
+                children: <Widget>[
+                  new Expanded(
+                    child: new RaisedButton(
+                      child: new Text("OK",
+                      textAlign: TextAlign.center),
+                      onPressed: () async {
+                        if(canPress) {
+                          setState(() {
+                            canPress = false;
+                          });
 
-                        var total;
-                        if(policy.cancelFee.contains('\$')) {
-                          total = int.parse(policy.cancelFee.replaceAll(new RegExp('[\\\$]'),''));
-                        }else {
-                          double percent = (int.parse(policy.cancelFee.replaceAll(new RegExp('[\\%]'),'')) / 100);
-                          total = (appointment['price'] * percent);
-                        }
+                          var total;
+                          if(policy.cancelFee.contains('\$')) {
+                            total = int.parse(policy.cancelFee.replaceAll(new RegExp('[\\\$]'),''));
+                          }else {
+                            double percent = (int.parse(policy.cancelFee.replaceAll(new RegExp('[\\%]'),'')) / 100);
+                            total = (appointment['price'] * percent);
+                          }
 
-                        var res = await spChargeCard(context, total, globals.spPaymentId, globals.spCustomerId, appointment['email'], appointment['barberSPID'], appointment['barberSPMethod'], appointment['barberSPPayout']);
-                        if(res) {
-                          var res2 = await updateAppointmentStatus(context, appointment['id'], 2);
-                          if(res2) {
-                            List tokens = await getNotificationTokens(context, barberId);
-                            for(var token in tokens){
-                              Map<String, dynamic> dataMap =  {
-                                'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-                                'action': 'APPOINTMENT',
-                                'title': 'Appointment Cancelled',
-                                'body': '${globals.username} has cancelled their appointment with you',
-                                'sender': '${globals.token}',
-                                'recipient': '$barberId',
-                                'appointment': appointment,
-                              };
-                              await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled their appointment with you.', token, dataMap);
+                          var res = await spChargeCard(context, total, globals.spPaymentId, globals.spCustomerId, appointment['email'], appointment['barberSPID'], appointment['barberSPMethod'], appointment['barberSPPayout']);
+                          if(res) {
+                            var res2 = await updateAppointmentStatus(context, appointment['id'], 2);
+                            if(res2) {
+                              List tokens = await getNotificationTokens(context, barberId);
+                              for(var token in tokens){
+                                Map<String, dynamic> dataMap =  {
+                                  'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                  'action': 'APPOINTMENT',
+                                  'title': 'Appointment Cancelled',
+                                  'body': '${globals.username} has cancelled their appointment with you',
+                                  'sender': '${globals.token}',
+                                  'recipient': '$barberId',
+                                  'appointment': appointment,
+                                };
+                                await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled their appointment with you.', token, dataMap);
+                              }
+                              setState(() {
+                                appointment['updated'] = DateTime.now().toString();
+                                appointment['status'] = 2;
+                              });
+                              var res1 = await getUserAppointments(context, globals.token);
+                              widget.updateAppointments(res1);
+                              Navigator.pop(context);
                             }
-                            setState(() {
-                              appointment['updated'] = DateTime.now().toString();
-                              appointment['status'] = 2;
-                            });
-                            var res1 = await getUserAppointments(context, globals.token);
-                            widget.updateAppointments(res1);
-                            Navigator.pop(context);
                           }
                         }
-                      }
-                    },
+                      },
+                    ),
                   ),
-                ),
-                Padding(padding: EdgeInsets.all(5)),
-                new Expanded(
-                  child: new RaisedButton(
-                    child: new Text("Cancel",
-                    textAlign: TextAlign.center),
-                    onPressed: () { 
-                      Navigator.pop(context);
-                    },
+                  Padding(padding: EdgeInsets.all(5)),
+                  new Expanded(
+                    child: new RaisedButton(
+                      child: new Text("Cancel",
+                      textAlign: TextAlign.center),
+                      onPressed: () { 
+                        Navigator.pop(context);
+                      },
+                    ),
                   ),
-                ),
-              ],
-            )
-          ],
-        )
-      ),
-    )
-  );
-}
+                ],
+              )
+            ],
+          )
+        ),
+      )
+    );
+  }
   clientCancel(int barberId, int appointmentId) async {
     progressHUD();
     var res = await getBarberPolicies(context, barberId) ?? new BarberPolicies();
