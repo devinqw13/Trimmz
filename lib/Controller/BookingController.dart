@@ -286,7 +286,6 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                 }
 
                 for (int i = 0; i <= end.difference(start.add(Duration(minutes: 45))).inMinutes; i+=15) {
-                  newTime = newTime.add(Duration(minutes: 15));
                   if(newTime.isAfter(DateTime.now())){
                     if(appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
                       appointmentTimes.forEach((k,v){
@@ -296,9 +295,12 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                         }
                       });
                     }else {
+                      newTime = newTime.add(Duration(minutes: 15));
                       var convertTime = df.format(DateTime.parse(newTime.toString()));
                       timesList.add(new RadioModel(false, convertTime));
                     }
+                  }else {
+                    newTime = newTime.add(Duration(minutes: 15));
                   }
                 }
               }
@@ -327,7 +329,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   getInitDate() async {
     final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
     var res = await getBarberAvailability(context, int.parse(barberInfo.id));
-    var res2 = await getBarberAppointments(context, int.parse(barberInfo.id));
+    // var res2 = await getBarberAppointments(context, int.parse(barberInfo.id));
+    var res2 = await getBarberBookAppointments(context, int.parse(barberInfo.id));
     var newTimes = await calculateTime(res, res2, _selectedDay);
     setState(() {
       _availableTimes = newTimes;
@@ -343,8 +346,8 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     });
     if(newDay.isAfter(currentDay) || newDay.isAtSameMomentAs(currentDay)){
       var res = await getBarberAvailability(context, int.parse(barberInfo.id));
-      var res2 = await getBarberAppointments(context, int.parse(barberInfo.id));
-      //var newTimes = await calculateTime(res, day);
+      // var res2 = await getBarberAppointments(context, int.parse(barberInfo.id));
+      var res2 = await getBarberBookAppointments(context, int.parse(barberInfo.id));
       var newTimes = await calculateTime(res, res2, day);
 
       setState(() {

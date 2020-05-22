@@ -585,6 +585,58 @@ Future<Map<DateTime, List<dynamic>>> getBarberAppointments(BuildContext context,
 
 }
 
+Future<Map<DateTime, List<dynamic>>> getBarberBookAppointments(BuildContext context, int userid) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}getBarberBookAppointment?token=$userid";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (045)", "Please try again. If this error continues to occur, please contact support.");
+    return {};
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (045)", "Please try again.");
+    return {};
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    Map<DateTime, List<dynamic>> apt = {};
+    final df = new DateFormat('yyyy-MM-dd');
+    final df2 = new DateFormat('hh:mm a');
+
+    for(var item in jsonResponse['appointments']) {
+      var dateString = item['date'];
+      DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
+
+      if(!apt.containsKey(date)) {
+        apt[date] = [{'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'paymentid': item['sp_paymentid'], 'customerid': item['sp_customerid'], 'email': item['email'], 'barber_pp': item['barber_pp'], 'client_pp': item['client_pp'], 'manual_client_name': item['manual_client_name'], 'manual_client_phone': item['manual_client_phone']}];
+      }else {
+        apt[date].add({'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'paymentid': item['sp_paymentid'], 'customerid': item['sp_customerid'], 'email': item['email'], 'barber_pp': item['barber_pp'], 'client_pp': item['client_pp'], 'manual_client_name': item['manual_client_name'], 'manual_client_phone': item['manual_client_phone']});
+      }
+    }
+
+    return apt;
+  }else {
+    return {};
+  }
+
+}
+
 Future<bool> removePackage(BuildContext context, int userid, int packageid) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
