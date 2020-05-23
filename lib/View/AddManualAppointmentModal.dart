@@ -239,13 +239,12 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
 
   calculateTime(List<Availability> list, Map<DateTime, List<dynamic>> existing, DateTime day) {
     final df = new DateFormat('hh:mm a');
-    //final df2 = new DateFormat('HH:mm');
     var weekday = DateFormat.EEEE().format(day).toString();
     List<RadioModel> timesList = new List<RadioModel>();
 
     for(var item in list) {
       if(item.day == weekday) {
-        if((item.start != null && item.end != null) && (item.start != '00:00:00' && item.end != '00:00:00')){
+        if((item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00'))){
           var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
           var end = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.end).toString());
           var startDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(day.toString()));
@@ -262,24 +261,51 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
                   appointmentTimes[time] = appointment['duration'].toString();
                 }
 
-                if(!appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
-                  timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
-                }
+                // if(!appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
+                //   if(newTime.isAfter(DateTime.now())){
+                //     timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
+                //   }
+                // }
 
-                for (int i = 0; i <= end.difference(start.add(Duration(minutes: 45))).inMinutes; i+=15) {
-                  newTime = newTime.add(Duration(minutes: 15));
-                  if(newTime.isAfter(DateTime.now())){
+                int iterate = end.difference(start).inMinutes - 15;
+                DateTime startingTime = newTime;
+
+                for (int i = 0; i <= end.difference(start).inMinutes; i+=15) {
+                  print(newTime);
+                  if(newTime.isAfter(DateTime.now()) && newTime.isBefore(startingTime.add(Duration(minutes: iterate)))){
                     if(appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
                       appointmentTimes.forEach((k,v){
                         if(k == DateFormat('Hms').format(newTime).toString()) {
+                          timesList.removeWhere((element) => element.buttonText == df.format(DateTime.parse(newTime.toString())));
                           newTime = newTime.add(Duration(minutes: int.parse(v)));
-                          return;
                         }
                       });
                     }else {
-                      var convertTime = df.format(DateTime.parse(newTime.toString()));
-                      timesList.add(new RadioModel(false, convertTime));
+                      bool shouldAdd = true;
+                      DateTime mmm;
+                      int val;
+
+                      appointmentTimes.forEach((k, v){
+                        var eDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(newTime.toString()));
+                        DateTime eTime = DateTime.parse(eDate + ' ' + k);
+
+                        if(newTime.add(Duration(minutes: 45)).isAfter(eTime) && newTime.add(Duration(minutes: 45)).isBefore(eTime.add(Duration(minutes: int.parse(v))))) {
+                          shouldAdd = false;
+                          mmm = eTime;
+                          val = int.parse(v);
+                        }
+                      });
+
+                      if(shouldAdd) {
+                        var convertTime = df.format(DateTime.parse(newTime.toString()));
+                        timesList.add(new RadioModel(false, convertTime));
+                        newTime = newTime.add(Duration(minutes: 15));
+                      }else {
+                        newTime = mmm.add(Duration(minutes: val));
+                      }
                     }
+                  }else {
+                    newTime = newTime.add(Duration(minutes: 15));
                   }
                 }
               }

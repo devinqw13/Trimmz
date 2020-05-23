@@ -258,7 +258,6 @@ class BookingControllerState extends State<BookingController> with TickerProvide
 
   calculateTime(List<Availability> list, Map<DateTime, List<dynamic>> existing, DateTime day) {
     final df = new DateFormat('hh:mm a');
-    //final df2 = new DateFormat('HH:mm');
     var weekday = DateFormat.EEEE().format(day).toString();
     List<RadioModel> timesList = new List<RadioModel>();
 
@@ -281,30 +280,48 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                   appointmentTimes[time] = appointment['duration'].toString();
                 }
 
-                if(!appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
-                  if(newTime.isAfter(DateTime.now())){
-                    timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
-                  }
-                }
+                // if(!appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
+                //   if(newTime.isAfter(DateTime.now())){
+                //     timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
+                //   }
+                // }
 
                 int iterate = end.difference(start).inMinutes - 15;
                 DateTime startingTime = newTime;
 
                 for (int i = 0; i <= end.difference(start).inMinutes; i+=15) {
+                  print(newTime);
                   if(newTime.isAfter(DateTime.now()) && newTime.isBefore(startingTime.add(Duration(minutes: iterate)))){
                     if(appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
                       appointmentTimes.forEach((k,v){
                         if(k == DateFormat('Hms').format(newTime).toString()) {
                           timesList.removeWhere((element) => element.buttonText == df.format(DateTime.parse(newTime.toString())));
                           newTime = newTime.add(Duration(minutes: int.parse(v)));
-                          return;
                         }
                       });
                     }else {
-                      // ADDS AVAILABLE TIMES HERE //
-                      newTime = newTime.add(Duration(minutes: 15));
-                      var convertTime = df.format(DateTime.parse(newTime.toString()));
-                      timesList.add(new RadioModel(false, convertTime));
+                      bool shouldAdd = true;
+                      DateTime mmm;
+                      int val;
+
+                      appointmentTimes.forEach((k, v){
+                        var eDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(newTime.toString()));
+                        DateTime eTime = DateTime.parse(eDate + ' ' + k);
+
+                        if(newTime.add(Duration(minutes: 45)).isAfter(eTime) && newTime.add(Duration(minutes: 45)).isBefore(eTime.add(Duration(minutes: int.parse(v))))) {
+                          shouldAdd = false;
+                          mmm = eTime;
+                          val = int.parse(v);
+                        }
+                      });
+
+                      if(shouldAdd) {
+                        var convertTime = df.format(DateTime.parse(newTime.toString()));
+                        timesList.add(new RadioModel(false, convertTime));
+                        newTime = newTime.add(Duration(minutes: 15));
+                      }else {
+                        newTime = mmm.add(Duration(minutes: val));
+                      }
                     }
                   }else {
                     newTime = newTime.add(Duration(minutes: 15));
