@@ -12,5 +12,6 @@ class SuggestedBarbers {
   String zipcode;
   String profilePicture;
   String headerImage;
+  int display;
   bool hasAdded = false;
 }

@@ -287,6 +287,7 @@ Future<List<SuggestedBarbers>> getSuggestions(BuildContext context, int userid, 
         suggestedBarber.rating = item['rating'] ?? '0';
         suggestedBarber.profilePicture = item['profile_picture'];
         suggestedBarber.headerImage = item['header_image'];
+        suggestedBarber.display = int.parse(item['display']);
         List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
         for(var item2 in clientBarbers) {
           if(item2.id.contains(item['id'].toString())){
@@ -1460,6 +1461,7 @@ Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String use
         suggestedBarber.zipcode = item['zipcode'].toString();
         suggestedBarber.rating = item['rating'] ?? '0';
         suggestedBarber.profilePicture = item['profile_picture'];
+        suggestedBarber.display = int.parse(item['display']);
         List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
         for(var item2 in clientBarbers) {
           if(item2.id.contains(item['id'].toString())){
