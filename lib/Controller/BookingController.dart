@@ -263,7 +263,9 @@ class BookingControllerState extends State<BookingController> with TickerProvide
 
     for(var item in list) {
       if(item.day == weekday) {
+        // TODO: IF START / END IS MARKED 12AM (00:00:00) IT DOESNT GO PAST THIS
         if((item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00'))){
+          print('here2');
           var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
           var end = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.end).toString());
           var startDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(day.toString()));
