@@ -46,6 +46,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   List<Packages> packages = [];
   String _packageId = '';
   String packageName = '';
+  int packageDuration = 0;
   List<RadioModel> _availableTimes = new List<RadioModel>();
   Map<DateTime, List<RadioModel>> _times;
   AnimationController _animationController;
@@ -54,7 +55,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   TextEditingController _tipController = new TextEditingController();
   int finalTip = 0;
   int finalPackagePrice = 0;
-  DateTime selectedDate;
+  DateTime selectedDate = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
   DateTime finalDateTime;
   ClientPaymentMethod paymentCard;
   ProgressHUD _progressHUD;
@@ -292,7 +293,6 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                 DateTime startingTime = newTime;
 
                 for (int i = 0; i <= end.difference(start).inMinutes; i+=15) {
-                  print(newTime);
                   if(newTime.isAfter(DateTime.now()) && newTime.isBefore(startingTime.add(Duration(minutes: iterate)))){
                     if(appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
                       appointmentTimes.forEach((k,v){
@@ -310,7 +310,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                         var eDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(newTime.toString()));
                         DateTime eTime = DateTime.parse(eDate + ' ' + k);
 
-                        if(newTime.add(Duration(minutes: 45)).isAfter(eTime) && newTime.add(Duration(minutes: 45)).isBefore(eTime.add(Duration(minutes: int.parse(v))))) {
+                        if(newTime.add(Duration(minutes: packageDuration)).isAfter(eTime) && newTime.add(Duration(minutes: packageDuration)).isBefore(eTime.add(Duration(minutes: int.parse(v))))) {
                           shouldAdd = false;
                           mmm = eTime;
                           val = int.parse(v);
@@ -359,11 +359,11 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     var newTimes = await calculateTime(res, res2, _selectedDay);
     setState(() {
       _availableTimes = newTimes;
-      selectedDate = _selectedDay;
+      // selectedDate = _selectedDay;
     });
   }
 
-  void _onDaySelected(DateTime day, List times) async {
+  void _onDaySelected(DateTime day, [List times]) async {
     var newDay = DateFormat('yyyy-MM-dd').parse(day.toString());
     var currentDay = DateFormat('yyyy-MM-dd').parse(DateTime.now().toString());
     setState(() {
@@ -566,7 +566,9 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                       _tipController.text = calculatedTip.toString();
                                       _packageId = packages[i].id;
                                       packageName = packages[i].name;
+                                      packageDuration = int.parse(packages[i].duration);
                                     });
+                                    _onDaySelected(selectedDate);
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -585,7 +587,9 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                                 _tipController.text = calculatedTip.toString();
                                                 _packageId = value;
                                                 packageName = packages[i].name;
+                                                packageDuration = int.parse(packages[i].duration);
                                               });
+                                              _onDaySelected(selectedDate);
                                             },
                                           ),
                                           Column(
