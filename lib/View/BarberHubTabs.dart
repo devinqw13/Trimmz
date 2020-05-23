@@ -1639,8 +1639,8 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                       softWrap: true,
                       text: new TextSpan(
                         children: <TextSpan> [
-                          new TextSpan(text: feedItems[i].username+' ', style: TextStyle(fontWeight: FontWeight.bold)),
-                          new TextSpan(text: feedItems[i].caption),
+                          new TextSpan(text: feedItems[i].username+' ', style: TextStyle(fontWeight: FontWeight.bold, color: globals.darkModeEnabled ? Colors.white : Colors.black)),
+                          new TextSpan(text: feedItems[i].caption, style: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black)),
                         ]
                       )
                     )
