@@ -850,7 +850,6 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
           showFullCalendarAptOptions(value);
         },
         showManualAddAppointment: (value) {
-          //TODO: NOT BEING USED YET
           showAddManualAppointment(value);
         },
       );
@@ -1929,7 +1928,6 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
           child: new Stack(
             children: <Widget> [
               SettingsTab(),
-              //settingsWidget(context),
               _progressHUD
             ]
           )

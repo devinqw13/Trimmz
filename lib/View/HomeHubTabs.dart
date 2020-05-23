@@ -812,6 +812,16 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
                 },
                 icon: Icon(Icons.calendar_today, size: 21.0),
               )
+            ),
+            Badge(
+              showBadge: false,
+              child: IconButton(
+                onPressed: () {
+                  final appointmentHistoryScreen = new AppointmentList();
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentHistoryScreen));
+                },
+                icon: Icon(Icons.chat_bubble_outline, size: 21.0),
+              )
             )
           ],
         ),
@@ -987,7 +997,6 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
           child: new Stack(
             children: <Widget> [
               SettingsTab(),
-              //settingsWidget(context),
               _progressHUD
             ]
           )

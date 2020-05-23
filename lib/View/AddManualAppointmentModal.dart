@@ -108,25 +108,32 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
               fontWeight: FontWeight.w400,
             ),
           ),
-          TextFormField(
-            controller: nameTextController,
-            decoration: InputDecoration(
-              labelText: "Name",
-              border: InputBorder.none
-            ),
-          ),
-          TextFormField(
-            controller: phoneTextController,
-            inputFormatters: [
-              MaskedTextInputFormatter(
-                mask: 'xxx-xxx-xxxx',
-                separator: '-',
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: TextFormField(
+                  controller: nameTextController,
+                  decoration: InputDecoration(
+                    labelText: "Name",
+                  ),
+                )
               ),
-            ],
-            decoration: InputDecoration(
-              labelText: "Phone",
-              border: InputBorder.none
-            ),
+              Padding(padding: EdgeInsets.all(5)),
+              Expanded(
+                child: TextFormField(
+                  controller: phoneTextController,
+                  inputFormatters: [
+                    MaskedTextInputFormatter(
+                      mask: 'xxx-xxx-xxxx',
+                      separator: '-',
+                    ),
+                  ],
+                  decoration: InputDecoration(
+                    labelText: "Phone",
+                  ),
+                )
+              )
+            ]
           )
         ]
       )
@@ -482,10 +489,10 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, top: 50),
       child: Container(
         padding: EdgeInsets.all(10.0),
-        height: MediaQuery.of(context).size.height * .9,
+        height: MediaQuery.of(context).size.height * .65,
         margin: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 20),
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 21, 21, 21),
