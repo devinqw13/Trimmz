@@ -34,7 +34,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
   @override
   void initState() {
     appointment = widget.appointment;
-    print(appointment);
     _progressHUD = new ProgressHUD(
       color: Colors.white,
       containerColor: Color.fromRGBO(21, 21, 21, 0.4),
@@ -156,7 +155,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
         progressHUD();
         showWarningDialog(context, res, barberId);
       }else {
-        print('here');
         var res = await updateAppointmentStatus(context, appointmentId, 2);
         if(res) {
           List tokens = await getNotificationTokens(context, barberId);
@@ -424,7 +422,6 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                       onPressed: () async {
                                                         progressHUD();
                                                         if(appointment['clientid'] == 0) {
-                                                          print('here');
                                                           var res2 = await updateAppointmentStatus(context, appointment['id'], 1);
                                                           if(res2) {
                                                             var res1 = await getBarberAppointments(context, globals.token);
