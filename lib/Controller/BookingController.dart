@@ -14,6 +14,7 @@ import 'BarberHubController.dart';
 import '../Model/Packages.dart';
 import 'package:intl/intl.dart';
 import '../Model/availability.dart';
+import 'package:trimmz/Model/AvailabilityV2.dart';
 import '../View/BookingTimeRadioButton.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import '../Calls/StripeConfig.dart';
@@ -26,7 +27,6 @@ import '../Model/BarberPolicies.dart';
 
 class BookingController extends StatefulWidget {
   final ClientBarbers barberInfo;
-
   final List selectedEvents;
   final List<Packages> packages;
   final Map<DateTime, List> events;
@@ -257,16 +257,15 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     });
   }
 
-  calculateTime(List<Availability> list, Map<DateTime, List<dynamic>> existing, DateTime day) {
+  calculateTimeV2(List<AvailabilityV2> list, Map<DateTime, List<dynamic>> existing, DateTime day) {
     final df = new DateFormat('hh:mm a');
-    var weekday = DateFormat.EEEE().format(day).toString();
+    var weekday = DateFormat('yyyy-MM-dd').format(day);
     List<RadioModel> timesList = new List<RadioModel>();
 
     for(var item in list) {
-      if(item.day == weekday) {
+      if(DateFormat('yyyy-MM-dd').format(item.date) == weekday) {
         // TODO: IF START / END IS MARKED 12AM (00:00:00) IT DOESNT GO PAST THIS
-        if((item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00'))){
-          print('here2');
+        if((item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00')) && item.closed != 1){
           var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
           var end = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.end).toString());
           var startDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(day.toString()));
@@ -352,14 +351,110 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     }
   }
 
+  // calculateTime(List<Availability> list, Map<DateTime, List<dynamic>> existing, DateTime day) {
+  //   final df = new DateFormat('hh:mm a');
+  //   var weekday = DateFormat.EEEE().format(day).toString();
+  //   List<RadioModel> timesList = new List<RadioModel>();
+
+  //   for(var item in list) {
+  //     if(item.day == weekday) {
+  //       // TODO: IF START / END IS MARKED 12AM (00:00:00) IT DOESNT GO PAST THIS
+  //       if((item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00'))){
+  //         print('here2');
+  //         var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
+  //         var end = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.end).toString());
+  //         var startDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(day.toString()));
+  //         var startTime = DateFormat('Hms').format(DateTime.parse(start.toString()));
+  //         var newStart = DateTime.parse(startDate + ' ' + startTime);
+  //         var newTime = newStart;
+
+  //         if(existing.containsKey(DateTime.parse(DateFormat('yyyy-MM-dd').format(day)))) {
+  //           existing.forEach((key, value){
+  //             if(DateFormat('yyyy-MM-dd').format(key) == DateFormat('yyyy-MM-dd').format(day)) {
+  //               Map<String, String> appointmentTimes = {};
+  //               for(var appointment in value) {
+  //                 var time = DateFormat('Hms').format(DateTime.parse(DateFormat('hh:mm a', 'en_US').parse(appointment['time']).toString()));
+  //                 appointmentTimes[time] = appointment['duration'].toString();
+  //               }
+
+  //               // if(!appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
+  //               //   if(newTime.isAfter(DateTime.now())){
+  //               //     timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
+  //               //   }
+  //               // }
+
+  //               int iterate = end.difference(start).inMinutes - 15;
+  //               DateTime startingTime = newTime;
+
+  //               for (int i = 0; i <= end.difference(start).inMinutes; i+=15) {
+  //                 if(newTime.isAfter(DateTime.now()) && newTime.isBefore(startingTime.add(Duration(minutes: iterate)))){
+  //                   if(appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
+  //                     appointmentTimes.forEach((k,v){
+  //                       if(k == DateFormat('Hms').format(newTime).toString()) {
+  //                         timesList.removeWhere((element) => element.buttonText == df.format(DateTime.parse(newTime.toString())));
+  //                         newTime = newTime.add(Duration(minutes: int.parse(v)));
+  //                       }
+  //                     });
+  //                   }else {
+  //                     bool shouldAdd = true;
+  //                     DateTime mmm;
+  //                     int val;
+
+  //                     appointmentTimes.forEach((k, v){
+  //                       var eDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(newTime.toString()));
+  //                       DateTime eTime = DateTime.parse(eDate + ' ' + k);
+
+  //                       if(newTime.add(Duration(minutes: packageDuration)).isAfter(eTime) && newTime.add(Duration(minutes: packageDuration)).isBefore(eTime.add(Duration(minutes: int.parse(v))))) {
+  //                         shouldAdd = false;
+  //                         mmm = eTime;
+  //                         val = int.parse(v);
+  //                       }
+  //                     });
+
+  //                     if(shouldAdd) {
+  //                       var convertTime = df.format(DateTime.parse(newTime.toString()));
+  //                       timesList.add(new RadioModel(false, convertTime));
+  //                       newTime = newTime.add(Duration(minutes: 15));
+  //                     }else {
+  //                       newTime = mmm.add(Duration(minutes: val));
+  //                     }
+  //                   }
+  //                 }else {
+  //                   newTime = newTime.add(Duration(minutes: 15));
+  //                 }
+  //               }
+  //             }
+  //           }); 
+  //         }else {
+  //           if(newTime.isAfter(DateTime.now())){
+  //             timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
+  //           }
+
+  //           for (int i = 0; i <= end.difference(start.add(Duration(minutes: 45))).inMinutes; i+=15) {
+  //             newTime = newTime.add(Duration(minutes: 15));
+  //             if(newTime.isAfter(DateTime.now())){
+  //               var convertTime = df.format(DateTime.parse(newTime.toString()));
+  //               timesList.add(new RadioModel(false, convertTime));
+  //             }
+  //           }
+  //         }
+  //         return timesList;    
+  //       }else {
+  //         return timesList = [];
+  //       }
+  //     }
+  //   }
+  // }
+
   getInitDate() async {
     final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
-    var res = await getBarberAvailability(context, int.parse(barberInfo.id));
+    // var res = await getBarberAvailability(context, int.parse(barberInfo.id));
+    var res1 = await getBarberAvailabilityV2(context, int.parse(barberInfo.id));
     var res2 = await getBarberBookAppointments(context, int.parse(barberInfo.id));
-    var newTimes = await calculateTime(res, res2, _selectedDay);
+    var newTimes = await calculateTimeV2(res1, res2, _selectedDay);
+    // var newTimes = await calculateTime(res, res2, _selectedDay);
     setState(() {
       _availableTimes = newTimes;
-      // selectedDate = _selectedDay;
     });
   }
 
@@ -371,8 +466,10 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     });
     if(newDay.isAfter(currentDay) || newDay.isAtSameMomentAs(currentDay)){
       var res = await getBarberAvailability(context, int.parse(barberInfo.id));
+      var res1 = await getBarberAvailabilityV2(context, int.parse(barberInfo.id));
       var res2 = await getBarberBookAppointments(context, int.parse(barberInfo.id));
-      var newTimes = await calculateTime(res, res2, day);
+      var newTimes = await calculateTimeV2(res1, res2, day);
+      // var newTimes = await calculateTime(res, res2, day);
       setState(() {
         _availableTimes = newTimes;
       });
@@ -841,13 +938,26 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Container(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * .35
+                            ),
                             padding: EdgeInsets.only(left: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text('Review', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20, color: Colors.blue)),
-                                Text(barberInfo.name),
-                                packageName != '' ? Text(packageName) : Container(),
+                                Text(
+                                  barberInfo.name,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  maxLines: 1,
+                                ),
+                                packageName != '' ? Text(
+                                  packageName,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  maxLines: 1
+                                ) : Container(),
                                 finalDateTime != null ?
                                   Text(
                                     DateFormat('Md').format(DateTime.parse(finalDateTime.toString())) + ' at ' + DateFormat('hh:mm a').format(DateTime.parse(finalDateTime.toString()))

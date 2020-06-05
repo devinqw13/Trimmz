@@ -81,11 +81,12 @@ class LoginScreenState extends State<LoginScreen> {
           var events = await getBarberAppointments(context, globals.token);
           var selectedEvents = events[_selectedDay] ?? [];
           var availability = await getBarberAvailability(context, globals.token);
+          var availabilityV2 = await getBarberAvailabilityV2(context, globals.token);
           var appointmentReq = await getBarberAppointmentRequests(context, globals.token);
           var policies = await getBarberPolicies(context, globals.token) ?? new BarberPolicies();
           progressHUD();
 
-          final barberHubScreen = new BarberHubScreen(packages: packages, events: events, selectedEvents: selectedEvents, availability: availability, appointmentReq: appointmentReq, policies: policies);
+          final barberHubScreen = new BarberHubScreen(packages: packages, events: events, selectedEvents: selectedEvents, availability: availability, availabilityV2: availabilityV2, appointmentReq: appointmentReq, policies: policies);
           Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberHubScreen));
         }
       break;
