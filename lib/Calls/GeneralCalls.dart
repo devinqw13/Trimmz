@@ -18,6 +18,7 @@ import '../Model/Reviews.dart';
 import '../Model/Notifications.dart';
 import 'dart:io';
 import 'package:device_info/device_info.dart';
+import '../Model/AvailabilityV2.dart';
 
 Future<List<String>> getDeviceDetails() async {
   String deviceName;
@@ -793,6 +794,52 @@ Future<List<Availability>> getBarberAvailability(BuildContext context, int useri
 
 }
 
+Future<List<AvailabilityV2>> getBarberAvailabilityV2(BuildContext context, int userid) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}getBarberAvailabilityV2?token=$userid";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (015)", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (015)", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+      List<AvailabilityV2> availability = [];
+      for(var item in jsonResponse['availability']){
+        AvailabilityV2 avail = new AvailabilityV2();
+        avail.start = item['start'];
+        avail.end = item['end'];
+        avail.closed = item['closed'];
+        avail.date = DateTime.parse(item['date']);
+        availability.add(avail);
+      }
+      return availability;
+  }else {
+    return [];
+  }
+
+}
+
 Future<bool> setTimeAvailability(BuildContext context, int userid, String day, DateTime start, DateTime end, bool isClosed) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
@@ -828,6 +875,55 @@ Future<bool> setTimeAvailability(BuildContext context, int userid, String day, D
     showErrorDialog(context, "The Server is not responding (016)", "Please try again. If this error continues to occur, please contact support.");
     return false;
   }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (016)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    return true;
+  }else {
+    return false;
+  }
+}
+
+Future<bool> setTimeAvailabilityV2(BuildContext context, int userid, String day, DateTime start, DateTime end, bool isClosed) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  int isClosedInt = isClosed ? 1 : 0;
+  String startString = DateFormat.Hms().format(start);
+  String endString = DateFormat.Hms().format(end);
+
+  Map jsonMap = {
+    "token" : userid,
+    "day" : day,
+    "start" : startString,
+    "end" : endString,
+    "closed": isClosedInt
+  };
+
+  String url = "${globals.baseUrl}updateAvailabilityV2/";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (016)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred (016)", "Please try again.");
     return false;

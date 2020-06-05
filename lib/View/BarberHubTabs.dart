@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/dialogs.dart';
 import '../View/Widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:line_icons/line_icons.dart';
@@ -41,6 +42,8 @@ import 'package:camera/camera.dart';
 import '../Controller/AddImageController.dart';
 import '../Model/FeedItems.dart';
 import 'SettingsTab.dart';
+import '../Model/AvailabilityV2.dart';
+import '../View/SetAvailabilityV2Modal.dart';
 
 class BarberHubTabWidget extends StatefulWidget{
   final int widgetItem;
@@ -48,9 +51,10 @@ class BarberHubTabWidget extends StatefulWidget{
   final List<Packages> packages;
   final Map<DateTime, List> events;
   final List<Availability> availability;
+  final List<AvailabilityV2> availabilityV2;
   final List<AppointmentRequest> appointmentReq;
   final BarberPolicies policies;
-  BarberHubTabWidget({Key key, this.widgetItem, this.selectedEvents, this.packages, this.events, this.availability, this.appointmentReq, this.policies}) : super (key: key);
+  BarberHubTabWidget({Key key, this.widgetItem, this.selectedEvents, this.packages, this.events, this.availability, this.appointmentReq, this.policies, this.availabilityV2}) : super (key: key);
 
   @override
   BarberHubTabWidgetState  createState() => BarberHubTabWidgetState ();
@@ -73,13 +77,17 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
   int badgeNotifications = 0;
   List<Packages> packages = [];
   List<Availability> availability = [];
+  List<AvailabilityV2> availabilityV2 = [];
   List<AppointmentRequest> appointmentReq = [];
   Map<DateTime, List> _events;
+  Map<DateTime, List> _availability = {};
   DateTime _calendarSelectDay = DateTime.now();
   List _selectedEvents = [];
   Colors status;
   CalendarController _calendarController;
+  CalendarController _calendarAvailabilityController;
   AnimationController _animationController;
+  AnimationController _animationAvailabilityController;
   BarberPolicies policies = new BarberPolicies();
   final df2 = new DateFormat('yyyy-MM-dd');
   List<FeedItem> feedItems = [];
@@ -87,14 +95,19 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
   void initState() {
     super.initState();
 
-    _calendarController = CalendarController();
-
-    _animationController = AnimationController(
+    _calendarController = new CalendarController();
+    _animationController = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
-
     _animationController.forward();
+
+    _calendarAvailabilityController = new CalendarController();
+    _animationAvailabilityController = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _animationAvailabilityController.forward();
 
     searchStreamController.stream
     .debounce(Duration(milliseconds: 0))
@@ -178,10 +191,18 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       _events = widget.events;
       _selectedEvents = widget.selectedEvents;
       availability = widget.availability;
+      availabilityV2 =  widget.availabilityV2;
       appointmentReq = widget.appointmentReq;
       policies = widget.policies;
     });
-
+    
+    for(var item in availabilityV2) {
+      DateTime date = DateTime.parse(DateFormat('yyyy-MM-dd').format(item.date));
+      setState(() {
+        _availability[date] = [{'date': item.date, 'start': item.start, 'end': item.end, 'closed': item.closed}];
+      });
+    }
+    
     var res5 = await getPosts(context, globals.token, 1);
     setState(() {
       feedItems = res5;
@@ -935,7 +956,18 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Text(_selectedEvents[i]['clientid'] == 0 ? _selectedEvents[i]['manual_client_name'] : _selectedEvents[i]['name'], style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                                    Container(
+                                      constraints: new BoxConstraints(
+                                        maxWidth: 100
+                                      ),
+                                      child: Text(
+                                        _selectedEvents[i]['clientid'] == 0 ? _selectedEvents[i]['manual_client_name'] : _selectedEvents[i]['name'],
+                                        overflow: TextOverflow.fade,
+                                        softWrap: false,
+                                        maxLines: 1,
+                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)
+                                      )
+                                    ),
                                     Padding(padding: EdgeInsets.all(5)),
                                     Container(
                                       padding: EdgeInsets.only(bottom: 1, top: 1, right: 6, left: 6),
@@ -1070,62 +1102,197 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
     );
   }
 
-  barberDBAvailability(BuildContext context) {
-    return new Column(
-      children: <Widget>[
-        ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: availability.length,
-          itemBuilder: (context, i){
-            final todayDay = DateFormat.EEEE().format(DateTime.now());
-            bool isNull = false;
-            String start;
-            String end;
-            final df = new DateFormat('h:mm a');
-            if(availability[i].start != null && availability[i].end != null) {
-              if(availability[i].start == '0:00:00' && availability[i].end == '0:00:00') {
-                isNull = true;
-              }else {
-                start = df.format(DateTime.parse(DateFormat('Hms', 'en_US').parse(availability[i].start).toString()));
-                end = df.format(DateTime.parse(DateFormat('Hms', 'en_US').parse(availability[i].end).toString()));
-              }
-            }else {
-              isNull = true;
+  // barberDBAvailability(BuildContext context) {
+  //   return new Column(
+  //     children: <Widget>[
+  //       ListView.builder(
+  //         physics: NeverScrollableScrollPhysics(),
+  //         shrinkWrap: true,
+  //         itemCount: availability.length,
+  //         itemBuilder: (context, i){
+  //           final todayDay = DateFormat.EEEE().format(DateTime.now());
+  //           bool isNull = false;
+  //           String start;
+  //           String end;
+  //           final df = new DateFormat('h:mm a');
+  //           if(availability[i].start != null && availability[i].end != null) {
+  //             if(availability[i].start == '0:00:00' && availability[i].end == '0:00:00') {
+  //               isNull = true;
+  //             }else {
+  //               start = df.format(DateTime.parse(DateFormat('Hms', 'en_US').parse(availability[i].start).toString()));
+  //               end = df.format(DateTime.parse(DateFormat('Hms', 'en_US').parse(availability[i].end).toString()));
+  //             }
+  //           }else {
+  //             isNull = true;
+  //           }
+  //           return Container(
+  //             margin: EdgeInsets.only(top: 5.0, bottom: 5.0),
+  //             child: Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: <Widget>[
+  //                 Row(
+  //                   children: <Widget>[
+  //                     todayDay == availability[i].day ? Container(height: 5.0, width: 5.0, decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),) : Container(height: 5.0, width: 5.0),
+  //                     Padding(padding: EdgeInsets.all(5.0),),
+  //                     Text(availability[i].day, style: TextStyle(fontSize: 18.0)),
+  //                   ],
+  //                 ),
+  //                 Row(
+  //                   children: <Widget>[
+  //                     GestureDetector(
+  //                       onTap: () {
+  //                         showSetAvailableTime(context, availability[i]);
+  //                       },
+  //                       child: Text(
+  //                         isNull ? 'Closed' : start + " - " + end,
+  //                         style: TextStyle(
+  //                           fontSize: 17.0
+  //                         ),
+  //                       )
+  //                     ),
+  //                   ],
+  //                 )
+  //               ],
+  //             )
+  //           );
+  //         },
+  //       )
+  //     ],
+  //   );
+  // }
+
+  _onAvailabilityDaySelect(DateTime day, List aDay) {
+    if(DateTime.parse(DateFormat('yyyy-MM-dd').format(day)).isBefore(DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now())))) {
+      showErrorDialog(context, "Cannot Edit Availability", "This date has passed");
+    }else {
+      showModalBottomSheet(context: context, backgroundColor: Colors.black.withOpacity(0), isScrollControlled: true, isDismissible: true, builder: (builder) {
+        bool isClosedChecked;
+        if(aDay.length > 0) {
+          if(aDay.first['closed'] == 1){
+            isClosedChecked = true;
+          }else {
+            isClosedChecked = false;
+          }
+        }else {
+          aDay.add({'date': day, 'start': '09:00:00', 'end': '17:00:00', 'closed': 0});
+          isClosedChecked = false;
+        }
+        return AvailabilityV2BottomSheet(
+          switchValue: isClosedChecked,
+          avail: aDay,
+          valueChanged: (value) {
+            setState(() {
+              isClosedChecked = value;
+            });
+          },
+          getAvailability: (avail) {
+            setState(() {
+              availabilityV2 = avail;
+            });
+            for(var item in availabilityV2) {
+              DateTime date = DateTime.parse(DateFormat('yyyy-MM-dd').format(item.date));
+              setState(() {
+                _availability[date] = [{'date': item.date, 'start': item.start, 'end': item.end, 'closed': item.closed}];
+              });
             }
-            return Container(
-              margin: EdgeInsets.only(top: 5.0, bottom: 5.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      todayDay == availability[i].day ? Container(height: 5.0, width: 5.0, decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),) : Container(height: 5.0, width: 5.0),
-                      Padding(padding: EdgeInsets.all(5.0),),
-                      Text(availability[i].day, style: TextStyle(fontSize: 18.0)),
-                    ],
+          },
+        );
+      });
+    }
+  }
+
+  barberDBAvailability(BuildContext context) {
+    return TableCalendar(
+      locale: 'en_US',
+      events: _availability,
+      onDaySelected: _onAvailabilityDaySelect,
+      availableGestures: AvailableGestures.horizontalSwipe,
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekdayStyle: TextStyle(color: globals.darkModeEnabled ? Color(0xFFf2f2f2) : Colors.black),
+        weekendStyle: TextStyle(color: globals.darkModeEnabled ?  Color(0xFFf2f2f2) : Colors.black)
+      ),
+      headerStyle: HeaderStyle(
+        formatButtonVisible: false,
+        leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.blue),
+        rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.blue)
+      ),
+      calendarStyle: CalendarStyle(
+        weekendStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),
+        outsideWeekendStyle: TextStyle(color: Color(0xFF9E9E9E))
+      ),
+      headerVisible: true,
+      calendarController: _calendarAvailabilityController,
+      initialSelectedDay: DateTime.now(),
+      initialCalendarFormat: CalendarFormat.twoWeeks,
+      builders: CalendarBuilders(
+        selectedDayBuilder: (context, date, _) {
+          return FadeTransition(
+            opacity: Tween(begin: 0.0, end: 1.0).animate(_animationAvailabilityController),
+            child: Container(
+              margin: const EdgeInsets.all(6.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: DateFormat('yyyy-MM-dd').format(date) == DateFormat('yyyy-MM-dd').format(DateTime.now()) ? globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[400] : Colors.transparent
+              ),
+              child: Center(
+                child: Text(
+                  '${date.day}',
+                ),
+              )
+            ),
+          );
+        },
+        todayDayBuilder: (context, date, _) {
+          return FadeTransition(
+            opacity: Tween(begin: 0.0, end: 1.0).animate(_animationAvailabilityController),
+            child: Container(
+              margin: const EdgeInsets.all(6.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[400]
+              ),
+              child: Center(
+                child: Text(
+                '${date.day}',
+                style: TextStyle().copyWith(fontSize: 16.0),
+              ),
+              )
+            ),
+          );
+        },
+        markersBuilder: (context, date, events, holidays) {
+          final children = <Widget>[];
+          var start = DateFormat('h').format(DateTime.parse(DateFormat('Hms', 'en_US').parse(events.first['start']).toString()));
+          var end = DateFormat('h').format(DateTime.parse(DateFormat('Hms', 'en_US').parse(events.first['end']).toString()));
+
+          if (events.isNotEmpty) {
+            children.add(
+              AnimatedContainer(
+                margin: EdgeInsets.only(top: 29, left: 2),
+                duration: const Duration(milliseconds: 300),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(5),
+                  color: globals.darkModeEnabled ? Colors.blue[700] : Colors.lightBlue
+                ),
+                width: 46.0,
+                height: 20.0,
+                child: Center(
+                  child: Text(
+                    events.first['closed'] == 0 ? '$start-$end' : 'Closed',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle().copyWith(
+                      color: Colors.white,
+                      fontSize: 13.0,
+                    ),
                   ),
-                  Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          showSetAvailableTime(context, availability[i]);
-                        },
-                        child: Text(
-                          isNull ? 'Closed' : start + " - " + end,
-                          style: TextStyle(
-                            fontSize: 17.0
-                          ),
-                        )
-                      ),
-                    ],
-                  )
-                ],
+                ),
               )
             );
-          },
-        )
-      ],
+          }
+          return children;
+        },
+      ),
     );
   }
 
@@ -1137,6 +1304,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
         key: refreshKey2,
         child: SingleChildScrollView(
           child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               setupChecks(),
               appointmentReq.length > 0 ? 
@@ -1287,6 +1455,16 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                   ]
                 )
               ),
+              // Container(
+              //   margin: EdgeInsets.only(left: 5.0, top: 10),
+              //   child: Text(
+              //     'Services',
+              //     style: TextStyle(
+              //       fontSize: 17.0,
+              //       fontWeight: FontWeight.w400,
+              //     )
+              //   )
+              // ),
               Container(
                 width: MediaQuery.of(context).size.width,
                 margin: EdgeInsets.all(5.0),
@@ -1438,6 +1616,16 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                   ],
                 )
               ),
+              // Container(
+              //   margin: EdgeInsets.only(left: 5.0, top: 10),
+              //   child: Text(
+              //     'Policies',
+              //     style: TextStyle(
+              //       fontSize: 17.0,
+              //       fontWeight: FontWeight.w400,
+              //     )
+              //   )
+              // ),
               Container(
                 width: MediaQuery.of(context).size.width,
                 margin: EdgeInsets.all(5.0),
@@ -1488,6 +1676,16 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                   ],
                 )
               ),
+              // Container(
+              //   margin: EdgeInsets.only(left: 5.0, top: 10),
+              //   child: Text(
+              //     'Availability',
+              //     style: TextStyle(
+              //       fontSize: 17.0,
+              //       fontWeight: FontWeight.w400,
+              //     )
+              //   )
+              // ),
               Container(
                 width: MediaQuery.of(context).size.width,
                 margin: EdgeInsets.all(5.0),
@@ -1505,7 +1703,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                       'Availability',
                       style: TextStyle(
                         fontSize: 17.0,
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w400
                       )
                     ),
                     Container(

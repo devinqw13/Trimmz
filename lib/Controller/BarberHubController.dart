@@ -7,6 +7,7 @@ import '../Model/BarberPolicies.dart';
 import '../Model/Packages.dart';
 import '../Model/availability.dart';
 import '../Model/AppointmentRequests.dart';
+import '../Model/AvailabilityV2.dart';
 
 class BarberHubScreen extends StatefulWidget {
   final Map message;
@@ -14,9 +15,10 @@ class BarberHubScreen extends StatefulWidget {
   final List<Packages> packages;
   final Map<DateTime, List> events;
   final List<Availability> availability;
+  final List<AvailabilityV2> availabilityV2;
   final List<AppointmentRequest> appointmentReq;
   final BarberPolicies policies;
-  BarberHubScreen({Key key, this.message, this.selectedEvents, this.packages, this.appointmentReq, this.availability, this.events, this.policies}) : super (key: key);
+  BarberHubScreen({Key key, this.message, this.selectedEvents, this.packages, this.appointmentReq, this.availability, this.events, this.policies, this.availabilityV2}) : super (key: key);
 
   @override
   BarberHubScreenState createState() => new BarberHubScreenState();
@@ -33,7 +35,7 @@ class BarberHubScreenState extends State<BarberHubScreen> with TickerProviderSta
     super.initState();
 
     _children = [
-      BarberHubTabWidget(widgetItem: 0, selectedEvents: widget.selectedEvents, packages: widget.packages, appointmentReq: widget.appointmentReq, availability: widget.availability, events: widget.events, policies: widget.policies),
+      BarberHubTabWidget(widgetItem: 0, selectedEvents: widget.selectedEvents, packages: widget.packages, appointmentReq: widget.appointmentReq, availability: widget.availability, events: widget.events, policies: widget.policies, availabilityV2: widget.availabilityV2),
       BarberHubTabWidget(widgetItem: 1),
       BarberHubTabWidget(widgetItem: 2),
       BarberHubTabWidget(widgetItem: 3)

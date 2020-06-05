@@ -86,18 +86,31 @@ class _AppointmentRequestBottomSheet extends State<AppointmentRequestBottomSheet
                               children: <Widget> [
                                 Row(
                                   children: <Widget>[
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          requests[i].clientName,
-                                          style: TextStyle(
-                                            fontSize: 20.0
+                                    Container(
+                                      constraints: new BoxConstraints(
+                                        maxWidth: 130
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            requests[i].clientName,
+                                            overflow: TextOverflow.fade,
+                                            softWrap: false,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              fontSize: 20.0
+                                            ),
                                           ),
-                                        ),
-                                        Text(df.format(DateTime.parse(requests[i].dateTime.toString()))),
-                                        Text(requests[i].packageName),
-                                      ]
+                                          Text(df.format(DateTime.parse(requests[i].dateTime.toString()))),
+                                          Text(
+                                            requests[i].packageName,
+                                            overflow: TextOverflow.fade,
+                                            softWrap: false,
+                                            maxLines: 1,
+                                          ),
+                                        ]
+                                      ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.all(5)
