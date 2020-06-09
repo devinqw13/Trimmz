@@ -7,7 +7,7 @@ import '../functions.dart';
 import '../Calls/GeneralCalls.dart';
 import 'AddAnnoucementRecipients.dart';
 import '../Model/Packages.dart';
-import '../Model/availability.dart';
+import 'package:trimmz/Model/AvailabilityV2.dart';
 import '../Model/AppointmentRequests.dart';
 import '../Model/BarberPolicies.dart';
 
@@ -15,10 +15,10 @@ class NotificationScreen extends StatefulWidget {
   final List selectedEvents;
   final List<Packages> packages;
   final Map<DateTime, List> events;
-  final List<Availability> availability;
+  final List<AvailabilityV2> availabilityV2;
   final List<AppointmentRequest> appointmentReq;
   final BarberPolicies policies;
-  NotificationScreen({Key key, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
+  NotificationScreen({Key key, this.appointmentReq, this.availabilityV2, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
 
   @override
   NotificationScreenState createState() => new NotificationScreenState();
@@ -54,44 +54,53 @@ class NotificationScreenState extends State<NotificationScreen> {
         shrinkWrap: true,
         itemCount: notifications.length,
         itemBuilder: (context, i) {
-          return Container(
-            decoration: BoxDecoration(
-              border: Border(
-                left: !notifications[i].read ? BorderSide(width: 3.0, color: Colors.blue) : BorderSide.none
-              )
-            ),
-            margin: EdgeInsets.all(3),
-            padding: EdgeInsets.all(5),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                //TODO: SHOW NOTIFIERS PROFILE PICTURE
-                Container(
-                  margin: EdgeInsets.all(10),
-                  width: 50.0,
-                  height: 50.0,
-                  decoration: new BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.purple,
-                    gradient: new LinearGradient(
-                      colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
-                    )
-                  ),
-                  child: Center(child:Text('T', style: TextStyle(fontSize: 20))) //Text(searchedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20)))
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(notifications[i].title, style: TextStyle(fontWeight: FontWeight.bold)),
-                    Container(
-                      width: MediaQuery.of(context).size.width * .75,
-                      child: Text(notifications[i].message, softWrap: true),
-                    ),
-                    buildTimeAgo(notifications[i].created)
-                  ]
+          return Dismissible(
+            key: Key(notifications[i].id.toString()),
+            onDismissed: (direction) {
+              var _ = removeNotification(context, globals.token, notifications[i].id);
+              setState(() {
+                notifications.removeAt(i);
+              });
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  left: !notifications[i].read ? BorderSide(width: 3.0, color: Colors.blue) : BorderSide.none
                 )
-              ]
+              ),
+              margin: EdgeInsets.all(3),
+              padding: EdgeInsets.all(5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  //TODO: SHOW NOTIFIERS PROFILE PICTURE
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    width: 50.0,
+                    height: 50.0,
+                    decoration: new BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.purple,
+                      gradient: new LinearGradient(
+                        colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
+                      )
+                    ),
+                    child: Center(child:Text('T', style: TextStyle(fontSize: 20))) //Text(searchedBarbers[i].name.substring(0,1), style: TextStyle(fontSize: 20)))
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(notifications[i].title, style: TextStyle(fontWeight: FontWeight.bold)),
+                      Container(
+                        width: MediaQuery.of(context).size.width * .75,
+                        child: Text(notifications[i].message, softWrap: true),
+                      ),
+                      buildTimeAgo(notifications[i].created)
+                    ]
+                  )
+                ]
+              )
             )
           );
         },
@@ -112,7 +121,7 @@ class NotificationScreenState extends State<NotificationScreen> {
               textColor: Colors.blue,
               child: Text('Send Annoucement', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),),
               onPressed: () async {
-                final addAnnoucementRecipientScreen = new AddAnnoucementRecipients(selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies);
+                final addAnnoucementRecipientScreen = new AddAnnoucementRecipients(selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availabilityV2: widget.availabilityV2, appointmentReq: widget.appointmentReq, policies: widget.policies);
                 Navigator.push(context, new MaterialPageRoute(builder: (context) => addAnnoucementRecipientScreen));
               },
             )

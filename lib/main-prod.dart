@@ -44,7 +44,7 @@ void main() async {
       final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
       events = await getBarberAppointments(context, globals.token);
       selectedEvents = events[_selectedDay] ?? [];
-      availability = await getBarberAvailability(context, globals.token);
+      // availability = await getBarberAvailability(context, globals.token);
       availabilityV2 = await getBarberAvailabilityV2(context, globals.token);
       appointmentReq = await getBarberAppointmentRequests(context, globals.token);
       policies = await getBarberPolicies(context, globals.token) ?? new BarberPolicies();

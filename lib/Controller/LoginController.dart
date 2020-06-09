@@ -80,7 +80,8 @@ class LoginScreenState extends State<LoginScreen> {
           final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
           var events = await getBarberAppointments(context, globals.token);
           var selectedEvents = events[_selectedDay] ?? [];
-          var availability = await getBarberAvailability(context, globals.token);
+          var availability = [];
+          // var availability = await getBarberAvailability(context, globals.token);
           var availabilityV2 = await getBarberAvailabilityV2(context, globals.token);
           var appointmentReq = await getBarberAppointmentRequests(context, globals.token);
           var policies = await getBarberPolicies(context, globals.token) ?? new BarberPolicies();

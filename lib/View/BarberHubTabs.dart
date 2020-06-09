@@ -1223,7 +1223,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
       headerVisible: true,
       calendarController: _calendarAvailabilityController,
       initialSelectedDay: DateTime.now(),
-      initialCalendarFormat: CalendarFormat.twoWeeks,
+      initialCalendarFormat: CalendarFormat.month,
       builders: CalendarBuilders(
         selectedDayBuilder: (context, date, _) {
           return FadeTransition(
@@ -1890,7 +1890,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                 progressHUD();
                 var barberList = await getUserBarbers(context, globals.token);
                 progressHUD();
-                final selectBarberScreen = new SelectBarberScreen(clientBarbers: barberList, selectedEvents: _selectedEvents, packages: packages, events: _events, availability: availability, appointmentReq: appointmentReq, policies: policies); 
+                final selectBarberScreen = new SelectBarberScreen(clientBarbers: barberList, selectedEvents: _selectedEvents, packages: packages, events: _events, availabilityV2: availabilityV2, appointmentReq: appointmentReq, policies: policies); 
                 Navigator.push(context, new MaterialPageRoute(builder: (context) => selectBarberScreen));
               },
             )
@@ -1917,7 +1917,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
           //       child: new FloatingActionButton(
           //         onPressed: () async {
           //           var cameras = await availableCameras();
-          //           final cameraScreen = new CameraApp(uploadType: 2, cameras: cameras, selectedEvents: _selectedEvents, packages: packages, events: _events, availability: availability, appointmentReq: appointmentReq, policies: policies);
+          //           final cameraScreen = new CameraApp(uploadType: 2, cameras: cameras, selectedEvents: _selectedEvents, packages: packages, events: _events, availabilityV2: availabilityV2, appointmentReq: appointmentReq, policies: policies);
           //           Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
           //         },
           //         child: new Icon(LineIcons.plus),
@@ -1942,7 +1942,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                 animationDuration: const Duration(milliseconds: 300),
                 child: IconButton(
                   onPressed: () async {
-                    final notificationScreen = new NotificationScreen(selectedEvents: _selectedEvents, packages: packages, events: _events, availability: availability, appointmentReq: appointmentReq, policies: policies);
+                    final notificationScreen = new NotificationScreen(selectedEvents: _selectedEvents, packages: packages, events: _events, availabilityV2: availabilityV2, appointmentReq: appointmentReq, policies: policies);
                     var result = await Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationScreen));
                     if(result == null) {
                       setState(() {
@@ -1957,7 +1957,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                 child: IconButton(
                   onPressed: () async {
                     var cameras = await availableCameras();
-                    final cameraScreen = new CameraApp(uploadType: 2, cameras: cameras, selectedEvents: _selectedEvents, packages: packages, events: _events, availability: availability, appointmentReq: appointmentReq, policies: policies);
+                    final cameraScreen = new CameraApp(uploadType: 2, cameras: cameras, selectedEvents: _selectedEvents, packages: packages, events: _events, availabilityV2: availabilityV2, appointmentReq: appointmentReq, policies: policies);
                     Navigator.push(context, new MaterialPageRoute(builder: (context) => cameraScreen));
                   },
                   icon: Icon(LineIcons.plus, size: 25.0),

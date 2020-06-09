@@ -400,9 +400,9 @@ class RegisterStep3ScreenState extends State<RegisterStep3Screen> with WidgetsBi
       }else {
         // final barberSalesSetup = new BarberSalesSetup(address: widget.shopAddress, city: widget.city, state: widget.state, zipcode: widget.zipcode, stateValue: widget.stateValue);
         // Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberSalesSetup));
-        var availability = await getBarberAvailability(context, globals.token);
+        var availability = await getBarberAvailabilityV2(context, globals.token);
         progressHUD();
-        final barberHubScreen = new BarberHubScreen(availability: availability);
+        final barberHubScreen = new BarberHubScreen(availabilityV2: availability);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberHubScreen));
       }
     }else {

@@ -13,7 +13,7 @@ import '../View/GallaryImageThumbnail.dart';
 import 'dart:typed_data';
 import 'package:simple_image_crop/simple_image_crop.dart';
 import '../Model/Packages.dart';
-import '../Model/availability.dart';
+import 'package:trimmz/Model/AvailabilityV2.dart';
 import '../Model/AppointmentRequests.dart';
 import '../Model/BarberPolicies.dart';
 import 'package:progress_hud/progress_hud.dart';
@@ -23,11 +23,11 @@ class CameraApp extends StatefulWidget {
   final List selectedEvents;
   final List<Packages> packages;
   final Map<DateTime, List> events;
-  final List<Availability> availability;
+  final List<AvailabilityV2> availabilityV2;
   final List<AppointmentRequest> appointmentReq;
   final BarberPolicies policies;
   final int uploadType;
-  CameraApp({Key key, @required this.uploadType, this.cameras, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
+  CameraApp({Key key, @required this.uploadType, this.cameras, this.appointmentReq, this.availabilityV2, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
   @override
   _CameraAppState createState() => _CameraAppState();
 }
@@ -183,7 +183,7 @@ class _CameraAppState extends State<CameraApp> {
     //progressHUD();
 
     if(widget.uploadType == 2) {
-      final shareImageScreen = new ShareImage(image: croppedFile.path, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies);
+      final shareImageScreen = new ShareImage(image: croppedFile.path, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availabilityV2: widget.availabilityV2, appointmentReq: widget.appointmentReq, policies: widget.policies);
       Navigator.push(context, new MaterialPageRoute(builder: (context) => shareImageScreen));
     }else {
       var res = await uploadImage(context, croppedFile.path, widget.uploadType);
@@ -243,7 +243,7 @@ class _CameraAppState extends State<CameraApp> {
                 if(_currentIndex == 1 && gallerySelectedImage != null) {
                   createCropImage(context);
                 }else {
-                  final shareImageScreen = new ShareImage(image: takenPhoto, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies);
+                  final shareImageScreen = new ShareImage(image: takenPhoto, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availabilityV2: widget.availabilityV2, appointmentReq: widget.appointmentReq, policies: widget.policies);
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => shareImageScreen));
                 }
               }

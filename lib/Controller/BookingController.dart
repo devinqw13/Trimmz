@@ -13,7 +13,6 @@ import 'SelectBarberController.dart';
 import 'BarberHubController.dart';
 import '../Model/Packages.dart';
 import 'package:intl/intl.dart';
-import '../Model/availability.dart';
 import 'package:trimmz/Model/AvailabilityV2.dart';
 import '../View/BookingTimeRadioButton.dart';
 import 'package:stripe_payment/stripe_payment.dart';
@@ -30,10 +29,10 @@ class BookingController extends StatefulWidget {
   final List selectedEvents;
   final List<Packages> packages;
   final Map<DateTime, List> events;
-  final List<Availability> availability;
+  final List<AvailabilityV2> availabilityV2;
   final List<AppointmentRequest> appointmentReq;
   final BarberPolicies policies;
-  BookingController({Key key, this.barberInfo, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
+  BookingController({Key key, this.barberInfo, this.appointmentReq, this.availabilityV2, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
 
   @override
   BookingControllerState createState() => new BookingControllerState();
@@ -265,7 +264,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     for(var item in list) {
       if(DateFormat('yyyy-MM-dd').format(item.date) == weekday) {
         // TODO: IF START / END IS MARKED 12AM (00:00:00) IT DOESNT GO PAST THIS
-        if((item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00')) && item.closed != 1){
+        if(/*(item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00')) && */item.closed != 1){
           var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
           var end = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.end).toString());
           var startDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(day.toString()));
@@ -561,7 +560,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
         final homeScreen = new HomeHubScreen(message: message); 
         Navigator.push(context, new MaterialPageRoute(builder: (context) => homeScreen));
       }else if(globals.userType == 2) {
-        final homeScreen = new BarberHubScreen(message: message, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies); 
+        final homeScreen = new BarberHubScreen(message: message, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availabilityV2: widget.availabilityV2, appointmentReq: widget.appointmentReq, policies: widget.policies); 
         Navigator.push(context, new MaterialPageRoute(builder: (context) => homeScreen));
       }
     }else {

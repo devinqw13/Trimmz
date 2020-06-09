@@ -6,7 +6,7 @@ import 'package:progress_hud/progress_hud.dart';
 import 'dart:io';
 import 'BarberHubController.dart';
 import '../Model/Packages.dart';
-import '../Model/availability.dart';
+import 'package:trimmz/Model/AvailabilityV2.dart';
 import '../Model/AppointmentRequests.dart';
 import '../Model/BarberPolicies.dart';
 
@@ -15,10 +15,10 @@ class ShareImage extends StatefulWidget {
   final List selectedEvents;
   final List<Packages> packages;
   final Map<DateTime, List> events;
-  final List<Availability> availability;
+  final List<AvailabilityV2> availabilityV2;
   final List<AppointmentRequest> appointmentReq;
   final BarberPolicies policies;
-  ShareImage({Key key, this.image, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
+  ShareImage({Key key, this.image, this.appointmentReq, this.availabilityV2, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
 
   @override
   ShareImageState createState() => new ShareImageState();
@@ -127,7 +127,7 @@ class ShareImageState extends State<ShareImage> {
                 var res = await uploadImage(context, image, 2, captionController.text);
                 progressHUD();
                 if(res != 'false') {
-                  final barberHubScreen = new BarberHubScreen(selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies);
+                  final barberHubScreen = new BarberHubScreen(selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availabilityV2: widget.availabilityV2, appointmentReq: widget.appointmentReq, policies: widget.policies);
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => barberHubScreen));
                 }else {
                   showErrorDialog(context, 'Unable to post', 'Your image was unable to post. Try again.');

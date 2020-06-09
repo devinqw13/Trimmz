@@ -8,7 +8,7 @@ import 'package:stream_transform/stream_transform.dart';
 import 'dart:async';
 import '../Calls/GeneralCalls.dart';
 import '../Model/Packages.dart';
-import '../Model/availability.dart';
+import 'package:trimmz/Model/AvailabilityV2.dart';
 import '../Model/AppointmentRequests.dart';
 import '../Model/BarberPolicies.dart';
 import '../View/Widgets.dart';
@@ -18,11 +18,11 @@ class SelectBarberScreen extends StatefulWidget {
   final List selectedEvents;
   final List<Packages> packages;
   final Map<DateTime, List> events;
-  final List<Availability> availability;
+  final List<AvailabilityV2> availabilityV2;
   final List<AppointmentRequest> appointmentReq;
   final BarberPolicies policies;
 
-  SelectBarberScreen({Key key, this.clientBarbers, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
+  SelectBarberScreen({Key key, this.clientBarbers, this.appointmentReq, this.availabilityV2, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
 
   @override
   SelectBarberScreenState createState() => new SelectBarberScreenState();
@@ -111,10 +111,10 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
                         newBarber.email = barber.email;
                         newBarber.city = barber.city;
 
-                        final bookingScreen = new BookingController(barberInfo: newBarber, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies); 
+                        final bookingScreen = new BookingController(barberInfo: newBarber, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availabilityV2: widget.availabilityV2, appointmentReq: widget.appointmentReq, policies: widget.policies); 
                         Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
                       }else {
-                        final bookingScreen = new BookingController(barberInfo: barber, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies); 
+                        final bookingScreen = new BookingController(barberInfo: barber, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availabilityV2: widget.availabilityV2, appointmentReq: widget.appointmentReq, policies: widget.policies); 
                         Navigator.push(context, new MaterialPageRoute(builder: (context) => bookingScreen));
                       }
                     },

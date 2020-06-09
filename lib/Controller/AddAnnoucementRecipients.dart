@@ -7,7 +7,7 @@ import 'package:circular_check_box/circular_check_box.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'dart:async';
 import '../Model/Packages.dart';
-import '../Model/availability.dart';
+import 'package:trimmz/Model/AvailabilityV2.dart';
 import '../Model/AppointmentRequests.dart';
 import '../Model/BarberPolicies.dart';
 import 'SendAnnoucementController.dart';
@@ -17,10 +17,10 @@ class AddAnnoucementRecipients extends StatefulWidget {
   final List selectedEvents;
   final List<Packages> packages;
   final Map<DateTime, List> events;
-  final List<Availability> availability;
+  final List<AvailabilityV2> availabilityV2;
   final List<AppointmentRequest> appointmentReq;
   final BarberPolicies policies;
-  AddAnnoucementRecipients({Key key, this.appointmentReq, this.availability, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
+  AddAnnoucementRecipients({Key key, this.appointmentReq, this.availabilityV2, this.events, this.packages, this.policies, this.selectedEvents}) : super (key: key);
 
   @override
   AddAnnoucementRecipientsState createState() => new AddAnnoucementRecipientsState();
@@ -394,7 +394,7 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
           actions: <Widget>[
             recipients.length > 0 ? FlatButton(
               onPressed: () {
-                final sendAnnoucementScreen = new SendAnnoucement(recipients: recipients, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availability: widget.availability, appointmentReq: widget.appointmentReq, policies: widget.policies);
+                final sendAnnoucementScreen = new SendAnnoucement(recipients: recipients, selectedEvents: widget.selectedEvents, packages: widget.packages, events: widget.events, availabilityV2: widget.availabilityV2, appointmentReq: widget.appointmentReq, policies: widget.policies);
                 Navigator.push(context, new MaterialPageRoute(builder: (context) => sendAnnoucementScreen));
               },
               child: Text('Next', style: TextStyle(fontWeight: FontWeight.bold))

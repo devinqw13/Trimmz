@@ -2050,6 +2050,7 @@ Future<List<Notifications>> getAllNotifications(BuildContext context, int userId
     List<Notifications> notifications = [];
     for(var item in jsonResponse['notifications']) {
       Notifications notify = new Notifications();
+      notify.id =  item['id'];
       notify.from = item['from'];
       notify.recipient = item['recipient'];
       notify.title = item['title'];
@@ -2448,5 +2449,41 @@ Future<List> getAllUsers(BuildContext context) async {
     return jsonResponse['users'];
   }else {
     return [];
+  }
+}
+
+removeNotification(BuildContext context, int token, int notification) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonData = {
+    "token": token,
+    "notification_id": notification
+  };
+
+  String url = "${globals.baseUrl}removeNotification/";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (045)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (045)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
   }
 }

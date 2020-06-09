@@ -1,4 +1,5 @@
 class Notifications {
+  int id;
   int from;
   int recipient;
   String title;
