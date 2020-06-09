@@ -1910,7 +1910,7 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
         length: 2,
         child: Scaffold(
           backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
-          // floatingActionButton: new Row(
+          // floatingActionButton: new Row(a
           //   mainAxisAlignment: MainAxisAlignment.end,
           //   children: <Widget>[
           //     new Container(

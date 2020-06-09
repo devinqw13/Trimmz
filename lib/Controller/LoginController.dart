@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:progress_hud/progress_hud.dart';
+import 'package:trimmz/Model/availability.dart';
 import '../globals.dart' as globals;
 import '../Calls/GeneralCalls.dart';
 import '../dialogs.dart';
@@ -80,7 +81,7 @@ class LoginScreenState extends State<LoginScreen> {
           final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
           var events = await getBarberAppointments(context, globals.token);
           var selectedEvents = events[_selectedDay] ?? [];
-          var availability = [];
+          List<Availability> availability = [];
           // var availability = await getBarberAvailability(context, globals.token);
           var availabilityV2 = await getBarberAvailabilityV2(context, globals.token);
           var appointmentReq = await getBarberAppointmentRequests(context, globals.token);

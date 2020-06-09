@@ -5,7 +5,8 @@ import 'package:trimmz/Controller/BookingController.dart';
 import '../Model/BarberPolicies.dart';
 import '../globals.dart' as globals;
 import '../View/Widgets.dart';
-import '../Model/availability.dart';
+// import '../Model/availability.dart';
+import 'package:trimmz/Model/AvailabilityV2.dart';
 import '../Calls/GeneralCalls.dart';
 import 'package:line_icons/line_icons.dart';
 import '../Model/ClientBarbers.dart';
@@ -34,7 +35,8 @@ class BarberProfileV2Screen extends StatefulWidget {
 class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
   BarberPolicies policies = new BarberPolicies();
   ClientBarbers user;
-  List<Availability> availability = [];
+  // List<Availability> availability = [];
+  List<AvailabilityV2> availabilityV2 = [];
   List<Packages> packages = [];
   List<FeedItem> feedItems = [];
   bool hasAdded = false;
@@ -47,9 +49,11 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
   }
 
   setUserInfo() async {
-    var res1 = await getBarberAvailability(context, int.parse(user.id));
+    // var res1 = await getBarberAvailability(context, int.parse(user.id));
+    var res = await getBarberAvailabilityV2(context, int.parse(user.id));
     setState(() {
-      availability = res1;
+      // availability = res1;
+      availabilityV2 = res;
       user = widget.userInfo;
     });
 
@@ -346,7 +350,8 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                availabilityWidget(context, availability)
+                // availabilityWidget(context, availability)
+                availabilityV2Widget(context, availabilityV2)
               ]
             )
           )

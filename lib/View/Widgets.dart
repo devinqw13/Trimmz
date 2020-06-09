@@ -6,6 +6,7 @@ import '../functions.dart';
 import '../globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Model/availability.dart';
+import 'package:trimmz/Model/AvailabilityV2.dart';
 import 'package:intl/intl.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -16,6 +17,70 @@ logout(BuildContext context) async {
   var _ = await removeFirebaseToken(context);
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.clear();
+}
+
+availabilityV2Widget(BuildContext context, List<AvailabilityV2> availabilityV2) {
+  List<AvailabilityV2> currentWeek = [];
+  List<DateTime> weekList = [];
+  DateTime now = DateTime.now();
+  for(int i=0 ; i<7;i++){
+    weekList.add(DateTime.parse(DateFormat('yyyy-MM-dd 12:00:00').format(now.add(new Duration(days: i)))));
+  }
+  for(var item in weekList) {
+    var availability = new AvailabilityV2();
+    var currentDate = availabilityV2.where((element) => element.date == item);
+    if(currentDate.length == 1) {
+      availability.date = currentDate.first.date;
+      availability.closed = currentDate.first.closed;
+      availability.start = currentDate.first.start;
+      availability.end = currentDate.first.end;
+      currentWeek.add(availability);
+    }else {
+      availability.closed = 1;
+      availability.date = item;
+      availability.start = '09:00:00';
+      availability.end = '17:00:00';
+      currentWeek.add(availability);
+    }
+  }
+
+  return ListView.builder(
+    padding: EdgeInsets.all(0),
+    physics: NeverScrollableScrollPhysics(),
+    shrinkWrap: true,
+    itemCount: currentWeek.length,
+    itemBuilder: (context, i){
+      bool isClosed = false;
+      final df = new DateFormat('ha');
+      String start = df.format(DateTime.parse(DateFormat('Hms', 'en_US').parse(currentWeek[i].start).toString()));
+      String end = df.format(DateTime.parse(DateFormat('Hms', 'en_US').parse(currentWeek[i].end).toString()));
+      if(currentWeek[i].closed == 1) {
+        isClosed = true;
+      }
+      return Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            AutoSizeText.rich(
+              TextSpan(
+                text: DateFormat.EEEE().format(currentWeek[i].date),
+                style: TextStyle(fontWeight: FontWeight.bold)
+              ),
+              maxLines: 1,
+              maxFontSize: 13,
+            ),
+            AutoSizeText.rich(
+              TextSpan(
+                text: isClosed ? 'Closed' : start + "-" + end,
+              ),
+              maxLines: 1,
+              maxFontSize: 16,
+            )
+          ],
+        )
+      );
+    },
+  );
 }
 
 availabilityWidget(BuildContext context, List<Availability> availability) {
