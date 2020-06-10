@@ -45,11 +45,20 @@ class AddAnnoucementRecipientsState extends State<AddAnnoucementRecipients> {
   }
 
   initGetSuggested() async {
+    List<BarberClients> list = [];
     var res = await getBarberClients(context, globals.token, 2);
+    // setState(() {
+    //   suggested = res;
+    // });
+    for(var item in res) {
+      var exists = list.where((element) => element.token == item.token);
+      if(exists.length < 1 && item.token != 0) {
+        list.add(item);
+      }
+    }
     setState(() {
-      suggested = res;
+      suggested = list;
     });
-
     for(var client in res) {
       var res1 = recipients.where((item) => item.containsValue(client.username));
       if(res1.length > 0) {
