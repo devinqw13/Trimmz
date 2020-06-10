@@ -12,5 +12,6 @@ class ClientBarbers {
   String zipcode;
   String profilePicture;
   String headerImage;
+  bool cardPaymentOnly = false;
   DateTime created;
 }

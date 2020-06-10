@@ -7,4 +7,5 @@ class AppointmentRequest {
   String packageName;
   int price;
   int tip;
+  bool cashPayment;
 }

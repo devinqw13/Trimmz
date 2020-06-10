@@ -986,7 +986,13 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
                                   ]
                                 ),
                                 Text(_selectedEvents[i]['package']),
-                                Text('\$' + (_selectedEvents[i]['price'] + (_selectedEvents[i]['tip'])).toString()),
+                                Row(
+                                  children:<Widget> [
+                                    Text('\$' + (_selectedEvents[i]['price'] + (_selectedEvents[i]['tip'])).toString()),
+                                    Padding(padding: EdgeInsets.all(2)),
+                                    Icon(_selectedEvents[i]['cash_payment'] == 1 ? LineIcons.money : Icons.credit_card, size: 18, color: Color(0xFFD4AF37))
+                                  ]
+                                )
                               ]
                             ),
                           ]

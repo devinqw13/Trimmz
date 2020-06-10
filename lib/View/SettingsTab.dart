@@ -17,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../Controller/AppearanceSettings.dart';
 import '../Controller/AdminPortalController.dart';
+import '../Controller/AdvancedSettingsController.dart';
 
 class SettingsTab extends StatefulWidget {
   SettingsTab();
@@ -116,7 +117,7 @@ class SettingsTabState extends State<SettingsTab> {
       globals.userType == 2 ? CSLink('Reviews', () {final reviewController = new ReviewController(userId: globals.token, username: globals.username); Navigator.push(context, new MaterialPageRoute(builder: (context) => reviewController));}, style: CSWidgetStyle(icon: Icon(Icons.chat_bubble_outline, color: globals.darkModeEnabled ? Colors.white : Colors.black54))) : Container(),
 
       globals.userType == 2 ? new CSHeader('Barber Settings') : Container(),
-      // globals.userType == 2 ? CSLink('Advanced Settings', () {}, style: CSWidgetStyle(icon: Icon(LineIcons.cogs))) : Container(),
+      globals.userType == 2 ? CSLink('Advanced Settings', () {final advSettingsController = new AdvancedSettingsController(); Navigator.push(context, new MaterialPageRoute(builder: (context) => advSettingsController));}, style: CSWidgetStyle(icon: Icon(LineIcons.cogs))) : Container(),
       //globals.userType == 2 ? CSLink('Client Book', () {}, style: CSWidgetStyle(icon: Icon(LineIcons.book))) : Container(),
       globals.userType == 2 ? CSLink('Mobile Pay', () {
         final mobileTransaction = globals.spPayoutMethod == null || globals.spPayoutId == null || globals.spAccountId == null ? new MobileTransactionSetup() : new MobileTransactionScreen();

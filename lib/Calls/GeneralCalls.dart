@@ -19,6 +19,7 @@ import '../Model/Notifications.dart';
 import 'dart:io';
 import 'package:device_info/device_info.dart';
 import '../Model/AvailabilityV2.dart';
+import '../Model/AdvancedSettings.dart';
 
 Future<List<String>> getDeviceDetails() async {
   String deviceName;
@@ -352,6 +353,7 @@ Future<List<ClientBarbers>> getUserBarbers(BuildContext context, int userid) asy
       clientBarber.zipcode = item['zipcode'].toString();
       clientBarber.rating = item['rating'];
       clientBarber.profilePicture = item['profile_picture'];
+      clientBarber.cardPaymentOnly = item['client_payment_option'] == 1 ? true : false;
       clientBarbers.add(clientBarber);
     }
 
@@ -574,9 +576,9 @@ Future<Map<DateTime, List<dynamic>>> getBarberAppointments(BuildContext context,
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(!apt.containsKey(date)) {
-        apt[date] = [{'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'paymentid': item['sp_paymentid'], 'customerid': item['sp_customerid'], 'email': item['email'], 'barber_pp': item['barber_pp'], 'client_pp': item['client_pp'], 'manual_client_name': item['manual_client_name'], 'manual_client_phone': item['manual_client_phone']}];
+        apt[date] = [{'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'paymentid': item['sp_paymentid'], 'customerid': item['sp_customerid'], 'email': item['email'], 'barber_pp': item['barber_pp'], 'client_pp': item['client_pp'], 'manual_client_name': item['manual_client_name'], 'manual_client_phone': item['manual_client_phone'], 'cash_payment': item['cash_payment']}];
       }else {
-        apt[date].add({'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'paymentid': item['sp_paymentid'], 'customerid': item['sp_customerid'], 'email': item['email'], 'barber_pp': item['barber_pp'], 'client_pp': item['client_pp'], 'manual_client_name': item['manual_client_name'], 'manual_client_phone': item['manual_client_phone']});
+        apt[date].add({'id': item['id'], 'clientid': item['client_id'], 'barberid': item['barber_id'], 'name': item['client_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'paymentid': item['sp_paymentid'], 'customerid': item['sp_customerid'], 'email': item['email'], 'barber_pp': item['barber_pp'], 'client_pp': item['client_pp'], 'manual_client_name': item['manual_client_name'], 'manual_client_phone': item['manual_client_phone'], 'cash_payment': item['cash_payment']});
       }
     }
 
@@ -943,7 +945,7 @@ Future<bool> setTimeAvailabilityV2(BuildContext context, int userid, String day,
   }
 }
 
-Future<bool> bookAppointment(BuildContext context, int userId, String barberId, int price, DateTime time, String packageId, int tip, [String name, String phone]) async {
+Future<bool> bookAppointment(BuildContext context, int userId, String barberId, int price, DateTime time, String packageId, int tip, bool cashPayment, [String name, String phone]) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Accept': 'application/json',
@@ -959,10 +961,10 @@ Future<bool> bookAppointment(BuildContext context, int userId, String barberId, 
     "time": time.toString(),
     "packageid" : packageId,
     "tip": tip,
+    "cash_payment": cashPayment ? 1 : 0
   };
 
   if(name != null) {
-    print('here');
     jsonMap['client_name'] = '$name';
   }
   if(phone != null) {
@@ -1037,6 +1039,7 @@ Future<List<AppointmentRequest>> getBarberAppointmentRequests(BuildContext conte
       request.packageName = item['pname'];
       request.price = item['price'];
       request.tip = item['tip'];
+      request.cashPayment = item['cash_payment'] == 1 ? true : false;
       appointmentReq.add(request);
     }
     return appointmentReq;
@@ -1558,6 +1561,7 @@ Future<List<SuggestedBarbers>> getSearchBarbers(BuildContext context, String use
         suggestedBarber.rating = item['rating'] ?? '0';
         suggestedBarber.profilePicture = item['profile_picture'];
         suggestedBarber.display = int.parse(item['display']);
+        suggestedBarber.cardPaymentOnly = item['client_payment_option'] == 1 ? true : false;
         List<ClientBarbers> clientBarbers = await getUserBarbers(context, globals.token);
         for(var item2 in clientBarbers) {
           if(item2.id.contains(item['id'].toString())){
@@ -1798,9 +1802,9 @@ Future<Map<DateTime, List<dynamic>>> getUserAppointments(BuildContext context, i
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(!apt.containsKey(date)) {
-        apt[date] = [{'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'profile_picture': item['profile_picture'], 'barberSPID': item['sp_account'], 'barberSPMethod': item['payoutMethod'], 'barberSPPayout': item['payoutId']}];
+        apt[date] = [{'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'profile_picture': item['profile_picture'], 'barberSPID': item['sp_account'], 'barberSPMethod': item['payoutMethod'], 'barberSPPayout': item['payoutId'], 'cash_payment': item['cash_payment']}];
       }else {
-        apt[date].add({'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'profile_picture': item['profile_picture'], 'barberSPID': item['sp_account'], 'barberSPMethod': item['payoutMethod'], 'barberSPPayout': item['payoutId']});
+        apt[date].add({'id': item['id'], 'barberid': item['barber_id'], 'clientid': item['client_id'], 'name': item['client_name'], 'barber_name': item['barber_name'], 'package': item['package_name'], 'time': df2.format(DateTime.parse(dateString)), 'full_time': item['date'], 'status': item['status'], 'price': item['price'], 'tip': item['tip'], 'duration': item['duration'], 'updated': item['updated'], 'profile_picture': item['profile_picture'], 'barberSPID': item['sp_account'], 'barberSPMethod': item['payoutMethod'], 'barberSPPayout': item['payoutId'], 'cash_payment': item['cash_payment']});
       }
     }
 
@@ -2485,5 +2489,87 @@ removeNotification(BuildContext context, int token, int notification) async {
     jsonResponse = json.decode(responseBody);
   } else {
     jsonResponse = json.decode(response.body);
+  }
+}
+
+Future<bool> updateAdvancedSettings(BuildContext context, int token, AdvancedSettings settings) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+    "token" : token,
+    "payment_option" : settings.paymentOption ? 1 : 0
+  };
+
+  String url = "${globals.baseUrl}updateAdvancedSettings/";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (046)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (046)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    return true;
+  }else {
+    return false;
+  }
+}
+
+Future<AdvancedSettings> getAdvancedSettings(BuildContext context, int token) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}getAdvancedSettings?token=$token";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (047)", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (047)", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    AdvancedSettings setting = new AdvancedSettings();
+    for(var item in jsonResponse['settings']) {
+      setting.paymentOption = item['client_payment_option'] == 1 ? true : false;
+    }
+    return setting;
+  }else {
+    return null;
   }
 }

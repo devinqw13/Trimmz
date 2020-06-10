@@ -8,6 +8,7 @@ import '../globals.dart' as globals;
 import '../Calls/GeneralCalls.dart';
 import 'package:progress_hud/progress_hud.dart';
 import '../View/Widgets.dart';
+import 'package:line_icons/line_icons.dart';
 
 class AppointmentOptionsBottomSheet extends StatefulWidget {
   AppointmentOptionsBottomSheet({@required this.appointment, @required this.showCancel, this.showFullCalendar, this.showFull, this.updateAppointments});
@@ -211,6 +212,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
     progressHUD();
     var res = await getBarberPolicies(context, appointment['barberid']) ?? new BarberPolicies();
     if(res.noShowEnabled) {
+      print('here');
       if(res.noShowFee.contains('\$')){
         var amountFee = res.noShowFee.split('\$')[1];
         
@@ -290,6 +292,18 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                   style: TextStyle(
                                     color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
                                   ),
+                                ),
+                                Row(
+                                  children: <Widget> [
+                                    Icon(appointment['cash_payment'] == 1 ? LineIcons.money : Icons.credit_card, size: 18, color: Color(0xFFD4AF37)),
+                                    Padding(padding: EdgeInsets.all(2)),
+                                    Text(
+                                      appointment['cash_payment'] == 1 ? 'In Shop' : 'Mobile Pay',
+                                      style: TextStyle(
+                                        color: globals.darkModeEnabled ? Colors.grey : Colors.grey[700]
+                                      )
+                                    )
+                                  ]
                                 ),
                                 Container(
                                   margin: EdgeInsets.only(bottom: 10, top: 10),
@@ -421,14 +435,30 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                       textColor: Colors.white,
                                                       onPressed: () async {
                                                         progressHUD();
-                                                        if(appointment['clientid'] == 0) {
+                                                        if(appointment['clientid'] == 0 || appointment['cash_payment'] == 1) {
                                                           var res2 = await updateAppointmentStatus(context, appointment['id'], 1);
                                                           if(res2) {
                                                             var res1 = await getBarberAppointments(context, globals.token);
                                                             widget.updateAppointments(res1);
                                                             setState(() {
                                                               appointment['status'] = 1;
+                                                              appointment['updated'] = DateTime.now().toString();
                                                             });
+                                                            if(appointment['clientid'] != 0) {
+                                                              List tokens = await getNotificationTokens(context, appointment['clientid']);
+                                                              for(var token in tokens){
+                                                                Map<String, dynamic> dataMap =  {
+                                                                  'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                                                  'action': 'APPOINTMENT',
+                                                                  'title': 'Appointment Completed',
+                                                                  'body': '${globals.username} has completed your appointment',
+                                                                  'sender': '${globals.token}',
+                                                                  'recipient': '${appointment['clientid']}',
+                                                                  'appointment': appointment,
+                                                                };
+                                                                await sendPushNotification(context, 'Appointment Completed', '${globals.username} has completed your appointment.', token, dataMap);
+                                                              }
+                                                            }
                                                           }
                                                         }else {
                                                           int total = appointment['price'] + appointment['tip'];
@@ -440,6 +470,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                               widget.updateAppointments(res1);
                                                               setState(() {
                                                                 appointment['status'] = 1;
+                                                                appointment['updated'] = DateTime.now().toString();
                                                               });
                                                               List tokens = await getNotificationTokens(context, appointment['clientid']);
                                                               for(var token in tokens){
@@ -447,7 +478,7 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                                   'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                                                                   'action': 'APPOINTMENT',
                                                                   'title': 'Appointment Completed',
-                                                                  'body': '${globals.username} has cancelled your appointment',
+                                                                  'body': '${globals.username} has completed your appointment',
                                                                   'sender': '${globals.token}',
                                                                   'recipient': '${appointment['clientid']}',
                                                                   'appointment': appointment,
@@ -473,15 +504,31 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
                                                       color: Colors.blue,
                                                       textColor: Colors.white,
                                                       onPressed: () async {
-                                                        if(appointment['clientid'] == 0) {
+                                                        if(appointment['clientid'] == 0 || appointment['cash_payment'] == 1) {
                                                           progressHUD();
                                                           var res1 = await updateAppointmentStatus(context, appointment['id'], 2);
                                                           if(res1) {
                                                             var res1 = await getBarberAppointments(context, globals.token);
                                                             widget.updateAppointments(res1);
                                                             setState(() {
+                                                              appointment['updated'] = DateTime.now().toString();
                                                               appointment['status'] = 2;
                                                             });
+                                                            if(appointment['clientid'] != 0) {
+                                                              List tokens = await getNotificationTokens(context, appointment['clientid']);
+                                                              for(var token in tokens){
+                                                                Map<String, dynamic> dataMap =  {
+                                                                  'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                                                                  'action': 'APPOINTMENT',
+                                                                  'title': 'Appointment Cancelled',
+                                                                  'body': '${globals.username} has cancelled your appointment',
+                                                                  'sender': '${globals.token}',
+                                                                  'recipient': '${appointment['clientid']}',
+                                                                  'appointment': appointment,
+                                                                };
+                                                                await sendPushNotification(context, 'Appointment Cancelled', '${globals.username} has cancelled your appointment.', token, dataMap);
+                                                              }
+                                                            }
                                                           }
                                                           progressHUD();
                                                         }else {

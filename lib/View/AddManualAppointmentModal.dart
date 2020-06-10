@@ -667,7 +667,7 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
                                 onPressed: () async {
                                   if(_packageId != '' || finalDateTime != null || nameTextController.text != '' || phoneTextController.text != '') {
                                     progressHUD();
-                                    var res = await bookAppointment(context, 0, globals.token.toString(), packagePrice, finalDateTime, _packageId, 0, nameTextController.text, phoneTextController.text);
+                                    var res = await bookAppointment(context, 0, globals.token.toString(), packagePrice, finalDateTime, _packageId, 0, true, nameTextController.text, phoneTextController.text);
                                     if(res) {
                                       var res2 = await getBarberAppointments(context, globals.token);
                                       progressHUD();

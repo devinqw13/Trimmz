@@ -13,5 +13,6 @@ class SuggestedBarbers {
   String profilePicture;
   String headerImage;
   int display;
+  bool cardPaymentOnly;
   bool hasAdded = false;
 }

@@ -23,6 +23,7 @@ import '../functions.dart';
 import  'package:keyboard_actions/keyboard_actions.dart';
 import '../Model/AppointmentRequests.dart';
 import '../Model/BarberPolicies.dart';
+import 'package:circular_check_box/circular_check_box.dart';
 
 class BookingController extends StatefulWidget {
   final ClientBarbers barberInfo;
@@ -60,11 +61,14 @@ class BookingControllerState extends State<BookingController> with TickerProvide
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
   final FocusNode _numberFocus = FocusNode();
+  bool cashPayment = false;
 
   @override
   void initState() {
     super.initState();
-    barberInfo = widget.barberInfo;
+    setState(() {
+      barberInfo = widget.barberInfo;
+    });
     _calendarController = CalendarController();
 
     getBarberPackages(int.parse(barberInfo.id));
@@ -185,7 +189,6 @@ class BookingControllerState extends State<BookingController> with TickerProvide
             }
           }
         }else {
-          //TODO: LOOK INTO ERROR MESSAGE
           var res1 = await spCreateCustomer(context, paymentMethod.id);
           if(res1.length > 0) {
             String spCustomerId = res1['id'];
@@ -263,7 +266,6 @@ class BookingControllerState extends State<BookingController> with TickerProvide
 
     for(var item in list) {
       if(DateFormat('yyyy-MM-dd').format(item.date) == weekday) {
-        // TODO: IF START / END IS MARKED 12AM (00:00:00) IT DOESNT GO PAST THIS
         if(/*(item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00')) && */item.closed != 1){
           var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
           var end = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.end).toString());
@@ -357,7 +359,6 @@ class BookingControllerState extends State<BookingController> with TickerProvide
 
   //   for(var item in list) {
   //     if(item.day == weekday) {
-  //       // TODO: IF START / END IS MARKED 12AM (00:00:00) IT DOESNT GO PAST THIS
   //       if((item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00'))){
   //         print('here2');
   //         var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
@@ -461,10 +462,11 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     var newDay = DateFormat('yyyy-MM-dd').parse(day.toString());
     var currentDay = DateFormat('yyyy-MM-dd').parse(DateTime.now().toString());
     setState(() {
+      finalDateTime = null;
       selectedDate = day;
     });
     if(newDay.isAfter(currentDay) || newDay.isAtSameMomentAs(currentDay)){
-      var res = await getBarberAvailability(context, int.parse(barberInfo.id));
+      // var res = await getBarberAvailability(context, int.parse(barberInfo.id));
       var res1 = await getBarberAvailabilityV2(context, int.parse(barberInfo.id));
       var res2 = await getBarberBookAppointments(context, int.parse(barberInfo.id));
       var newTimes = await calculateTimeV2(res1, res2, day);
@@ -532,13 +534,75 @@ class BookingControllerState extends State<BookingController> with TickerProvide
     });
   }
 
+  showErrorDialogBox(BuildContext context, String title, List<String> messages) {
+    return showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Center(child: Text(title,
+          style: TextStyle(fontSize: 19.0),)),
+        content: new Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text('There is missing information that is needed:'),
+            new Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * .09,
+              width: MediaQuery.of(context).size.width,
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: messages.length,
+                itemBuilder: (context, i) {
+                  return Text(messages[i], style: TextStyle(color: Colors.grey));
+                },
+              )
+            ),
+            new Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+            ),
+            new Row(
+              children: <Widget>[
+                new Expanded(
+                  child: new RaisedButton(
+                    child: new Text("OK",
+                    textAlign: TextAlign.center),
+                    onPressed: () { 
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              ],
+            )
+          ],
+        )
+      )
+    );
+  }
+
+
   bookingAppointment(int userId, String barberId, int price, DateTime time, String packageId, int tip) async {
-    if(userId == null || barberId == null || price == null || time == null || packageId == null || tip == null || paymentCard == null) {
-      showErrorDialog(context, 'Missing Information', 'Enter/Select all required information');
+    List<String> errorMessages = [];
+    if(time == null) {
+      errorMessages.add('Select a date & time');
+    }
+    if(packageId == '') {
+      errorMessages.add('Select a service');
+    }
+    if(barberInfo.cardPaymentOnly && paymentCard == null) {
+      errorMessages.add('Enter a payment method');
+    }
+    if(barberInfo.cardPaymentOnly == false && cashPayment == false && paymentCard == null) {
+      errorMessages.add('Enter a payment method');
+    }
+    if(errorMessages.length > 0) {
+      showErrorDialogBox(context, 'Missing Information', errorMessages);
       return;
     }
+
     progressHUD();
-    var res = await bookAppointment(context, userId, barberId, price, time, packageId, tip);
+    var res = await bookAppointment(context, userId, barberId, price, time, packageId, tip, cashPayment);
     if(res) {
       List tokens = await getNotificationTokens(context, int.parse(barberId));
       for(var token in tokens){
@@ -832,7 +896,45 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        Container(
+                        !barberInfo.cardPaymentOnly ? Container(
+                          child: Row(
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text('Mobile Pay'),
+                                  Radio(
+                                    activeColor: Colors.blue,
+                                    value: false,
+                                    groupValue: cashPayment,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        cashPayment = value;
+                                      });
+                                    }
+                                  ),
+                                ]
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text('In Shop'),
+                                  Radio(
+                                    activeColor: Colors.blue,
+                                    value: true,
+                                    groupValue: cashPayment,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        cashPayment = value;
+                                      });
+                                    }
+                                  ),
+                                ]
+                              )
+                            ]
+                          )
+                        ) : Container(),
+                        !cashPayment || (!barberInfo.cardPaymentOnly && !cashPayment) ? Container(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget> [
@@ -917,6 +1019,13 @@ class BookingControllerState extends State<BookingController> with TickerProvide
                                 ],
                               )
                             ]
+                          )
+                        ): Container(
+                          child: Text('By selecting in shop payment method you\'ll be asked to pay in cash or by another barber\'s preference.',
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              color: Colors.grey[400]
+                            )
                           )
                         )
                       ]

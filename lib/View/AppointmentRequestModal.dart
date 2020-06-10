@@ -102,12 +102,22 @@ class _AppointmentRequestBottomSheet extends State<AppointmentRequestBottomSheet
                                               fontSize: 20.0
                                             ),
                                           ),
-                                          Text(df.format(DateTime.parse(requests[i].dateTime.toString()))),
+                                          Text(
+                                            df.format(DateTime.parse(requests[i].dateTime.toString())),
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 13
+                                            )
+                                          ),
                                           Text(
                                             requests[i].packageName,
                                             overflow: TextOverflow.fade,
                                             softWrap: false,
                                             maxLines: 1,
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 13
+                                            )
                                           ),
                                         ]
                                       ),
@@ -115,18 +125,31 @@ class _AppointmentRequestBottomSheet extends State<AppointmentRequestBottomSheet
                                     Padding(
                                       padding: EdgeInsets.all(5)
                                     ),
-                                    Container(
-                                      padding: EdgeInsets.all(10),
-                                      child: Center(
-                                        child: Text(
-                                          '\$' + (requests[i].price + requests[i].tip).toString(),
-                                          textAlign: TextAlign.center,
+                                    Column(
+                                      children: <Widget> [
+                                        Container(
+                                          padding: EdgeInsets.all(10),
+                                          child: Center(
+                                            child: Text(
+                                              '\$' + (requests[i].price + requests[i].tip).toString(),
+                                              textAlign: TextAlign.center,
+                                            )
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[300],
+                                            shape: BoxShape.circle
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(2)
+                                        ),
+                                        Text(
+                                          requests[i].cashPayment ? 'In Shop' : 'Mobile Pay',
+                                          style: TextStyle(
+                                            color: Colors.grey
+                                          )
                                         )
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[300],
-                                        shape: BoxShape.circle
-                                      ),
+                                      ]
                                     ),
                                   ],
                                 ),
