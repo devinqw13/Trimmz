@@ -6,7 +6,8 @@ import 'BookingTimeRadioButton.dart';
 import '../globals.dart' as globals;
 import '../Calls/GeneralCalls.dart';
 import 'package:intl/intl.dart';
-import '../Model/availability.dart';
+// import '../Model/availability.dart';
+import 'package:trimmz/Model/AvailabilityV2.dart';
 import '../View/TextFieldFormatter.dart';
 import 'package:progress_hud/progress_hud.dart';
 
@@ -39,6 +40,7 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
   TextEditingController phoneTextController = new TextEditingController();
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
+  int packageDuration = 0;
 
   void initState() {
     super.initState();
@@ -78,9 +80,10 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
 
   getInitDate() async {
     final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
-    var res = await getBarberAvailability(context, globals.token);
+    // var res = await getBarberAvailability(context, globals.token);
+    var res1 = await getBarberAvailabilityV2(context, globals.token);
     var res2 = await getBarberAppointments(context, globals.token);
-    var newTimes = await calculateTime(res, res2, _selectedDay);
+    var newTimes = await calculateTimeV2(res1, res2, _selectedDay);
     setState(() {
       _availableTimes = newTimes;
       selectedDate = _selectedDay;
@@ -188,6 +191,7 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
                         packagePrice = int.parse(packages[i].price);
                         _packageId = packages[i].id;
                         packageName = packages[i].name;
+                        packageDuration = int.parse(packages[i].duration);
                       });
                     },
                     child: Row(
@@ -204,6 +208,7 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
                                   packagePrice = int.parse(packages[i].price);
                                   _packageId = value;
                                   packageName = packages[i].name;
+                                  packageDuration = int.parse(packages[i].duration);
                                 });
                               },
                             ),
@@ -244,14 +249,15 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
     );
   }
 
-  calculateTime(List<Availability> list, Map<DateTime, List<dynamic>> existing, DateTime day) {
+  calculateTimeV2(List<AvailabilityV2> list, Map<DateTime, List<dynamic>> existing, DateTime day) {
     final df = new DateFormat('hh:mm a');
-    var weekday = DateFormat.EEEE().format(day).toString();
+    var weekday = DateFormat('yyyy-MM-dd').format(day);
     List<RadioModel> timesList = new List<RadioModel>();
 
     for(var item in list) {
-      if(item.day == weekday) {
-        if((item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00'))){
+      if(DateFormat('yyyy-MM-dd').format(item.date) == weekday) {
+        // TODO: IF START / END IS MARKED 12AM (00:00:00) IT DOESNT GO PAST THIS
+        if(/*(item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00')) && */item.closed != 1){
           var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
           var end = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.end).toString());
           var startDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(day.toString()));
@@ -278,7 +284,6 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
                 DateTime startingTime = newTime;
 
                 for (int i = 0; i <= end.difference(start).inMinutes; i+=15) {
-                  print(newTime);
                   if(newTime.isAfter(DateTime.now()) && newTime.isBefore(startingTime.add(Duration(minutes: iterate)))){
                     if(appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
                       appointmentTimes.forEach((k,v){
@@ -296,7 +301,7 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
                         var eDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(newTime.toString()));
                         DateTime eTime = DateTime.parse(eDate + ' ' + k);
 
-                        if(newTime.add(Duration(minutes: 45)).isAfter(eTime) && newTime.add(Duration(minutes: 45)).isBefore(eTime.add(Duration(minutes: int.parse(v))))) {
+                        if(newTime.add(Duration(minutes: packageDuration)).isAfter(eTime) && newTime.add(Duration(minutes: packageDuration)).isBefore(eTime.add(Duration(minutes: int.parse(v))))) {
                           shouldAdd = false;
                           mmm = eTime;
                           val = int.parse(v);
@@ -338,6 +343,100 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
     }
   }
 
+  // calculateTime(List<Availability> list, Map<DateTime, List<dynamic>> existing, DateTime day) {
+  //   final df = new DateFormat('hh:mm a');
+  //   var weekday = DateFormat.EEEE().format(day).toString();
+  //   List<RadioModel> timesList = new List<RadioModel>();
+
+  //   for(var item in list) {
+  //     if(item.day == weekday) {
+  //       if((item.start != null && item.end != null) && ((item.start != '00:00:00' && item.end != '00:00:00') && (item.start != '0:00:00' && item.end != '0:00:00'))){
+  //         var start = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.start).toString());
+  //         var end = DateTime.parse(DateFormat('Hms', 'en_US').parse(item.end).toString());
+  //         var startDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(day.toString()));
+  //         var startTime = DateFormat('Hms').format(DateTime.parse(start.toString()));
+  //         var newStart = DateTime.parse(startDate + ' ' + startTime);
+  //         var newTime = newStart;
+
+  //         if(existing.containsKey(DateTime.parse(DateFormat('yyyy-MM-dd').format(day)))) {
+  //           existing.forEach((key, value){
+  //             if(DateFormat('yyyy-MM-dd').format(key) == DateFormat('yyyy-MM-dd').format(day)) {
+  //               Map<String, String> appointmentTimes = {};
+  //               for(var appointment in value) {
+  //                 var time = DateFormat('Hms').format(DateTime.parse(DateFormat('hh:mm a', 'en_US').parse(appointment['time']).toString()));
+  //                 appointmentTimes[time] = appointment['duration'].toString();
+  //               }
+
+  //               // if(!appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
+  //               //   if(newTime.isAfter(DateTime.now())){
+  //               //     timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
+  //               //   }
+  //               // }
+
+  //               int iterate = end.difference(start).inMinutes - 15;
+  //               DateTime startingTime = newTime;
+
+  //               for (int i = 0; i <= end.difference(start).inMinutes; i+=15) {
+  //                 print(newTime);
+  //                 if(newTime.isAfter(DateTime.now()) && newTime.isBefore(startingTime.add(Duration(minutes: iterate)))){
+  //                   if(appointmentTimes.containsKey(DateFormat('Hms').format(newTime).toString())) {
+  //                     appointmentTimes.forEach((k,v){
+  //                       if(k == DateFormat('Hms').format(newTime).toString()) {
+  //                         timesList.removeWhere((element) => element.buttonText == df.format(DateTime.parse(newTime.toString())));
+  //                         newTime = newTime.add(Duration(minutes: int.parse(v)));
+  //                       }
+  //                     });
+  //                   }else {
+  //                     bool shouldAdd = true;
+  //                     DateTime mmm;
+  //                     int val;
+
+  //                     appointmentTimes.forEach((k, v){
+  //                       var eDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(newTime.toString()));
+  //                       DateTime eTime = DateTime.parse(eDate + ' ' + k);
+
+  //                       if(newTime.add(Duration(minutes: 45)).isAfter(eTime) && newTime.add(Duration(minutes: 45)).isBefore(eTime.add(Duration(minutes: int.parse(v))))) {
+  //                         shouldAdd = false;
+  //                         mmm = eTime;
+  //                         val = int.parse(v);
+  //                       }
+  //                     });
+
+  //                     if(shouldAdd) {
+  //                       var convertTime = df.format(DateTime.parse(newTime.toString()));
+  //                       timesList.add(new RadioModel(false, convertTime));
+  //                       newTime = newTime.add(Duration(minutes: 15));
+  //                     }else {
+  //                       newTime = mmm.add(Duration(minutes: val));
+  //                     }
+  //                   }
+  //                 }else {
+  //                   newTime = newTime.add(Duration(minutes: 15));
+  //                 }
+  //               }
+  //             }
+  //           }); 
+  //         }else {
+  //           if(newTime.isAfter(DateTime.now())){
+  //             timesList.add(new RadioModel(false, df.format(DateTime.parse(newTime.toString()))));
+  //           }
+
+  //           for (int i = 0; i <= end.difference(start.add(Duration(minutes: 45))).inMinutes; i+=15) {
+  //             newTime = newTime.add(Duration(minutes: 15));
+  //             if(newTime.isAfter(DateTime.now())){
+  //               var convertTime = df.format(DateTime.parse(newTime.toString()));
+  //               timesList.add(new RadioModel(false, convertTime));
+  //             }
+  //           }
+  //         }
+  //         return timesList;    
+  //       }else {
+  //         return timesList = [];
+  //       }
+  //     }
+  //   }
+  // }
+
   void _onDaySelected(DateTime day, List times) async {
     var newDay = DateFormat('yyyy-MM-dd').parse(day.toString());
     var currentDay = DateFormat('yyyy-MM-dd').parse(DateTime.now().toString());
@@ -346,9 +445,10 @@ class _AddManualAppointmentModal extends State<AddManualAppointmentModal> with T
       selectedDate = day;
     });
     if(newDay.isAfter(currentDay) || newDay.isAtSameMomentAs(currentDay)){
-      var res = await getBarberAvailability(context, globals.token);
+      // var res = await getBarberAvailability(context, globals.token);
+      var res1 = await getBarberAvailabilityV2(context, globals.token);
       //var res2 = await getBarberAppointments(context, globals.token);
-      var newTimes = await calculateTime(res, appointments, day);
+      var newTimes = await calculateTimeV2(res1, appointments, day);
 
       setState(() {
         _availableTimes = newTimes;
