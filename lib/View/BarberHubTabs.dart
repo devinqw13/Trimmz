@@ -187,13 +187,13 @@ class BarberHubTabWidgetState extends State<BarberHubTabWidget> with TickerProvi
 
   initBarberInfo() async {
     setState(() {
-      packages = widget.packages;
+      packages = widget.packages ?? [];
       _events = widget.events;
-      _selectedEvents = widget.selectedEvents;
-      availability = widget.availability;
-      availabilityV2 =  widget.availabilityV2;
-      appointmentReq = widget.appointmentReq;
-      policies = widget.policies;
+      _selectedEvents = widget.selectedEvents ?? [];
+      availability = widget.availability ?? [];
+      availabilityV2 =  widget.availabilityV2 ?? [];
+      appointmentReq = widget.appointmentReq ?? [];
+      policies = widget.policies ?? [];
     });
     
     for(var item in availabilityV2) {
