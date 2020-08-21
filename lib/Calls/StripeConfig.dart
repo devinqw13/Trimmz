@@ -6,7 +6,7 @@ stripeInit() {
     StripeOptions(
       publishableKey: "${globals.stripePublishablekey}",
       merchantId: "${globals.stripeMerchantId}",
-      androidPayMode: '',
+      androidPayMode: 'test',
     ),
   );
 }

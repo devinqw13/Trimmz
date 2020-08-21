@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "359276155405",
+    "firebase_url": "https://trimmz-63a11.firebaseio.com",
+    "project_id": "trimmz-63a11",
+    "storage_bucket": "trimmz-63a11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359276155405:android:71e8ad5ac34f8c72d4bb44",
+        "android_client_info": {
+          "package_name": "com.trimmz.trimmz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "359276155405-tvqhrtrursngc84777plmiuslgf4c000.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDskBRkzCQmAAx-nBvE5N_Y5Du9FAzTQsE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "359276155405-tvqhrtrursngc84777plmiuslgf4c000.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "359276155405-u1a0vadjamahvcukk6o26e0rq8b8t5p5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.trimmz"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
