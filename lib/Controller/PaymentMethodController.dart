@@ -248,6 +248,7 @@ class PaymentMethodScreenState extends State<PaymentMethodScreen> {
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: AppBar(
           automaticallyImplyLeading: widget.signup ? false : true,
+          centerTitle: true,
           title: Text("Payment Method"),
           actions: <Widget>[
             widget.signup ? FlatButton(

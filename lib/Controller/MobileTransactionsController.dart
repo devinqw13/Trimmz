@@ -467,6 +467,7 @@ class MobileTransactionScreenState extends State<MobileTransactionScreen> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: AppBar(
+          centerTitle: true,
           title: Text("Mobile Pay"),
         ),
         body: new Stack(

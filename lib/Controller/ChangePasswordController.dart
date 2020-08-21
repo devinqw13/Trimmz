@@ -294,6 +294,7 @@ class ChangePasswordState extends State<ChangePassword> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('Change Password')
         ),
         body: new Stack(

@@ -567,6 +567,7 @@ class BarberProfileV2ScreenState extends State<BarberProfileV2Screen> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('@'+user.username)
         ),
         body: new SingleChildScrollView(

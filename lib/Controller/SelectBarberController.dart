@@ -226,6 +226,7 @@ class SelectBarberScreenState extends State<SelectBarberScreen> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA), //Colors.grey
         appBar: AppBar(
+          centerTitle: true,
           title: Text("Select Barber"),
           bottom: clientBarbers.length > 0 ? PreferredSize(preferredSize: const Size.fromHeight(0.0), child: Container()) : PreferredSize(
             preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * .045),

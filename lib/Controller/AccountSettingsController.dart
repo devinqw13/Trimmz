@@ -667,6 +667,7 @@ class AccountSettingsState extends State<AccountSettings> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('Account Settings')
         ),
         body: new Stack(

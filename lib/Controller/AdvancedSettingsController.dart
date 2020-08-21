@@ -72,6 +72,7 @@ class AdvancedSettingsControllerState extends State<AdvancedSettingsController> 
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('Advanced Settings')
         ),
         body: new Stack(

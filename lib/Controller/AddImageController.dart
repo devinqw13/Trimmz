@@ -203,6 +203,7 @@ class _CameraAppState extends State<CameraApp> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: _currentIndex == 0 ? Text('Photo') :
           galleryList.length > 0 ? 
           Container(

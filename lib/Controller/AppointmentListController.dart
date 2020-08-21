@@ -416,6 +416,7 @@ class AppointmentListState extends State<AppointmentList> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('Appointments'),
         ),
         body: new Stack(

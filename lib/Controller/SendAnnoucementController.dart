@@ -124,6 +124,7 @@ class SendAnnoucementState extends State<SendAnnoucement> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('New Annoucement'),
           actions: <Widget>[
             textController.text.length > 0 ? FlatButton(

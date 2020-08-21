@@ -1144,6 +1144,7 @@ class BookingControllerState extends State<BookingController> with TickerProvide
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('Booking Appointment')
         ),
         body: KeyboardActions(

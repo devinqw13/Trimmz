@@ -867,6 +867,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           automaticallyImplyLeading: false,
+          centerTitle: true,
           title: Text('Marketplace'),
           actions: <Widget>[
             Badge(
@@ -989,6 +990,7 @@ class HomeHubTabWidgetState extends State<HomeHubTabWidget> with TickerProviderS
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
           automaticallyImplyLeading: false,
+          centerTitle: true,
           title: Text('Settings'),
         ),
         body: new WillPopScope(

@@ -74,6 +74,7 @@ class AppearanceSettingsState extends State<AppearanceSettings> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('Appearance')
         ),
         body: new Stack(

@@ -171,6 +171,7 @@ class NotificationScreenState extends State<NotificationScreen> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('Notifications')
         ),
         body: new Stack(

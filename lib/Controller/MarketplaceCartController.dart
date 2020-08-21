@@ -46,6 +46,7 @@ class MarketplaceCartState extends State<MarketplaceCart> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('Cart')
         ),
         body: new Stack(

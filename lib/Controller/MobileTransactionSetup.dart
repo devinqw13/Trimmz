@@ -549,6 +549,7 @@ class MobileTransactionSetupState extends State<MobileTransactionSetup> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('Mobile Pay Setup')
         ),
         body: new Stack(

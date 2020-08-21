@@ -709,6 +709,7 @@ class BarberSalesSetupState extends State<BarberSalesSetup> {
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: AppBar(
           automaticallyImplyLeading: false,
+          centerTitle: true,
           title: Text("Additional Setup"),
           actions: <Widget>[
             FlatButton(

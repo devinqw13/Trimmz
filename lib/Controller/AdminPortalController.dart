@@ -213,6 +213,7 @@ class AdminPortalState extends State<AdminPortal> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('Admin Portal')
         ),
         body: KeyboardActions(

@@ -316,6 +316,7 @@ class ReviewControllerState extends State<ReviewController> {
       child: Scaffold(
         backgroundColor: globals.darkModeEnabled ? Colors.black : Color(0xFFFAFAFA),
         appBar: new AppBar(
+          centerTitle: true,
           title: new Text('@${widget.username}\'s Reviews')
         ),
         body: new Stack(
