@@ -210,15 +210,46 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
 
   markNoShow() async {
     progressHUD();
-    var res = await getBarberPolicies(context, appointment['barberid']) ?? new BarberPolicies();
-    if(res.noShowEnabled) {
-      print('here');
-      if(res.noShowFee.contains('\$')){
-        var amountFee = res.noShowFee.split('\$')[1];
-        
-      }else {
-        var amountFee = res.noShowFee.split('%')[0];
-        
+    BarberPolicies policy = await getBarberPolicies(context, appointment['barberid']) ?? new BarberPolicies();
+    if(policy.noShowEnabled) {
+      if(canPress) {
+        setState(() {
+          canPress = false;
+        });
+
+        var total;
+        if(policy.noShowFee.contains('\$')) {
+          total = int.parse(policy.noShowFee.replaceAll(new RegExp('[\\\$]'),''));
+        }else {
+          double percent = (int.parse(policy.noShowFee.replaceAll(new RegExp('[\\%]'),'')) / 100);
+          total = (appointment['price'] * percent);
+        }
+
+        var res = await spChargeCard(context, total, appointment['paymentid'], appointment['customerid'], appointment['email']);
+        if(res) {
+          var res2 = await updateAppointmentStatus(context, appointment['id'], 4);
+          if(res2) {
+            var res1 = await getBarberAppointments(context, globals.token);
+            widget.updateAppointments(res1);
+            setState(() {
+              appointment['status'] = 4;
+              appointment['updated'] = DateTime.now().toString();
+            });
+            List tokens = await getNotificationTokens(context, appointment['clientid']);
+            for(var token in tokens){
+              Map<String, dynamic> dataMap =  {
+                'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                'action': 'APPOINTMENT',
+                'title': 'No-Show Appointment',
+                'body': '${globals.username} has marked your appointment as a no-show. You will be charged for voliating their no-show policy.',
+                'sender': '${globals.token}',
+                'recipient': '${appointment['clientid']}',
+                'appointment': appointment,
+              };
+              await sendPushNotification(context, 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show. You will be charged for voliating their no-show policy.', token, dataMap);
+            }
+          }
+        }
       }
     }else {
       var res = await updateAppointmentStatus(context, appointment['id'], 4);
@@ -227,11 +258,12 @@ class _AppointmentOptionsBottomSheet extends State<AppointmentOptionsBottomSheet
         widget.updateAppointments(res1);
         setState(() {
           appointment['status'] = 4;
+          appointment['updated'] = DateTime.now().toString();
         });
+        List tokens = await getNotificationTokens(context, appointment['clientid']);
+        sendNotifications(context, tokens, appointment['clientid'], 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', 'APPOINTMENT', appointment, 'appointment');
       }
     }
-    List tokens = await getNotificationTokens(context, appointment['clientid']);
-    sendNotifications(context, tokens, appointment['clientid'], 'No-Show Appointment', '${globals.username} has marked your appointment as a no-show', 'APPOINTMENT', appointment, 'appointment');
     progressHUD();
   }
 
