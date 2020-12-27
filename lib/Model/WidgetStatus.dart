@@ -1,0 +1,4 @@
+enum WidgetStatus {
+  HIDDEN,
+  VISIBLE
+}

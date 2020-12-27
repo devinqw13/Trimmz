@@ -1,41 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:progress_hud/progress_hud.dart';
-import 'package:trimmz/Model/availability.dart';
-import '../globals.dart' as globals;
-import '../Calls/GeneralCalls.dart';
-import '../dialogs.dart';
-import 'HomeHubController.dart';
+import 'package:trimmz/Controller/UserController.dart';
+import 'package:trimmz/calls.dart';
+import 'package:trimmz/dialogs.dart';
 import 'package:flutter/services.dart';
-import 'BarberHubController.dart';
-import 'RegisterController.dart';
-import 'dart:ui';
-import '../functions.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:intl/intl.dart';
-import '../Model/BarberPolicies.dart';
+import 'package:progress_hud/progress_hud.dart';
+import 'package:trimmz/helpers.dart';
+import 'package:trimmz/globals.dart' as globals;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginScreen extends StatefulWidget {
-  LoginScreen({Key key}) : super (key: key);
+class LoginController extends StatefulWidget {
+  LoginController({Key key}) : super (key: key);
 
   @override
-  LoginScreenState createState() => new LoginScreenState();
+  LoginControllerState createState() => new LoginControllerState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = new TextEditingController();
-  final TextEditingController _passwordController = new TextEditingController();
+class LoginControllerState extends State<LoginController> {
+  final TextEditingController userEmailTFController = new TextEditingController();
+  final TextEditingController passwordTFController = new TextEditingController();
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
-  BuildContext currentContext;
-  bool showPassword = false;
 
-   @override
+  @override
   void initState() {
     super.initState();
 
     _progressHUD = new ProgressHUD(
       color: Colors.white,
-      containerColor: Color.fromRGBO(21, 21, 21, 0.4),
       borderRadius: 8.0,
       loading: false,
       text: 'Loading...'
@@ -53,316 +44,264 @@ class LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  callLoginPost(String username, String password, bool retry, BuildContext context) async {
-    progressHUD();
-    Map results = await loginPost(username, password, context);
-    if (results.length == 0) {
-      return;
+  final kHintTextStyle = TextStyle(
+    color: Colors.white54,
+    fontFamily: 'OpenSans',
+  );
+
+  final kLabelStyle = TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+    fontFamily: 'OpenSans',
+  );
+
+  final kBoxDecorationStyle = BoxDecoration(
+    color: Color(0xFF6CA8F1),
+    borderRadius: BorderRadius.circular(10.0),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black12,
+        blurRadius: 6.0,
+        offset: Offset(0, 2),
+      ),
+    ],
+  );
+
+  _handleSubmit(String user, String password) async {
+    if(password != "") {
+      progressHUD();
+      var results = await login(context, user, password);
+      setGlobals(results);
+      var dashboardItems = await getDashboardItems(globals.user.token, context);
+      progressHUD();
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? false : prefs.getBool('darkModeEnabled');
+      prefs.setInt('token', globals.user.token);
+      if (globals.darkModeEnabled) {
+        globals.userBrightness = Brightness.dark;
+      }else {
+        globals.userBrightness = Brightness.light;
+      }
+
+      if(globals.user.token == 1) {
+
+      }else {
+        final userController = new UserController(dashboardItems: dashboardItems);
+        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => userController));
+      }
+    }else {
+      showOkDialog(context, "Please enter a valid password");
     }
-    progressHUD();
-    processLogin(results, retry);
   }
 
-  void processLogin(Map results, bool retry) async {
-    var status = results['error'];
-    switch (status) {
-      case 'true':
-        showOkDialog(context, "Login failed. Please verify username and password are correct.");
-        break;
-      case 'false':
-        setGlobals(results);
-
-        if(globals.userType == 1 || globals.userType == 3) {
-          final homeHubScreen = new HomeHubScreen();
-          Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => homeHubScreen));
-        }else if(globals.userType == 2){
-          progressHUD();
-          var packages = await getBarberPkgs(context, globals.token);
-          final _selectedDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())));
-          var events = await getBarberAppointments(context, globals.token);
-          var selectedEvents = events[_selectedDay] ?? [];
-          List<Availability> availability = [];
-          // var availability = await getBarberAvailability(context, globals.token);
-          var availabilityV2 = await getBarberAvailabilityV2(context, globals.token);
-          var appointmentReq = await getBarberAppointmentRequests(context, globals.token);
-          var policies = await getBarberPolicies(context, globals.token) ?? new BarberPolicies();
-          progressHUD();
-
-          final barberHubScreen = new BarberHubScreen(packages: packages, events: events, selectedEvents: selectedEvents, availability: availability, availabilityV2: availabilityV2, appointmentReq: appointmentReq, policies: policies);
-          Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => barberHubScreen));
-        }
-      break;
-    }
+  Widget _buildEmailTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Email or username',
+          style: kLabelStyle,
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 60.0,
+          child: TextField(
+            controller: userEmailTFController,
+            keyboardType: TextInputType.text,
+            autocorrect: false,
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.email,
+                color: Colors.white,
+              ),
+              hintText: 'Enter your email or username',
+              hintStyle: kHintTextStyle,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
-  void normalLogin(String user, String pass) async {
-    if (pass != "") {
-      currentContext = context;
-      callLoginPost(user, pass, false, context);
-    } else {
-      _openTextDialog("Please enter a valid password");
-    }
+  Widget _buildPasswordTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Password',
+          style: kLabelStyle,
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 60.0,
+          child: TextField(
+            controller: passwordTFController,
+            obscureText: true,
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.lock,
+                color: Colors.white,
+              ),
+              hintText: 'Enter your password',
+              hintStyle: kHintTextStyle,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
-  void _handleSubmitted(String user, String pass, BuildContext context) async {
-    normalLogin(user, pass);
-  }
-
-  void _openTextDialog(String text) {
-    AlertDialog dialog = new AlertDialog(
-      content: new SingleChildScrollView(
-        child: new Text(text,
-        textAlign: TextAlign.center
+  Widget _buildForgotPasswordBtn() {
+    return Container(
+      alignment: Alignment.centerRight,
+      child: FlatButton(
+        onPressed: () => print('Forgot Password Button Pressed'),
+        padding: EdgeInsets.only(right: 0.0),
+        child: Text(
+          'Forgot Password?',
+          style: kLabelStyle,
         ),
       ),
     );
-    showDialog(context: context, builder: (context) => dialog, barrierDismissible: true);
+  }
+
+  Widget _buildLoginBtn() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 25.0),
+      width: double.infinity,
+      child: RaisedButton(
+        elevation: 5.0,
+        onPressed: () {
+          _handleSubmit(userEmailTFController.text, passwordTFController.text);
+        },
+        padding: EdgeInsets.all(15.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        color: Colors.white,
+        child: Text(
+          'LOGIN',
+          style: TextStyle(
+            color: Color(0xFF527DAA),
+            letterSpacing: 1.5,
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'OpenSans',
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignupBtn() {
+    return GestureDetector(
+      onTap: () {
+        
+      },
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: 'Don\'t have an Account? ',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            TextSpan(
+              text: 'Sign Up',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    Widget titleSection = new Container(
-      padding: const EdgeInsets.only(top: 0, left: 32.0, right: 32.0),
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * .08),
-      child: new ClipRRect(
-        borderRadius: new BorderRadius.circular(10.0),
-        child: new Image.asset('images/trimmz_icon_t.png',
-          height: MediaQuery.of(context).size.height * .22,
-        )
-      ),
-    );
-
-    Widget usernameTextField() {
-      return new Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-        width: MediaQuery.of(context).size.width * .80,
-        child: new Row(
-          children: <Widget>[
-            new Expanded(
-              child: new TextField(
-                controller: _usernameController,
-                keyboardType: TextInputType.text,
-                autocorrect: false,
-                style: new TextStyle(
-                  fontSize: 18.0,
-                  color: Colors.white
-                ),
-                decoration: new InputDecoration(
-                  prefixIcon: Icon(Icons.person, color: Colors.white),
-                  hintText: 'Username',
-                  hintStyle: TextStyle(color: Colors.white70),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue)
-                  )
-                ),
-                onSubmitted: (newValue) {
-                  FocusScope.of(context).requestFocus(_passwordController ?? new FocusNode());
-                },
-              ),
-            ),
-          ],
-        )
-      );
-    }
-
-    Widget passwordTextField = new Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-      width: MediaQuery.of(context).size.width * .80,
-      child: new TextField(
-        controller: _passwordController,
-        obscureText: showPassword ? false : true,
-        autocorrect: false,
-        keyboardType: TextInputType.visiblePassword,
-        onSubmitted: (value) {
-          FocusScope.of(context).requestFocus(new FocusNode());
-          if(_passwordController.text.length > 0){
-            _handleSubmitted(_usernameController.text, _passwordController.text, context);
-          }
-        },
-        style: new TextStyle(
-          fontSize: 18.0,
-          color: Colors.white
-        ),
-        decoration: new InputDecoration(
-          prefixIcon: Icon(Icons.lock, color: Colors.white),
-          suffixIcon: GestureDetector(
-            onTap: () {
-              setState(() {
-                showPassword = !showPassword;
-              });
-            },
-            child: Icon(showPassword ? LineIcons.eye_slash : LineIcons.eye, color: Colors.white),
-          ),
-          hintText: 'Password',
-          hintStyle: TextStyle(color: Colors.white70),
-          border: new UnderlineInputBorder(
-            borderSide: new BorderSide(
-              color: Colors.white
-            )
-          ),
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.blue)
-          )
-        ),
-      ),
-    );
-
-    Widget buildLoginButton() {
-      return new GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(new FocusNode());
-          _handleSubmitted(_usernameController.text, _passwordController.text, context);
-        },
-        child: Container(
-          padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
-          constraints: const BoxConstraints(maxHeight: 45.0, minWidth: 200.0, minHeight: 45.0),
-          width: MediaQuery.of(context).size.width * .75,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            gradient: new LinearGradient(
-              colors: [Color.fromARGB(255, 0, 61, 184), Colors.lightBlueAccent],
-            )
-          ),
-          child: Center(
-            child: Text(
-              'Login',
-              style: new TextStyle(
-                fontSize: 19.0,
-                fontWeight: FontWeight.w300
-              )
-            )
-          )
-        )
-      );
-    }
-
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-      statusBarBrightness: Brightness.dark
-    ));
-
     return new Theme(
       data: new ThemeData(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        hintColor: Colors.white70,
         brightness: Brightness.dark,
       ),
-      child: new Scaffold(
-        backgroundColor: Colors.black,
-        resizeToAvoidBottomPadding: true,
-        body: new Container(
-          child: new WillPopScope(
-            onWillPop: () async {
-              return false;
-            },
-            child: new Stack(
+      child: Scaffold(
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light,
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Stack(
               children: <Widget>[
-                new ConstrainedBox(
-                  constraints: const BoxConstraints.expand(),
-                  child: new Image.asset(
-                    'images/barberBackground.png',
-                    fit: BoxFit.cover,
-                  )
-                ),
-                new Center(
-                  child: new ClipRect(
-                    child: new BackdropFilter(
-                      filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                      child: new Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        decoration: new BoxDecoration(
-                          color: Colors.black.withOpacity(0.85)
-                        ),
-                        child: new Stack(
-                          children: <Widget>[
-                            new Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                new Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    titleSection
-                                  ],
-                                ),
-                                new Column(
-                                  children: <Widget>[
-                                    new Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        new Container(
-                                          child: new Column(
-                                            children: <Widget>[
-                                              new Container(
-                                                width: screenWidth * .9,
-                                                child: new Column(
-                                                  children: <Widget>[
-                                                    usernameTextField(),
-                                                    passwordTextField
-                                                  ],
-                                                )
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    buildLoginButton()
-                                  ],
-                                ),
-                                new Container(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: new Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      new GestureDetector(
-                                        onTap: () {/*_resetPasswordTapped();*/},
-                                        child: new Container(
-                                          padding: const EdgeInsets.only(left: 12.0, bottom: 10.0),
-                                          child: new Text("Forgot Password?",
-                                            style: new TextStyle(
-                                              fontSize: 13.0,
-                                              color: Colors.white
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      new GestureDetector(
-                                        onTap: () {
-                                          final registerScreen = new RegisterScreen();
-                                          Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => registerScreen));
-                                        },
-                                        child: new Container(
-                                          padding: const EdgeInsets.only(right: 12.0,
-                                          bottom: 10.0),
-                                          child: new Text("New User? Click Here",
-                                            style: new TextStyle(
-                                              fontSize: 13.0,
-                                              color: Colors.white
-                                            ),
-                                          ),
-                                        )
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            _progressHUD
-                        ]
-                      )
+                Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF73AEF5),
+                        Color(0xFF61A4F1),
+                        Color(0xFF478DE0),
+                        Color(0xFF398AE5),
+                      ],
+                      stops: [0.1, 0.4, 0.7, 0.9],
                     ),
                   ),
                 ),
-              ),
-            ],
-          )
-          )
-        )
+                Container(
+                  height: double.infinity,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 40.0,
+                      vertical: 60.0,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        new Image.asset('images/trimmz_icon_t.png',
+                          height: 150.0,
+                        ),
+                        SizedBox(height: 30.0),
+                        _buildEmailTF(),
+                        SizedBox(
+                          height: 30.0,
+                        ),
+                        _buildPasswordTF(),
+                        _buildForgotPasswordBtn(),
+                        _buildLoginBtn(),
+                        _buildSignupBtn(),
+                      ],
+                    ),
+                  ),
+                ),
+                _progressHUD
+              ],
+            ),
+          ),
+        ),
       )
     );
   }
