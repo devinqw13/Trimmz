@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 class Appointments {
   List<Appointment> list = [];
   Map<DateTime, List<dynamic>> calendarFormat = {};
+  List<Appointment> requests = [];
 
   Appointments(List input) {
     final df = new DateFormat('hh:mm a');
@@ -11,28 +12,53 @@ class Appointments {
       var dateString = item['date'];
       DateTime date = DateTime.parse(df2.format(DateTime.parse(dateString)));
 
-      Appointment appointment = new Appointment();
-      appointment.id = item['id'];
-      appointment.clientID = item['client_id'];
-      appointment.barberID = item['barber_id'];
-      appointment.clientName = item['client_name'];
-      appointment.packageName = item['package_name'];
-      appointment.appointmentTime = df.format(DateTime.parse(item['date']));
-      appointment.appointmentFullTime = item['date'];
-      appointment.status = item['status'];
-      appointment.price = item['price'];
-      appointment.tip = item['tip'];
-      appointment.duration = item['duration'];
-      appointment.updated = item['updated'];
-      appointment.stripePaymentID = item['sp_paymentid'];
-      appointment.stripeCustomerID = item['sp_customerid'];
-      appointment.email = item['email'];
-      appointment.manualClientName = item['manual_client_name'];
-      appointment.manualClientPhone = item['manual_client_phone'];
-      appointment.cashPayment = item['cash_payment'];
-      appointment.clientProfilePicture = item['client_pp'];
-      appointment.barberProfilePicture = item['barber_pp'];
-      list.add(appointment);
+      if(item['status'] == 3) {
+        Appointment appointment = new Appointment();
+        appointment.id = item['id'];
+        appointment.clientID = item['client_id'];
+        appointment.barberID = item['barber_id'];
+        appointment.clientName = item['client_name'];
+        appointment.packageName = item['package_name'];
+        appointment.appointmentTime = df.format(DateTime.parse(item['date']));
+        appointment.appointmentFullTime = item['date'];
+        appointment.status = item['status'];
+        appointment.price = item['price'];
+        appointment.tip = item['tip'];
+        appointment.duration = item['duration'];
+        appointment.updated = item['updated'];
+        appointment.stripePaymentID = item['sp_paymentid'];
+        appointment.stripeCustomerID = item['sp_customerid'];
+        appointment.email = item['email'];
+        appointment.manualClientName = item['manual_client_name'];
+        appointment.manualClientPhone = item['manual_client_phone'];
+        appointment.cashPayment = item['cash_payment'];
+        appointment.clientProfilePicture = item['client_pp'];
+        appointment.barberProfilePicture = item['barber_pp'];
+        requests.add(appointment);
+      }else {
+        Appointment appointment = new Appointment();
+        appointment.id = item['id'];
+        appointment.clientID = item['client_id'];
+        appointment.barberID = item['barber_id'];
+        appointment.clientName = item['client_name'];
+        appointment.packageName = item['package_name'];
+        appointment.appointmentTime = df.format(DateTime.parse(item['date']));
+        appointment.appointmentFullTime = item['date'];
+        appointment.status = item['status'];
+        appointment.price = item['price'];
+        appointment.tip = item['tip'];
+        appointment.duration = item['duration'];
+        appointment.updated = item['updated'];
+        appointment.stripePaymentID = item['sp_paymentid'];
+        appointment.stripeCustomerID = item['sp_customerid'];
+        appointment.email = item['email'];
+        appointment.manualClientName = item['manual_client_name'];
+        appointment.manualClientPhone = item['manual_client_phone'];
+        appointment.cashPayment = item['cash_payment'];
+        appointment.clientProfilePicture = item['client_pp'];
+        appointment.barberProfilePicture = item['barber_pp'];
+        list.add(appointment);
+      }
 
       if(!calendarFormat.containsKey(date)) {
         calendarFormat[date] = [Map.from(item)];

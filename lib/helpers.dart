@@ -84,33 +84,3 @@ onCmdAction(BuildContext context, String cmdCode) async {
     }
   }
 }
-
-buildCmdWidget(BuildContext context, String cmdCode, {dynamic data}) {
-  switch(cmdCode) {
-    case "drawer_apt_requests": {
-      Widget widget;
-      if(data != null) {
-        widget = new Container(
-          child: Text("5"),
-          padding: EdgeInsets.all(3.0),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle
-          ),
-        );
-      }else {
-        widget = new Icon(Icons.keyboard_arrow_right);
-      }
-
-      return widget;
-    }
-    default: {
-      Widget widget;
-      if(data == "default") {
-        widget =  new Icon(Icons.keyboard_arrow_right);
-      }else if(data == null) {
-        widget =  Container();
-      }
-      return widget;
-    }
-  }
-}

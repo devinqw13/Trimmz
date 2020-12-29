@@ -73,6 +73,7 @@ class LoginControllerState extends State<LoginController> {
       var results = await login(context, user, password);
       setGlobals(results);
       var dashboardItems = await getDashboardItems(globals.user.token, context);
+      var appointments = await getBarberAppointments(context, globals.user.token);
       progressHUD();
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -87,7 +88,7 @@ class LoginControllerState extends State<LoginController> {
       if(globals.user.token == 1) {
 
       }else {
-        final userController = new UserController(dashboardItems: dashboardItems);
+        final userController = new UserController(dashboardItems: dashboardItems, appointments: appointments);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => userController));
       }
     }else {

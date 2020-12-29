@@ -11,6 +11,7 @@ class DashboardItem {
   bool defaultUserDrawer;
   bool defaultClientDrawer;
   bool isDashboard;
+  int sort;
 
   DashboardItem(Map input) {
     this.cmdID = input['id'];
@@ -20,6 +21,7 @@ class DashboardItem {
     this.defaultUserDrawer = input ['default_user_drawer'] == 1 ? true : false;
     this.defaultClientDrawer = input ['default_client_drawer'] == 1 ? true : false;
     this.isDashboard = input ['is_dashboard'] == 1 ? true : false;
+    this.sort = input['sort'];
 
     if(input['icon'] != null) {
       if(input['default_icon_type'] == 0) {

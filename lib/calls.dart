@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:trimmz/dialogs.dart';
 import 'package:trimmz/Model/DashboardItem.dart';
 import 'package:trimmz/Model/Appointment.dart';
+import 'package:trimmz/Model/User.dart';
 
 Future<List<String>> getDeviceDetails() async {
   String deviceName;
@@ -152,11 +153,11 @@ Future<Appointments> getBarberAppointments(BuildContext context, int userid) asy
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (017)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
     return null;
   } 
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (017)", "Please try again.");
+    showErrorDialog(context, "An error has occurred", "Please try again.");
     return null;
   }
 
@@ -171,6 +172,44 @@ Future<Appointments> getBarberAppointments(BuildContext context, int userid) asy
     var appointments = Appointments(jsonResponse['appointments']);
 
     return appointments;
+  }else {
+    return null;
+  }
+}
+
+Future<List<User>> getUsersByLocation(BuildContext context, int zipcode) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}getUsersByLocation?zipcode=$zipcode";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    var users = Users(jsonResponse['users']);
+    print(users);
+    return users.list;
   }else {
     return null;
   }

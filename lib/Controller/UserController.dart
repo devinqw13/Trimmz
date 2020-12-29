@@ -15,6 +15,9 @@ import 'package:trimmz/Model/WidgetStatus.dart';
 import 'package:intl/intl.dart';
 import 'package:trimmz/Model/Appointment.dart';
 import 'package:line_icons/line_icons.dart';
+import 'dart:ui' as ui;
+import 'package:trimmz/Model/User.dart';
+import 'package:async/async.dart';
 // import 'package:web_socket_channel/io.dart';
 
 
@@ -36,21 +39,23 @@ class UserControllerState extends State<UserController> with TickerProviderState
   List<DashboardItem> _drawerItems = [];
   var refreshKey = GlobalKey<RefreshIndicatorState>();
   CalendarController _calendarController = new CalendarController();
-  WidgetStatus _widgetStatus = WidgetStatus.HIDDEN;
-  AnimationController calendarAnimationController, opacityAnimationController;
-  Animation calendarPositionAnimation, calendarOpacityAnimation;
+  WidgetStatus _calendarWidgetStatus = WidgetStatus.HIDDEN;
+  WidgetStatus _searchWidgetStatus = WidgetStatus.HIDDEN;
+  AnimationController calendarAnimationController, searchAnimationController, opacityAnimationController, opacityAnimationController2;
+  Animation calendarPositionAnimation, calendarOpacityAnimation, searchPositionAnimation, searchOpacityAnimation;
   final duration = new Duration(milliseconds: 200);
   bool calendarActive = true;
+  bool searchActive = true;
   GlobalKey key = GlobalKey();
   Map<DateTime, List> _calendarAppointments;
   DateTime _calendarSelectedDay = DateTime.now();
   List _selectedAppointments = [];
   List appointmentRequests = [];
+  List<User> setLocatedUsers = [];
+  AsyncMemoizer _memoizer;
 
   @override
   void initState() {
-    super.initState();
-
     // var channel = IOWebSocketChannel.connect(
     //   "wss://c3amg9ynvf.execute-api.us-east-2.amazonaws.com/production",
     //   headers: {"userId": globals.user.token}
@@ -58,10 +63,12 @@ class UserControllerState extends State<UserController> with TickerProviderState
     // channel.stream.listen((message) {
     //   onReturnAction(message)
     // });
+    _memoizer = AsyncMemoizer();
 
     _dashboardItems = widget.dashboardItems.where((element) => element.isDashboard).toList();
     _drawerItems = widget.dashboardItems.where((element) => !element.isDashboard).toList();
     _calendarAppointments = widget.appointments.calendarFormat ?? {};
+    appointmentRequests = widget.appointments.requests;
     _selectedAppointments = _calendarAppointments[DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())))] ?? [];
 
     getDeviceDetails();
@@ -73,6 +80,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
       text: 'Loading...'
     );
 
+    // CALENDAR ANIMATIONS
     calendarAnimationController = new AnimationController(duration: duration, vsync: this);
     opacityAnimationController = new AnimationController(duration: duration, vsync: this);
     calendarPositionAnimation = new Tween(begin: 0.0, end: widget.screenHeight).animate(
@@ -90,12 +98,39 @@ class UserControllerState extends State<UserController> with TickerProviderState
     calendarAnimationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         if (calendarActive) {
-          _widgetStatus = WidgetStatus.VISIBLE;
+          _calendarWidgetStatus = WidgetStatus.VISIBLE;
         } else {
-          _widgetStatus = WidgetStatus.HIDDEN;
+          _calendarWidgetStatus = WidgetStatus.HIDDEN;
         }
       }
     });
+
+    // SEARCH ANIMATIONS
+    searchAnimationController = new AnimationController(duration: duration, vsync: this);
+    opacityAnimationController2 = new AnimationController(duration: duration, vsync: this);
+    searchPositionAnimation = new Tween(begin: 0.0, end: widget.screenHeight).animate(
+      new CurvedAnimation(parent: searchAnimationController, curve: Curves.easeInOut)
+    );
+    searchOpacityAnimation = new Tween(begin: 0.0, end: 1.0).animate(
+      new CurvedAnimation(parent: opacityAnimationController2, curve: Curves.easeInOut)
+    );
+    searchPositionAnimation.addListener(() {
+      setState(() {});
+    });
+    searchOpacityAnimation.addListener(() {
+      setState(() {});
+    });
+    searchAnimationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (searchActive) {
+          _searchWidgetStatus = WidgetStatus.VISIBLE;
+        } else {
+          _searchWidgetStatus = WidgetStatus.HIDDEN;
+        }
+      }
+    });
+
+    super.initState();
   }
 
   @override
@@ -103,6 +138,8 @@ class UserControllerState extends State<UserController> with TickerProviderState
     super.dispose();
     calendarAnimationController.dispose();
     opacityAnimationController.dispose();
+    searchAnimationController.dispose();
+    opacityAnimationController2.dispose();
   }
 
   void progressHUD() {
@@ -116,18 +153,33 @@ class UserControllerState extends State<UserController> with TickerProviderState
     });
   }
 
-  void onTapDown() {
-    if (_widgetStatus == WidgetStatus.HIDDEN) {
+  void onTapDownCalendar() {
+    if (_calendarWidgetStatus == WidgetStatus.HIDDEN) {
       calendarAnimationController.forward(from: 0.0);
       opacityAnimationController.forward(from: 0.0);
-      _widgetStatus = WidgetStatus.VISIBLE;
+      _calendarWidgetStatus = WidgetStatus.VISIBLE;
       _calendarController.setCalendarFormat(CalendarFormat.month);
+      _calendarController.setSelectedDay(DateTime.now());
     }
-    else if (_widgetStatus == WidgetStatus.VISIBLE) {
+    else if (_calendarWidgetStatus == WidgetStatus.VISIBLE) {
       calendarAnimationController.reverse(from: 400.0);
       opacityAnimationController.reverse(from: 1.0);
-      _widgetStatus = WidgetStatus.HIDDEN;
+      _calendarWidgetStatus = WidgetStatus.HIDDEN;
       _calendarController.setCalendarFormat(CalendarFormat.week);
+      _calendarController.setSelectedDay(DateTime.now());
+    }
+  }
+
+  void onTapDownSearch() {
+    if (_searchWidgetStatus == WidgetStatus.HIDDEN) {
+      searchAnimationController.forward(from: 0.0);
+      opacityAnimationController2.forward(from: 0.0);
+      _searchWidgetStatus = WidgetStatus.VISIBLE;
+    }
+    else if (_searchWidgetStatus == WidgetStatus.VISIBLE) {
+      searchAnimationController.reverse(from: 400.0);
+      opacityAnimationController2.reverse(from: 1.0);
+      _searchWidgetStatus = WidgetStatus.HIDDEN;
     }
   }
 
@@ -142,6 +194,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
       _dashboardItems = dashItems.where((element) => element.isDashboard).toList();
       _drawerItems = dashItems.where((element) => !element.isDashboard).toList();
       _calendarAppointments = appointments.calendarFormat;
+      appointmentRequests = widget.appointments.requests;
     });
     return completer.future;
   }
@@ -178,6 +231,82 @@ class UserControllerState extends State<UserController> with TickerProviderState
         globals.darkModeEnabled = true;
       }
     });
+  }
+
+  buildCmdWidget(BuildContext context, String cmdCode) {
+    switch(cmdCode) {
+      case "drawer_apt_requests": {
+        Widget widget;
+        if(appointmentRequests.length > 0) {
+          widget = new Container(
+            child: Text(
+              appointmentRequests.length.toString(),
+              style: TextStyle(
+                color: globals.darkModeEnabled ? Colors.black : Colors.white
+              )
+            ),
+            padding: EdgeInsets.all(5.0),
+            decoration: BoxDecoration(
+              color: globals.darkModeEnabled ? Colors.white : Colors.black,
+              shape: BoxShape.circle
+            ),
+          );
+        }else {
+          widget = new Container();
+        }
+
+        return widget;
+      }
+      default: {
+        return new Container();
+      }
+    }
+  }
+
+  Widget _buildDrawerItemList(List<DashboardItem> drawerItems) {
+    List<Widget> primary = [];
+    List<Widget> secondary = [];
+
+    for(var item in drawerItems) {
+      Widget widget = FlatButton(
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 12),
+        onPressed: () {onCmdAction(context, item.cmdCode);},
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              item.name,
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w400
+              )
+            ),
+            buildCmdWidget(context, item.cmdCode)
+          ]
+        )
+      );
+
+      if(item.cmdCode == "drawer_settings") {
+        secondary.add(widget);
+      }else {
+        primary.add(widget);
+      }
+    }
+
+    return ListView(
+      padding: EdgeInsets.all(0.0),
+      children: [
+        Column(children: primary),
+        new Container(
+          height: 0.5,
+          color: Colors.grey,
+          margin: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        ),
+        Column(children: secondary),
+      ],
+    );
   }
 
   Widget buildDrawer() {
@@ -262,42 +391,28 @@ class UserControllerState extends State<UserController> with TickerProviderState
               ),
             ),
             new Expanded(
-              // child: new ListView(
-              //   padding: const EdgeInsets.only(top: 0.0, left: 0.0, right: 0.0, bottom: 0.0),
-              //   children: [
-              //     FlatButton(
-              //       onPressed: () {/*performNavigation()*/},
+              // child: ListView.builder(
+              //   padding: EdgeInsets.all(0.0),
+              //   itemCount: _drawerItems.length,
+              //   itemBuilder: (context, index) {
+              //     return FlatButton(
+              //       onPressed: () {onCmdAction(context, _drawerItems[index].cmdCode);},
               //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.start,
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
               //         children: [
-              //           Text("Profile")
+              //           Text(
+              //             _drawerItems[index].name,
+              //             style: TextStyle(
+              //               fontSize: 16.0
+              //             )
+              //           ),
+              //           buildCmdWidget(context, _drawerItems[index].cmdCode)
               //         ]
               //       )
-              //     )
-              //   ],
+              //     );
+              //   },
               // )
-              child: ListView.builder(
-                padding: EdgeInsets.all(0.0),
-                itemCount: _drawerItems.length,
-                itemBuilder: (context, index) {
-                  return FlatButton(
-                    onPressed: () {onCmdAction(context, _drawerItems[index].cmdCode);},
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      
-                      children: [
-                        Text(
-                          _drawerItems[index].name,
-                          style: TextStyle(
-                            fontSize: 16.0
-                          )
-                        ),
-                        buildCmdWidget(context, _drawerItems[index].cmdCode)
-                      ]
-                    )
-                  );
-                },
-              )
+              child: _buildDrawerItemList(_drawerItems)
             ),
             new Container(
               width: MediaQuery.of(context).size.width,
@@ -389,14 +504,6 @@ class UserControllerState extends State<UserController> with TickerProviderState
 
   buildDashboard() {
     var filterDashboardList = _dashboardItems;
-    if (filter != null) {
-      filterDashboardList = [];
-      for (var item in _dashboardItems) {
-        // if (searchFilterText(item)) {
-        //   filterDashboardList.add(item);
-        // }
-      }
-    }
     if (filterDashboardList != null) {
       if (filterDashboardList.length > 0) {
         return new RefreshIndicator(
@@ -552,10 +659,104 @@ class UserControllerState extends State<UserController> with TickerProviderState
     }
   }
 
+  Widget _buildUserSearchCard(User user) {
+    return Container(
+      child: Column(
+        children: [
+          Text(user.name),
+          Text(user.username),
+          // Text(user.shopName),
+          Text(user.shopAddress),
+          Text(user.state),
+          Text(user.city)
+        ]
+      )
+    );
+  }
+
+  Widget buildSearchResults(List<User> users) {
+    return Container(
+      child: ListView.builder(
+        itemCount: users.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          // return new Card(
+          //   child: Stack(
+          //     children: [
+          //       users[index].headerImage != null ?
+          //       new Image.network("${globals.baseImageUrl}${users[index].headerImage}",
+          //         // height: 60.0,
+          //         fit: BoxFit.fill,
+          //       ) : Container(),
+          //       new Center(
+          //         child: new ClipRect(
+          //           child: new BackdropFilter(
+          //             filter: ui.ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
+          //             child: new Container(
+          //               decoration: new BoxDecoration(
+          //                 color: Colors.black.withOpacity(0.9)
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //       _buildUserSearchCard(users[index])
+          //     ],
+          //   )
+          // );
+          return Card(
+            child: Container(
+              decoration: users[index].headerImage != null ? BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(
+                    "${globals.baseImageUrl}${users[index].headerImage}",
+                  ),
+                  fit: BoxFit.cover
+                )
+              ): BoxDecoration(
+
+              ),
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    alignment: Alignment.center,
+                    color: Colors.grey.withOpacity(0.1),
+                    child: _buildUserSearchCard(users[index])
+                  ),
+                ),
+              ),
+            )
+          );
+        },
+      ),
+    );
+  }
+
+  _fetchUserByLocationData() async {
+    return this._memoizer.runOnce(() async {
+      var res = await getUsersByLocation(context, 45241);
+      return res;
+    });
+  } 
+
+  _buildSearchList() {
+    return FutureBuilder(
+      future: _fetchUserByLocationData(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return buildSearchResults(snapshot.data);
+        } else {
+          return CircularProgressIndicator();
+        }
+      }
+    );
+  }
+
   Widget getCalendarOverlay() {
     var searchHeight = 0.0;
     var searchOpacity = 0.0;
-    switch(_widgetStatus) {
+    switch(_calendarWidgetStatus) {
       case WidgetStatus.HIDDEN:
         searchHeight = calendarPositionAnimation.value;
         searchOpacity = calendarOpacityAnimation.value;
@@ -583,6 +784,43 @@ class UserControllerState extends State<UserController> with TickerProviderState
           )
         ),
         color: globals.userBrightness == Brightness.light ? Colors.white : richBlack,
+    );
+  }
+
+  Widget getSearchOverlay() {
+    var searchHeight = 0.0;
+    var searchOpacity = 0.0;
+    switch(_searchWidgetStatus) {
+      case WidgetStatus.HIDDEN:
+        searchHeight = searchPositionAnimation.value;
+        searchOpacity = searchOpacityAnimation.value;
+        searchActive = false;
+        break;
+      case WidgetStatus.VISIBLE:
+        searchHeight = searchPositionAnimation.value;
+        searchOpacity = searchOpacityAnimation.value;
+        searchActive = true;
+        break;
+    }
+    return new BackdropFilter(
+      filter: new ui.ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: searchHeight,
+        child: new Opacity(
+          opacity: searchOpacity,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                flex: 6,
+                child: _buildSearchList()
+              ),
+            ],
+          )
+        ),
+        color: const Color.fromARGB(120, 0, 0, 0),
+      )
     );
   }
 
@@ -620,11 +858,11 @@ class UserControllerState extends State<UserController> with TickerProviderState
       onVerticalDragEnd: (details) {
         if(details.velocity.pixelsPerSecond.dy > 0.0) {
           if(_calendarController.calendarFormat != CalendarFormat.month) {
-            onTapDown();
+            onTapDownCalendar();
           }
         }else {
           if(_calendarController.calendarFormat != CalendarFormat.week) {
-            onTapDown();
+            onTapDownCalendar();
           }
         }
       },
@@ -670,7 +908,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
             );
             animation.forward();
 
-            if(_widgetStatus == WidgetStatus.VISIBLE) {
+            if(_calendarWidgetStatus == WidgetStatus.VISIBLE) {
               return FadeTransition(
                 opacity: Tween(begin: 0.0, end: 1.0).animate(animation),
                 child: Container(
@@ -710,7 +948,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
             }
           },
           todayDayBuilder: (context, date, _) {
-            if(_widgetStatus == WidgetStatus.VISIBLE) {
+            if(_calendarWidgetStatus == WidgetStatus.VISIBLE) {
               return Container(
                 margin: const EdgeInsets.all(6.0),
                 decoration: BoxDecoration(
@@ -768,6 +1006,20 @@ class UserControllerState extends State<UserController> with TickerProviderState
             ),
           ),
           elevation: 0.0,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.notifications_none_sharp),
+              onPressed: () {
+
+              }
+            ),
+            IconButton(
+              icon: _searchWidgetStatus == WidgetStatus.VISIBLE ? Icon(Icons.close) : Icon(Icons.search),
+              onPressed: () {
+                onTapDownSearch();
+              },
+            )
+          ],
         ),
         drawer: buildDrawer(),
         body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -800,7 +1052,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                           child: Stack(
                             children: [
                               buildDashboard(),
-                              getCalendarOverlay()
+                              getCalendarOverlay(),
                             ],
                           ),
                           padding: const EdgeInsets.only(top: 0.0),
@@ -808,6 +1060,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                       ),
                     ]
                   ),
+                  getSearchOverlay(),
                   _progressHUD,
                 ]
               )
