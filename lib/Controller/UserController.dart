@@ -32,6 +32,7 @@ class UserController extends StatefulWidget {
 }
 
 class UserControllerState extends State<UserController> with TickerProviderStateMixin {
+  final TextEditingController searchTFController = new TextEditingController();
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
   String filter;
@@ -66,7 +67,9 @@ class UserControllerState extends State<UserController> with TickerProviderState
     _memoizer = AsyncMemoizer();
 
     _dashboardItems = widget.dashboardItems.where((element) => element.isDashboard).toList();
+    _dashboardItems.sort((a,b) => a.sort.compareTo(b.sort));
     _drawerItems = widget.dashboardItems.where((element) => !element.isDashboard).toList();
+    _drawerItems.sort((a,b) => a.sort.compareTo(b.sort));
     _calendarAppointments = widget.appointments.calendarFormat ?? {};
     appointmentRequests = widget.appointments.requests;
     _selectedAppointments = _calendarAppointments[DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())))] ?? [];
@@ -160,6 +163,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
       _calendarWidgetStatus = WidgetStatus.VISIBLE;
       _calendarController.setCalendarFormat(CalendarFormat.month);
       _calendarController.setSelectedDay(DateTime.now());
+      _selectedAppointments = _calendarAppointments[DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())))] ?? [];
     }
     else if (_calendarWidgetStatus == WidgetStatus.VISIBLE) {
       calendarAnimationController.reverse(from: 400.0);
@@ -167,6 +171,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
       _calendarWidgetStatus = WidgetStatus.HIDDEN;
       _calendarController.setCalendarFormat(CalendarFormat.week);
       _calendarController.setSelectedDay(DateTime.now());
+      _selectedAppointments = _calendarAppointments[DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())))] ?? [];
     }
   }
 
@@ -192,9 +197,11 @@ class UserControllerState extends State<UserController> with TickerProviderState
     completer.complete();
     setState(() {
       _dashboardItems = dashItems.where((element) => element.isDashboard).toList();
+      _dashboardItems.sort((a,b) => a.sort.compareTo(b.sort));
       _drawerItems = dashItems.where((element) => !element.isDashboard).toList();
+      _drawerItems.sort((a,b) => a.sort.compareTo(b.sort));
       _calendarAppointments = appointments.calendarFormat;
-      appointmentRequests = widget.appointments.requests;
+      appointmentRequests = appointments.requests;
     });
     return completer.future;
   }
@@ -241,15 +248,8 @@ class UserControllerState extends State<UserController> with TickerProviderState
           widget = new Container(
             child: Text(
               appointmentRequests.length.toString(),
-              style: TextStyle(
-                color: globals.darkModeEnabled ? Colors.black : Colors.white
-              )
             ),
             padding: EdgeInsets.all(5.0),
-            decoration: BoxDecoration(
-              color: globals.darkModeEnabled ? Colors.white : Colors.black,
-              shape: BoxShape.circle
-            ),
           );
         }else {
           widget = new Container();
@@ -292,7 +292,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
       }else {
         primary.add(widget);
       }
-    }
+    } 
 
     return ListView(
       padding: EdgeInsets.all(0.0),
@@ -342,7 +342,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: "100 ",
+                              text: "N/A ",
                               style: TextStyle(
                                 color: globals.darkModeEnabled ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w500,
@@ -661,75 +661,116 @@ class UserControllerState extends State<UserController> with TickerProviderState
 
   Widget _buildUserSearchCard(User user) {
     return Container(
-      child: Column(
+      padding: EdgeInsets.all(10.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(user.name),
-          Text(user.username),
-          // Text(user.shopName),
-          Text(user.shopAddress),
-          Text(user.state),
-          Text(user.city)
+          buildUserProfilePicture(context, user.profilePicture, user.name),
+          Padding(padding: EdgeInsets.all(4)),
+          Expanded(
+            flex: 9,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "${user.name} ",
+                        style: TextStyle(
+                          color: globals.darkModeEnabled ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16.0
+                        )
+                      ),
+                      TextSpan(
+                        text: "@${user.username}",
+                        style: TextStyle(
+                          color: globals.darkModeEnabled ? Colors.grey : Colors.black54,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 15.0
+                        )
+                      )
+                    ]
+                  ),
+                ),
+                user.shopName != null && user.shopName != "" ?
+                Text(
+                  user.shopName,
+                  style: TextStyle(
+                    color: globals.darkModeEnabled ? Colors.grey : Colors.black54,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 13.0
+                  )
+                ) : Container(),
+                user.shopAddress != null ?
+                Text(
+                  "${user.shopAddress}, ${user.city}, ${user.state} ${user.zipcode}",
+                  style: TextStyle(
+                    color: globals.darkModeEnabled ? Colors.grey : Colors.black54,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 13.0
+                  )
+                ) : Text(
+                  "${user.city}, ${user.state} ${user.zipcode}",
+                  style: TextStyle(
+                    color: globals.darkModeEnabled ? Colors.grey : Colors.black54,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 13.0
+                  )
+                )
+              ]
+            )
+          )
         ]
       )
     );
   }
 
-  Widget buildSearchResults(List<User> users) {
-    return Container(
-      child: ListView.builder(
-        itemCount: users.length,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          // return new Card(
-          //   child: Stack(
-          //     children: [
-          //       users[index].headerImage != null ?
-          //       new Image.network("${globals.baseImageUrl}${users[index].headerImage}",
-          //         // height: 60.0,
-          //         fit: BoxFit.fill,
-          //       ) : Container(),
-          //       new Center(
-          //         child: new ClipRect(
-          //           child: new BackdropFilter(
-          //             filter: ui.ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
-          //             child: new Container(
-          //               decoration: new BoxDecoration(
-          //                 color: Colors.black.withOpacity(0.9)
-          //               ),
-          //             ),
-          //           ),
-          //         ),
-          //       ),
-          //       _buildUserSearchCard(users[index])
-          //     ],
-          //   )
-          // );
-          return Card(
-            child: Container(
-              decoration: users[index].headerImage != null ? BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    "${globals.baseImageUrl}${users[index].headerImage}",
-                  ),
-                  fit: BoxFit.cover
-                )
-              ): BoxDecoration(
+  _unfocusSearch() {
+    FocusScope.of(context).unfocus();
+    onTapDownSearch();
+  }
 
-              ),
-              child: ClipRRect(
-                child: BackdropFilter(
-                  filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    alignment: Alignment.center,
-                    color: Colors.grey.withOpacity(0.1),
-                    child: _buildUserSearchCard(users[index])
+  Widget buildSearchResults(List<User> users) {
+    return GestureDetector(
+      onTap: () => _unfocusSearch(),
+      child: Container(
+        child: ListView.builder(
+          itemCount: users.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () => print("GO TO PROFILE"),
+              child: Card(
+                child: Container(
+                  decoration: users[index].headerImage != null ? BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        "${globals.baseImageUrl}${users[index].headerImage}",
+                      ),
+                      fit: BoxFit.cover
+                    )
+                  ): BoxDecoration(
+
                   ),
-                ),
-              ),
-            )
-          );
-        },
-      ),
+                  child: ClipRRect(
+                    child: BackdropFilter(
+                      filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        alignment: Alignment.center,
+                        color: globals.darkModeEnabled ? Colors.black.withOpacity(0.6) : Colors.white.withOpacity(0.6),
+                        child: _buildUserSearchCard(users[index])
+                      ),
+                    ),
+                  ),
+                )
+              )
+            );
+          },
+        ),
+      )
     );
   }
 
@@ -888,7 +929,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
         builders: CalendarBuilders(
           markersBuilder: (context, date, events, holidays) {
             final children = <Widget>[];
-            int amount = events.where((element) => element['status'] != 2).length;
+            int amount = events.where((element) => element['status'] != 2 && element['status'] != 3).length;
 
             if (events.isNotEmpty && amount > 0) {
               children.add(
@@ -986,6 +1027,40 @@ class UserControllerState extends State<UserController> with TickerProviderState
     );
   }
 
+  Widget _buildSearchTF() {
+    return Container(
+      decoration: BoxDecoration(
+        color: darkBackgroundGrey,
+        borderRadius: BorderRadius.circular(50.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6.0,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        keyboardType: TextInputType.text,
+        autocorrect: false,
+        style: TextStyle(
+          color: Colors.white,
+          fontFamily: 'OpenSans',
+        ),
+        decoration: InputDecoration(
+          border: UnderlineInputBorder(borderSide: BorderSide.none),
+          isDense: true,
+          contentPadding: EdgeInsets.only(left: 15, right: 8, top: 8, bottom: 8),
+          hintText: 'Search Trimmz',
+          hintStyle: TextStyle(
+            color: Colors.white54,
+            fontFamily: 'OpenSans',
+          ),
+        ),
+      )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Theme(
@@ -998,22 +1073,26 @@ class UserControllerState extends State<UserController> with TickerProviderState
           brightness: globals.userBrightness,
           backgroundColor: globals.darkModeEnabled ? richBlack : Colors.white,
           centerTitle: true,
-          title: new Text(
+          title: _searchWidgetStatus != WidgetStatus.VISIBLE ? new Text(
             "Welcome ${globals.user.name}!",
             style: TextStyle(
               fontWeight: FontWeight.normal,
               fontSize: 18.0
             ),
-          ),
+          ) : _buildSearchTF(),
           elevation: 0.0,
           actions: [
-            IconButton(
+            _searchWidgetStatus != WidgetStatus.VISIBLE ? IconButton(
+              splashColor: Colors.transparent,  
+              highlightColor: Colors.transparent,
               icon: Icon(Icons.notifications_none_sharp),
               onPressed: () {
 
               }
-            ),
+            ) : Container(),
             IconButton(
+              splashColor: Colors.transparent,  
+              highlightColor: Colors.transparent,
               icon: _searchWidgetStatus == WidgetStatus.VISIBLE ? Icon(Icons.close) : Icon(Icons.search),
               onPressed: () {
                 onTapDownSearch();
@@ -1035,15 +1114,10 @@ class UserControllerState extends State<UserController> with TickerProviderState
                   new Column(
                     children: <Widget>[
                       new Container(
+                        padding: EdgeInsets.only(bottom:  2.0),
                         child: buildHeader(),
                         decoration: BoxDecoration(
                           color: globals.userBrightness == Brightness.light ? Colors.white : richBlack,
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Colors.grey,
-                              width: .2
-                            )
-                          )
                         ),
                       ),
                       new Expanded(

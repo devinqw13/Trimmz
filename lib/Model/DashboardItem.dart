@@ -36,9 +36,7 @@ class DashboardItem {
       }else {
         icon = new Image.network(
           "${globals.baseImageUrl}${input['icon']}", 
-            color: Colors.white,
-            scale: 1.0
-          );
+        );
       }
     }else {
       icon = new Container();

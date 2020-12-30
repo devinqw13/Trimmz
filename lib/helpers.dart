@@ -84,3 +84,30 @@ onCmdAction(BuildContext context, String cmdCode) async {
     }
   }
 }
+
+Widget buildUserProfilePicture(BuildContext context, String profilePicture, String name) {
+  if(profilePicture != null) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(50.0),
+      child: new Image.network('${globals.baseImageUrl}$profilePicture',
+        height: 60.0,
+        fit: BoxFit.fill,
+      )
+    );
+  }else {
+    return Container(
+      child: CircleAvatar(
+        child: Center(child:Text(name.substring(0,1).toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 25))),
+        radius: 30,
+        backgroundColor: Colors.transparent,
+      ),
+      decoration: new BoxDecoration(
+        shape: BoxShape.circle,
+        color: globals.darkModeEnabled ? Colors.black : Colors.white,
+        gradient: new LinearGradient(
+          colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
+        )
+      ),
+    );
+  }
+}
