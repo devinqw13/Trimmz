@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/calls.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:trimmz/Model/DashboardItem.dart';
 import 'package:trimmz/dialogs.dart';
-import 'package:trimmz/calls.dart';
+import 'package:trimmz/Controller/ConversationController.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trimmz/Model/Conversation.dart';
+import 'dart:convert';
+import 'package:trimmz/Controller/AppointmentRequestController.dart';
+import 'package:trimmz/Model/Appointment.dart';
+import 'package:trimmz/Controller/UserProfileController.dart';
+import 'package:trimmz/Controller/UserProfileControllerV2.dart';
+import 'package:intl/intl.dart';
 
 setGlobals(Map results) async {
   globals.LoginUser user = new globals.LoginUser();
@@ -32,7 +41,7 @@ setGlobals(Map results) async {
 
 Future<dynamic> buildMicroAppController(BuildContext context, DashboardItem item) async {
   switch (item.cmdCode) {
-    case "Schedule": {
+    case "user_schedule": {
       showOkDialog(context, "OPENING MICRO APPLICATION");
       break;
     }
@@ -65,22 +74,23 @@ getStatusBar(int status, var time) {
   }
 }
 
-onWebSocketAction(message) {
-  var actionKey = message['key'];
-  switch(actionKey) {
-    case 'updateDashboardItems': {
-      break;
-    }
-    case 'updateUserAppointments': {
-      break;
-    }
-  }
-}
-
-onCmdAction(BuildContext context, String cmdCode) async {
+onCmdAction(BuildContext context, String cmdCode, {dynamic data}) async {
   switch(cmdCode) {
     case "drawer_apt_requests": {
-      //TODO: GO TO REQUEST PAGE.
+      final appointmentRequestsController = new AppointmentRequestController(requests: data);
+      Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentRequestsController));
+      break;
+    }
+    case "drawer_messages": {
+      var results = await getCached("conversations");
+      
+      final messagesController = new ConversationController(cachedConversations: results);
+      Navigator.push(context, new MaterialPageRoute(builder: (context) => messagesController));
+      break;
+    }
+    case "drawer_profile": {
+      final userProfileController = new UserProfileController(token: globals.user.token);
+      Navigator.push(context, new MaterialPageRoute(builder: (context) => userProfileController));
     }
   }
 }
@@ -110,4 +120,98 @@ Widget buildUserProfilePicture(BuildContext context, String profilePicture, Stri
       ),
     );
   }
+}
+
+cacheData(String key, dynamic data) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  switch(key) {
+    case "conversations": {
+      List<String> cachedConversations = [];
+      List<String> cachedMessages = [];
+
+      for(var item in data['conversations']){
+        cachedConversations.add(json.encode(item));
+      }
+      for(var item in data['messages']){
+        cachedMessages.add(json.encode(item));
+      }
+      prefs.setStringList("conversations", cachedConversations);
+      prefs.setStringList("messages", cachedMessages);
+
+      break;
+    }
+  }
+}
+
+Future<dynamic> getCached(String key) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  switch(key) {
+    case "conversations": {
+      List conversations = [];
+      List messages = [];
+
+      var cachedConversations = prefs.getStringList("conversations") ?? [];
+      var cachedMessages = prefs.getStringList("messages") ?? [];
+      cachedConversations.forEach((element) {
+        conversations.add(json.decode(element));
+      });
+      cachedMessages.forEach((element) {
+        messages.add(json.decode(element));
+      });
+
+      var results = Conversations(conversations, messages);
+      results.list.sort((a,b) => a.created.compareTo(b.created));
+      return results.list;
+    }
+    default: {
+      return null;
+    }
+  }
+}
+
+Future<dynamic> onWebSocketAction(String key, Map data, {dynamic other}) async {
+  switch(key) {
+    case "recieveMessage": {
+      List<Conversation> conversations = other;
+      Map newData = {
+        "id": data['id'],
+        "message": data['message'],
+        "senderId": data['senderId'],
+        "conversationId": data['conversationId'],
+        "created": data['created']
+      };
+
+      var message = new Message(newData);
+
+      conversations.where((element) => element.id == data['conversationId']).first.recentMessage = data['message'];
+
+      conversations.where((element) => element.id == data['conversationId']).first.recentSenderId = data['senderId'];
+
+      conversations.where((element) => element.id == data['conversationId']).first.messages.insert(0, message);
+
+      return conversations;
+    }
+    default: {
+      return data;
+    }
+  }
+}
+
+Future<Appointment> handleAppointmentStatus(BuildContext context, int status, int appointmentId) async {
+  Appointment appointment = await appointmentHandler(context, globals.user.token, appointmentId, status);
+  return appointment;
+}
+
+String formatTime(String time, bool showMinutes) {
+  final df = DateTime.parse(DateFormat('Hms', 'en_US').parse(time).toString());
+  String returnTime = "";
+  if(df.minute > 0) {
+    final i = new DateFormat('h:mma');
+    returnTime = i.format(df);
+
+  }else {
+    final i = new DateFormat('ha');
+    returnTime = i.format(df);
+  }
+  return returnTime;
 }

@@ -27,6 +27,7 @@ class LoginUser {
   String state;
   int zipcode;
   String profilePic;
+  String headerPicture;
 }
 
 class StripeUser {

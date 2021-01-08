@@ -8,6 +8,8 @@ import 'package:trimmz/dialogs.dart';
 import 'package:trimmz/Model/DashboardItem.dart';
 import 'package:trimmz/Model/Appointment.dart';
 import 'package:trimmz/Model/User.dart';
+import 'package:trimmz/Model/Conversation.dart';
+import 'package:trimmz/helpers.dart';
 
 Future<List<String>> getDeviceDetails() async {
   String deviceName;
@@ -208,8 +210,124 @@ Future<List<User>> getUsersByLocation(BuildContext context, int zipcode) async {
 
   if(jsonResponse['error'] == 'false'){
     var users = Users(jsonResponse['users']);
-    print(users);
     return users.list;
+  }else {
+    return null;
+  }
+}
+
+Future<User> getUserById(BuildContext context, int zipcode) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}getUser?token=$zipcode";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    var user = User(jsonResponse['user'][0]);
+    return user;
+  }else {
+    return null;
+  }
+}
+
+Future<List<Conversation>> getConversations(BuildContext context) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}getConversation?token=${globals.user.token}&usertype=${globals.user.userType}";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    cacheData("conversations", jsonResponse);
+    var conversations = Conversations(jsonResponse['conversations'], jsonResponse['messages']);
+    return conversations.list;
+  }else {
+    return null;
+  }
+}
+//TODO: CREATE API FOR SETTING APPOINTMENT STATUS (COMPLETE, CANCEL, NOSHOW)
+Future<Appointment> appointmentHandler(BuildContext context, int barberId, int appointmentId, int decision) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+    "barberid": barberId,
+    "requestid": appointmentId,
+    "decision": decision,
+  };
+
+  String url = "${globals.baseUrl}appointmentReqDecision/";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (019)", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (019)", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  if(jsonResponse['error'] == 'false'){
+    Appointment appointment = new Appointment(jsonResponse['result']);
+    return appointment;
   }else {
     return null;
   }

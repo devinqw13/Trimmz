@@ -1,3 +1,6 @@
+import 'package:trimmz/Model/Availability.dart';
+import 'package:trimmz/Model/GalleryItem.dart';
+
 class Users {
   List<User> list = [];
 
@@ -24,6 +27,12 @@ class User {
   String headerImage;
   String phoneNumber;
   bool display;
+  int type;
+  String rating;
+  int numOfReviews;
+  String bio;
+  List<Availability> availability = [];
+  List<GalleryItem> gallery = [];
 
   User(Map input) {
     this.id = input['id'];
@@ -39,5 +48,19 @@ class User {
     this.headerImage = input['header_image'];
     this.phoneNumber = input['phone'];
     this.display = input['diplay'] == "1" ? true : false;
+    this.type = input['type'];
+    this.rating = input['rating'] ?? "0";
+    this.numOfReviews = input['num_of_reviews'];
+    this.bio = input['biography'];
+    if(input['availability'] != null) {
+      for(var item in input['availability']) {
+      this.availability.add(new Availability(item));
+      }
+    }
+    if(input['gallery'] != null) {
+      for(var item in input['gallery']) {
+        this.gallery.add(new GalleryItem(item));
+      }
+    }
   }
 }

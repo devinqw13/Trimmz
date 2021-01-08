@@ -18,7 +18,10 @@ import 'package:line_icons/line_icons.dart';
 import 'dart:ui' as ui;
 import 'package:trimmz/Model/User.dart';
 import 'package:async/async.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 // import 'package:web_socket_channel/io.dart';
+import 'package:trimmz/Controller/AppointmentsController.dart';
+import 'package:trimmz/Controller/UserProfileController.dart';
 
 
 class UserController extends StatefulWidget {
@@ -270,8 +273,8 @@ class UserControllerState extends State<UserController> with TickerProviderState
     for(var item in drawerItems) {
       Widget widget = FlatButton(
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        padding: EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 12),
-        onPressed: () {onCmdAction(context, item.cmdCode);},
+        padding: EdgeInsets.only(left: 16, right: 16, top: 14, bottom: 14),
+        onPressed: () {onCmdAction(context, item.cmdCode, data: appointmentRequests);},
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -299,7 +302,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
       children: [
         Column(children: primary),
         new Container(
-          height: 0.5,
+          height: 0.2,
           color: Colors.grey,
           margin: const EdgeInsets.only(top: 4.0, bottom: 4.0),
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -307,6 +310,18 @@ class UserControllerState extends State<UserController> with TickerProviderState
         Column(children: secondary),
       ],
     );
+  }
+
+  goToAppointments() {
+    var userAppointments = widget.appointments.list.where((element) => element.status == 1 || element.status == 0).toList();
+    userAppointments.sort((a,b) => DateTime.parse(a.appointmentFullTime).compareTo(DateTime.parse(b.appointmentFullTime)));
+
+    final messagesController = new AppointmentsController(appointments: userAppointments);
+    Navigator.push(context, new MaterialPageRoute(builder: (context) => messagesController));
+  }
+
+  goToClientList() {
+    //TODO: Go to client list
   }
 
   Widget buildDrawer() {
@@ -326,7 +341,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
               accountUsername: new Text(
                 "@" + globals.user.username,
                 style: TextStyle(
-                  color: Colors.grey
+                  color: textGrey
                 )
               ),
               currentAccountPicture: new Image.network('${globals.baseImageUrl}${globals.user.profilePic}',
@@ -352,7 +367,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                             TextSpan(
                               text: "Clients",
                               style: TextStyle(
-                                color: Colors.grey,
+                                color: textGrey,
                                 fontWeight: FontWeight.normal,
                                 fontSize: 15.0
                               )
@@ -363,28 +378,31 @@ class UserControllerState extends State<UserController> with TickerProviderState
                     ),
                     Expanded(
                       flex: 9,
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "${widget.appointments.list.where((element) => element.status == 1 || element.status == 0).length.toString()} ",
-                              style: TextStyle(
-                                color: globals.darkModeEnabled ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16.0
+                      child: GestureDetector(
+                        onTap: () => goToAppointments(),
+                        child:  RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "${widget.appointments.list.where((element) => element.status == 1 || element.status == 0).length.toString()} ",
+                                style: TextStyle(
+                                  color: globals.darkModeEnabled ? Colors.white : Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16.0
+                                )
+                              ),
+                              TextSpan(
+                                text: "Appointments",
+                                style: TextStyle(
+                                  color: textGrey,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 15.0
+                                )
                               )
-                            ),
-                            TextSpan(
-                              text: "Appointments",
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 15.0
-                              )
-                            )
-                          ]
+                            ]
+                          ),
                         ),
-                      ),
+                      )
                     )
                   ]
                 ),
@@ -597,7 +615,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                             TextSpan(
                               text: '\n'+endTime,
                               style: TextStyle(
-                                color: Colors.grey,
+                                color: textGrey,
                                 fontWeight: FontWeight.normal,
                                 fontSize: 12.0
                               )
@@ -626,14 +644,14 @@ class UserControllerState extends State<UserController> with TickerProviderState
                                 ),
                               ),
                               Padding(padding: EdgeInsets.all(1)),
-                              _selectedAppointments[index]['client_id'] == 0 ? Icon(LineIcons.pencil, size: 17, color: Colors.grey) : Container()
+                              _selectedAppointments[index]['client_id'] == 0 ? Icon(LineIcons.pencil, size: 17, color: textGrey) : Container()
                             ]
                           ),
                           Text(
                             _selectedAppointments[index]['package_name'],
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
-                              color: Colors.grey
+                              color: textGrey
                             ),
                           ),
                           Row(
@@ -662,68 +680,100 @@ class UserControllerState extends State<UserController> with TickerProviderState
   Widget _buildUserSearchCard(User user) {
     return Container(
       padding: EdgeInsets.all(10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildUserProfilePicture(context, user.profilePicture, user.name),
-          Padding(padding: EdgeInsets.all(4)),
-          Expanded(
-            flex: 9,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "${user.name} ",
-                        style: TextStyle(
-                          color: globals.darkModeEnabled ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16.0
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildUserProfilePicture(context, user.profilePicture, user.name),
+            Padding(padding: EdgeInsets.all(4)),
+            Expanded(
+              flex: 9,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    softWrap: false,
+                    overflow: TextOverflow.fade,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "${user.name} ",
+                          style: TextStyle(
+                            color: globals.darkModeEnabled ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16.0
+                          )
+                        ),
+                        TextSpan(
+                          text: "@${user.username}",
+                          style: TextStyle(
+                            color: textGrey,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15.0
+                          )
                         )
-                      ),
-                      TextSpan(
-                        text: "@${user.username}",
-                        style: TextStyle(
-                          color: globals.darkModeEnabled ? Colors.grey : Colors.black54,
-                          fontWeight: FontWeight.normal,
-                          fontSize: 15.0
-                        )
-                      )
-                    ]
+                      ]
+                    ),
                   ),
-                ),
-                user.shopName != null && user.shopName != "" ?
-                Text(
-                  user.shopName,
-                  style: TextStyle(
-                    color: globals.darkModeEnabled ? Colors.grey : Colors.black54,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 13.0
+                  user.shopName != null && user.shopName != "" ?
+                  Text(
+                    user.shopName,
+                    style: TextStyle(
+                      color: textGrey,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13.0
+                    )
+                  ) : Container(),
+                  user.shopAddress != null ?
+                  Text(
+                    "${user.shopAddress}, ${user.city}, ${user.state} ${user.zipcode}",
+                    style: TextStyle(
+                      color: textGrey,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 13.0
+                    )
+                  ) : Text(
+                    "${user.city}, ${user.state} ${user.zipcode}",
+                    style: TextStyle(
+                      color: textGrey,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 13.0
+                    )
                   )
-                ) : Container(),
-                user.shopAddress != null ?
-                Text(
-                  "${user.shopAddress}, ${user.city}, ${user.state} ${user.zipcode}",
-                  style: TextStyle(
-                    color: globals.darkModeEnabled ? Colors.grey : Colors.black54,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 13.0
-                  )
-                ) : Text(
-                  "${user.city}, ${user.state} ${user.zipcode}",
-                  style: TextStyle(
-                    color: globals.darkModeEnabled ? Colors.grey : Colors.black54,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 13.0
-                  )
-                )
-              ]
-            )
-          )
-        ]
+                ]
+              )
+            ),
+            Expanded(
+              flex: 3,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    "${user.numOfReviews} Ratings",
+                  ),
+                  Text(
+                    user.rating != "0" ? double.parse(user.rating).toStringAsFixed(1) : "N/A",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold
+                    )
+                  ),
+                  RatingBarIndicator(
+                    rating: double.parse(user.rating),
+                    itemBuilder: (context, index) => Icon(
+                        Icons.star,
+                        color: Color(0xFFD2AC47),
+                    ),
+                    itemCount: 5,
+                    itemSize: 13.0,
+                    direction: Axis.horizontal,
+                    unratedColor: textGrey,
+                  ),
+                ],
+              ),
+            ),
+          ]
+        )
       )
     );
   }
@@ -731,6 +781,11 @@ class UserControllerState extends State<UserController> with TickerProviderState
   _unfocusSearch() {
     FocusScope.of(context).unfocus();
     onTapDownSearch();
+  }
+
+  goToUserProfile(int token) {
+    final userProfileController = new UserProfileController(token: token);
+    Navigator.push(context, new MaterialPageRoute(builder: (context) => userProfileController));
   }
 
   Widget buildSearchResults(List<User> users) {
@@ -742,7 +797,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return GestureDetector(
-              onTap: () => print("GO TO PROFILE"),
+              onTap: () => goToUserProfile(users[index].id),
               child: Card(
                 child: Container(
                   decoration: users[index].headerImage != null ? BoxDecoration(
@@ -1030,7 +1085,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
   Widget _buildSearchTF() {
     return Container(
       decoration: BoxDecoration(
-        color: darkBackgroundGrey,
+        color: globals.darkModeEnabled ? darkBackgroundGrey : Color.fromARGB(255, 232, 232, 232),
         borderRadius: BorderRadius.circular(50.0),
         boxShadow: [
           BoxShadow(
@@ -1044,7 +1099,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
         keyboardType: TextInputType.text,
         autocorrect: false,
         style: TextStyle(
-          color: Colors.white,
+          color: globals.darkModeEnabled ? Colors.white : Colors.black,
           fontFamily: 'OpenSans',
         ),
         decoration: InputDecoration(
@@ -1053,7 +1108,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
           contentPadding: EdgeInsets.only(left: 15, right: 8, top: 8, bottom: 8),
           hintText: 'Search Trimmz',
           hintStyle: TextStyle(
-            color: Colors.white54,
+            color: globals.darkModeEnabled ? Colors.white54 : Colors.black54,
             fontFamily: 'OpenSans',
           ),
         ),
@@ -1067,6 +1122,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
       data: new ThemeData(
         primaryColor: globals.darkModeEnabled ? Colors.black : Colors.white,
         brightness: globals.userBrightness,
+        backgroundColor: globals.darkModeEnabled ? richBlack : Colors.white,
       ),
       child: new Scaffold(
         appBar: new AppBar(

@@ -6,57 +6,16 @@ class Appointments {
   List<Appointment> requests = [];
 
   Appointments(List input) {
-    final df = new DateFormat('hh:mm a');
-    final df2 = new DateFormat('yyyy-MM-dd');
+    final df = new DateFormat('yyyy-MM-dd');
     for(var item in input) {
       var dateString = item['date'];
-      DateTime date = DateTime.parse(df2.format(DateTime.parse(dateString)));
+      DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
       if(item['status'] == 3) {
-        Appointment appointment = new Appointment();
-        appointment.id = item['id'];
-        appointment.clientID = item['client_id'];
-        appointment.barberID = item['barber_id'];
-        appointment.clientName = item['client_name'];
-        appointment.packageName = item['package_name'];
-        appointment.appointmentTime = df.format(DateTime.parse(item['date']));
-        appointment.appointmentFullTime = item['date'];
-        appointment.status = item['status'];
-        appointment.price = item['price'];
-        appointment.tip = item['tip'];
-        appointment.duration = item['duration'];
-        appointment.updated = item['updated'];
-        appointment.stripePaymentID = item['sp_paymentid'];
-        appointment.stripeCustomerID = item['sp_customerid'];
-        appointment.email = item['email'];
-        appointment.manualClientName = item['manual_client_name'];
-        appointment.manualClientPhone = item['manual_client_phone'];
-        appointment.cashPayment = item['cash_payment'];
-        appointment.clientProfilePicture = item['client_pp'];
-        appointment.barberProfilePicture = item['barber_pp'];
+        Appointment appointment = new Appointment(item);
         requests.add(appointment);
       }else {
-        Appointment appointment = new Appointment();
-        appointment.id = item['id'];
-        appointment.clientID = item['client_id'];
-        appointment.barberID = item['barber_id'];
-        appointment.clientName = item['client_name'];
-        appointment.packageName = item['package_name'];
-        appointment.appointmentTime = df.format(DateTime.parse(item['date']));
-        appointment.appointmentFullTime = item['date'];
-        appointment.status = item['status'];
-        appointment.price = item['price'];
-        appointment.tip = item['tip'];
-        appointment.duration = item['duration'];
-        appointment.updated = item['updated'];
-        appointment.stripePaymentID = item['sp_paymentid'];
-        appointment.stripeCustomerID = item['sp_customerid'];
-        appointment.email = item['email'];
-        appointment.manualClientName = item['manual_client_name'];
-        appointment.manualClientPhone = item['manual_client_phone'];
-        appointment.cashPayment = item['cash_payment'];
-        appointment.clientProfilePicture = item['client_pp'];
-        appointment.barberProfilePicture = item['barber_pp'];
+        Appointment appointment = new Appointment(item);
         list.add(appointment);
       }
 
@@ -88,7 +47,32 @@ class Appointment {
   String email;
   String manualClientName;
   String manualClientPhone;
-  int cashPayment;
+  bool cashPayment;
   String clientProfilePicture;
   String barberProfilePicture;
+
+  Appointment(Map input) {
+    final df = new DateFormat('hh:mm a');
+
+    this.id = input['id'];
+    this.clientID = input['client_id'];
+    this.barberID = input['barber_id'];
+    this.clientName = input['client_name'];
+    this.packageName = input['package_name'];
+    this.appointmentTime = df.format(DateTime.parse(input['date']));
+    this.appointmentFullTime = input['date'];
+    this.status = input['status'];
+    this.price = input['price'];
+    this.tip = input['tip'];
+    this.duration = input['duration'];
+    this.updated = input['updated'];
+    this.stripePaymentID = input['sp_paymentid'];
+    this.stripeCustomerID = input['sp_customerid'];
+    this.email = input['email'];
+    this.manualClientName = input['manual_client_name'];
+    this.manualClientPhone = input['manual_client_phone'];
+    this.cashPayment = input['cash_payment'] == 1 ? true : false;
+    this.clientProfilePicture = input['client_pp'];
+    this.barberProfilePicture = input['barber_pp'];
+  }
 }
