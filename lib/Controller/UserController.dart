@@ -22,6 +22,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 // import 'package:web_socket_channel/io.dart';
 import 'package:trimmz/Controller/AppointmentsController.dart';
 import 'package:trimmz/Controller/UserProfileController.dart';
+import 'package:trimmz/dialogs.dart';
 
 
 class UserController extends StatefulWidget {
@@ -60,13 +61,6 @@ class UserControllerState extends State<UserController> with TickerProviderState
 
   @override
   void initState() {
-    // var channel = IOWebSocketChannel.connect(
-    //   "wss://c3amg9ynvf.execute-api.us-east-2.amazonaws.com/production",
-    //   headers: {"userId": globals.user.token}
-    // );
-    // channel.stream.listen((message) {
-    //   onReturnAction(message)
-    // });
     _memoizer = AsyncMemoizer();
 
     _dashboardItems = widget.dashboardItems.where((element) => element.isDashboard).toList();
@@ -76,8 +70,6 @@ class UserControllerState extends State<UserController> with TickerProviderState
     _calendarAppointments = widget.appointments.calendarFormat ?? {};
     appointmentRequests = widget.appointments.requests;
     _selectedAppointments = _calendarAppointments[DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())))] ?? [];
-
-    getDeviceDetails();
 
     _progressHUD = new ProgressHUD(
       color: Colors.white,
@@ -137,6 +129,27 @@ class UserControllerState extends State<UserController> with TickerProviderState
     });
 
     super.initState();
+  }
+
+  List<List<DashboardItem>> generateDrawerLists() {
+    Map<int, List<DashboardItem>> mapOfDashboardList = {};
+    List<List<DashboardItem>> listofLists = [];
+
+    for(var item in _drawerItems) {
+      if(mapOfDashboardList.containsKey(item.listNumber)) {
+        mapOfDashboardList[item.listNumber].add(item);
+      }else {
+        List<DashboardItem> x = [];
+        x.add(item);
+        mapOfDashboardList[item.listNumber] = x;
+      }
+    }
+
+    mapOfDashboardList.forEach((k, v) {
+      listofLists.add(v);
+    });
+
+    return listofLists;
   }
 
   @override
@@ -266,12 +279,10 @@ class UserControllerState extends State<UserController> with TickerProviderState
     }
   }
 
-  Widget _buildDrawerItemList(List<DashboardItem> drawerItems) {
-    List<Widget> primary = [];
-    List<Widget> secondary = [];
-
-    for(var item in drawerItems) {
-      Widget widget = FlatButton(
+  buildDrawerSubList(List<DashboardItem> items) {
+    List<Widget> widgetList = [];
+    for(DashboardItem item in items) {
+      Widget widget = new FlatButton(
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         padding: EdgeInsets.only(left: 16, right: 16, top: 14, bottom: 14),
         onPressed: () {onCmdAction(context, item.cmdCode, data: appointmentRequests);},
@@ -289,26 +300,23 @@ class UserControllerState extends State<UserController> with TickerProviderState
           ]
         )
       );
-
-      if(item.cmdCode == "drawer_settings") {
-        secondary.add(widget);
-      }else {
-        primary.add(widget);
-      }
-    } 
-
-    return ListView(
+      widgetList.add(widget);
+    }
+    return Column(children: widgetList);
+  }
+  
+  _buildDrawerItemList() {
+    List<List<DashboardItem>> drawerList = generateDrawerLists();
+    return ListView.separated(
       padding: EdgeInsets.all(0.0),
-      children: [
-        Column(children: primary),
-        new Container(
-          height: 0.2,
-          color: Colors.grey,
-          margin: const EdgeInsets.only(top: 4.0, bottom: 4.0),
-          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-        ),
-        Column(children: secondary),
-      ],
+      shrinkWrap: true,
+      itemCount: drawerList.length,
+      separatorBuilder: (context, index) {
+        return new Divider();
+      },
+      itemBuilder: (context, index) {
+        return buildDrawerSubList(drawerList[index]);
+      },
     );
   }
 
@@ -331,6 +339,10 @@ class UserControllerState extends State<UserController> with TickerProviderState
         child: Column(
           children: <Widget>[
             new CustomUserAccountsDrawerHeader(
+              headerImage: globals.user.headerPicture != null ?
+              NetworkImage(
+                "${globals.baseImageUrl}${globals.user.headerPicture}",
+              ): AssetImage("images/trimmz_icon_t.png"),
               accountName: new Text(
                 globals.user.name,
                 style: TextStyle(
@@ -341,7 +353,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
               accountUsername: new Text(
                 "@" + globals.user.username,
                 style: TextStyle(
-                  color: textGrey
+                  color: textGreyAlt
                 )
               ),
               currentAccountPicture: new Image.network('${globals.baseImageUrl}${globals.user.profilePic}',
@@ -349,6 +361,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                 fit: BoxFit.fill,
               ),
               otherDetails: Container(
+                padding: EdgeInsets.only(bottom: 5),
                 child: Row(
                   children: [
                     Expanded(
@@ -367,7 +380,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                             TextSpan(
                               text: "Clients",
                               style: TextStyle(
-                                color: textGrey,
+                                color: textGreyAlt,
                                 fontWeight: FontWeight.normal,
                                 fontSize: 15.0
                               )
@@ -394,7 +407,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                               TextSpan(
                                 text: "Appointments",
                                 style: TextStyle(
-                                  color: textGrey,
+                                  color: textGreyAlt,
                                   fontWeight: FontWeight.normal,
                                   fontSize: 15.0
                                 )
@@ -409,28 +422,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
               ),
             ),
             new Expanded(
-              // child: ListView.builder(
-              //   padding: EdgeInsets.all(0.0),
-              //   itemCount: _drawerItems.length,
-              //   itemBuilder: (context, index) {
-              //     return FlatButton(
-              //       onPressed: () {onCmdAction(context, _drawerItems[index].cmdCode);},
-              //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //         children: [
-              //           Text(
-              //             _drawerItems[index].name,
-              //             style: TextStyle(
-              //               fontSize: 16.0
-              //             )
-              //           ),
-              //           buildCmdWidget(context, _drawerItems[index].cmdCode)
-              //         ]
-              //       )
-              //     );
-              //   },
-              // )
-              child: _buildDrawerItemList(_drawerItems)
+              child: _buildDrawerItemList()
             ),
             new Container(
               width: MediaQuery.of(context).size.width,
@@ -463,11 +455,31 @@ class UserControllerState extends State<UserController> with TickerProviderState
     );
   }
 
+  Future<dynamic> handleLocalMicroAppData(DashboardItem item) async {
+    switch(item.cmdCode) {
+      case "user_schedule": {
+        return _calendarAppointments;
+      }
+      case "user_services": {
+        return widget.screenHeight;
+      }
+      default: {
+        return null;
+      }
+    }
+  }
+
   Widget _buildGridTile(DashboardItem dashboardItem, int index, double scale) {
     return new GestureDetector(
-      onTap: () {
+      onTap: () async {
         progressHUD();
-        buildMicroAppController(context, dashboardItem);
+        var microAppController = await buildMicroAppController(context, dashboardItem, data: await handleLocalMicroAppData(dashboardItem));
+        if (microAppController == null) {
+          progressHUD();
+          showErrorDialog(context, "An error has occurred", "Could not open '${dashboardItem.name}'. Please try again.");
+          return;
+        }
+        Navigator.push(context, new MaterialPageRoute(builder: (context) => microAppController));
         progressHUD();
       },
       child: Container(
@@ -800,15 +812,13 @@ class UserControllerState extends State<UserController> with TickerProviderState
               onTap: () => goToUserProfile(users[index].id),
               child: Card(
                 child: Container(
-                  decoration: users[index].headerImage != null ? BoxDecoration(
+                  decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(
+                      image: users[index].headerImage != null ? NetworkImage(
                         "${globals.baseImageUrl}${users[index].headerImage}",
-                      ),
+                      ) : AssetImage("images/trimmz_icon_t.png"),
                       fit: BoxFit.cover
                     )
-                  ): BoxDecoration(
-
                   ),
                   child: ClipRRect(
                     child: BackdropFilter(
@@ -1138,21 +1148,34 @@ class UserControllerState extends State<UserController> with TickerProviderState
           ) : _buildSearchTF(),
           elevation: 0.0,
           actions: [
-            _searchWidgetStatus != WidgetStatus.VISIBLE ? IconButton(
-              splashColor: Colors.transparent,  
-              highlightColor: Colors.transparent,
-              icon: Icon(Icons.notifications_none_sharp),
-              onPressed: () {
-
-              }
+            _searchWidgetStatus != WidgetStatus.VISIBLE ? Container(
+              margin: EdgeInsets.only(left: 8.0, right: 8.0),
+              child: GestureDetector(
+                child: Icon(Icons.dashboard_outlined),
+                onTap: () {
+                  // onTapDownDashboard();
+                },
+              )
             ) : Container(),
-            IconButton(
-              splashColor: Colors.transparent,  
-              highlightColor: Colors.transparent,
-              icon: _searchWidgetStatus == WidgetStatus.VISIBLE ? Icon(Icons.close) : Icon(Icons.search),
-              onPressed: () {
-                onTapDownSearch();
-              },
+
+            _searchWidgetStatus != WidgetStatus.VISIBLE ? Container(
+              margin: EdgeInsets.only(left: 8.0, right: 8.0),
+              child: GestureDetector(
+                child: Icon(Icons.notifications_none_sharp),
+                onTap: () {
+                  
+                },
+              )
+            ) : Container(),
+
+            Container(
+              margin: EdgeInsets.only(left: 8.0, right: 15.0),
+              child: GestureDetector(
+                child: _searchWidgetStatus == WidgetStatus.VISIBLE ? Icon(Icons.close) : Icon(Icons.search),
+                onTap: () {
+                  onTapDownSearch();
+                },
+              )
             )
           ],
         ),

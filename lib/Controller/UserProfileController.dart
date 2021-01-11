@@ -13,6 +13,8 @@ import 'dart:math' as math;
 import 'package:trimmz/Model/User.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:trimmz/RippleButton.dart';
+import 'package:trimmz/Model/Service.dart';
 
 class UserProfileController extends StatefulWidget {
   final int token;
@@ -61,21 +63,25 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
       child: Row(
         children: [
           buildUserProfilePicture(context, user.profilePicture, user.name),
-          Padding(padding: EdgeInsets.all(10.0)),
+          Padding(padding: EdgeInsets.all(3.0)),
           Expanded(
-            flex: 9,
+            flex: 5,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   user.name,
+                  softWrap: false,
+                  overflow: TextOverflow.fade,
                   style: TextStyle(
                     fontSize: 17.0,
                     fontWeight: FontWeight.w600
                   )
                 ),
                 Text(
-                  "@${user.username}",
+                 "@${user.username}",
+                  softWrap: false,
+                  overflow: TextOverflow.fade,
                   style: TextStyle(
                     color: globals.darkModeEnabled ? Colors.grey : Color.fromARGB(255, 80, 80, 80),
                     fontWeight: FontWeight.normal
@@ -85,15 +91,65 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
             ),
           ),
           Expanded(
-            flex: 5,
-            child: Row(
+            flex: 9,
+            child: globals.user.token == widget.token ?  Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
-                  child: RaisedButton(
-                    onPressed: () => print("EDIT PROFILE / FOLLOW-UNFOLLOW"),
+                RippleButton(
+                  splashColor: CustomColors1.mystic.withAlpha(100),
+                  onPressed: () {
+                    
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 5),
                     child: Text("Edit Profile"),
-                  ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(3)),
+                      border: Border.all(
+                        color: globals.darkModeEnabled ? Colors.white60.withAlpha(180) : Colors.black87.withAlpha(180),
+                        width: 1
+                      )
+                    ),
+                  )
                 )
+              ]
+            ) : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                RippleButton(
+                  splashColor: CustomColors1.mystic.withAlpha(100),
+                  onPressed: () {
+                    
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 5),
+                    child: Text("Follow"),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(3)),
+                      border: Border.all(
+                        color: globals.darkModeEnabled ? Colors.white60.withAlpha(180) : Colors.black87.withAlpha(180),
+                        width: 1
+                      )
+                    ),
+                  )
+                ),
+                RippleButton(
+                  splashColor: CustomColors1.mystic.withAlpha(100),
+                  onPressed: () {
+                    
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 5),
+                    child: Text("Message"),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(3)),
+                      border: Border.all(
+                        color: globals.darkModeEnabled ? Colors.white60.withAlpha(180) : Colors.black87.withAlpha(180),
+                        width: 1
+                      )
+                    ),
+                  )
+                ),
               ]
             ),
           )
@@ -345,6 +401,43 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
     return children;
   }
 
+  buildServicesList(List<Service> services) {
+    List<Widget> children = [];
+    for(Service item in services) {
+      Widget widget = new Padding(
+        padding: EdgeInsets.only(top: 5, bottom: 5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600
+                  ),
+                ),
+                Text(
+                  "${item.duration} minutes",
+                  style: TextStyle(
+                    color: textGrey
+                  ),
+                )
+              ]
+            ),
+            Text(
+              "\$${item.price}"
+            )
+          ],
+        )
+      );
+      children.add(widget);
+    }
+
+    return children;
+  }
+
   buildExpansionTiles(User user) {
     return Container(
       margin: EdgeInsets.only(bottom: 5.0),
@@ -367,6 +460,7 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
             title: Text(
               "Services",
             ),
+            children: buildServicesList(user.services),
           ),
           ExpansionTile(
             tilePadding: EdgeInsets.all(0),
@@ -453,7 +547,7 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
       builder: (context, snapshot) {
         if(snapshot.hasData) {
           return Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 15.0, top: 5),
+            padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 5),
             child: SingleChildScrollView(
               physics: NeverScrollableScrollPhysics(),
               child: Column(

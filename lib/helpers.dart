@@ -10,8 +10,9 @@ import 'dart:convert';
 import 'package:trimmz/Controller/AppointmentRequestController.dart';
 import 'package:trimmz/Model/Appointment.dart';
 import 'package:trimmz/Controller/UserProfileController.dart';
-import 'package:trimmz/Controller/UserProfileControllerV2.dart';
+import 'package:trimmz/Controller/ScheduleController.dart';
 import 'package:intl/intl.dart';
+import 'package:trimmz/Controller/ServicesController.dart';
 
 setGlobals(Map results) async {
   globals.LoginUser user = new globals.LoginUser();
@@ -22,6 +23,7 @@ setGlobals(Map results) async {
   user.userAdmin = results['user'][0]['type'] == 3 ? true : false;
   user.userType = results['user'][0]['type'];
   user.profilePic = results['user'][0]['profile_picture'];
+  user.headerPicture = results['user'][0]['header_image'];
   user.shopName = results['user'][0]['shop_name'] ?? '';
   user.shopAddress = results['user'][0]['shop_address'];
   user.city = results['user'][0]['city'];
@@ -39,14 +41,21 @@ setGlobals(Map results) async {
   stripe.payoutMethod = results['user'][0]['payoutMethod'] ?? 'standard';
 }
 
-Future<dynamic> buildMicroAppController(BuildContext context, DashboardItem item) async {
+Future<dynamic> buildMicroAppController(BuildContext context, DashboardItem item, {dynamic data}) async {
   switch (item.cmdCode) {
     case "user_schedule": {
-      showOkDialog(context, "OPENING MICRO APPLICATION");
-      break;
+      return new ScheduleController(calendarAppointments: data);
+    }
+    case "user_services": {
+      var services = await getServices(context, globals.user.token);
+      return new ServicesController(services: services, screenHeight: data);
+    }
+    case "user_availability": {
+      var availability = await getAvailability(context, globals.user.token);
+      return;
     }
     default: {
-      showErrorDialog(context, "An error has occurred", "Could not open '${item.name}'. Please try to login again.");
+      return;
     }
   }
 }

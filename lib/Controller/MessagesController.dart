@@ -135,63 +135,66 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
               },
             ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 10.0),
-                  decoration: BoxDecoration(
-                    color: globals.darkModeEnabled ? darkBackgroundGrey : Color.fromARGB(255, 232, 232, 232),
-                    borderRadius: BorderRadius.circular(50.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 6.0,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: messageTFController,
-                    keyboardType: TextInputType.text,
-                    autocorrect: false,
-                    style: TextStyle(
-                      color: globals.darkModeEnabled ? Colors.white : Colors.black,
-                      fontFamily: 'OpenSans',
+          Container(
+            padding: EdgeInsets.only(top: 5.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 10.0),
+                    decoration: BoxDecoration(
+                      color: globals.darkModeEnabled ? darkBackgroundGrey : Color.fromARGB(255, 232, 232, 232),
+                      borderRadius: BorderRadius.circular(50.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 3.0,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    decoration: InputDecoration(
-                      border: UnderlineInputBorder(borderSide: BorderSide.none),
-                      isDense: true,
-                      contentPadding: EdgeInsets.only(left: 15, right: 8, top: 8, bottom: 8),
-                      hintText: 'Search',
-                      hintStyle: TextStyle(
-                        color: globals.darkModeEnabled ? Colors.white54 : Colors.black54,
+                    child: TextField(
+                      controller: messageTFController,
+                      keyboardType: TextInputType.text,
+                      autocorrect: false,
+                      style: TextStyle(
+                        color: globals.darkModeEnabled ? Colors.white : Colors.black,
                         fontFamily: 'OpenSans',
                       ),
-                    ),
+                      decoration: InputDecoration(
+                        border: UnderlineInputBorder(borderSide: BorderSide.none),
+                        isDense: true,
+                        contentPadding: EdgeInsets.only(left: 15, right: 8, top: 8, bottom: 8),
+                        hintText: 'Search',
+                        hintStyle: TextStyle(
+                          color: globals.darkModeEnabled ? Colors.white54 : Colors.black54,
+                          fontFamily: 'OpenSans',
+                        ),
+                      ),
+                    )
+                  )
+                ),
+                FlatButton(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  padding: EdgeInsets.all(0.0),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onPressed: () {
+                    if(_visible) {
+                      sendMessage();
+                    }
+                  },
+                  child: Text(
+                    "Send",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16.0,
+                      color: _visible ? Colors.blue : Colors.grey
+                    )
                   )
                 )
-              ),
-              FlatButton(
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                padding: EdgeInsets.all(0.0),
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onPressed: () {
-                  if(_visible) {
-                    sendMessage();
-                  }
-                },
-                child: Text(
-                  "Send",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.0,
-                    color: _visible ? Colors.blue : Colors.grey
-                  )
-                )
-              )
-            ]
+              ]
+            )
           )
         ]
       )
@@ -304,15 +307,65 @@ class _MessageBubble extends State<MessageBubble> {
           //         fontSize: 13, fontFamily: 'Poppins', color: globals.darkModeEnabled ? Colors.white : Colors.black),
           //   ),
           // ),
-          Material(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(50),
-              topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
-              bottomRight: Radius.circular(50),
-              topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
+
+          // Material(
+          //   borderRadius: BorderRadius.only(
+          //     bottomLeft: Radius.circular(50),
+          //     topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
+          //     bottomRight: Radius.circular(50),
+          //     topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
+          //   ),
+          //   color: widget.user ? Colors.blue : Colors.white,
+          //   elevation: 5,
+          //   child: Padding(
+          //     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          //     child: Text(
+          //       widget.msgText,
+          //       style: TextStyle(
+          //         color: widget.user ? Colors.white : Colors.black,
+          //         fontFamily: 'Poppins',
+          //         fontSize: 15,
+          //       ),
+          //     ),
+          //   ),
+          // ),
+
+          Container(
+            decoration: widget.user ?
+            BoxDecoration(
+              gradient: primaryGradient,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(50),
+                topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
+                bottomRight: Radius.circular(50),
+                topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: globals.darkModeEnabled ? Colors.black : Colors.grey[400],
+                  blurRadius: 2.0,
+                  spreadRadius: 0.0,
+                  offset: Offset(2.0, 2.0),
+                )
+              ],
+            ) :
+            BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(50),
+                topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
+                bottomRight: Radius.circular(50),
+                topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: globals.darkModeEnabled ? Colors.black : Colors.grey[400],
+                  blurRadius: 2.0,
+                  spreadRadius: 0.0,
+                  offset: Offset(2.0, 2.0),
+                )
+              ],
             ),
-            color: widget.user ? Colors.blue : Colors.white,
-            elevation: 5,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Text(
@@ -324,7 +377,7 @@ class _MessageBubble extends State<MessageBubble> {
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );

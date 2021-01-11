@@ -11,11 +11,31 @@ final lightBackgroundGrey = const Color.fromARGB(255, 242, 242, 242);
 final buttonGrey = const Color.fromARGB(255, 224, 224, 224);
 final darkBackgroundGrey = const Color.fromARGB(255, 42, 42, 42);
 final textGrey = globals.darkModeEnabled ? Colors.grey : Color.fromARGB(255, 80, 80, 80);
+final textGreyAlt = globals.darkModeEnabled ? Color.fromARGB(255, 80, 80, 80) : Colors.grey;
 final richBlack = const Color(0xff010203);
 final defaultDarkGrey = const Color.fromARGB(255, 48, 48, 48);
 final keyboardGrey = const Color.fromARGB(255, 209, 212, 217);
 final underlineGrey = const Color.fromARGB(255, 235, 235, 235);
 final primaryColor = const Color(0xFF206f98); //0xFF03A9F4
+final primaryGradient = LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        colors: [
+                                          const Color(0xFF2C5364),
+                                          const Color(0xFF203A43),
+                                          const Color(0xFF0F2027),
+                                        ]
+                                      );
+final oldPrimaryGradient = LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Color(0xFF73AEF5),
+                                            Color(0xFF61A4F1),
+                                            Color(0xFF478DE0),
+                                            Color(0xFF398AE5),
+                                          ],
+                                          stops: [0.1, 0.4, 0.7, 0.9],
+                                        );
 
 final defaultButtonColor = const Color.fromARGB(255, 52, 152, 219);
 final blueButtonColor = const Color.fromARGB(255, 123, 167, 207);
@@ -38,7 +58,7 @@ Color colorFromName(String name) {
   }
 }
 
-class TwitterColor {
+class CustomColors1 {
   static final Color bondiBlue = Color.fromRGBO(0, 132, 180, 1.0);
   static final Color cerulean = Color.fromRGBO(0, 172, 237, 1.0);
   static final Color spindle = Color.fromRGBO(192, 222, 237, 1.0);

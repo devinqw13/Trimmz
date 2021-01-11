@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:trimmz/Model/Availability.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'dart:convert';
 import 'package:trimmz/dialogs.dart';
@@ -10,6 +11,7 @@ import 'package:trimmz/Model/Appointment.dart';
 import 'package:trimmz/Model/User.dart';
 import 'package:trimmz/Model/Conversation.dart';
 import 'package:trimmz/helpers.dart';
+import 'package:trimmz/Model/Service.dart';
 
 Future<List<String>> getDeviceDetails() async {
   String deviceName;
@@ -113,7 +115,7 @@ Future<List<DashboardItem>> getDashboardItems(int token, BuildContext context) a
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}userDashboard?token=$token";
+  String url = "${globals.baseUrl}V1/dashboard?token=$token";
   try {
     response = await http.get(url);
   } catch (Exception) {
@@ -188,7 +190,7 @@ Future<List<User>> getUsersByLocation(BuildContext context, int zipcode) async {
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getUsersByLocation?zipcode=$zipcode";
+  String url = "${globals.baseUrl}V1/users/zipcode?zipcode=$zipcode";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -216,7 +218,7 @@ Future<List<User>> getUsersByLocation(BuildContext context, int zipcode) async {
   }
 }
 
-Future<User> getUserById(BuildContext context, int zipcode) async {
+Future<User> getUserById(BuildContext context, int token) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Accept': 'application/json',
@@ -225,7 +227,7 @@ Future<User> getUserById(BuildContext context, int zipcode) async {
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getUser?token=$zipcode";
+  String url = "${globals.baseUrl}V1/users/id?token=$token";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -262,7 +264,7 @@ Future<List<Conversation>> getConversations(BuildContext context) async {
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getConversation?token=${globals.user.token}&usertype=${globals.user.userType}";
+  String url = "${globals.baseUrl}V1/conversations?token=${globals.user.token}&usertype=${globals.user.userType}";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -328,6 +330,175 @@ Future<Appointment> appointmentHandler(BuildContext context, int barberId, int a
   if(jsonResponse['error'] == 'false'){
     Appointment appointment = new Appointment(jsonResponse['result']);
     return appointment;
+  }else {
+    return null;
+  }
+}
+
+Future<List<Service>> getServices(BuildContext context, int token) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}V1/services?token=$token";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    List<Service> services = [];
+    for(var item in jsonResponse['services']) {
+      services.add(new Service(item));
+    }
+    return services;
+  }else {
+    return null;
+  }
+}
+
+Future<Service> addService(BuildContext context, int token, String name, int price, int duration) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  Map jsonMap = {
+    "token": token,
+    "name": name,
+    "duration": duration,
+    "price": price
+  };
+
+  String url = "${globals.baseUrl}V1/services";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    Service service = new Service(jsonResponse['results'][0]);
+    return service;
+  }else {
+    return null;
+  }
+}
+
+Future<Map> editService(BuildContext context, int token, int packageId, {String name, int price, int duration}) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  Map jsonMap = {
+    "token": token,
+    "packageid": packageId,
+  };
+
+  if(name != null) jsonMap['name'] = name;
+  if(price != null) jsonMap['price'] = price;
+  if(duration != null) jsonMap['duration'] = duration;
+
+  String url = "${globals.baseUrl}V1/services/id";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    return jsonResponse;
+  }else {
+    return null;
+  }
+}
+
+Future<List<Availability>> getAvailability(BuildContext context, int token) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}V1/availability?token=$token";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    List<Availability> availability = [];
+    for(var item in jsonResponse['availability']) {
+      availability.add(new Availability(item));
+    }
+    return availability;
   }else {
     return null;
   }

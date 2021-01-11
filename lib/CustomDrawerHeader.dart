@@ -5,6 +5,7 @@
 import 'package:flutter/widgets.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:trimmz/globals.dart' as globals;
 
 class _AccountPictures extends StatelessWidget {
   const _AccountPictures({
@@ -270,6 +271,7 @@ class CustomUserAccountsDrawerHeader extends StatefulWidget {
     @required this.accountName,
     @required this.accountUsername,
     this.otherDetails,
+    @required this.headerImage,
     this.onDetailsPressed
   }) : super(key: key);
 
@@ -298,6 +300,8 @@ class CustomUserAccountsDrawerHeader extends StatefulWidget {
   final Widget accountUsername;
 
   final Widget otherDetails;
+
+  final ImageProvider<Object> headerImage;
 
   /// A callback that is called when the horizontal area which contains the
   /// [accountName] and [accountUsername] is tapped.
@@ -329,31 +333,48 @@ class _CustomUserAccountsDrawerHeaderState extends State<CustomUserAccountsDrawe
           color: Theme.of(context).primaryColor,
         ),
         margin: widget.margin,
-        padding: const EdgeInsetsDirectional.only(top: 16.0, start: 16.0),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 16.0),
-                  child: _AccountPictures(
-                    currentAccountPicture: widget.currentAccountPicture,
-                    otherAccountsPictures: widget.otherAccountsPictures,
-                  ),
-                )
-              ),
-              _AccountDetails(
-                accountName: widget.accountName,
-                accountUsername: widget.accountUsername,
-                isOpen: _isOpen,
-                onTap: widget.onDetailsPressed == null ? null : _handleDetailsPressed,
-              ),
-              widget.otherDetails
-            ],
+        padding: const EdgeInsetsDirectional.only(start: 0.0),
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: widget.headerImage,
+              fit: BoxFit.cover
+            )
           ),
-        ),
+          child: ClipRRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                padding: EdgeInsets.only(left: 16.0),
+                color: globals.darkModeEnabled ? Color.fromARGB(200, 0, 0, 0) : Color.fromARGB(200, 220, 220, 220),
+                child: SafeArea(
+                  bottom: false,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.only(top: 5, end: 16.0),
+                          child: _AccountPictures(
+                            currentAccountPicture: widget.currentAccountPicture,
+                            otherAccountsPictures: widget.otherAccountsPictures,
+                          ),
+                        )
+                      ),
+                      _AccountDetails(
+                        accountName: widget.accountName,
+                        accountUsername: widget.accountUsername,
+                        isOpen: _isOpen,
+                        onTap: widget.onDetailsPressed == null ? null : _handleDetailsPressed,
+                      ),
+                      widget.otherDetails
+                    ],
+                  ),
+                ),
+              )
+            )
+          )
+        )
       ),
     );
   }

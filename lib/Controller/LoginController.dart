@@ -7,6 +7,7 @@ import 'package:progress_hud/progress_hud.dart';
 import 'package:trimmz/helpers.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trimmz/palette.dart';
 
 class LoginController extends StatefulWidget {
   LoginController({Key key}) : super (key: key);
@@ -56,7 +57,7 @@ class LoginControllerState extends State<LoginController> {
   );
 
   final kBoxDecorationStyle = BoxDecoration(
-    color: Color(0xFF6CA8F1),
+    color: Color.fromARGB(110, 0, 0, 0), //Color(0xFF6CA8F1),
     borderRadius: BorderRadius.circular(10.0),
     boxShadow: [
       BoxShadow(
@@ -258,17 +259,18 @@ class LoginControllerState extends State<LoginController> {
                   height: double.infinity,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF73AEF5),
-                        Color(0xFF61A4F1),
-                        Color(0xFF478DE0),
-                        Color(0xFF398AE5),
-                      ],
-                      stops: [0.1, 0.4, 0.7, 0.9],
-                    ),
+                    // gradient: LinearGradient(
+                    //   begin: Alignment.topCenter,
+                    //   end: Alignment.bottomCenter,
+                    //   colors: [
+                    //     Color(0xFF73AEF5),
+                    //     Color(0xFF61A4F1),
+                    //     Color(0xFF478DE0),
+                    //     Color(0xFF398AE5),
+                    //   ],
+                    //   stops: [0.1, 0.4, 0.7, 0.9],
+                    // ),
+                    gradient: primaryGradient
                   ),
                 ),
                 Container(
