@@ -386,7 +386,7 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
           Expanded(
             flex: 9,
             child: Text(
-              element.id == null ? "Closed" : "${formatTime(element.start, false)} - ${formatTime(element.end, false)}",
+              element.id == null || element.closed ? "Closed" : "${formatTime(element.start, false)} - ${formatTime(element.end, false)}",
               style: TextStyle(
                 color: globals.darkModeEnabled ? Colors.grey : Color.fromARGB(255, 80, 80, 80),
                 fontWeight: FontWeight.normal,

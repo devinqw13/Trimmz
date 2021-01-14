@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/Controller/AvailabilityController.dart';
 import 'package:trimmz/calls.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:trimmz/Model/DashboardItem.dart';
@@ -52,7 +53,7 @@ Future<dynamic> buildMicroAppController(BuildContext context, DashboardItem item
     }
     case "user_availability": {
       var availability = await getAvailability(context, globals.user.token);
-      return;
+      return new AvailabilityController(availability: availability);
     }
     default: {
       return;

@@ -6,6 +6,7 @@ import 'package:trimmz/palette.dart';
 import 'package:progress_hud/progress_hud.dart';
 import 'package:intl/intl.dart';
 import 'package:trimmz/helpers.dart';
+import 'package:line_icons/line_icons.dart';
 
 class AppointmentsController extends StatefulWidget {
   final List<Appointment> appointments;
@@ -164,22 +165,56 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
                     ),
                     subtitle: Row(
                       children: [
-                        RichText(
-                          text: TextSpan(
-                            style: TextStyle(
-                              color: Colors.grey
-                            ),
+                        Expanded(
+                          // child: RichText(
+                          //   softWrap: true,
+                          //   overflow: TextOverflow.ellipsis,
+                          //   text: TextSpan(
+                          //     style: TextStyle(
+                          //       color: Colors.grey
+                          //     ),
+                          //     children: [
+                          //       TextSpan(
+                          //         text: df.format(DateTime.parse(appointments[index].appointmentFullTime.toString())),
+                          //       ),
+                          //       TextSpan(
+                          //         text: "\n${appointments[index].packageName}\n",
+                          //       ),
+                          //       TextSpan(
+                          //         text: appointments[index].cashPayment ? 'In Shop' : 'Mobile Pay',
+                          //       ),
+                          //     ]
+                          //   ),
+                          // )
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextSpan(
-                                text: df.format(DateTime.parse(appointments[index].appointmentFullTime.toString())),
+                              Text(
+                                df.format(DateTime.parse(appointments[index].appointmentFullTime.toString())),
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w700
+                                ),
                               ),
-                              TextSpan(
-                                text: "\n${appointments[index].packageName}\n",
+                              Text(
+                                "${appointments[index].packageName}",
+                                style: TextStyle(
+                                  color: Colors.grey
+                                ),
                               ),
-                              TextSpan(
-                                text: appointments[index].cashPayment ? 'In Shop' : 'Mobile Pay',
-                              ),
-                            ]
+                              Row(
+                                children: [
+                                  Icon(appointments[index].cashPayment ? LineIcons.money : Icons.credit_card, size: 18, color: Color(0xFFD4AF37)),
+                                  Padding(padding: EdgeInsets.all(2)),
+                                  Text(
+                                    appointments[index].cashPayment ? 'In Shop' : 'Mobile Pay',
+                                    style: TextStyle(
+                                      color: Colors.grey
+                                    ),
+                                  )
+                                ]
+                              )
+                            ],
                           ),
                         )
                       ]

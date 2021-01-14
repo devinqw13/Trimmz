@@ -720,7 +720,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                         TextSpan(
                           text: "@${user.username}",
                           style: TextStyle(
-                            color: textGrey,
+                            color: textGreyAlt,
                             fontWeight: FontWeight.normal,
                             fontSize: 15.0
                           )
@@ -732,7 +732,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                   Text(
                     user.shopName,
                     style: TextStyle(
-                      color: textGrey,
+                      color: textGreyAlt,
                       fontWeight: FontWeight.w600,
                       fontSize: 13.0
                     )
@@ -741,14 +741,14 @@ class UserControllerState extends State<UserController> with TickerProviderState
                   Text(
                     "${user.shopAddress}, ${user.city}, ${user.state} ${user.zipcode}",
                     style: TextStyle(
-                      color: textGrey,
+                      color: textGreyAlt,
                       fontWeight: FontWeight.normal,
                       fontSize: 13.0
                     )
                   ) : Text(
                     "${user.city}, ${user.state} ${user.zipcode}",
                     style: TextStyle(
-                      color: textGrey,
+                      color: textGreyAlt,
                       fontWeight: FontWeight.normal,
                       fontSize: 13.0
                     )
@@ -773,13 +773,13 @@ class UserControllerState extends State<UserController> with TickerProviderState
                   RatingBarIndicator(
                     rating: double.parse(user.rating),
                     itemBuilder: (context, index) => Icon(
-                        Icons.star,
-                        color: Color(0xFFD2AC47),
+                      Icons.star,
+                      color: Color(0xFFD2AC47),
                     ),
                     itemCount: 5,
                     itemSize: 13.0,
                     direction: Axis.horizontal,
-                    unratedColor: textGrey,
+                    unratedColor: textGreyAlt,
                   ),
                 ],
               ),
