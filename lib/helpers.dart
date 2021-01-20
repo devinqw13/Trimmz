@@ -3,7 +3,6 @@ import 'package:trimmz/Controller/AvailabilityController.dart';
 import 'package:trimmz/calls.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:trimmz/Model/DashboardItem.dart';
-import 'package:trimmz/dialogs.dart';
 import 'package:trimmz/Controller/ConversationController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trimmz/Model/Conversation.dart';
@@ -14,6 +13,8 @@ import 'package:trimmz/Controller/UserProfileController.dart';
 import 'package:trimmz/Controller/ScheduleController.dart';
 import 'package:intl/intl.dart';
 import 'package:trimmz/Controller/ServicesController.dart';
+import 'package:trimmz/Controller/SettingsController.dart';
+import 'package:trimmz/Controller/SelectUserBookAppointment.dart';
 
 setGlobals(Map results) async {
   globals.LoginUser user = new globals.LoginUser();
@@ -55,6 +56,22 @@ Future<dynamic> buildMicroAppController(BuildContext context, DashboardItem item
       var availability = await getAvailability(context, globals.user.token);
       return new AvailabilityController(availability: availability);
     }
+    case "drawer_settings": {
+      return new SettingsController();
+    }
+    case "drawer_apt_requests": {
+      return new AppointmentRequestController(requests: data);
+    }
+    case "drawer_messages": {
+      var results = await getCached("conversations");
+      return new ConversationController(cachedConversations: results);
+    }
+    case "drawer_book_appointment": {
+      return new SelectUserBookAppointmentController(token: globals.user.token);
+    }
+    case "drawer_profile": {
+      return new UserProfileController(token: globals.user.token);
+    }
     default: {
       return;
     }
@@ -84,27 +101,6 @@ getStatusBar(int status, var time) {
   }
 }
 
-onCmdAction(BuildContext context, String cmdCode, {dynamic data}) async {
-  switch(cmdCode) {
-    case "drawer_apt_requests": {
-      final appointmentRequestsController = new AppointmentRequestController(requests: data);
-      Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentRequestsController));
-      break;
-    }
-    case "drawer_messages": {
-      var results = await getCached("conversations");
-      
-      final messagesController = new ConversationController(cachedConversations: results);
-      Navigator.push(context, new MaterialPageRoute(builder: (context) => messagesController));
-      break;
-    }
-    case "drawer_profile": {
-      final userProfileController = new UserProfileController(token: globals.user.token);
-      Navigator.push(context, new MaterialPageRoute(builder: (context) => userProfileController));
-    }
-  }
-}
-
 Widget buildUserProfilePicture(BuildContext context, String profilePicture, String name) {
   if(profilePicture != null) {
     return ClipRRect(
@@ -119,6 +115,33 @@ Widget buildUserProfilePicture(BuildContext context, String profilePicture, Stri
       child: CircleAvatar(
         child: Center(child:Text(name.substring(0,1).toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 25))),
         radius: 30,
+        backgroundColor: Colors.transparent,
+      ),
+      decoration: new BoxDecoration(
+        shape: BoxShape.circle,
+        color: globals.darkModeEnabled ? Colors.black : Colors.white,
+        gradient: new LinearGradient(
+          colors: [Color(0xFFF9F295), Color(0xFFB88A44)]
+        )
+      ),
+    );
+  }
+}
+
+Widget buildSmallUserProfilePicture(BuildContext context, String profilePicture, String name) {
+  if(profilePicture != null) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(50.0),
+      child: new Image.network('${globals.baseImageUrl}$profilePicture',
+        height: 35.0,
+        fit: BoxFit.fill,
+      )
+    );
+  }else {
+    return Container(
+      child: CircleAvatar(
+        child: Center(child:Text(name.substring(0,1).toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 15))),
+        radius: 17.5,
         backgroundColor: Colors.transparent,
       ),
       decoration: new BoxDecoration(

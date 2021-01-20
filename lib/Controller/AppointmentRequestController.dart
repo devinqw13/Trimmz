@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:trimmz/calls.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:trimmz/palette.dart';
 import 'package:trimmz/Model/Appointment.dart';
@@ -45,114 +46,172 @@ class AppointmentRequestControllerState extends State<AppointmentRequestControll
     });
   }
 
-  acceptAppointment(int appointmentId) async {
+  handleAppointmentStatus(int appointmentId, int status) async {
     progressHUD();
+    var results = await appointmentHandler(context, globals.user.token, appointmentId, status);
+    Appointment appointment = requests.where((element) => element.id == results.id).first;
 
+    setState(() {
+      requests.removeWhere((element) => element.id == appointment.id);
+    });
+    globals.userControllerState.refreshList();
     progressHUD();
   }
 
-  declineAppointment(int appointmentId) async {
-    progressHUD();
-
-    progressHUD();
+  viewAppointment(Appointment appointment) {
+  
   }
 
-  viewAppointment(Appointment appointment) async {
-    progressHUD();
+  List<Widget> buildExpandedButtons(Appointment request) {
+    List<Widget> _children = [];
 
-    progressHUD();
+    Widget acceptButton = new Expanded(
+                                        child: Container(
+                                          padding: EdgeInsets.all(5),
+                                          child:  RaisedButton(
+                                            color: Colors.blue,
+                                            onPressed: () => handleAppointmentStatus(request.id, 0),
+                                            child: Text(
+                                              "Accept",
+                                              style: TextStyle(
+                                                color: Colors.white
+                                              )
+                                            ),
+                                          )
+                                        )
+                                      );
+    Widget declineButton = new Expanded(
+                                    child: Container(
+                                      padding: EdgeInsets.all(5),
+                                      child: RaisedButton(
+                                        color: Colors.red,
+                                        onPressed: () => handleAppointmentStatus(request.id, 99),
+                                        child: Text(
+                                          "Decline",
+                                          style: TextStyle(
+                                            color: Colors.white
+                                          )
+                                        ),
+                                      )
+                                    )
+                                  );
+    Widget viewButton = new Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.all(5),
+                                        child:  RaisedButton(
+                                          color: Color(0xFFF7F7F7),
+                                          onPressed: () => viewAppointment(request),
+                                          child: Text(
+                                            "View",
+                                            style: TextStyle(
+                                              color: Colors.black
+                                            ),
+                                          ),
+                                        )
+                                        )
+                                      );
+    Widget dismissButton = new Expanded(
+                                    child: Container(
+                                      padding: EdgeInsets.all(5),
+                                      child: RaisedButton(
+                                        color: Colors.blue,
+                                        onPressed: () => handleAppointmentStatus(request.id, 98),
+                                        child: Text(
+                                          "Dismiss",
+                                          style: TextStyle(
+                                            color: Colors.white
+                                          )
+                                        ),
+                                      )
+                                    )
+                                  );
+
+    if(DateTime.now().isAfter(DateTime.parse(request.appointmentFullTime))) {
+      _children.add(dismissButton);
+      _children.add(viewButton);
+    }else {
+      _children.add(acceptButton);
+      _children.add(declineButton);
+      _children.add(viewButton);
+    }
+    return _children;                     
   }
 
   Widget _buildScreen() {
     return Container(
       padding: EdgeInsets.all(10),
       height: double.infinity,
-      child: SingleChildScrollView(
+      child: requests.length > 0 ? SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
             ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: requests.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  final df = new DateFormat('EEE, MMM d h:mm a');
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: requests.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final df = new DateFormat('EEE, MMM d h:mm a');
 
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 5.0),
-                    child: ExpansionTile(
-                      leading: buildUserProfilePicture(context, requests[index].clientProfilePicture, requests[index].clientName),
-                      title: Text(
-                        requests[index].clientName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600
-                        ),
+                return Container(
+                  margin: EdgeInsets.only(bottom: 5.0),
+                  child: ExpansionTile(
+                    leading: buildUserProfilePicture(context, requests[index].clientProfilePicture, requests[index].clientName),
+                    title: Text(
+                      requests[index].clientName,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600
                       ),
-                      subtitle: Row(
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              style: TextStyle(
-                                color: Colors.grey
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: df.format(DateTime.parse(requests[index].appointmentFullTime.toString())),
-                                ),
-                                TextSpan(
-                                  text: "\n${requests[index].packageName}\n",
-                                ),
-                                TextSpan(
-                                  text: requests[index].cashPayment ? 'In Shop' : 'Mobile Pay',
-                                ),
-                              ]
-                            ),
-                          )
-                        ]
-                      ),
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(5.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: RaisedButton(
-                                  color: Colors.blue,
-                                  onPressed: () => acceptAppointment(requests[index].id),
-                                  child: Text("Accept"),
-                                )
-                              ),
-                              Padding(padding: EdgeInsets.all(5)),
-                              Expanded(
-                                child: RaisedButton(
-                                  color: Colors.red,
-                                  onPressed: () => declineAppointment(requests[index].id),
-                                  child: Text("Decline"),
-                                )
-                              ),
-                              Padding(padding: EdgeInsets.all(5)),
-                              Expanded(
-                                child: RaisedButton(
-                                  color: Color(0xFFF7F7F7),
-                                  onPressed: () => viewAppointment(requests[index]),
-                                  child: Text(
-                                    "View",
-                                    style: TextStyle(
-                                      color: Colors.black
-                                    ),
-                                  ),
-                                )
-                              )
-                            ]
-                          )
-                        )
-                      ],
                     ),
-                  );
-                },
-              ),
+                    subtitle: Row(
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              color: Colors.grey
+                            ),
+                            children: [
+                              TextSpan(
+                                text: df.format(DateTime.parse(requests[index].appointmentFullTime.toString())),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600
+                                )
+                              ),
+                              DateTime.now().isAfter(DateTime.parse(requests[index].appointmentFullTime)) ?
+                              TextSpan(
+                                text: " (Expired)",
+                                style: TextStyle(
+                                  fontStyle: FontStyle.italic
+                                )
+                              ): TextSpan(),
+                              TextSpan(
+                                text: "\n${requests[index].packageName}\n",
+                              ),
+                              TextSpan(
+                                text: requests[index].cashPayment ? 'In Shop' : 'Mobile Pay',
+                              ),
+                            ]
+                          ),
+                        )
+                      ]
+                    ),
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(5.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: buildExpandedButtons(requests[index])
+                        )
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
           ]
+        )
+      ): Center(
+        child: Text(
+          "No Appointment Requests",
         )
       )
     );

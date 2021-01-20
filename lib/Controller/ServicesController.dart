@@ -10,6 +10,7 @@ import 'package:trimmz/Model/Service.dart';
 import 'package:trimmz/Model/WidgetStatus.dart';
 import 'dart:ui' as ui;
 import 'package:line_icons/line_icons.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ServicesController extends StatefulWidget {
   final List<Service> services;
@@ -92,52 +93,106 @@ class ServicesControllerState extends State<ServicesController> with TickerProvi
     onTapDownAdd();
   }
 
+  deleteServiceAction(int id) async {
+    progressHUD();
+    var result = await deleteService(context, globals.user.token, id);
+    if(result['results'] == "true") {
+      setState(() {
+        services.removeWhere((element) => element.id == result['serviceId']);
+      });
+      progressHUD();
+      return;
+    }
+    progressHUD();
+    showErrorDialog(context, "An error has occurred", "Service was not able to be removed. Please try again!");
+  }
+
   Widget _buildScreen() {
     return Container(
       height: double.infinity,
-      padding: EdgeInsets.only(left: 10, right: 10),
-      child: ListView.builder(
+      padding: EdgeInsets.only(left: 10),
+      child: services.length > 0 ? ListView.builder(
         shrinkWrap: true,
         itemCount: services.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () => doEditService(services[index]),
-            child: Container(
-              color: Colors.transparent,
-              margin: EdgeInsets.only(top: 15, bottom: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        services[index].name,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600
+            child: Slidable(
+              actionPane: SlidableDrawerActionPane(),
+              child: Container(
+                color: Colors.transparent,
+                padding: EdgeInsets.only(left: 10, right: 10),
+                margin: EdgeInsets.only(top: 15, bottom: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          services[index].name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600
+                          ),
                         ),
-                      ),
-                      Text(
-                        "${services[index].duration} minutes",
-                        style: TextStyle(
-                          color: textGrey
-                        ),
-                      )
-                    ]
-                  ),
-                  Text(
-                    "\$${services[index].price}"
-                  )
-                ]
-              )
+                        Text(
+                          "${services[index].duration} minutes",
+                          style: TextStyle(
+                            color: textGrey
+                          ),
+                        )
+                      ]
+                    ),
+                    Text(
+                      "\$${services[index].price}"
+                    )
+                  ]
+                )
+              ),
+              secondaryActions: [
+                IconSlideAction(
+                  caption: 'Delete',
+                  color: Colors.red,
+                  icon: Icons.delete,
+                  onTap: () => deleteServiceAction(services[index].id),
+                ),
+              ]
             )
           );
         },
+      ):
+      Center(
+        child: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: "No Services",
+                style: TextStyle(
+                  color: globals.darkModeEnabled ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16.0
+                )
+              ),
+              TextSpan(
+                text: "\nPress + to add a service",
+                style: TextStyle(
+                  color: globals.darkModeEnabled ? Colors.grey[400] : Color.fromARGB(255, 80, 80, 80),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 15.0
+                )
+              )
+            ]
+          ),
+        )
       ),
     );
   }
 
   void onTapDownAdd() {
+    nameTFController.clear();
+    durationTFController.clear();
+    priceTFController.clear();
     if (_addWidgetStatus == WidgetStatus.HIDDEN) {
       addAnimationController.forward(from: 0.0);
       opacityAnimationController.forward(from: 0.0);

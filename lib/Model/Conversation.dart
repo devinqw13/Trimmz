@@ -12,6 +12,7 @@ class Conversations {
 class Conversation {
   int id;
   String username;
+  String name;
   int userId;
   String recentMessage;
   String recentSender;
@@ -24,6 +25,7 @@ class Conversation {
   Conversation(Map input, List input2) {
     this.id = input['id'];
     this.username = input['username'];
+    this.name = input['name'];
     this.userId = input['user_Id'];
     this.recentMessage = input['recent_message'];
     this.recentSenderId = input['recent_sender_id'];

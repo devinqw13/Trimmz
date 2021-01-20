@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:trimmz/globals.dart' as globals;
+import 'package:trimmz/helpers.dart';
 import 'package:trimmz/palette.dart';
 import 'package:trimmz/Model/Conversation.dart';
 import 'dart:async';
@@ -213,12 +214,34 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
           brightness: globals.userBrightness,
           backgroundColor: globals.darkModeEnabled ? richBlack : Colors.white,
           centerTitle: true,
-          title: new Text(
-            "${conversation.username}",
-            style: TextStyle(
-              fontWeight: FontWeight.normal,
-              fontSize: 18.0
-            ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildSmallUserProfilePicture(context, conversation.profilePicture, conversation.username),
+              Padding(padding: EdgeInsets.all(5)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "${conversation.name}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 18.0
+                    ),
+                  ),
+                  Text(
+                    "@${conversation.username}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey,
+                      fontSize: 13.0
+                    ),
+                  ),
+                ]
+              )
+            ]
           ),
           elevation: 0.0,
         ),
@@ -296,40 +319,8 @@ class _MessageBubble extends State<MessageBubble> {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
-        crossAxisAlignment:
-            widget.user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: widget.user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
-          // Container(
-          //   padding: EdgeInsets.symmetric(horizontal: 10),
-          //   child: Text(
-          //     msgSender,
-          //     style: TextStyle(
-          //         fontSize: 13, fontFamily: 'Poppins', color: globals.darkModeEnabled ? Colors.white : Colors.black),
-          //   ),
-          // ),
-
-          // Material(
-          //   borderRadius: BorderRadius.only(
-          //     bottomLeft: Radius.circular(50),
-          //     topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
-          //     bottomRight: Radius.circular(50),
-          //     topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
-          //   ),
-          //   color: widget.user ? Colors.blue : Colors.white,
-          //   elevation: 5,
-          //   child: Padding(
-          //     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          //     child: Text(
-          //       widget.msgText,
-          //       style: TextStyle(
-          //         color: widget.user ? Colors.white : Colors.black,
-          //         fontFamily: 'Poppins',
-          //         fontSize: 15,
-          //       ),
-          //     ),
-          //   ),
-          // ),
-
           Container(
             decoration: widget.user ?
             BoxDecoration(

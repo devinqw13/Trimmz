@@ -12,6 +12,7 @@ import 'package:trimmz/Model/User.dart';
 import 'package:trimmz/Model/Conversation.dart';
 import 'package:trimmz/helpers.dart';
 import 'package:trimmz/Model/Service.dart';
+import 'package:trimmz/Model/FeedItem.dart';
 
 Future<List<String>> getDeviceDetails() async {
   String deviceName;
@@ -292,8 +293,8 @@ Future<List<Conversation>> getConversations(BuildContext context) async {
     return null;
   }
 }
-//TODO: CREATE API FOR SETTING APPOINTMENT STATUS (COMPLETE, CANCEL, NOSHOW)
-Future<Appointment> appointmentHandler(BuildContext context, int barberId, int appointmentId, int decision) async {
+
+Future<Appointment> appointmentHandler(BuildContext context, int barberId, int appointmentId, int status) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Accept': 'application/json',
@@ -303,21 +304,20 @@ Future<Appointment> appointmentHandler(BuildContext context, int barberId, int a
   http.Response response;
 
   var jsonMap = {
-    "barberid": barberId,
-    "requestid": appointmentId,
-    "decision": decision,
+    "token": barberId,
+    "status": "$status",
   };
 
-  String url = "${globals.baseUrl}appointmentReqDecision/";
+  String url = "${globals.baseUrl}V1/appointments/$appointmentId";
 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (019)", "Please try again. If this error continues to occur, please contact support.");
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
     return null;
-  } 
+  }
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (019)", "Please try again.");
+    showErrorDialog(context, "An error has occurred", "Please try again.");
     return null;
   }
 
@@ -328,7 +328,7 @@ Future<Appointment> appointmentHandler(BuildContext context, int barberId, int a
     jsonResponse = json.decode(response.body);
   }
   if(jsonResponse['error'] == 'false'){
-    Appointment appointment = new Appointment(jsonResponse['result']);
+    Appointment appointment = new Appointment(jsonResponse['appointment']);
     return appointment;
   }else {
     return null;
@@ -499,6 +499,86 @@ Future<List<Availability>> getAvailability(BuildContext context, int token) asyn
       availability.add(new Availability(item));
     }
     return availability;
+  }else {
+    return null;
+  }
+}
+
+Future<List<FeedItem>> getUserFeed(BuildContext context, int token) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  // String url = "${globals.baseUrl}V1/userFeed?token=$token";
+  String url = "${globals.baseUrl}getPosts?token=$token&type=2";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    List<FeedItem> feed = [];
+    for(var item in jsonResponse['posts']) {
+      feed.add(new FeedItem(item));
+    }
+    return feed;
+  }else {
+    return null;
+  }
+}
+
+Future<Map> deleteService(BuildContext context, int token, int serviceId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}V1/services?token=$token&serviceId=$serviceId";
+
+  try {
+    response = await http.delete(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    return {
+      "results": jsonResponse['results'],
+      "serviceId": serviceId
+    };
   }else {
     return null;
   }

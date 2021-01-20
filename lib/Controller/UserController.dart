@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:trimmz/helpers.dart';
 import 'package:trimmz/CustomDrawerHeader.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:trimmz/Controller/LoginController.dart';
 import 'package:trimmz/Model/WidgetStatus.dart';
 import 'package:intl/intl.dart';
 import 'package:trimmz/Model/Appointment.dart';
@@ -19,11 +18,12 @@ import 'dart:ui' as ui;
 import 'package:trimmz/Model/User.dart';
 import 'package:async/async.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-// import 'package:web_socket_channel/io.dart';
 import 'package:trimmz/Controller/AppointmentsController.dart';
 import 'package:trimmz/Controller/UserProfileController.dart';
+import 'package:trimmz/Controller/NotificationCenterController.dart';
 import 'package:trimmz/dialogs.dart';
-
+import 'package:trimmz/FeedItemWidget.dart';
+import 'package:trimmz/RippleButton.dart';
 
 class UserController extends StatefulWidget {
   final List<DashboardItem> dashboardItems;
@@ -46,28 +46,37 @@ class UserControllerState extends State<UserController> with TickerProviderState
   CalendarController _calendarController = new CalendarController();
   WidgetStatus _calendarWidgetStatus = WidgetStatus.HIDDEN;
   WidgetStatus _searchWidgetStatus = WidgetStatus.HIDDEN;
-  AnimationController calendarAnimationController, searchAnimationController, opacityAnimationController, opacityAnimationController2;
-  Animation calendarPositionAnimation, calendarOpacityAnimation, searchPositionAnimation, searchOpacityAnimation;
+  WidgetStatus _feedWidgetStatus = WidgetStatus.HIDDEN;
+  AnimationController calendarAnimationController, searchAnimationController, feedAnimationController, opacityAnimationController, opacityAnimationController2, opacityAnimationController3;
+  Animation calendarPositionAnimation, calendarOpacityAnimation, searchPositionAnimation, searchOpacityAnimation, feedPositionAnimation, feedOpacityAnimation;
   final duration = new Duration(milliseconds: 200);
   bool calendarActive = true;
   bool searchActive = true;
+  bool feedActive = true;
   GlobalKey key = GlobalKey();
+  List<Appointment> appointments = [];
   Map<DateTime, List> _calendarAppointments;
   DateTime _calendarSelectedDay = DateTime.now();
   List _selectedAppointments = [];
   List appointmentRequests = [];
   List<User> setLocatedUsers = [];
   AsyncMemoizer _memoizer;
+  AsyncMemoizer _memoizer2;
+  var refreshFeedKey = GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
+    globals.userControllerState = this;
+
     _memoizer = AsyncMemoizer();
+    _memoizer2 = AsyncMemoizer();
 
     _dashboardItems = widget.dashboardItems.where((element) => element.isDashboard).toList();
     _dashboardItems.sort((a,b) => a.sort.compareTo(b.sort));
     _drawerItems = widget.dashboardItems.where((element) => !element.isDashboard).toList();
     _drawerItems.sort((a,b) => a.sort.compareTo(b.sort));
     _calendarAppointments = widget.appointments.calendarFormat ?? {};
+    appointments = widget.appointments.list;
     appointmentRequests = widget.appointments.requests;
     _selectedAppointments = _calendarAppointments[DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())))] ?? [];
 
@@ -128,6 +137,31 @@ class UserControllerState extends State<UserController> with TickerProviderState
       }
     });
 
+    // FEED ANIMATIONS
+    feedAnimationController = new AnimationController(duration: duration, vsync: this);
+    opacityAnimationController3 = new AnimationController(duration: duration, vsync: this);
+    feedPositionAnimation = new Tween(begin: 0.0, end: widget.screenHeight).animate(
+      new CurvedAnimation(parent: feedAnimationController, curve: Curves.easeInOut)
+    );
+    feedOpacityAnimation = new Tween(begin: 0.0, end: 1.0).animate(
+      new CurvedAnimation(parent: opacityAnimationController3, curve: Curves.easeInOut)
+    );
+    feedPositionAnimation.addListener(() {
+      setState(() {});
+    });
+    feedOpacityAnimation.addListener(() {
+      setState(() {});
+    });
+    feedAnimationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (feedActive) {
+          _feedWidgetStatus = WidgetStatus.VISIBLE;
+        } else {
+          _feedWidgetStatus = WidgetStatus.HIDDEN;
+        }
+      }
+    });
+
     super.initState();
   }
 
@@ -159,6 +193,8 @@ class UserControllerState extends State<UserController> with TickerProviderState
     opacityAnimationController.dispose();
     searchAnimationController.dispose();
     opacityAnimationController2.dispose();
+    feedAnimationController.dispose();
+    opacityAnimationController3.dispose();
   }
 
   void progressHUD() {
@@ -204,11 +240,24 @@ class UserControllerState extends State<UserController> with TickerProviderState
     }
   }
 
+  void onTapDownFeed() {
+    if (_feedWidgetStatus == WidgetStatus.HIDDEN) {
+      feedAnimationController.forward(from: 0.0);
+      opacityAnimationController3.forward(from: 0.0);
+      _feedWidgetStatus = WidgetStatus.VISIBLE;
+    }
+    else if (_feedWidgetStatus == WidgetStatus.VISIBLE) {
+      feedAnimationController.reverse(from: 400.0);
+      opacityAnimationController3.reverse(from: 1.0);
+      _feedWidgetStatus = WidgetStatus.HIDDEN;
+    }
+  }
+
   Future<Null> refreshList() async {
     Completer<Null> completer = new Completer<Null>();
     refreshKey.currentState.show();
     List<DashboardItem> dashItems = await getDashboardItems(globals.user.token, context);
-    var appointments = await getBarberAppointments(context, globals.user.token);
+    var results = await getBarberAppointments(context, globals.user.token);
 
     completer.complete();
     setState(() {
@@ -216,8 +265,9 @@ class UserControllerState extends State<UserController> with TickerProviderState
       _dashboardItems.sort((a,b) => a.sort.compareTo(b.sort));
       _drawerItems = dashItems.where((element) => !element.isDashboard).toList();
       _drawerItems.sort((a,b) => a.sort.compareTo(b.sort));
-      _calendarAppointments = appointments.calendarFormat;
-      appointmentRequests = appointments.requests;
+      _calendarAppointments = results.calendarFormat;
+      appointmentRequests = results.requests;
+      appointments = results.list;
     });
     return completer.future;
   }
@@ -285,7 +335,17 @@ class UserControllerState extends State<UserController> with TickerProviderState
       Widget widget = new FlatButton(
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         padding: EdgeInsets.only(left: 16, right: 16, top: 14, bottom: 14),
-        onPressed: () {onCmdAction(context, item.cmdCode, data: appointmentRequests);},
+        onPressed: () async {
+          progressHUD();
+          var microAppController = await buildMicroAppController(context, item, data: await handleLocalMicroAppData(item));
+          if (microAppController == null) {
+            progressHUD();
+            showErrorDialog(context, "An error has occurred", "Could not open '${item.name}'. Please try again.");
+            return;
+          }
+          progressHUD();
+          Navigator.push(context, new MaterialPageRoute(builder: (context) => microAppController));
+        },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -324,8 +384,8 @@ class UserControllerState extends State<UserController> with TickerProviderState
     var userAppointments = widget.appointments.list.where((element) => element.status == 1 || element.status == 0).toList();
     userAppointments.sort((a,b) => DateTime.parse(a.appointmentFullTime).compareTo(DateTime.parse(b.appointmentFullTime)));
 
-    final messagesController = new AppointmentsController(appointments: userAppointments);
-    Navigator.push(context, new MaterialPageRoute(builder: (context) => messagesController));
+    final appointmentsController = new AppointmentsController(appointments: userAppointments);
+    Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentsController));
   }
 
   goToClientList() {
@@ -353,7 +413,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
               accountUsername: new Text(
                 "@" + globals.user.username,
                 style: TextStyle(
-                  color: textGreyAlt
+                  color: globals.darkModeEnabled ? Colors.grey[400] : Color.fromARGB(255, 80, 80, 80)
                 )
               ),
               currentAccountPicture: new Image.network('${globals.baseImageUrl}${globals.user.profilePic}',
@@ -380,7 +440,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                             TextSpan(
                               text: "Clients",
                               style: TextStyle(
-                                color: textGreyAlt,
+                                color: globals.darkModeEnabled ? Colors.grey[400] : Color.fromARGB(255, 80, 80, 80),
                                 fontWeight: FontWeight.normal,
                                 fontSize: 15.0
                               )
@@ -397,7 +457,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: "${widget.appointments.list.where((element) => element.status == 1 || element.status == 0).length.toString()} ",
+                                text: "${appointments.where((element) => element.status == 1 || element.status == 0).length.toString()} ",
                                 style: TextStyle(
                                   color: globals.darkModeEnabled ? Colors.white : Colors.black,
                                   fontWeight: FontWeight.w500,
@@ -407,7 +467,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                               TextSpan(
                                 text: "Appointments",
                                 style: TextStyle(
-                                  color: textGreyAlt,
+                                  color: globals.darkModeEnabled ? Colors.grey[400] : Color.fromARGB(255, 80, 80, 80),
                                   fontWeight: FontWeight.normal,
                                   fontSize: 15.0
                                 )
@@ -437,15 +497,6 @@ class UserControllerState extends State<UserController> with TickerProviderState
                       _handleDarkMode();
                     },
                   ),
-                  FlatButton(
-                    child: Text("Sign Out"),
-                    onPressed: () async {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      prefs.clear();
-
-                      Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new LoginController()));
-                    },
-                  )
                 ],
               )
             ),
@@ -462,6 +513,9 @@ class UserControllerState extends State<UserController> with TickerProviderState
       }
       case "user_services": {
         return widget.screenHeight;
+      }
+      case "drawer_apt_requests": {
+        return appointmentRequests;
       }
       default: {
         return null;
@@ -543,7 +597,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
           child: new GridView.builder(
             shrinkWrap: true,
             itemCount: filterDashboardList.length,
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 15.0, top: 0.0),
+            padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 15.0, top: 0.0),
             gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               mainAxisSpacing: 15.0,
@@ -720,7 +774,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                         TextSpan(
                           text: "@${user.username}",
                           style: TextStyle(
-                            color: textGreyAlt,
+                            color: globals.darkModeEnabled ? Colors.grey[400] : Color.fromARGB(255, 80, 80, 80),
                             fontWeight: FontWeight.normal,
                             fontSize: 15.0
                           )
@@ -732,7 +786,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                   Text(
                     user.shopName,
                     style: TextStyle(
-                      color: textGreyAlt,
+                      color: globals.darkModeEnabled ? Colors.grey[400] : Color.fromARGB(255, 80, 80, 80),
                       fontWeight: FontWeight.w600,
                       fontSize: 13.0
                     )
@@ -741,14 +795,14 @@ class UserControllerState extends State<UserController> with TickerProviderState
                   Text(
                     "${user.shopAddress}, ${user.city}, ${user.state} ${user.zipcode}",
                     style: TextStyle(
-                      color: textGreyAlt,
+                      color: globals.darkModeEnabled ? Colors.grey[400] : Color.fromARGB(255, 80, 80, 80),
                       fontWeight: FontWeight.normal,
                       fontSize: 13.0
                     )
                   ) : Text(
                     "${user.city}, ${user.state} ${user.zipcode}",
                     style: TextStyle(
-                      color: textGreyAlt,
+                      color: globals.darkModeEnabled ? Colors.grey[400] : Color.fromARGB(255, 80, 80, 80),
                       fontWeight: FontWeight.normal,
                       fontSize: 13.0
                     )
@@ -779,7 +833,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                     itemCount: 5,
                     itemSize: 13.0,
                     direction: Axis.horizontal,
-                    unratedColor: textGreyAlt,
+                    unratedColor: globals.darkModeEnabled ? Colors.grey[400] : Color.fromARGB(255, 80, 80, 80),
                   ),
                 ],
               ),
@@ -844,7 +898,117 @@ class UserControllerState extends State<UserController> with TickerProviderState
       var res = await getUsersByLocation(context, 45241);
       return res;
     });
-  } 
+  }
+
+  _fetchUserFeed() async {
+    return this._memoizer2.runOnce(() async {
+      var res = await getUserFeed(context, globals.user.token);
+      return res;
+    });
+  }
+
+  buildEmptyFeed() {
+    return Container(
+      padding: EdgeInsets.only(left: 30, right: 30),
+      child: Center(
+        child: ListView(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "No Photos?",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600
+                  ),
+                ),
+                Padding(padding: EdgeInsets.all(10)),
+                Text(
+                  "This empty feed won\'t last long. Start following people and you\'ll see photos show up here.",
+                  textAlign: TextAlign.center,
+                ),
+                Padding(padding: EdgeInsets.all(10)),
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * .5
+                  ),
+                  decoration: BoxDecoration(
+                    color: globals.darkModeEnabled ? Color.fromARGB(225, 0, 0, 0) : Color.fromARGB(100, 0, 0, 0),
+                    borderRadius: BorderRadius.all(Radius.circular(3)),
+                    border: Border.all(
+                      color: CustomColors1.mystic.withAlpha(100)
+                    )
+                  ),
+                  child: RippleButton(
+                    splashColor: CustomColors1.mystic.withAlpha(100),
+                    onPressed: () {
+                      onTapDownSearch();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
+                      child: Center(
+                        child: Text(
+                          "Find people to follow",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500
+                          )
+                        ),
+                      )
+                    )
+                  )
+                )
+              ]
+            ),
+          ]
+        )
+      )
+    );
+  }
+
+  _buildPhotoFeed() {
+    var apiCall = _fetchUserFeed();
+    return FutureBuilder(
+      future: apiCall,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+          case ConnectionState.active:
+          case ConnectionState.waiting:
+            // TODO: SHOW LOADING
+          case ConnectionState.done:
+            if(snapshot.hasData) {
+              if(snapshot.data.length > 0) {
+                return new RefreshIndicator(
+                  key: refreshFeedKey,
+                  color: globals.darkModeEnabled ? Colors.white : Colors.blue,
+                  onRefresh: () {             
+                    return apiCall = getUserFeed(context, globals.user.token);
+                  },
+                  child: ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return FeedItemWidget(item: snapshot.data[index]);
+                    },
+                  )
+                );
+              }else {
+                return buildEmptyFeed();
+              }
+            }else {
+              return CircularProgressIndicator();
+            }
+            break;
+          default:
+            return null; 
+        }
+      },
+    );
+  }
 
   _buildSearchList() {
     return FutureBuilder(
@@ -925,7 +1089,44 @@ class UserControllerState extends State<UserController> with TickerProviderState
             ],
           )
         ),
-        color: const Color.fromARGB(120, 0, 0, 0),
+        color: globals.darkModeEnabled ? Color.fromARGB(220, 0, 0, 0) : Color.fromARGB(220, 255, 255, 255),
+      )
+    );
+  }
+
+  Widget getFeedOverlay() {
+    var feedHeight = 0.0;
+    var feedOpacity = 0.0;
+    switch(_feedWidgetStatus) {
+      case WidgetStatus.HIDDEN:
+        feedHeight = feedPositionAnimation.value;
+        feedOpacity = feedOpacityAnimation.value;
+        feedActive = false;
+        break;
+      case WidgetStatus.VISIBLE:
+        feedHeight = feedPositionAnimation.value;
+        feedOpacity = feedOpacityAnimation.value;
+        feedActive = true;
+        break;
+    }
+    return new BackdropFilter(
+      filter: new ui.ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: feedHeight,
+        child: new Opacity(
+          opacity: feedOpacity,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                flex: 6,
+                child: _buildPhotoFeed()
+              ),
+            ],
+          )
+        ),
+        color: globals.userBrightness == Brightness.light ? Colors.white : richBlack,
       )
     );
   }
@@ -1153,7 +1354,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
               child: GestureDetector(
                 child: Icon(Icons.dashboard_outlined),
                 onTap: () {
-                  // onTapDownDashboard();
+                  onTapDownFeed();
                 },
               )
             ) : Container(),
@@ -1163,7 +1364,8 @@ class UserControllerState extends State<UserController> with TickerProviderState
               child: GestureDetector(
                 child: Icon(Icons.notifications_none_sharp),
                 onTap: () {
-                  
+                  final notificationCenterController = new NotificationCenterController();
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationCenterController));
                 },
               )
             ) : Container(),
@@ -1213,6 +1415,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                       ),
                     ]
                   ),
+                  getFeedOverlay(),
                   getSearchOverlay(),
                   _progressHUD,
                 ]

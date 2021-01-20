@@ -346,7 +346,7 @@ class _CustomUserAccountsDrawerHeaderState extends State<CustomUserAccountsDrawe
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
                 padding: EdgeInsets.only(left: 16.0),
-                color: globals.darkModeEnabled ? Color.fromARGB(200, 0, 0, 0) : Color.fromARGB(200, 220, 220, 220),
+                color: globals.darkModeEnabled ? Color.fromARGB(230, 0, 0, 0) : Color.fromARGB(230, 255, 255, 255),
                 child: SafeArea(
                   bottom: false,
                   child: Column(
