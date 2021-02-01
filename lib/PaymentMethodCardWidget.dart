@@ -15,8 +15,19 @@ class _PaymentMethodCard extends State<PaymentMethodCard> {
 
   @override
   void initState() {
-    getPMData();
     super.initState();
+
+    print("\"${globals.strpk}\"");
+
+    StripePayment.setOptions(
+      new StripeOptions(
+        publishableKey: globals.strpk,
+        merchantId: "",
+        androidPayMode: '',
+      ),
+    );
+
+    getPMData();
   }
 
   getPMData() async {
@@ -30,12 +41,16 @@ class _PaymentMethodCard extends State<PaymentMethodCard> {
     return Container();
   }
 
+  void onError(var error) {
+    print(error);
+  }
+
   addPaymentMethod() async {
     await StripePayment.paymentRequestWithCardForm(
       CardFormPaymentRequest(),
     ).then((PaymentMethod paymentMethod) async {
       print(paymentMethod.id);
-    });
+    }).catchError(onError);
   }
 
   @override

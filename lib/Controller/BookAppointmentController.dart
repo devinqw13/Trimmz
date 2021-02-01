@@ -16,6 +16,7 @@ import 'package:trimmz/Model/Service.dart';
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:expandable/expandable.dart';
 import 'package:trimmz/PaymentMethodCardWidget.dart';
+import 'package:stripe_payment/stripe_payment.dart';
 
 class BookAppointmentController extends StatefulWidget {
   final User user;

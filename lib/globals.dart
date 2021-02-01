@@ -3,6 +3,7 @@ import 'package:trimmz/Controller/UserController.dart';
 
 LoginUser user;
 StripeUser stripe;
+String strpk;
 
 String baseUrl = "";
 String baseImageUrl = "";

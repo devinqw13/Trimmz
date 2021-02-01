@@ -44,6 +44,8 @@ setGlobals(Map results) async {
 
   globals.stripe = stripe;
 
+  globals.strpk = results['strpk'];
+
   globals.processingFee = results['processingFee'] ?? 1.00;
   globals.standardPayoutFee = results['standardPayoutFee'] ?? 0.028;
   globals.instantPayoutFee = results['instantPayoutFee'] ?? 0.032;
