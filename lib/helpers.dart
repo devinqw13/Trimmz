@@ -40,7 +40,13 @@ setGlobals(Map results) async {
   stripe.payoutId = results['user'][0]['payoutId'];
   stripe.accountId = results['user'][0]['sp_account'];
   stripe.paymentId = results['user'][0]['sp_paymentid'];
-  stripe.payoutMethod = results['user'][0]['payoutMethod'] ?? 'standard';
+  stripe.paymentMethodType = results['user'][0]['payoutMethod'] ?? 'standard';
+
+  globals.stripe = stripe;
+
+  globals.processingFee = results['processingFee'] ?? 1.00;
+  globals.standardPayoutFee = results['standardPayoutFee'] ?? 0.028;
+  globals.instantPayoutFee = results['instantPayoutFee'] ?? 0.032;
 }
 
 Future<dynamic> buildMicroAppController(BuildContext context, DashboardItem item, {dynamic data}) async {

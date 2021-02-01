@@ -118,7 +118,7 @@ class ServicesControllerState extends State<ServicesController> with TickerProvi
           return GestureDetector(
             onTap: () => doEditService(services[index]),
             child: Slidable(
-              actionPane: SlidableDrawerActionPane(),
+              actionPane: SlidableStrechActionPane(),
               child: Container(
                 color: Colors.transparent,
                 padding: EdgeInsets.only(left: 10, right: 10),

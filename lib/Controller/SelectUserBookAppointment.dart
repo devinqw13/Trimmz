@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:trimmz/calls.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:progress_hud/progress_hud.dart';
 import 'package:trimmz/palette.dart';
+import 'package:trimmz/helpers.dart';
+import 'package:trimmz/Controller/BookAppointmentController.dart';
 
 class SelectUserBookAppointmentController extends StatefulWidget {
   final int token;
@@ -39,6 +42,100 @@ class SelectUserBookAppointmentControllerState extends State<SelectUserBookAppoi
       }
       _loadingInProgress = !_loadingInProgress;
     });
+  }
+
+  buildGridTile(var user) {
+    return new Container(
+      child: new Column(
+        children: <Widget>[
+          new Expanded(
+            flex: 4,
+            child: new Container(
+              child: new Center(
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    buildUserProfilePicture(context, user.profilePicture, user.username),
+                    Column(
+                      children: [
+                        Text(
+                          user.name,
+                          style: TextStyle(
+                            fontSize: 19
+                          ),
+                        ),
+                        Text(
+                          "@${user.username}",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              decoration: new BoxDecoration(
+                color: globals.darkModeEnabled ? Color.fromARGB(255, 21, 21, 21) : Color.fromARGB(255, 225, 225, 225),
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(2.0), topRight: Radius.circular(2.0))
+              ),
+            ),
+          ),
+          new Expanded(
+            flex: 1,
+            child: new Container(
+              child: new Center(
+                child: new FlatButton(
+                  onPressed: () async {
+                    final bookAppointmentController = new BookAppointmentController(user: user);
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => bookAppointmentController));
+                  },
+                  child: Text('Book Appointment', 
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.normal
+                    ),
+                  )
+                )
+              ),
+              decoration: new BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(2.0), bottomRight: Radius.circular(2.0)),
+              )
+            )
+          )
+        ],
+      ),
+      decoration: new BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(2.0)),
+      )
+    );
+  }
+
+  buildUsersList(var users) {
+    return new GridView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: users.length,
+      padding: EdgeInsets.all(2),
+      shrinkWrap: true,
+      gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 15.0,
+        crossAxisSpacing: 15.0,
+        childAspectRatio: 0.9
+      ),
+      itemBuilder: (context, index) {
+        return new Card(
+          child: buildGridTile(users[index]),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(2.0))
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildScreen() {
@@ -81,6 +178,16 @@ class SelectUserBookAppointmentControllerState extends State<SelectUserBookAppoi
                 ),
               )
             ),
+            FutureBuilder(
+              future: getFollowedUsers(context, globals.user.token),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return buildUsersList(snapshot.data);
+                } else {
+                  return CircularProgressIndicator();
+                }
+              }
+            )
           ]
         )
       )

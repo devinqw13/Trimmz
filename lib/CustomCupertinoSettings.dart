@@ -7,10 +7,10 @@ import 'palette.dart';
 
 const CS_ITEM_HEIGHT = 50.0;
 var csHeaderColor = globals.darkModeEnabled ? richBlack : const Color(0xFFEEEEF3);
-var csBorderColor = globals.darkModeEnabled ? Colors.white12 : Colors.black12;
+var csBorderColor = globals.darkModeEnabled ? Colors.white10 : Colors.black12;
 var csTextColor = globals.darkModeEnabled ? Colors.white : Colors.black;
 var csHeaderTextColor = globals.darkModeEnabled ? Colors.white70 : Colors.black54;
-var csRowColor = globals.darkModeEnabled ? darkGrey : Colors.white;
+var csRowColor = globals.darkModeEnabled ? Color.fromARGB(255, 15, 15, 15) : Colors.white;
 var csArrowColor = globals.darkModeEnabled ? Colors.white30 : Colors.black26;
 const CS_ITEM_PADDING = const EdgeInsets.only(left: 10.0, right: 10.0);
 const CS_HEADER_FONT_SIZE = 14.0;

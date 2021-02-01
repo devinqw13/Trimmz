@@ -37,6 +37,7 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
       String currentUser = globals.user.username;
 
       MessageBubble msgBubble = MessageBubble(
+        conversation: conversation,
         msgText: msgText,
         msgSender: msgSender,
         user: currentUser == msgSender
@@ -129,6 +130,7 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
               itemBuilder: (context, index) {
                 String msgSender = messages[index].senderId == globals.user.token ? globals.user.username : conversation.username;
                 return new MessageBubble(
+                  conversation: conversation,
                   msgText: messages[index].message,
                   msgSender: messages[index].senderId == globals.user.token ? globals.user.username : conversation.username,
                   user: globals.user.username == msgSender
@@ -303,10 +305,11 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
 // }
 
 class MessageBubble extends StatefulWidget {
+  final Conversation conversation;
   final String msgText;
   final String msgSender;
   final bool user;
-  MessageBubble({@required this.msgText, @required this.msgSender, @required this.user});
+  MessageBubble({@required this.conversation, @required this.msgText, @required this.msgSender, @required this.user});
 
   @override
   _MessageBubble createState() => _MessageBubble();
@@ -317,58 +320,118 @@ class _MessageBubble extends State<MessageBubble> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, left: 0.0, right: 0.0),
       child: Column(
         crossAxisAlignment: widget.user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            decoration: widget.user ?
-            BoxDecoration(
-              gradient: primaryGradient,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(50),
-                topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
-                bottomRight: Radius.circular(50),
-                topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: globals.darkModeEnabled ? Colors.black : Colors.grey[400],
-                  blurRadius: 2.0,
-                  spreadRadius: 0.0,
-                  offset: Offset(2.0, 2.0),
+          Row(
+            mainAxisAlignment: widget.user ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              !widget.user ? Container(
+                padding: EdgeInsets.only(right: 5.0),
+                child: buildSmallUserProfilePicture(context, widget.conversation.profilePicture, widget.conversation.username)
+              ):
+              Container(),
+              Flexible(
+                child: Container(
+                  decoration: widget.user ?
+                  BoxDecoration(
+                    gradient: primaryGradient,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
+                      topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
+                      bottomRight: Radius.circular(50),
+                      topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: globals.darkModeEnabled ? Colors.black : Colors.grey[400],
+                        blurRadius: 2.0,
+                        spreadRadius: 0.0,
+                        offset: Offset(2.0, 2.0),
+                      )
+                    ],
+                  ) :
+                  BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
+                      topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
+                      bottomRight: Radius.circular(50),
+                      topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: globals.darkModeEnabled ? Colors.black : Colors.grey[400],
+                        blurRadius: 2.0,
+                        spreadRadius: 0.0,
+                        offset: Offset(2.0, 2.0),
+                      )
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    child: Text(
+                      widget.msgText,
+                      style: TextStyle(
+                        color: widget.user ? Colors.white : Colors.black,
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
                 )
-              ],
-            ) :
-            BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(50),
-                topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
-                bottomRight: Radius.circular(50),
-                topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: globals.darkModeEnabled ? Colors.black : Colors.grey[400],
-                  blurRadius: 2.0,
-                  spreadRadius: 0.0,
-                  offset: Offset(2.0, 2.0),
-                )
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Text(
-                widget.msgText,
-                style: TextStyle(
-                  color: widget.user ? Colors.white : Colors.black,
-                  fontFamily: 'Poppins',
-                  fontSize: 15,
-                ),
-              ),
-            ),
+              )
+            ],
           )
+          // Container(
+          //   decoration: widget.user ?
+          //   BoxDecoration(
+          //     gradient: primaryGradient,
+          //     borderRadius: BorderRadius.only(
+          //       bottomLeft: Radius.circular(50),
+          //       topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
+          //       bottomRight: Radius.circular(50),
+          //       topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
+          //     ),
+          //     boxShadow: [
+          //       BoxShadow(
+          //         color: globals.darkModeEnabled ? Colors.black : Colors.grey[400],
+          //         blurRadius: 2.0,
+          //         spreadRadius: 0.0,
+          //         offset: Offset(2.0, 2.0),
+          //       )
+          //     ],
+          //   ) :
+          //   BoxDecoration(
+          //     color: Colors.white,
+          //     borderRadius: BorderRadius.only(
+          //       bottomLeft: Radius.circular(50),
+          //       topLeft: widget.user ? Radius.circular(50) : Radius.circular(0),
+          //       bottomRight: Radius.circular(50),
+          //       topRight: widget.user ? Radius.circular(0) : Radius.circular(50),
+          //     ),
+          //     boxShadow: [
+          //       BoxShadow(
+          //         color: globals.darkModeEnabled ? Colors.black : Colors.grey[400],
+          //         blurRadius: 2.0,
+          //         spreadRadius: 0.0,
+          //         offset: Offset(2.0, 2.0),
+          //       )
+          //     ],
+          //   ),
+          //   child: Padding(
+          //     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          //     child: Text(
+          //       widget.msgText,
+          //       style: TextStyle(
+          //         color: widget.user ? Colors.white : Colors.black,
+          //         fontFamily: 'Poppins',
+          //         fontSize: 15,
+          //       ),
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );

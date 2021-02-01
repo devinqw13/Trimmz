@@ -1,6 +1,7 @@
 import 'package:trimmz/Model/Availability.dart';
 import 'package:trimmz/Model/GalleryItem.dart';
 import 'package:trimmz/Model/Service.dart';
+import 'package:trimmz/Model/Appointment.dart';
 
 class Users {
   List<User> list = [];
@@ -31,9 +32,11 @@ class User {
   String rating;
   int numOfReviews;
   String bio;
+  bool cardPaymentOnly;
   List<Availability> availability = [];
   List<GalleryItem> gallery = [];
   List<Service> services = [];
+  Appointments appointments;
 
   User(Map input) {
     this.id = input['id'];
@@ -53,6 +56,7 @@ class User {
     this.rating = input['rating'] ?? "0";
     this.numOfReviews = input['num_of_reviews'];
     this.bio = input['biography'];
+    this.cardPaymentOnly = input['client_payment_option'] == 0 ? false : true ?? false;
     if(input['availability'] != null) {
       for(var item in input['availability']) {
         this.availability.add(new Availability(item));
@@ -67,6 +71,9 @@ class User {
       for(var item in input['services']) {
         this.services.add(new Service(item));
       }
+    }
+    if(input['appointments'] != null) {
+      this.appointments = new Appointments(input['appointments']);
     }
   }
 }

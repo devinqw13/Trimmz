@@ -78,7 +78,7 @@ class LoginControllerState extends State<LoginController> {
       progressHUD();
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? false : prefs.getBool('darkModeEnabled');
+      globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
       prefs.setInt('token', globals.user.token);
       if (globals.darkModeEnabled) {
         globals.userBrightness = Brightness.dark;

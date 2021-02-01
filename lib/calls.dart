@@ -60,12 +60,12 @@ Future<Map> login(BuildContext context, String username, String password) async 
   try {
     response = await http.post(url, body: json.encode(jsonMap), headers: headers);
   } catch (Exception) {
-    showErrorDialog(context, "The Server is not responding (001)", "Please try again later.");
+    showErrorDialog(context, "The Server is not responding", "Please try again later.");
     return {};
   }
   
   if (response == null || response.statusCode != 200) {
-    showErrorDialog(context, "An error has occurred (001)", "Please try again.");
+    showErrorDialog(context, "An error has occurred", "Please try again.");
     return {};
   }
 
@@ -88,9 +88,9 @@ Future<Map> existingLogin(int token, [BuildContext context]) async {
 
   http.Response response;
   Map jsonResponse = {};
-  String url = '${globals.baseUrl}getLoginId?token=$token';
+  String url = '${globals.baseUrl}V1/login/$token';
   try {
-    response = await http.get(url, headers: headers);
+    response = await http.post(url, headers: headers);
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding", "Please try again later.");
     return {};
@@ -579,6 +579,124 @@ Future<Map> deleteService(BuildContext context, int token, int serviceId) async 
       "results": jsonResponse['results'],
       "serviceId": serviceId
     };
+  }else {
+    return null;
+  }
+}
+
+Future<List<User>> getFollowedUsers(BuildContext context, int token) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}V1/users/following?token=$token";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    var users = Users(jsonResponse['users']);
+    return users.list;
+  }else {
+    return null;
+  }
+}
+
+Future<globals.PaymentMethod> getPaymentMethod(BuildContext context, String token) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}V1/payment-method/$token";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    return new globals.PaymentMethod(jsonResponse['payment_method']);
+  }else {
+    return null;
+  }
+}
+
+Future<Availability> setUserAvailability(BuildContext context, int token, String day, String start, String end, bool isClosed) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  Map jsonMap = {
+    "token" : token,
+    "day" : day,
+    "start" : start,
+    "end" : end,
+    "closed": isClosed ? 1 : 0
+  };
+
+  String url = "${globals.baseUrl}V1/availability";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    return new Availability(jsonResponse['results'][0]);
   }else {
     return null;
   }

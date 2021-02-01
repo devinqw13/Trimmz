@@ -17,6 +17,10 @@ bool darkModeEnabled;
 
 UserControllerState userControllerState;
 
+double processingFee;
+double standardPayoutFee;
+double instantPayoutFee;
+
 class LoginUser {
   int token;
   String username;
@@ -36,8 +40,23 @@ class LoginUser {
 
 class StripeUser {
   String customerId;
-  String payoutMethod;
+  PaymentMethod payoutMethod;
+  String paymentMethodType;
   String payoutId;
   String accountId;
   String paymentId;
+}
+
+class PaymentMethod {
+  String id;
+  String brand;
+  String last4;
+  String fingerPrint;
+
+  PaymentMethod(Map input) {
+    this.id = input['id'];
+    this.brand = input['brand'];
+    this.last4 = input['last4'];
+    this.fingerPrint = input['fingerprint'];
+  }
 }

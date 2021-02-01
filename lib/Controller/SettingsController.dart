@@ -136,9 +136,9 @@ class SettingsControllerState extends State<SettingsController> {
         brightness: globals.userBrightness,
       ),
       child: new Scaffold(
+        backgroundColor: globals.darkModeEnabled ? richBlack : Color(0xFFFAFAFA),
         appBar: new AppBar(
           brightness: globals.userBrightness,
-          backgroundColor: globals.darkModeEnabled ? richBlack : Colors.white,
           centerTitle: true,
           title: new Text(
             "Settings",
