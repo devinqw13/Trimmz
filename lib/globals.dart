@@ -41,23 +41,34 @@ class LoginUser {
 
 class StripeUser {
   String customerId;
-  PaymentMethod payoutMethod;
+  StripePaymentMethod payoutMethod;
   String paymentMethodType;
   String payoutId;
   String accountId;
   String paymentId;
 }
 
-class PaymentMethod {
+class StripePaymentMethod {
   String id;
   String brand;
   String last4;
   String fingerPrint;
+  Widget brandIcon;
 
-  PaymentMethod(Map input) {
+  StripePaymentMethod(Map input) {
     this.id = input['id'];
     this.brand = input['brand'];
     this.last4 = input['last4'];
     this.fingerPrint = input['fingerprint'];
+
+    if(input['brand'] == 'visa') {
+      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/visa1.png'),fit: BoxFit.cover),height: 25));
+    }else if(input['brand'] == 'discover'){
+      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/discover1.png'),fit: BoxFit.cover),height: 25));
+    }else if(input['brand'] == 'amex'){
+      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/amex1.png'),fit: BoxFit.cover),height: 25));
+    }else if(input['brand'] == 'mastercard'){
+      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/mastercard1.png'),fit: BoxFit.cover),height: 25));
+    }
   }
 }

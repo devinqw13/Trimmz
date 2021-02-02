@@ -16,7 +16,6 @@ import 'package:trimmz/Model/Service.dart';
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:expandable/expandable.dart';
 import 'package:trimmz/PaymentMethodCardWidget.dart';
-import 'package:stripe_payment/stripe_payment.dart';
 
 class BookAppointmentController extends StatefulWidget {
   final User user;
@@ -437,7 +436,7 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
           return FadeTransition(
             opacity: Tween(begin: 0.0, end: 1.0).animate(animation),
             child: Container(
-              margin: const EdgeInsets.all(6.0),
+              margin: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.blue[500]
@@ -455,7 +454,7 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
           return FadeTransition(
             opacity: Tween(begin: 0.0, end: 1.0).animate(animation),
             child: Container(
-              margin: const EdgeInsets.all(6.0),
+              margin: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[350]
@@ -628,7 +627,9 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PaymentMethodCard(),
+        PaymentMethodCard(
+          controllerState: this,
+        ),
         Row(
           children: [
             Expanded(

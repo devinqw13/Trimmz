@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:trimmz/Controller/BookAppointmentController.dart';
 import 'package:trimmz/Model/Availability.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'dart:convert';
@@ -621,7 +622,7 @@ Future<List<User>> getFollowedUsers(BuildContext context, int token) async {
   }
 }
 
-Future<globals.PaymentMethod> getPaymentMethod(BuildContext context, String token) async {
+Future<globals.StripePaymentMethod> getPaymentMethod(BuildContext context, String token) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Accept': 'application/json',
@@ -651,7 +652,10 @@ Future<globals.PaymentMethod> getPaymentMethod(BuildContext context, String toke
   }
 
   if(jsonResponse['error'] == 'false'){
-    return new globals.PaymentMethod(jsonResponse['payment_method']);
+    if(globals.stripe.customerId == null) {
+      globals.stripe.customerId = jsonResponse['customerId'];
+    }
+    return new globals.StripePaymentMethod(jsonResponse['payment_method'][0]);
   }else {
     return null;
   }
@@ -697,6 +701,50 @@ Future<Availability> setUserAvailability(BuildContext context, int token, String
 
   if(jsonResponse['error'] == 'false'){
     return new Availability(jsonResponse['results'][0]);
+  }else {
+    return null;
+  }
+}
+
+Future<globals.StripePaymentMethod> updatePaymentMethod(BuildContext context, int token, String paymentMethodId) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+    "token": token,
+    "paymentMethodId": paymentMethodId,
+  };
+
+  String url = "${globals.baseUrl}V1/payment-method";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    if(globals.stripe.customerId == null) {
+      globals.stripe.customerId = jsonResponse['customerId'];
+    }
+    return new globals.StripePaymentMethod(jsonResponse['payment_method']);
   }else {
     return null;
   }
