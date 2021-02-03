@@ -4,6 +4,15 @@ class Service {
   int duration;
   int price;
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'duration': duration,
+      'price': price
+    };
+  }
+
   Service(Map<String, dynamic> input) {
     this.id = input['id'];
     this.name = input['name'];

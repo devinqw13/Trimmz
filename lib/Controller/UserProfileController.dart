@@ -439,6 +439,7 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
   }
 
   buildExpansionTiles(User user) {
+    user.services.sort((a,b) => a.price.compareTo(b.price));
     return Container(
       margin: EdgeInsets.only(bottom: 5.0),
       child: Column(

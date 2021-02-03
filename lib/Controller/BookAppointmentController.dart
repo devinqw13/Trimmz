@@ -31,16 +31,17 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
   User user;
   CalendarController calendarController = new CalendarController();
   int overallDuration = 0;
-  List overallServices = [];
+  List<Map> overallServices = [];
   double overallSubTotal = 0;
   double processingFee = globals.processingFee;
   double overallTotal = globals.processingFee;
-  DateTime appointmentDateTime;
+  DateTime overallDateTime;
   Map<DateTime, List<RadioModel>> times;
   List<RadioModel> _availableTimes = new List<RadioModel>();
   AnimationController animation;
   List<ServiceOption> services = [];
   ExpandableController expandableController = new ExpandableController();
+  List<ExpandableController> servicesExpandableController = [];
   TextEditingController tipTFController = new TextEditingController();
   bool cardPaymentSelected = true;
   List<OptionType> tipOptions = [];
@@ -59,6 +60,8 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
 
     for(var item in user.services) {
       services.add(new ServiceOption(item));
+      services.sort((a,b) => a.price.compareTo(b.price));
+      servicesExpandableController.add(new ExpandableController());
     }
     
     animation = new AnimationController(
@@ -210,24 +213,168 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
     );
   }
 
-  void selectService(ServiceOption service) {
+  void selectService(ServiceOption service, int index) {
     setState(() {
       service.selected = !service.selected;
-      service.selected ?
-        overallDuration += service.duration:
-        overallDuration -= service.duration;
-      service.selected ?
-        overallTotal += double.parse(service.price.toString()):
-        overallTotal -= double.parse(service.price.toString());
-      service.selected ?
-        overallSubTotal += double.parse(service.price.toString()):
-        overallSubTotal -= double.parse(service.price.toString());
+      servicesExpandableController[index].expanded = !servicesExpandableController[index].expanded;
+
+      if(service.selected) {
+        overallServices.add(service.service.toMap());
+        overallSubTotal += double.parse(service.price.toString());
+        overallDuration += service.duration;
+      }else {
+        var osList = overallServices.where((e) => e['id'] == service.serviceId);
+        for(var i=0; i < osList.length; i++) {
+          overallSubTotal -= double.parse(service.price.toString());
+          overallDuration -= service.duration;
+        }
+
+        overallServices.removeWhere((e) => e['id'] == service.serviceId);
+        removeTip();
+        //------ END -------//
+      }
     });
-    var tip = tipOptions.where((element) => element.selected == true);
-    if(tip.length > 0) {
-      overallSubTotal = tip.first.value * overallSubTotal;
-    }
+    calculateTip();
     _onDaySelected(calendarController.selectedDay, null, null);
+  }
+
+  removeTip() {
+    double total = 0;
+    for(var item in overallServices) {
+      total += item['price'];
+    }
+    double estimate = overallSubTotal - total;
+    setState(() {
+      overallSubTotal -= estimate;
+    });
+  }
+
+  _buildServiceSubtractButton(int quantity, ServiceOption service) {
+    return Container(
+      height: 17.0,
+      child: RawMaterialButton(
+        constraints: BoxConstraints(
+          minWidth: 20
+        ),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        child: Text(
+          "-",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: quantity == 1 ? Colors.grey : Colors.blue
+          )
+        ),
+        shape: CircleBorder(side: BorderSide(color: quantity == 1 ? Colors.grey : Colors.blue)),
+        onPressed: quantity == 1 ? null : () {
+          FocusScope.of(context).unfocus();
+          setState(() {
+            overallServices.removeAt(
+              overallServices.lastIndexWhere((e) => e['id'] == service.serviceId)
+            );
+            overallDuration -= service.duration;
+            overallSubTotal -= double.parse(service.price.toString());
+          });
+          //TODO: CALCULATE TIP WHEN REMOVE (HINT: REMOVE TIP FIRST)
+        },
+      )
+    );
+  }
+
+  _buildServiceAddButton(int quantity, ServiceOption service) {
+    return Container(
+      height: 17.0,
+      child: RawMaterialButton(
+        constraints: BoxConstraints(
+          minWidth: 20
+        ),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        child: Center(
+            child: Text(
+            "+",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.blue
+            ),
+          )
+        ),
+        shape: CircleBorder(side: BorderSide(color: Colors.blue)),
+        onPressed: () {
+          FocusScope.of(context).unfocus();
+          setState(() {
+            overallServices.add(service.service.toMap());
+            overallSubTotal += double.parse(service.price.toString());
+            overallDuration -= service.duration;
+          });
+          //TODO: CALCULATE TIP WHEN ADD (HINT: REMOVE TIP FIRST)
+        },
+      )
+    );
+  }
+
+  _buildServiceItem(ServiceOption service, int index) {
+    return ExpandablePanel(
+      controller: servicesExpandableController[index],
+      tapHeaderToExpand: false,
+      tapBodyToCollapse: false,
+      hasIcon: false,
+      header: GestureDetector(
+        onTap: () => selectService(service, index),
+        child: Container(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              new Row(
+                children: [
+                  new CircularCheckBox(
+                    activeColor: Colors.blue,
+                    value: service.selected,
+                    onChanged: (bool value) => selectService(service, index)
+                  ),
+                  new Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        service.serviceName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600
+                        ),
+                      ),
+                      Text(
+                        "${service.duration} Minutes",
+                        style: TextStyle(
+                          color: Colors.grey
+                        )
+                      )
+                    ]
+                  )
+                ]
+              ),
+              Text(
+                "\$${service.price}",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600
+                )
+              )
+            ]
+          )
+        )
+      ),
+      expanded: Container(
+        child: Row(
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 20),
+              child: Text(overallServices.where((e) => e['id'] == service.serviceId).length.toString())
+            ),
+            Padding(padding: EdgeInsets.all(10)),
+            _buildServiceSubtractButton(overallServices.where((e) => e['id'] == service.serviceId).length, service),
+            Padding(padding: EdgeInsets.all(10)),
+            _buildServiceAddButton(overallServices.where((e) => e['id'] == service.serviceId).length, service)
+          ],
+        ),
+      ),
+    );
   }
 
   _buildSelectServices() {
@@ -253,49 +400,7 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
             itemCount: services.length,
             shrinkWrap: true,
             itemBuilder: (context, index) {
-              return new GestureDetector(
-                onTap: () => selectService(services[index]),
-                child: Container(
-                  color: Colors.transparent,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      new Row(
-                        children: [
-                          new CircularCheckBox(
-                            activeColor: Colors.blue,
-                            value: services[index].selected,
-                            onChanged: (bool value) => selectService(services[index])
-                          ),
-                          new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                services[index].serviceName,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600
-                                ),
-                              ),
-                              Text(
-                                "${services[index].duration} Minutes",
-                                style: TextStyle(
-                                  color: Colors.grey
-                                )
-                              )
-                            ]
-                          )
-                        ]
-                      ),
-                      Text(
-                        "\$${services[index].price}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600
-                        )
-                      )
-                    ]
-                  )
-                )
-              );
+              return _buildServiceItem(services[index], index);
             },
           )
         )
@@ -309,6 +414,7 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
     if(daySelected.isAfter(currentDay) || daySelected.isAtSameMomentAs(currentDay)) {
       var result = calculateAvailability(user.availability, user.appointments.calendarFormat, day);
       setState(() {
+        overallDateTime = null;
         _availableTimes = result;
       });
     }
@@ -488,13 +594,13 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
             return Container(
               child: new GestureDetector(
                 onTap: () {
-                  // var date = DateFormat('yyyy-MM-dd').format(DateTime.parse(calendarController.selectedDay.toString()));
-                  // var time = DateFormat('HH:mm:ss').format(DateFormat('hh:mm a').parse(_availableTimes[i].buttonText));
-                  // setState(() {
-                  //   _availableTimes.forEach((element) => element.isSelected = false);
-                  //   _availableTimes[i].isSelected = true;
-                  //   appointmentDateTime = DateTime.parse(date + ' ' + time);
-                  // });
+                  var date = DateFormat('yyyy-MM-dd').format(DateTime.parse(calendarController.selectedDay.toString()));
+                  var time = DateFormat('HH:mm:ss').format(DateFormat('hh:mm a').parse(_availableTimes[i].buttonText));
+                  setState(() {
+                    _availableTimes.forEach((element) => element.isSelected = false);
+                    _availableTimes[i].isSelected = true;
+                    overallDateTime = DateTime.parse(date + ' ' + time);
+                  });
                 },
                 child: new RadioItem(_availableTimes[i]),
               )
@@ -603,21 +709,35 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
     );
   }
 
+  calculateTip() {
+    var tip = tipOptions.where((element) => element.selected == true);
+    if(tip.length > 0) {
+      if(tip.first.key != "Custom") {
+        var amount = overallSubTotal * tip.first.value;
+        setState(() {
+          tipTFController.text = amount.toString();
+          overallSubTotal += amount;
+        });
+      }else {
+        if(tipTFController.text != "") {
+          var amount = overallSubTotal * double.parse(tipTFController.text);
+          print(amount);
+        }
+      }
+    }
+  }
+
   _buildPaymentMethodExpansion() {
     List<Widget> _children = [];
     for(var item in tipOptions) {
       _children.add(
         GestureDetector(
           onTap: () {
-            if(item.key != "Custom") {
-              setState(() {
-                tipTFController.text = (overallSubTotal * item.value).toStringAsFixed(2);
-              });
-            }
             setState(() {
               tipOptions.forEach((element) => element.selected = false);
               item.selected = true;
             });
+            calculateTip();
           },
           child: new RadioItem(new RadioModel(item.selected, item.key))
         ),
@@ -635,6 +755,7 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
             Expanded(
               child: TextFormField(
                 controller: tipTFController,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Tip",
                   labelStyle: TextStyle(
@@ -686,6 +807,10 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
   }
 
   _buildScreen() {
+    String total = (
+      overallSubTotal +
+      processingFee
+    ).toStringAsFixed(2);
     return Container(
       height: double.infinity,
       child: Column(
@@ -824,7 +949,7 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Text(
-                            "\$${overallTotal.toStringAsFixed(2)}",
+                            "\$$total",
                             style: TextStyle(
                               // fontSize: 13.0,
                               fontWeight: FontWeight.w600
@@ -957,12 +1082,14 @@ class ServiceOption {
   String serviceName;
   int duration;
   int price;
+  Service service;
 
   ServiceOption(Service input) {
     this.serviceId = input.id;
     this.serviceName = input.name;
     this.duration = input.duration;
     this.price = input.price;
+    this.service = input;
   }
 }
 
