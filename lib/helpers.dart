@@ -238,10 +238,10 @@ Future<dynamic> onWebSocketAction(String key, Map data, {dynamic other}) async {
   }
 }
 
-Future<Appointment> handleAppointmentStatus(BuildContext context, int status, int appointmentId) async {
-  Appointment appointment = await appointmentHandler(context, globals.user.token, appointmentId, status);
-  return appointment;
-}
+// Future<Appointment> handleAppointmentStatus(BuildContext context, int status, int appointmentId) async {
+//   Appointment appointment = await appointmentHandler(context, globals.user.token, appointmentId, status);
+//   return appointment;
+// }
 
 String formatTime(String time, bool showMinutes) {
   final df = DateTime.parse(DateFormat('Hms', 'en_US').parse(time).toString());

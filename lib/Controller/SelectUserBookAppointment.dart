@@ -184,7 +184,9 @@ class SelectUserBookAppointmentControllerState extends State<SelectUserBookAppoi
                 if (snapshot.hasData) {
                   return buildUsersList(snapshot.data);
                 } else {
-                  return CircularProgressIndicator();
+                  return CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation(Colors.blue)
+                  );
                 }
               }
             )

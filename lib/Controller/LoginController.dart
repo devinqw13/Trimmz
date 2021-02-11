@@ -8,6 +8,7 @@ import 'package:trimmz/helpers.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trimmz/palette.dart';
+import 'package:trimmz/Controller/ClientController.dart';
 
 class LoginController extends StatefulWidget {
   LoginController({Key key}) : super (key: key);
@@ -79,6 +80,7 @@ class LoginControllerState extends State<LoginController> {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
+      prefs.setBool('darkModeEnabled', globals.darkModeEnabled);
       prefs.setInt('token', globals.user.token);
       if (globals.darkModeEnabled) {
         globals.userBrightness = Brightness.dark;
@@ -87,7 +89,8 @@ class LoginControllerState extends State<LoginController> {
       }
 
       if(globals.user.token == 1) {
-
+        final clientController = new ClientController(dashboardItems: dashboardItems);
+        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => clientController));
       }else {
         final userController = new UserController(screenHeight: MediaQuery.of(context).size.height, dashboardItems: dashboardItems, appointments: appointments);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => userController));

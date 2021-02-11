@@ -1,4 +1,6 @@
 import 'package:intl/intl.dart';
+import 'package:trimmz/Model/Service.dart';
+import 'dart:convert';
 
 class Appointments {
   List<Appointment> list = [];
@@ -34,12 +36,14 @@ class Appointment {
   int clientID;
   int barberID;
   String clientName;
-  String packageName;
+  String userName;
+  List<Service> services = [];
   String appointmentTime;
   String appointmentFullTime;
   int status;
-  int price;
-  int tip;
+  double subTotal;
+  double tip;
+  double processingFee;
   int duration;
   String updated;
   String stripePaymentID;
@@ -49,7 +53,7 @@ class Appointment {
   String manualClientPhone;
   bool cashPayment;
   String clientProfilePicture;
-  String barberProfilePicture;
+  String userProfilePicture;
 
   Appointment(Map input) {
     final df = new DateFormat('hh:mm a');
@@ -58,21 +62,27 @@ class Appointment {
     this.clientID = input['client_id'];
     this.barberID = input['barber_id'];
     this.clientName = input['client_name'];
-    this.packageName = input['package_name'];
+    this.userName = input['user_name'];
     this.appointmentTime = df.format(DateTime.parse(input['date']));
     this.appointmentFullTime = input['date'];
     this.status = input['status'];
-    this.price = input['price'];
+    this.subTotal = input['subtotal'];
     this.tip = input['tip'];
+    this.processingFee = input['processing_fee'];
     this.duration = input['duration'];
     this.updated = input['updated'];
-    this.stripePaymentID = input['sp_paymentid'];
-    this.stripeCustomerID = input['sp_customerid'];
+    this.stripePaymentID = input['sp_paymentId'];
+    this.stripeCustomerID = input['sp_customerId'];
     this.email = input['email'];
     this.manualClientName = input['manual_client_name'];
     this.manualClientPhone = input['manual_client_phone'];
     this.cashPayment = input['cash_payment'] == 1 ? true : false;
     this.clientProfilePicture = input['client_pp'];
-    this.barberProfilePicture = input['barber_pp'];
+    this.userProfilePicture = input['barber_pp'];
+    
+    Map servicesJson = json.decode(input['services']);
+    servicesJson.forEach((key, value) {
+      services.add(new Service(value));
+    });
   }
 }

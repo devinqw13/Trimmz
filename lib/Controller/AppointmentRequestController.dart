@@ -4,9 +4,11 @@ import 'package:trimmz/calls.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:trimmz/palette.dart';
 import 'package:trimmz/Model/Appointment.dart';
+import 'package:trimmz/Model/Service.dart';
 import 'package:progress_hud/progress_hud.dart';
 import 'package:trimmz/helpers.dart';
 import 'package:intl/intl.dart';
+import 'package:trimmz/Controller/AppointmentDetailsController.dart';
 
 class AppointmentRequestController extends StatefulWidget {
   final List<Appointment> requests;
@@ -59,7 +61,8 @@ class AppointmentRequestControllerState extends State<AppointmentRequestControll
   }
 
   viewAppointment(Appointment appointment) {
-  
+    final appointmentDetailsController = new AppointmentDetailsController(appointment: appointment);
+    Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentDetailsController));
   }
 
   List<Widget> buildExpandedButtons(Appointment request) {
@@ -137,6 +140,50 @@ class AppointmentRequestControllerState extends State<AppointmentRequestControll
     return _children;                     
   }
 
+  buildServicesColumn(List<Service> services) {
+    Map servicesMap = {};
+    List<Widget> _children = [];
+
+    for(var service in services) {
+      if(!servicesMap.containsKey(service.id)) {
+        servicesMap[service.id] = [Map.from(service.toMap())];
+      }else {
+        servicesMap[service.id].add(Map.from(service.toMap()));
+      }
+    }
+
+    servicesMap.forEach((appointmentId, s) {
+      _children.add(
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: s[0]['name'],
+                style: TextStyle(
+                  color: globals.darkModeEnabled ? Colors.white : Colors.black,
+                  fontSize: 13.0
+                )
+              ),
+              s.length > 1 ? TextSpan(
+                text: " (${s.length})",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 12.0
+                )
+              ): TextSpan()
+            ]
+          ),
+        )
+      );
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: _children
+    );
+  }
+
   Widget _buildScreen() {
     return Container(
       padding: EdgeInsets.all(10),
@@ -164,33 +211,20 @@ class AppointmentRequestControllerState extends State<AppointmentRequestControll
                     ),
                     subtitle: Row(
                       children: [
-                        RichText(
-                          text: TextSpan(
-                            style: TextStyle(
-                              color: Colors.grey
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              df.format(DateTime.parse(requests[index].appointmentFullTime.toString())),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600
+                              )
                             ),
-                            children: [
-                              TextSpan(
-                                text: df.format(DateTime.parse(requests[index].appointmentFullTime.toString())),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600
-                                )
-                              ),
-                              DateTime.now().isAfter(DateTime.parse(requests[index].appointmentFullTime)) ?
-                              TextSpan(
-                                text: " (Expired)",
-                                style: TextStyle(
-                                  fontStyle: FontStyle.italic
-                                )
-                              ): TextSpan(),
-                              TextSpan(
-                                text: "\n${requests[index].packageName}\n",
-                              ),
-                              TextSpan(
-                                text: requests[index].cashPayment ? 'In Shop' : 'Mobile Pay',
-                              ),
-                            ]
-                          ),
+                            buildServicesColumn(requests[index].services),
+                            Text(
+                              requests[index].cashPayment ? 'In Shop' : 'Mobile Pay',
+                            ),
+                          ],
                         )
                       ]
                     ),

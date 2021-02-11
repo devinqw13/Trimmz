@@ -62,13 +62,13 @@ class StripePaymentMethod {
     this.fingerPrint = input['fingerprint'];
 
     if(input['brand'] == 'visa') {
-      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/visa1.png'),fit: BoxFit.cover),height: 25));
+      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/visa1.png'),fit: BoxFit.cover),height: 17));
     }else if(input['brand'] == 'discover'){
-      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/discover1.png'),fit: BoxFit.cover),height: 25));
+      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/discover1.png'),fit: BoxFit.cover),height: 17));
     }else if(input['brand'] == 'amex'){
-      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/amex1.png'),fit: BoxFit.cover),height: 25));
+      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/amex1.png'),fit: BoxFit.cover),height: 17));
     }else if(input['brand'] == 'mastercard'){
-      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/mastercard1.png'),fit: BoxFit.cover),height: 25));
+      this.brandIcon = Tab(icon: Container(child: Image(image: AssetImage('ccimages/mastercard1.png'),fit: BoxFit.cover),height: 17));
     }
   }
 }

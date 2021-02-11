@@ -23,7 +23,7 @@ class ConversationControllerState extends State<ConversationController> with Tic
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
   List<Conversation> conversationList = [];
-  TrimmzWebSocket webSocket = new TrimmzWebSocket();
+  TrimmzWebSocket webSocket = new TrimmzWebSocket("Conversation", 0);
 
   @override
   void initState() {
@@ -58,7 +58,7 @@ class ConversationControllerState extends State<ConversationController> with Tic
   webSocketReconnect() async {
     if(this.mounted) {
       setState(() {
-        webSocket = new TrimmzWebSocket();
+        webSocket = new TrimmzWebSocket("Conversation", 0);
       });
       webSocket.channel.stream.listen((event) async {
         webSocketAddMessage(event);
@@ -94,6 +94,10 @@ class ConversationControllerState extends State<ConversationController> with Tic
   }
 
   goToMessages(Conversation conversation) {
+    setState(() {
+      conversation.readConversation = true;
+    });
+    
     final messagesController = new MessagesController(conversation: conversation);
     Navigator.push(context, new MaterialPageRoute(builder: (context) => messagesController));
   }

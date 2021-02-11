@@ -31,6 +31,7 @@ class Conversation {
     this.recentSenderId = input['recent_sender_id'];
     this.recentSender = input['recent_sender'];
     this.profilePicture = input['profile_picture'];
+    this.readConversation = input['read_conversation'] == 1 ? true : false;
     this.created = DateTime.parse(input['recent_message_created']);
 
     for(var item in input2) {

@@ -13,6 +13,9 @@ class DashboardItem {
   bool isDashboard;
   int sort;
   int listNumber;
+  String clientConfig;
+  String iconData;
+  int defaultIconType;
 
   DashboardItem(Map input) {
     this.cmdID = input['id'];
@@ -20,10 +23,13 @@ class DashboardItem {
     this.name = input['cmd_name'];
     this.defaultDashboard = input['default_dashboard'] == 1 ? true : false;
     this.defaultUserDrawer = input ['default_user_drawer'] == 1 ? true : false;
-    this.defaultClientDrawer = input ['default_client_drawer'] == 1 ? true : false;
+    this.defaultClientDrawer = input ['default_client'] == 1 ? true : false;
     this.isDashboard = input ['is_dashboard'] == 1 ? true : false;
     this.sort = input['sort'];
-    this.listNumber = input['list_number'];
+    this.listNumber = input['list_number']; 
+    this.clientConfig = input['client_config'];
+    this.iconData = input['icon'];
+    this.defaultIconType = input['default_icon_type'];
 
     if(input['icon'] != null) {
       if(input['default_icon_type'] == 0) {

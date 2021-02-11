@@ -7,6 +7,8 @@ import 'package:progress_hud/progress_hud.dart';
 import 'package:intl/intl.dart';
 import 'package:trimmz/helpers.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:trimmz/Controller/AppointmentDetailsController.dart';
+import 'package:trimmz/Model/Service.dart';
 
 class AppointmentsController extends StatefulWidget {
   final List<Appointment> appointments;
@@ -47,9 +49,8 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
   }
 
   viewAppointment(Appointment appointment) {
-    progressHUD();
-
-    progressHUD();
+    final appointmentDetailsController = new AppointmentDetailsController(appointment: appointment);
+    Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentDetailsController));
   }
 
   _buildActionButtons(int status, Appointment appointment) {
@@ -128,6 +129,50 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
     }
   }
 
+  buildServicesColumn(List<Service> services) {
+    Map servicesMap = {};
+    List<Widget> _children = [];
+
+    for(var service in services) {
+      if(!servicesMap.containsKey(service.id)) {
+        servicesMap[service.id] = [Map.from(service.toMap())];
+      }else {
+        servicesMap[service.id].add(Map.from(service.toMap()));
+      }
+    }
+
+    servicesMap.forEach((appointmentId, s) {
+      _children.add(
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: s[0]['name'],
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 13.0,
+                )
+              ),
+              s.length > 1 ? TextSpan(
+                text: " (${s.length})",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 12.0
+                )
+              ): TextSpan()
+            ]
+          ),
+        )
+      );
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: _children
+    );
+  }
+
   Widget _buildScreen() {
     return Container(
       padding: EdgeInsets.all(10),
@@ -166,26 +211,6 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
                     subtitle: Row(
                       children: [
                         Expanded(
-                          // child: RichText(
-                          //   softWrap: true,
-                          //   overflow: TextOverflow.ellipsis,
-                          //   text: TextSpan(
-                          //     style: TextStyle(
-                          //       color: Colors.grey
-                          //     ),
-                          //     children: [
-                          //       TextSpan(
-                          //         text: df.format(DateTime.parse(appointments[index].appointmentFullTime.toString())),
-                          //       ),
-                          //       TextSpan(
-                          //         text: "\n${appointments[index].packageName}\n",
-                          //       ),
-                          //       TextSpan(
-                          //         text: appointments[index].cashPayment ? 'In Shop' : 'Mobile Pay',
-                          //       ),
-                          //     ]
-                          //   ),
-                          // )
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -196,12 +221,7 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
                                   fontWeight: FontWeight.w700
                                 ),
                               ),
-                              Text(
-                                "${appointments[index].packageName}",
-                                style: TextStyle(
-                                  color: Colors.grey
-                                ),
-                              ),
+                              buildServicesColumn(appointments[index].services),
                               Row(
                                 children: [
                                   Icon(appointments[index].cashPayment ? LineIcons.money : Icons.credit_card, size: 18, color: Color(0xFFD4AF37)),

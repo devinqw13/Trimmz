@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:stripe_payment/stripe_payment.dart';
 import 'package:trimmz/Controller/BookAppointmentController.dart';
 import 'package:trimmz/Model/Availability.dart';
 import 'package:trimmz/globals.dart' as globals;
@@ -15,11 +16,12 @@ import 'package:trimmz/helpers.dart';
 import 'package:trimmz/Model/Service.dart';
 import 'package:trimmz/Model/FeedItem.dart';
 
-Future<List<String>> getDeviceDetails() async {
+Future<List> getDeviceDetails() async {
   String deviceName;
   String deviceVersion;
   String deviceIdentifier;
   String deviceType;
+  bool isPhysicalDevice;
   final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
   try {
     if (Platform.isAndroid) {
@@ -27,19 +29,21 @@ Future<List<String>> getDeviceDetails() async {
       deviceName = build.model;
       deviceVersion = build.version.toString();
       deviceIdentifier = build.id;
+      isPhysicalDevice = build.isPhysicalDevice;
       deviceType = 'Android';
     } else if (Platform.isIOS) {
       var data = await deviceInfoPlugin.iosInfo;
       deviceName = data.name;
       deviceVersion = data.systemVersion;
       deviceIdentifier = data.identifierForVendor; // UUID for iOS
+      isPhysicalDevice = data.isPhysicalDevice;
       deviceType = 'iOS';
     }
   } on Exception {
     print("failed to get platform version");
   }
 
-  return [deviceName, deviceVersion, deviceIdentifier, deviceType];
+  return [deviceName, deviceVersion, deviceIdentifier, deviceType, isPhysicalDevice];
 }
 
 Future<Map> login(BuildContext context, String username, String password) async {
@@ -154,7 +158,8 @@ Future<Appointments> getBarberAppointments(BuildContext context, int userid) asy
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}getBarberAppointments?token=$userid";
+  // String url = "${globals.baseUrl}getBarberAppointments?token=$userid";
+  String url = "${globals.baseUrl}V1/appointments?token=$userid";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -515,7 +520,7 @@ Future<List<FeedItem>> getUserFeed(BuildContext context, int token) async {
   http.Response response;
 
   // String url = "${globals.baseUrl}V1/userFeed?token=$token";
-  String url = "${globals.baseUrl}getPosts?token=$token&type=2";
+  String url = "${globals.baseUrl}getPosts?token=$token&type=1";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -655,7 +660,47 @@ Future<globals.StripePaymentMethod> getPaymentMethod(BuildContext context, Strin
     if(globals.stripe.customerId == null) {
       globals.stripe.customerId = jsonResponse['customerId'];
     }
-    return new globals.StripePaymentMethod(jsonResponse['payment_method'][0]);
+    if(jsonResponse['payment_method'].length > 0) {
+      return new globals.StripePaymentMethod(jsonResponse['payment_method'][0]);
+    }else {
+      return null;
+    }
+  }else {
+    return null;
+  }
+}
+
+Future<globals.StripePaymentMethod> getAppointmentPaymentMethod(BuildContext context, String token) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}V1/payment-method?id=$token";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    return new globals.StripePaymentMethod(jsonResponse['payment_method']);
   }else {
     return null;
   }
@@ -747,5 +792,107 @@ Future<globals.StripePaymentMethod> updatePaymentMethod(BuildContext context, in
     return new globals.StripePaymentMethod(jsonResponse['payment_method']);
   }else {
     return null;
+  }
+}
+
+Future<Appointment> bookAppointment(BuildContext context, int token, int userToken, double subTotal, num tip, double processingFee, List<Map> services, DateTime time, {Map paymentMethod, Map manual}) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+    "token": token,
+    "userToken": userToken,
+    "subTotal": subTotal,
+    "tip": tip,
+    "processingFee": processingFee,
+    "services": services,
+    "time": "$time"
+  };
+
+  if(paymentMethod != null){
+    jsonMap['paymentMethod'] = paymentMethod;
+  }
+  if(manual != null) {
+    jsonMap['manual'] = manual;
+  }
+  
+  String url = "${globals.baseUrl}V1/booking";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    print(Exception);
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == 'false'){
+    return new Appointment(jsonResponse['appointment'][0]);
+  }else {
+    return null;
+  }
+}
+
+Future<bool> setFirebaseToken(BuildContext context, String firebaseToken, int token) async {
+  Map<String, String> headers = {
+    'Content-type' : 'application/json', 
+    'Accept': 'application/json',
+  };
+
+  var deviceInfo = await getDeviceDetails();
+  if(!deviceInfo[4]) return null;
+
+  var jsonData = {
+    "userid": token,
+    "token": "$firebaseToken",
+    "device_type": '${deviceInfo[0]}',
+    "device_os_version": '${deviceInfo[1]}',
+    "device_id": '${deviceInfo[2]}',
+    "device_os": '${deviceInfo[3]}',
+    "created": '${DateTime.now()}'
+  };
+
+  String url = "${globals.baseUrl}setNotificationToken/";
+
+  Map jsonResponse = {};
+  http.Response response;
+  try {
+    response = await http.post(url, body: jsonEncode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (038)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (038)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    return true;
+  }else {
+    return false;
   }
 }

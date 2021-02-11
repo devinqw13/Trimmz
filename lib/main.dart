@@ -45,7 +45,7 @@ void main() async {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
-        '/': (context) => token == null ? new LoginController() : globals.user.userType == 2 ? UserController(dashboardItems: dashboardItems, appointments: appointments, screenHeight: MediaQuery.of(context).size.height) : ClientController(),
+        '/': (context) => token == null ? new LoginController() : globals.user.userType == 2 ? UserController(dashboardItems: dashboardItems, appointments: appointments, screenHeight: MediaQuery.of(context).size.height) : ClientController(dashboardItems: dashboardItems),
       },
       theme: new ThemeData(
         primaryColor: Colors.blue,

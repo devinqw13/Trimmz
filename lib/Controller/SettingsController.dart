@@ -15,7 +15,7 @@ class SettingsController extends StatefulWidget {
   SettingsControllerState createState() => new SettingsControllerState();
 }
 
-class SettingsControllerState extends State<SettingsController> {
+class SettingsControllerState extends State<SettingsController> with TickerProviderStateMixin {
   CupertinoSettings settings;
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;

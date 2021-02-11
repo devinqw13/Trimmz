@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:trimmz/calls.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:stripe_payment/stripe_payment.dart';
-import 'package:trimmz/Controller/BookAppointmentController.dart';
 
 class PaymentMethodCard extends StatefulWidget {
   final controllerState;
-  PaymentMethodCard({Key key, this.controllerState});
+  final ValueChanged<globals.StripePaymentMethod> onPaymentMethodChanged;
+  PaymentMethodCard({Key key, this.controllerState, this.onPaymentMethodChanged});
 
   @override
   _PaymentMethodCard createState() => _PaymentMethodCard();
@@ -31,10 +31,12 @@ class _PaymentMethodCard extends State<PaymentMethodCard> {
   }
 
   getPMData() async {
+    print(globals.stripe.customerId);
     if(globals.stripe.customerId != null) {
       globals.StripePaymentMethod result = await getPaymentMethod(context, globals.stripe.customerId);
       setState(() {
         paymentMethod = result;
+        widget.onPaymentMethodChanged(paymentMethod);
       });
     }
   }
@@ -69,6 +71,7 @@ class _PaymentMethodCard extends State<PaymentMethodCard> {
       var result = await updatePaymentMethod(context, globals.user.token, payMethod.id);
       setState(() {
         paymentMethod = result;
+        widget.onPaymentMethodChanged(paymentMethod);
       });
       widget.controllerState.progressHUD();
     }).catchError(onError);

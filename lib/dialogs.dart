@@ -82,7 +82,7 @@ showMultipleErrorDialog(BuildContext context, String title, List<String> message
               physics: NeverScrollableScrollPhysics(),
               itemCount: messages.length,
               itemBuilder: (context, i) {
-                return Text(messages[i], style: TextStyle(color: Color.fromARGB(255, 80, 80, 80)));
+                return Text("- ${messages[i]}", style: TextStyle(color: Color.fromARGB(255, 80, 80, 80)));
               },
             )
           ),

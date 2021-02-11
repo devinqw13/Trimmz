@@ -24,10 +24,12 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
   bool _visible = false;
   List<MessageBubble> messageWidgets = [];
   List<Message> messages = [];
-  TrimmzWebSocket webSocket = new TrimmzWebSocket();
+  TrimmzWebSocket webSocket;
 
   @override
   void initState() {
+    webSocket = new TrimmzWebSocket("Messages", widget.conversation.id);
+
     conversation = widget.conversation;
     widget.conversation.messages.forEach((element) {messages.add(element);});
 
@@ -76,7 +78,7 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
   webSocketReconnect() async {
     if(this.mounted) {
       setState(() {
-        webSocket = new TrimmzWebSocket();
+        webSocket = new TrimmzWebSocket("Messages", conversation.id);
       });
       webSocket.channel.stream.listen((event) async {
         webSocketAddMessage(event);
@@ -107,6 +109,7 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
       "action": "onaction",
       "key": "sendMessage",
       "token": conversation.userId,
+      "recipientUsername": conversation.username,
       "senderId": globals.user.token,
       "conversationId": conversation.id,
       "message": messageTFController.text,

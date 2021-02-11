@@ -16,6 +16,10 @@ import 'package:trimmz/Model/Service.dart';
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:expandable/expandable.dart';
 import 'package:trimmz/PaymentMethodCardWidget.dart';
+import 'package:trimmz/CustomSlidePanel.dart';
+import 'package:trimmz/dialogs.dart';
+import 'package:trimmz/calls.dart';
+import 'package:trimmz/Controller/AppointmentDetailsController.dart';
 
 class BookAppointmentController extends StatefulWidget {
   final User user;
@@ -33,6 +37,8 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
   int overallDuration = 0;
   List<Map> overallServices = [];
   double overallSubTotal = 0;
+  num overallTip = 0;
+  String overallTipString = "0";
   double processingFee = globals.processingFee;
   double overallTotal = globals.processingFee;
   DateTime overallDateTime;
@@ -45,9 +51,14 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
   TextEditingController tipTFController = new TextEditingController();
   bool cardPaymentSelected = true;
   List<OptionType> tipOptions = [];
+  GlobalKey key = GlobalKey();
+  double initPanelHeight = 100;
+  globals.StripePaymentMethod paymentMethod;
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _getKeySize());
+
     user = widget.user;
 
     tipOptions.add(OptionType(key: "10%", value: 0.1, selected: false));
@@ -85,6 +96,15 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
   void dispose() {
     animation.dispose();
     super.dispose();
+  }
+
+  _getKeySize() {
+    final RenderBox renderBoxRed = key.currentContext.findRenderObject();
+    final size = renderBoxRed.size;
+
+    setState(() {
+      initPanelHeight = size.height;
+    });
   }
 
   void progressHUD() {
@@ -222,6 +242,7 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
         overallServices.add(service.service.toMap());
         overallSubTotal += double.parse(service.price.toString());
         overallDuration += service.duration;
+        removeTip();
       }else {
         var osList = overallServices.where((e) => e['id'] == service.serviceId);
         for(var i=0; i < osList.length; i++) {
@@ -274,7 +295,9 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
             overallDuration -= service.duration;
             overallSubTotal -= double.parse(service.price.toString());
           });
-          //TODO: CALCULATE TIP WHEN REMOVE (HINT: REMOVE TIP FIRST)
+          removeTip();
+          calculateTip();
+          _onDaySelected(calendarController.selectedDay, null, null);
         },
       )
     );
@@ -303,9 +326,11 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
           setState(() {
             overallServices.add(service.service.toMap());
             overallSubTotal += double.parse(service.price.toString());
-            overallDuration -= service.duration;
+            overallDuration += service.duration;
           });
-          //TODO: CALCULATE TIP WHEN ADD (HINT: REMOVE TIP FIRST)
+          removeTip();
+          calculateTip();
+          _onDaySelected(calendarController.selectedDay, null, null);
         },
       )
     );
@@ -713,10 +738,21 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
     var tip = tipOptions.where((element) => element.selected == true);
     if(tip.length > 0) {
       if(tip.first.key != "Custom") {
-        var amount = overallSubTotal * tip.first.value;
+        String tipString;
+        num amount = overallSubTotal * tip.first.value;
+        if(amount == amount.truncate()) {
+          amount = amount.toInt();
+          tipString = amount.toInt().toString();
+        }else {
+          amount = amount;
+          final oCcy = new NumberFormat("#,##0.00", "en_US");
+          tipString = oCcy.format(double.parse(amount.toStringAsFixed(2)));
+        }
         setState(() {
-          tipTFController.text = amount.toString();
-          overallSubTotal += amount;
+          overallTip = amount;
+          overallTipString = tipString;
+          tipTFController.text = tipString;
+          // overallSubTotal += amount;
         });
       }else {
         if(tipTFController.text != "") {
@@ -737,6 +773,7 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
               tipOptions.forEach((element) => element.selected = false);
               item.selected = true;
             });
+            removeTip();
             calculateTip();
           },
           child: new RadioItem(new RadioModel(item.selected, item.key))
@@ -749,6 +786,11 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
       children: [
         PaymentMethodCard(
           controllerState: this,
+          onPaymentMethodChanged: (method) {
+            setState(() {
+              paymentMethod = method;
+            });
+          },
         ),
         Row(
           children: [
@@ -756,6 +798,12 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
               child: TextFormField(
                 controller: tipTFController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [
+                  // MaskedTextInputFormatter(
+                  //   mask: 'xx.xx',
+                  //   separator: '.',
+                  // ),
+                ],
                 decoration: InputDecoration(
                   labelText: "Tip",
                   labelStyle: TextStyle(
@@ -806,9 +854,54 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
     );
   }
 
+  _handleBookAppointment() async {
+    List<String> errorMessages = [];
+    Map paymentMethodJson = {
+      "customerId": globals.stripe.customerId,
+      "paymentMethodId": paymentMethod != null ? paymentMethod.id : null
+    };
+
+    if(overallServices.length == 0) {
+      errorMessages.add("Select at least one service");
+    }
+    if(overallDateTime == null) {
+      errorMessages.add("Select a date & time");
+    }
+    if(user.cardPaymentOnly && paymentMethod == null) {
+      errorMessages.add("Enter a payment method");
+    }
+    if(!user.cardPaymentOnly && cardPaymentSelected && paymentMethod == null) {
+      errorMessages.add("Enter a payment method or select another payment option");
+    }
+
+    if(errorMessages.length > 0) {
+      showMultipleErrorDialog(context, "Missing Information", errorMessages, other: "There is missing information that is needed:");
+      return;
+    }
+
+    progressHUD();
+    var result = await bookAppointment(
+      context,
+      globals.user.token, // client token
+      user.id, // user token
+      overallSubTotal,
+      overallTip,
+      processingFee,
+      overallServices,
+      overallDateTime,
+      paymentMethod:
+        user.cardPaymentOnly ? paymentMethodJson :
+        cardPaymentSelected ? paymentMethodJson : null
+    );
+    progressHUD();
+    final appointmentDetailsController = new AppointmentDetailsController(appointment: result);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => appointmentDetailsController));
+  }
+
   _buildScreen() {
     String total = (
       overallSubTotal +
+      overallTip +
       processingFee
     ).toStringAsFixed(2);
     return Container(
@@ -836,167 +929,221 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
               )
             )
           ),
-          Container(
-            padding: EdgeInsets.only(bottom: 20, top: 20, left: 25, right: 25),
-            decoration: BoxDecoration(
-              color: Color(0xff0a0a0a),
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0))
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Summary",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600
+          SlidingUpPanel(
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+            color: Color(0xff0a0a0a),
+            maxHeight: MediaQuery.of(context).size.height * .27,
+            minHeight: initPanelHeight,
+            panel: Container(
+              padding: EdgeInsets.only(left: 20, right: 20, top: 10),
+              child: ListView(
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  Text(
+                    "Summary",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600
+                    ),
                   ),
-                ),
-                Padding(padding: EdgeInsets.all(5.0)),
-                IntrinsicHeight(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: Text(
-                          'Sub Total', 
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13.0
-                          ),
-                        )
-                      ),
-                      new Container(
-                        width: 1.0,
-                        color: Colors.grey,
-                        margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
-                        padding: const EdgeInsets.symmetric(vertical: 0.0),
-                      ),
-                      Expanded(
-                        flex: 5,
-                        child: Align(
-                          alignment: Alignment.centerRight,
+                  Padding(padding: EdgeInsets.all(5.0)),
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 5,
                           child: Text(
-                            "\$${overallSubTotal.toStringAsFixed(2)}",
+                            'Sub Total', 
                             style: TextStyle(
                               color: Colors.grey,
-                              fontSize: 13.0,
-                              fontWeight: FontWeight.w600
+                              fontSize: 13.0
                             ),
-                          )
-                        )
-                      ),
-                    ]
-                  )
-                ),
-                Padding(padding: EdgeInsets.all(8.0)),
-                IntrinsicHeight(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: Text(
-                          'Processing Fees',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13.0
-                          ),
-                        )
-                      ),
-                      new Container(
-                        width: 1.0,
-                        color: Colors.grey,
-                        margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
-                        padding: const EdgeInsets.symmetric(vertical: 0.0),
-                      ),
-                      Expanded(
-                        flex: 5,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            "\$${processingFee.toStringAsFixed(2)}",
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 13.0,
-                              fontWeight: FontWeight.w600
-                            ),
-                          )
-                        )
-                      ),
-                    ]
-                  )
-                ),
-                Divider(),
-                IntrinsicHeight(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: Text(
-                          'Total Fees',
-                          style: TextStyle(
-                            // fontSize: 13.0
-                          ),
-                        )
-                      ),
-                      new Container(
-                        width: 1.0,
-                        color: Colors.grey,
-                        margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
-                        padding: const EdgeInsets.symmetric(vertical: 0.0),
-                      ),
-                      Expanded(
-                        flex: 5,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            "\$$total",
-                            style: TextStyle(
-                              // fontSize: 13.0,
-                              fontWeight: FontWeight.w600
-                            ),
-                          )
-                        )
-                      ),
-                    ]
-                  )
-                ),
-                Padding(padding: EdgeInsets.all(10.0)),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: globals.darkModeEnabled ? Color(0xff0a0a0a).withAlpha(225) : Color.fromARGB(110, 0, 0, 0),
-                          borderRadius: BorderRadius.all(Radius.circular(3)),
-                          border: Border.all(
-                            color: CustomColors1.mystic.withAlpha(100)
                           )
                         ),
-                        child: RippleButton(
-                          splashColor: CustomColors1.mystic.withAlpha(100),
-                          onPressed: () {
-                            FocusScope.of(context).unfocus();
-                            
-                          },
-                          child: Container(
-                            padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
-                            child: Center(
-                              child: Text(
-                                "Book Appointment",
-                                style: TextStyle(
-                                  color: Colors.white
-                                )
+                        new Container(
+                          width: 1.0,
+                          color: Colors.grey,
+                          margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
+                          padding: const EdgeInsets.symmetric(vertical: 0.0),
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              "\$${overallSubTotal.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13.0,
+                                fontWeight: FontWeight.w600
                               ),
                             )
                           )
-                        )
-                      ),
+                        ),
+                      ]
                     )
-                  ]
-                )
-              ],
+                  ),
+                  Padding(padding: EdgeInsets.all(8.0)),
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text(
+                            'Tip', 
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 13.0
+                            ),
+                          )
+                        ),
+                        new Container(
+                          width: 1.0,
+                          color: Colors.grey,
+                          margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
+                          padding: const EdgeInsets.symmetric(vertical: 0.0),
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              "\$$overallTipString",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13.0,
+                                fontWeight: FontWeight.w600
+                              ),
+                            )
+                          )
+                        ),
+                      ]
+                    )
+                  ),
+                  Padding(padding: EdgeInsets.all(8.0)),
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text(
+                            'Processing Fees',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 13.0
+                            ),
+                          )
+                        ),
+                        new Container(
+                          width: 1.0,
+                          color: Colors.grey,
+                          margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
+                          padding: const EdgeInsets.symmetric(vertical: 0.0),
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              "\$${processingFee.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13.0,
+                                fontWeight: FontWeight.w600
+                              ),
+                            )
+                          )
+                        ),
+                      ]
+                    )
+                  ),
+                  Divider()
+                ]
+              )
             ),
-          ),
+            footer: Container(
+              key: key,
+              decoration: BoxDecoration(
+                color: Color(0xff0a0a0a),
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+              ),
+              padding: EdgeInsets.only(bottom: 20, top: 20, left: 20, right: 20),
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(top: 0.0, bottom: 10.0),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 5,
+                            child: Text(
+                              'Total Fees',
+                              style: TextStyle(
+                                // fontSize: 13.0
+                              ),
+                            )
+                          ),
+                          // new Container(
+                          //   width: 1.0,
+                          //   color: Colors.grey,
+                          //   margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
+                          //   padding: const EdgeInsets.symmetric(vertical: 0.0),
+                          // ),
+                          Expanded(
+                            flex: 5,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                "\$$total",
+                                style: TextStyle(
+                                  // fontSize: 13.0,
+                                  fontWeight: FontWeight.w600
+                                ),
+                              )
+                            )
+                          ),
+                        ]
+                      )
+                    )
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: globals.darkModeEnabled ? Color(0xff0a0a0a).withAlpha(225) : Color.fromARGB(110, 0, 0, 0),
+                            borderRadius: BorderRadius.all(Radius.circular(3)),
+                            border: Border.all(
+                              color: CustomColors1.mystic.withAlpha(100)
+                            )
+                          ),
+                          child: RippleButton(
+                            splashColor: CustomColors1.mystic.withAlpha(100),
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              _handleBookAppointment();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
+                              child: Center(
+                                child: Text(
+                                  "Book Appointment",
+                                  style: TextStyle(
+                                    color: Colors.white
+                                  )
+                                ),
+                              )
+                            )
+                          )
+                        ),
+                      )
+                    ]
+                  ),
+                ]
+              )
+            )
+          )
         ]
       ),
     );

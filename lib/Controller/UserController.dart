@@ -24,6 +24,10 @@ import 'package:trimmz/Controller/NotificationCenterController.dart';
 import 'package:trimmz/dialogs.dart';
 import 'package:trimmz/FeedItemWidget.dart';
 import 'package:trimmz/RippleButton.dart';
+import 'package:trimmz/Model/Service.dart';
+import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:io';
 
 class UserController extends StatefulWidget {
   final List<DashboardItem> dashboardItems;
@@ -63,9 +67,12 @@ class UserControllerState extends State<UserController> with TickerProviderState
   AsyncMemoizer _memoizer;
   AsyncMemoizer _memoizer2;
   var refreshFeedKey = GlobalKey<RefreshIndicatorState>();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
+    firebaseCloudMessagingListeners();
+
     globals.userControllerState = this;
 
     _memoizer = AsyncMemoizer();
@@ -163,6 +170,36 @@ class UserControllerState extends State<UserController> with TickerProviderState
     });
 
     super.initState();
+  }
+  
+  void firebaseCloudMessagingListeners() {
+    if (Platform.isIOS) iOSPermission();
+
+    _firebaseMessaging.getToken().then((token) async {
+      print("CLOUD MESSAGING TOKEN: " + token);
+      await setFirebaseToken(context, token, globals.user.token);
+    });
+
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        
+      },
+      onResume: (Map<String, dynamic> message) async {
+        
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        
+      },
+    );
+  }
+
+  void iOSPermission() {
+    _firebaseMessaging.requestNotificationPermissions(
+        IosNotificationSettings(sound: true, badge: true, alert: true)
+    );
+    _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings){
+
+    });
   }
 
   List<List<DashboardItem>> generateDrawerLists() {
@@ -649,6 +686,56 @@ class UserControllerState extends State<UserController> with TickerProviderState
     }
   }
 
+  buildServicesColumn(String servicesMap) {
+    List<Service> services = [];
+    Map servicesJson = json.decode(servicesMap);
+    servicesJson.forEach((key, value) {
+      services.add(new Service(value));
+    });
+
+    Map servicesMap2 = {};
+    List<Widget> _children = [];
+
+    for(var service in services) {
+      if(!servicesMap2.containsKey(service.id)) {
+        servicesMap2[service.id] = [Map.from(service.toMap())];
+      }else {
+        servicesMap2[service.id].add(Map.from(service.toMap()));
+      }
+    }
+
+    servicesMap2.forEach((appointmentId, s) {
+      _children.add(
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: s[0]['name'],
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 13.0, 
+                )
+              ),
+              s.length > 1 ? TextSpan(
+                text: " (${s.length})",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 12.0
+                )
+              ): TextSpan()
+            ]
+          ),
+        )
+      );
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: _children
+    );
+  }
+
   _buildCalendarList() {
     if(_selectedAppointments.length > 0) {
       return Container(
@@ -665,30 +752,27 @@ class UserControllerState extends State<UserController> with TickerProviderState
               child: IntrinsicHeight(
                 child: Row(
                   children: [
-                    Expanded(
-                      flex: 1,
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: startTime,
-                              style: TextStyle(
-                                color: globals.darkModeEnabled ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13.0
-                              )
-                            ),
-                            TextSpan(
-                              text: '\n'+endTime,
-                              style: TextStyle(
-                                color: textGrey,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 12.0
-                              )
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: startTime,
+                            style: TextStyle(
+                              color: globals.darkModeEnabled ? Colors.white : Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13.0
                             )
-                          ]
-                        ),
-                      )
+                          ),
+                          TextSpan(
+                            text: '\n'+endTime,
+                            style: TextStyle(
+                              color: textGrey,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 12.0
+                            )
+                          )
+                        ]
+                      ),
                     ),
                     new Container(
                       width: 4.0,
@@ -697,7 +781,6 @@ class UserControllerState extends State<UserController> with TickerProviderState
                       padding: const EdgeInsets.symmetric(vertical: 15.0),
                     ),
                     Expanded(
-                      flex: 5,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -713,13 +796,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                               _selectedAppointments[index]['client_id'] == 0 ? Icon(LineIcons.pencil, size: 17, color: textGrey) : Container()
                             ]
                           ),
-                          Text(
-                            _selectedAppointments[index]['package_name'],
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: textGrey
-                            ),
-                          ),
+                          buildServicesColumn(_selectedAppointments[index]['services']),
                           Row(
                             children: [
                               Icon(_selectedAppointments[index]['cash_payment'] == 1 ? LineIcons.money : Icons.credit_card, size: 18, color: Color(0xFFD4AF37))
@@ -1000,7 +1077,9 @@ class UserControllerState extends State<UserController> with TickerProviderState
                 return buildEmptyFeed();
               }
             }else {
-              return CircularProgressIndicator();
+              return CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation(Colors.blue)
+              );
             }
             break;
           default:
@@ -1017,7 +1096,9 @@ class UserControllerState extends State<UserController> with TickerProviderState
         if (snapshot.hasData) {
           return buildSearchResults(snapshot.data);
         } else {
-          return CircularProgressIndicator();
+          return CircularProgressIndicator(
+            valueColor: new AlwaysStoppedAnimation(Colors.blue)
+          );
         }
       }
     );
@@ -1219,7 +1300,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
               return FadeTransition(
                 opacity: Tween(begin: 0.0, end: 1.0).animate(animation),
                 child: Container(
-                  margin: const EdgeInsets.all(6.0),
+                  margin: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: primaryColor
@@ -1237,7 +1318,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
               );
             }else {
              return Container(
-                margin: const EdgeInsets.all(6.0),
+                margin: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: DateFormat('yyyy-MM-dd').format(date) == DateFormat('yyyy-MM-dd').format(DateTime.now()) ? primaryColor : Colors.transparent
@@ -1257,7 +1338,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
           todayDayBuilder: (context, date, _) {
             if(_calendarWidgetStatus == WidgetStatus.VISIBLE) {
               return Container(
-                margin: const EdgeInsets.all(6.0),
+                margin: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Color.fromRGBO(32, 111, 152, 0.5)
@@ -1271,7 +1352,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
               );
             }else {
               return Container(
-                margin: const EdgeInsets.all(6.0),
+                margin: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: primaryColor
