@@ -205,7 +205,7 @@ class FeedControllerState extends State<FeedController> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: new Text(
-          "Welcome ${globals.user.name}",
+          "Welcome ${globals.user.name}!",
           style: TextStyle(
             fontWeight: FontWeight.normal,
             fontSize: 18.0

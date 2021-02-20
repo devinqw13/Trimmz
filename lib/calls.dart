@@ -149,7 +149,7 @@ Future<List<DashboardItem>> getDashboardItems(int token, BuildContext context) a
   return returnItems;
 }
 
-Future<Appointments> getBarberAppointments(BuildContext context, int userid) async {
+Future<Appointments> getAppointments(BuildContext context, int userid, int userType) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Accept': 'application/json',
@@ -158,8 +158,7 @@ Future<Appointments> getBarberAppointments(BuildContext context, int userid) asy
   Map jsonResponse = {};
   http.Response response;
 
-  // String url = "${globals.baseUrl}getBarberAppointments?token=$userid";
-  String url = "${globals.baseUrl}V1/appointments?token=$userid";
+  String url = "${globals.baseUrl}V1/appointments?token=$userid&userType=$userType";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -181,7 +180,7 @@ Future<Appointments> getBarberAppointments(BuildContext context, int userid) asy
 
   if(jsonResponse['error'] == 'false'){
     var appointments = Appointments(jsonResponse['appointments']);
-
+    print(appointments.list.length);
     return appointments;
   }else {
     return null;

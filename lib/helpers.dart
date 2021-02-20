@@ -103,6 +103,9 @@ getStatusBar(int status, var time) {
     case 2: {
       return Colors.red;
     }
+    case 3: {
+      return Colors.grey;
+    }
     case 4: {
       return Colors.indigo;
     }

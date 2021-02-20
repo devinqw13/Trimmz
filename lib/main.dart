@@ -36,7 +36,7 @@ void main() async {
     var res = await existingLogin(token);
     setGlobals(res);
     dashboardItems = await getDashboardItems(globals.user.token, context);
-    appointments = await getBarberAppointments(context, globals.user.token);
+    appointments = await getAppointments(context, globals.user.token, globals.user.userType);
   }
 
   runApp(
@@ -45,7 +45,7 @@ void main() async {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
-        '/': (context) => token == null ? new LoginController() : globals.user.userType == 2 ? UserController(dashboardItems: dashboardItems, appointments: appointments, screenHeight: MediaQuery.of(context).size.height) : ClientController(dashboardItems: dashboardItems),
+        '/': (context) => token == null ? new LoginController() : globals.user.userType == 2 ? UserController(dashboardItems: dashboardItems, appointments: appointments, screenHeight: MediaQuery.of(context).size.height) : ClientController(dashboardItems: dashboardItems, appointments: appointments),
       },
       theme: new ThemeData(
         primaryColor: Colors.blue,

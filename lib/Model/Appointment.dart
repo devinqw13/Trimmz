@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:trimmz/Model/Service.dart';
 import 'dart:convert';
+import 'package:trimmz/globals.dart' as globals;
 
 class Appointments {
   List<Appointment> list = [];
@@ -13,7 +14,7 @@ class Appointments {
       var dateString = item['date'];
       DateTime date = DateTime.parse(df.format(DateTime.parse(dateString)));
 
-      if(item['status'] == 3) {
+      if(item['status'] == 3 && globals.user.userType == 2) {
         Appointment appointment = new Appointment(item);
         requests.add(appointment);
       }else {

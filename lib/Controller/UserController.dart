@@ -294,7 +294,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
     Completer<Null> completer = new Completer<Null>();
     refreshKey.currentState.show();
     List<DashboardItem> dashItems = await getDashboardItems(globals.user.token, context);
-    var results = await getBarberAppointments(context, globals.user.token);
+    var results = await getAppointments(context, globals.user.token, globals.user.userType);
 
     completer.complete();
     setState(() {
