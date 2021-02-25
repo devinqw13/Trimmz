@@ -89,7 +89,7 @@ class LoginControllerState extends State<LoginController> {
       }
 
       if(globals.user.token == 1) {
-        final clientController = new ClientController(dashboardItems: dashboardItems);
+        final clientController = new ClientController(dashboardItems: dashboardItems, appointments: appointments);
         Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => clientController));
       }else {
         final userController = new UserController(screenHeight: MediaQuery.of(context).size.height, dashboardItems: dashboardItems, appointments: appointments);

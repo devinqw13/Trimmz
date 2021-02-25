@@ -180,7 +180,6 @@ Future<Appointments> getAppointments(BuildContext context, int userid, int userT
 
   if(jsonResponse['error'] == 'false'){
     var appointments = Appointments(jsonResponse['appointments']);
-    print(appointments.list.length);
     return appointments;
   }else {
     return null;
@@ -276,11 +275,11 @@ Future<List<Conversation>> getConversations(BuildContext context) async {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
     showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
-    return null;
+    return [];
   }
   if (response == null || response.statusCode != 200) {
     showErrorDialog(context, "An error has occurred", "Please try again.");
-    return null;
+    return [];
   }
 
   if (json.decode(response.body) is List) {
@@ -289,13 +288,17 @@ Future<List<Conversation>> getConversations(BuildContext context) async {
   } else {
     jsonResponse = json.decode(response.body);
   }
-
+  
   if(jsonResponse['error'] == 'false'){
-    cacheData("conversations", jsonResponse);
-    var conversations = Conversations(jsonResponse['conversations'], jsonResponse['messages']);
-    return conversations.list;
+    if(jsonResponse['conversations'].length > 0 && jsonResponse['messages'].length > 0) {
+      cacheData("conversations", jsonResponse);
+      var conversations = Conversations(jsonResponse['conversations'], jsonResponse['messages']);
+      return conversations.list;
+    }else {
+      return [];
+    }
   }else {
-    return null;
+    return [];
   }
 }
 

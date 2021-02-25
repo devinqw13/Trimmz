@@ -30,6 +30,7 @@ class ClientControllerState extends State<ClientController> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   int _index = 0;
   List<Widget> i = [];
+  Appointments appointments;
 
   @override
   void initState() {
@@ -42,10 +43,12 @@ class ClientControllerState extends State<ClientController> {
       text: 'Loading...'
     );
 
+    appointments = widget.appointments;
+
     i = [
       FeedController(dashboardItems: widget.dashboardItems),
       SearchController(),
-      ClientAppointmentsController(appointments: widget.appointments),
+      ClientAppointmentsController(appointments: appointments),
       SettingsController()
     ];
 

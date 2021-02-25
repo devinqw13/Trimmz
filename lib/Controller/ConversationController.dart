@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/RippleButton.dart';
 import 'package:trimmz/calls.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:progress_hud/progress_hud.dart';
@@ -7,22 +8,35 @@ import 'package:trimmz/helpers.dart';
 import 'package:trimmz/palette.dart';
 import 'package:trimmz/Model/Conversation.dart';
 import 'package:trimmz/Controller/MessagesController.dart';
+import 'package:trimmz/Controller/NewMessageController.dart';
 import 'package:trimmz/Model/TrimmzWebSocket.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'dart:convert';
+import 'package:line_icons/line_icons.dart';
+import 'package:trimmz/Model/WidgetStatus.dart';
+import 'package:trimmz/Model/User.dart';
+import 'package:circular_check_box/circular_check_box.dart';
+import 'dart:ui' as ui;
 
 class ConversationController extends StatefulWidget {
   final List<Conversation> cachedConversations;
-  ConversationController({Key key, this.cachedConversations}) : super (key: key);
+  final screenHeight;
+  ConversationController({Key key, this.cachedConversations, this.screenHeight}) : super (key: key);
 
   @override
   ConversationControllerState createState() => new ConversationControllerState();
 }
 
 class ConversationControllerState extends State<ConversationController> with TickerProviderStateMixin {
+  WidgetStatus _newMessageWidgetStatus = WidgetStatus.HIDDEN;
+  AnimationController newMessageAnimationController, opacityAnimationController;
+  Animation newMessagePositionAnimation, newMessageOpacityAnimation;
+  bool newMessageActive = true;
+  final duration = new Duration(milliseconds: 200);
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
   List<Conversation> conversationList = [];
+  List<NewMessageUser> newMessageUsers = [];
   TrimmzWebSocket webSocket = new TrimmzWebSocket("Conversation", 0);
 
   @override
@@ -41,6 +55,31 @@ class ConversationControllerState extends State<ConversationController> with Tic
     );
 
     initGetConversations();
+    getNewMessageUsers();
+
+    newMessageAnimationController = new AnimationController(duration: duration, vsync: this);
+    opacityAnimationController = new AnimationController(duration: duration, vsync: this);
+    newMessagePositionAnimation = new Tween(begin: 0.0, end: widget.screenHeight).animate(
+      new CurvedAnimation(parent: newMessageAnimationController, curve: Curves.easeInOut)
+    );
+    newMessageOpacityAnimation = new Tween(begin: 0.0, end: 1.0).animate(
+      new CurvedAnimation(parent: opacityAnimationController, curve: Curves.easeInOut)
+    );
+    newMessagePositionAnimation.addListener(() {
+      setState(() {});
+    });
+    newMessageOpacityAnimation.addListener(() {
+      setState(() {});
+    });
+    newMessageAnimationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (newMessageActive) {
+          _newMessageWidgetStatus = WidgetStatus.VISIBLE;
+        } else {
+          _newMessageWidgetStatus = WidgetStatus.HIDDEN;
+        }
+      }
+    });
 
     super.initState();
   }
@@ -49,6 +88,29 @@ class ConversationControllerState extends State<ConversationController> with Tic
   void dispose() {
     super.dispose();
     webSocket.channel.sink.close(status.goingAway);
+  }
+
+  getNewMessageUsers() async {
+    List<User> results = await getFollowedUsers(context, globals.user.token);
+
+    for(User item in results) {
+      setState(() {
+        newMessageUsers.add(new NewMessageUser(item));
+      });
+    }
+  }
+
+  void onTapDownAdd() {
+    if (_newMessageWidgetStatus == WidgetStatus.HIDDEN) {
+      newMessageAnimationController.forward(from: 0.0);
+      opacityAnimationController.forward(from: 0.0);
+      _newMessageWidgetStatus = WidgetStatus.VISIBLE;
+    }
+    else if (_newMessageWidgetStatus == WidgetStatus.VISIBLE) {
+      newMessageAnimationController.reverse(from: 400.0);
+      opacityAnimationController.reverse(from: 1.0);
+      _newMessageWidgetStatus = WidgetStatus.HIDDEN;
+    }
   }
 
   wserror(err) async {
@@ -76,10 +138,10 @@ class ConversationControllerState extends State<ConversationController> with Tic
 
   initGetConversations() async {
     List<Conversation> results = await getConversations(context);
-    results.sort((a,b) => a.created.compareTo(b.created));
     setState(() {
       conversationList = results;
     });
+    conversationList.sort((a,b) => a.created.compareTo(b.created));
   }
 
   void progressHUD() {
@@ -109,6 +171,7 @@ class ConversationControllerState extends State<ConversationController> with Tic
       child: SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           children: [
             Container(
               margin: EdgeInsets.only(bottom: 10.0),
@@ -142,7 +205,7 @@ class ConversationControllerState extends State<ConversationController> with Tic
                 ),
               )
             ),
-            ListView.builder(
+            conversationList.length > 0 ? ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: conversationList.length,
@@ -209,10 +272,194 @@ class ConversationControllerState extends State<ConversationController> with Tic
                   )
                 );
               },
-            )
+            ):
+            Center(child: Text("No Messages"))
           ],
         ),
       ),
+    );
+  }
+
+  buildUsersList() {
+    return new ListView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: newMessageUsers.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        return new Card(
+          color: Colors.transparent,
+          elevation: 0.0,
+          child: Container(
+            padding: EdgeInsets.all(5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    buildSmallUserProfilePicture(context, newMessageUsers[index].user.profilePicture, newMessageUsers[index].user.username),
+                    Padding(padding: EdgeInsets.all(5)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          newMessageUsers[index].user.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600
+                          )
+                        ),
+                        Text(newMessageUsers[index].user.username)
+                      ]
+                    )
+                  ],
+                ),
+                new CircularCheckBox(
+                  activeColor: Colors.blue,
+                  value: newMessageUsers[index].selected,
+                  onChanged: (bool value) {
+                    setState(() {
+                      newMessageUsers.forEach((element) => element.selected = false);
+                      newMessageUsers[index].selected = !newMessageUsers[index].selected;
+                    });
+                  }
+                ),
+              ]
+            )
+          )
+        );
+      },
+    );
+  }
+
+  buildNewMessageBody() {
+    return ListView(
+      children: [
+        Container(
+          margin: EdgeInsets.only(bottom: 10.0),
+          decoration: BoxDecoration(
+            color: globals.darkModeEnabled ? darkBackgroundGrey : Color.fromARGB(255, 232, 232, 232),
+            borderRadius: BorderRadius.circular(50.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 2.0,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TextField(
+            keyboardType: TextInputType.text,
+            autocorrect: false,
+            style: TextStyle(
+              color: globals.darkModeEnabled ? Colors.white : Colors.black,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(borderSide: BorderSide.none),
+              isDense: true,
+              contentPadding: EdgeInsets.only(left: 15, right: 8, top: 8, bottom: 8),
+              hintText: 'Search',
+              hintStyle: TextStyle(
+                color: globals.darkModeEnabled ? Colors.white54 : Colors.black54,
+                fontFamily: 'OpenSans',
+              ),
+            ),
+          )
+        ),
+        buildUsersList()
+      ]
+    );
+  }
+
+  getNewMessageOverlay() {
+    var newMessageHeight = 0.0;
+    var newMessageOpacity = 0.0;
+    switch(_newMessageWidgetStatus) {
+      case WidgetStatus.HIDDEN:
+        newMessageHeight = newMessagePositionAnimation.value;
+        newMessageOpacity = newMessageOpacityAnimation.value;
+        newMessageActive = false;
+        break;
+      case WidgetStatus.VISIBLE:
+        newMessageHeight = newMessagePositionAnimation.value;
+        newMessageOpacity = newMessageOpacityAnimation.value;
+        newMessageActive = true;
+        break;
+    }
+    return new BackdropFilter(
+      filter: new ui.ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
+      child: Container(
+        padding: EdgeInsets.only(bottom: 25, left: 10, right: 10),
+        width: MediaQuery.of(context).size.width,
+        height: newMessageHeight,
+        child: new Opacity(
+          opacity: newMessageOpacity,
+          child: Stack(
+            children: [
+              Column(
+                children: <Widget>[
+                  Expanded(
+                    child: buildNewMessageBody()
+                  ),
+                ],
+              ),
+              newMessageUsers.where((e) => e.selected == true).length > 0 ? Align(
+                alignment: Alignment.bottomCenter,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: globals.darkModeEnabled ? Color.fromARGB(225, 0, 0, 0) : Color.fromARGB(110, 0, 0, 0),
+                          borderRadius: BorderRadius.all(Radius.circular(3)),
+                          border: Border.all(
+                            color: CustomColors1.mystic.withAlpha(100)
+                          )
+                        ),
+                        child: RippleButton(
+                          splashColor: CustomColors1.mystic.withAlpha(100),
+                          onPressed: () {
+                            User selectedUser = newMessageUsers.firstWhere((e) => e.selected == true).user;
+
+                            var existItem = conversationList.where((e) => e.userId == selectedUser.id);
+
+                            setState(() {
+                              newMessageUsers.forEach((element) => element.selected = false);
+                            });
+
+                            onTapDownAdd();
+
+                            if(existItem.length > 0) {
+                              final messagesController = new MessagesController(conversation: existItem.first);
+                              Navigator.push(context, new MaterialPageRoute(builder: (context) => messagesController));
+                            }else {
+                              final newMessagesController = new NewMessagesController(user: selectedUser);
+                              Navigator.push(context, new MaterialPageRoute(builder: (context) => newMessagesController));
+                            }
+
+                          },
+                          child: Container(
+                            padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
+                            child: Center(
+                              child: Text(
+                                "Chat",
+                                style: TextStyle(
+                                  color: Colors.white
+                                )
+                              ),
+                            )
+                          )
+                        )
+                      ),
+                    )
+                  ]
+                )
+              ): Container()
+            ]
+          )
+        ),
+        color: const Color.fromARGB(255, 0, 0, 0),
+      )
     );
   }
 
@@ -237,11 +484,22 @@ class ConversationControllerState extends State<ConversationController> with Tic
           ),
           elevation: 0.0,
           actions: [
-            IconButton(
-              icon: Icon(Icons.drive_file_rename_outline),
+            _newMessageWidgetStatus != WidgetStatus.VISIBLE ? IconButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              icon: Icon(LineIcons.pencil_square),
               onPressed: () {
-
+                onTapDownAdd();
               },
+            ) :
+            FlatButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                onTapDownAdd();
+              },
+              child: Text("Cancel")
             )
           ],
         ),
@@ -254,6 +512,7 @@ class ConversationControllerState extends State<ConversationController> with Tic
               child: new Stack(
                 children: [
                   _buildScreen(),
+                  getNewMessageOverlay(),
                   _progressHUD,
                 ]
               )
@@ -262,5 +521,15 @@ class ConversationControllerState extends State<ConversationController> with Tic
         )
       )
     );
+  }
+}
+
+class NewMessageUser {
+  User user;
+  bool selected;
+
+  NewMessageUser(User input) {
+    this.user = input;
+    this.selected = false;
   }
 }

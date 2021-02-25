@@ -112,9 +112,8 @@ class ClientAppointmentsControllerState extends State<ClientAppointmentsControll
     Appointment appointment = upcoming.where((element) => element.id == results.id).first;
 
     setState(() {
-      upcoming.removeWhere((element) => element.id == appointment.id);
+      appointment.status = results.status;
     });
-    globals.userControllerState.refreshList();
     progressHUD();
   }
 

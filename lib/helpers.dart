@@ -72,7 +72,7 @@ Future<dynamic> buildMicroAppController(BuildContext context, DashboardItem item
     }
     case "drawer_messages": {
       var results = await getCached("conversations");
-      return new ConversationController(cachedConversations: results);
+      return new ConversationController(cachedConversations: results, screenHeight: MediaQuery.of(context).size.height);
     }
     case "drawer_book_appointment": {
       return new SelectUserBookAppointmentController(token: globals.user.token);
@@ -232,6 +232,24 @@ Future<dynamic> onWebSocketAction(String key, Map data, {dynamic other}) async {
       conversations.where((element) => element.id == data['conversationId']).first.recentSenderId = data['senderId'];
 
       conversations.where((element) => element.id == data['conversationId']).first.messages.insert(0, message);
+
+      return conversations;
+    }
+    case "newConversation": {
+      List<Conversation> conversations = other;
+
+      //Convert values to int datatype
+      data['conversation']['user_Id'] = int.parse(data['conversation']['user_Id']);
+      data['conversation']['recent_sender_id'] = int.parse(data['conversation']['recent_sender_id']);
+      data['conversation']['read_conversation'] = int.parse(data['conversation']['read_conversation']);
+      data['message'][0]['senderId'] = int.parse(data['message'][0]['senderId']);
+
+      //json name parameter returning as list (ISSUE)
+      data['conversation']['name'] = data['conversation']['name'][0];
+
+      var conversation = new Conversation(data['conversation'], data['message']);
+
+      conversations.add(conversation);
 
       return conversations;
     }
