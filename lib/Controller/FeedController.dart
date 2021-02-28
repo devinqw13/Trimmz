@@ -7,8 +7,13 @@ import 'package:trimmz/palette.dart';
 import 'package:trimmz/RippleButton.dart';
 import 'package:trimmz/FeedItemWidget.dart';
 import 'package:trimmz/Model/DashboardItem.dart';
+import 'package:trimmz/Model/NotificationItem.dart';
+import 'package:trimmz/Badge.dart';
+import 'package:trimmz/Controller/NotificationCenterController.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:io';
+import 'package:trimmz/Controller/ConversationController.dart';
 import 'package:trimmz/helpers.dart';
-import 'package:trimmz/dialogs.dart';
 
 class FeedController extends StatefulWidget {
   final List<DashboardItem> dashboardItems;
@@ -23,12 +28,14 @@ class FeedControllerState extends State<FeedController> {
   bool _loadingInProgress = false;
   AsyncMemoizer _memoizer;
   var refreshFeedKey = GlobalKey<RefreshIndicatorState>();
-  List<Widget> appBarWidgets = [];
+  List<NotificationItem> notifications = [];
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
+    firebaseCloudMessagingListeners();
+    initGetNotifications();
     _memoizer = AsyncMemoizer();
-    _buildAppBarWidgets();
 
     _progressHUD = new ProgressHUD(
       color: Colors.white,
@@ -38,6 +45,51 @@ class FeedControllerState extends State<FeedController> {
     );
 
     super.initState();
+  }
+  
+  initGetNotifications() async {
+    var result = await getNotifications(context, globals.user.token);
+    handleNotificationData(result);
+  }
+
+  handleNotificationData(var data) {
+    if(data is List<NotificationItem>) {
+      setState(() {
+        notifications = data;
+      });
+    }else {
+
+    }
+  }
+
+  void firebaseCloudMessagingListeners() {
+    if (Platform.isIOS) iOSPermission();
+
+    _firebaseMessaging.getToken().then((token) async {
+      print("CLOUD MESSAGING TOKEN: " + token);
+      await setFirebaseToken(context, token, globals.user.token);
+    });
+
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        
+      },
+      onResume: (Map<String, dynamic> message) async {
+        
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        
+      },
+    );
+  }
+
+  void iOSPermission() {
+    _firebaseMessaging.requestNotificationPermissions(
+        IosNotificationSettings(sound: true, badge: true, alert: true)
+    );
+    _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings){
+
+    });
   }
 
   void progressHUD() {
@@ -49,37 +101,6 @@ class FeedControllerState extends State<FeedController> {
       }
       _loadingInProgress = !_loadingInProgress;
     });
-  }
-
-  _buildAppBarWidgets() {
-    var items = widget.dashboardItems.where((e) => e.clientConfig == "HOME_APPBAR");
-    for(var item in items) {
-      Widget icon = new Icon(
-        IconData(
-          int.parse(item.iconData),
-          fontFamily: 'MaterialIcons'
-        ),
-        color: globals.darkModeEnabled ? Colors.white : darkBackgroundGrey
-      );
-
-      appBarWidgets.add(
-        IconButton(
-          padding: EdgeInsets.all(0),
-          icon: icon,
-          onPressed: () async {
-            progressHUD();
-            var microAppController = await buildMicroAppController(context, item);
-            if (microAppController == null) {
-              progressHUD();
-              showErrorDialog(context, "An error has occurred", "Could not open '${item.name}'. Please try again.");
-              return;
-            }
-            progressHUD();
-            Navigator.push(context, new MaterialPageRoute(builder: (context) => microAppController));
-          }
-        )
-      );
-    }
   }
 
   _fetchUserFeed() async {
@@ -184,8 +205,10 @@ class FeedControllerState extends State<FeedController> {
                 return buildEmptyFeed();
               }
             }else {
-              return CircularProgressIndicator(
-                valueColor: new AlwaysStoppedAnimation(Colors.blue)
+              return Center(
+                child: CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation(Colors.blue)
+                )
               );
             }
             break;
@@ -211,7 +234,43 @@ class FeedControllerState extends State<FeedController> {
             fontSize: 18.0
           ),
         ),
-        actions: appBarWidgets,
+        actions: [
+          Container(
+            margin: EdgeInsets.only(left: 8.0, right: 8.0),
+            child: GestureDetector(
+              child: Badge(
+                widget: Icon(Icons.messenger_outline_outlined),
+                count: notifications.where((e) => e.read == false).length
+              ),
+              onTap: () async {
+                var results = await getCached("conversations");
+                final messageController = new ConversationController(cachedConversations: results, screenHeight: MediaQuery.of(context).size.height);
+
+                Navigator.push(context, new MaterialPageRoute(builder: (context) => messageController));
+              },
+            )
+          ),
+
+          Container(
+            margin: EdgeInsets.only(left: 8.0, right: 8.0),
+            child: GestureDetector(
+              child: Badge(
+                widget: Icon(Icons.notifications_none_sharp),
+                count: notifications.where((e) => e.read == false).length
+              ),
+              onTap: () async {
+                final notificationCenterController = new NotificationCenterController(notifications: notifications);
+                await Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationCenterController));
+
+                for(var item in notifications) {
+                  setState(() {
+                    item.read = true;
+                  });
+                }
+              },
+            )
+          )
+        ],
         elevation: 0.0,
       ),
       body: Container(

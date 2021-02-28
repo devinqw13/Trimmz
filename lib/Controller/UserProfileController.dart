@@ -118,12 +118,15 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
               children: [
                 RippleButton(
                   splashColor: CustomColors1.mystic.withAlpha(100),
-                  onPressed: () {
-                    
+                  onPressed: () async {
+                    var result = await handleFollowing(context, globals.user.token, user.id, !user.isFollowing);
+                    setState(() {
+                      user.isFollowing = result;
+                    });
                   },
                   child: Container(
                     padding: EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 5),
-                    child: Text("Follow"),
+                    child: user.isFollowing ? Text("Following") : Text("Follow"),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(3)),
                       border: Border.all(
@@ -544,7 +547,7 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
 
   _buildBody() {
     return FutureBuilder(
-      future: getUserById(context, widget.token),
+      future: getUserById(context, widget.token, globals.user.token),
       builder: (context, snapshot) {
         if(snapshot.hasData) {
           return Container(
@@ -682,7 +685,7 @@ class CustomFlexibleSpace extends StatelessWidget {
 
   _buildHeader(BuildContext context, int token, bool blur) {
     return FutureBuilder(
-      future: getUserById(context, token),
+      future: getUserById(context, token, globals.user.token),
       builder: (context, snapshot) {
         if(snapshot.hasData) {
           return Container(

@@ -37,6 +37,7 @@ class User {
   List<GalleryItem> gallery = [];
   List<Service> services = [];
   Appointments appointments;
+  bool isFollowing;
 
   User(Map input) {
     this.id = input['id'];
@@ -57,6 +58,7 @@ class User {
     this.numOfReviews = input['num_of_reviews'];
     this.bio = input['biography'];
     this.cardPaymentOnly = input['client_payment_option'] == 0 ? false : true ?? false;
+    this.isFollowing = input['is_following'] != null ? true : false;
     if(input['availability'] != null) {
       for(var item in input['availability']) {
         this.availability.add(new Availability(item));

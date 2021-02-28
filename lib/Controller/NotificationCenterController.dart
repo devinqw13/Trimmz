@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:progress_hud/progress_hud.dart';
+import 'package:trimmz/helpers.dart';
 import 'package:trimmz/palette.dart';
 import 'package:trimmz/Model/NotificationItem.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:trimmz/calls.dart';
 
 class NotificationCenterController extends StatefulWidget {
-  NotificationCenterController({Key key}) : super (key: key);
+  final List<NotificationItem> notifications;
+  NotificationCenterController({Key key, this.notifications}) : super (key: key);
 
   @override
   NotificationCenterControllerState createState() => new NotificationCenterControllerState();
@@ -20,6 +24,10 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
   @override
   void initState() {
     super.initState();
+
+    readNotifications();
+    
+    notifications = widget.notifications;
 
     _progressHUD = new ProgressHUD(
       backgroundColor: Color.fromARGB(0, 0, 0, 0),
@@ -42,9 +50,12 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
     });
   }
 
+  readNotifications() {
+    var _ = setNotificationsRead(context, globals.user.token);
+  }
+
   Widget _buildScreen() {
     return Container(
-      padding: EdgeInsets.all(10),
       height: double.infinity,
       child: notifications.length > 0 ? SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
@@ -55,7 +66,45 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
               itemCount: notifications.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                return Text(notifications[index].body);
+                return Slidable(
+                  actionPane: SlidableStrechActionPane(),
+                  child: Container(
+                    color: Colors.transparent,
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    margin: EdgeInsets.only(top: 15, bottom: 15),
+                    child: Row(
+                      children: [
+                        buildSmallUserProfilePicture(context, notifications[index].profilePicture, notifications[index].fromUser),
+                        Padding(padding: EdgeInsets.all(5)),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              notifications[index].title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600
+                              )
+                            ),
+                            Text(notifications[index].body)
+                          ]
+                        )
+                      ]
+                    )
+                  ),
+                  secondaryActions: [
+                    IconSlideAction(
+                      caption: 'Remove',
+                      color: Colors.red,
+                      icon: Icons.delete,
+                      onTap: () {
+                        var _ = removeNotification(context, globals.user.token, notifications[index].id);
+                        setState(() {
+                          notifications.removeAt(index);
+                        });
+                      },
+                    ),
+                  ]
+                );
               }
             )
           ]
@@ -81,7 +130,7 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
           backgroundColor: globals.darkModeEnabled ? richBlack : Colors.white,
           centerTitle: true,
           title: new Text(
-            "Notification Center",
+            "Notifications",
             style: TextStyle(
               fontWeight: FontWeight.normal,
               fontSize: 18.0

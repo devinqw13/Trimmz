@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:stripe_payment/stripe_payment.dart';
-import 'package:trimmz/Controller/BookAppointmentController.dart';
 import 'package:trimmz/Model/Availability.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'dart:convert';
@@ -15,6 +13,7 @@ import 'package:trimmz/Model/Conversation.dart';
 import 'package:trimmz/helpers.dart';
 import 'package:trimmz/Model/Service.dart';
 import 'package:trimmz/Model/FeedItem.dart';
+import 'package:trimmz/Model/NotificationItem.dart';
 
 Future<List> getDeviceDetails() async {
   String deviceName;
@@ -223,7 +222,7 @@ Future<List<User>> getUsersByLocation(BuildContext context, int zipcode) async {
   }
 }
 
-Future<User> getUserById(BuildContext context, int token) async {
+Future<User> getUserById(BuildContext context, int token, int userid) async {
   Map<String, String> headers = {
     'Content-Type' : 'application/json',
     'Accept': 'application/json',
@@ -232,7 +231,7 @@ Future<User> getUserById(BuildContext context, int token) async {
   Map jsonResponse = {};
   http.Response response;
 
-  String url = "${globals.baseUrl}V1/users/id?token=$token";
+  String url = "${globals.baseUrl}V1/users/id?token=$token&userid=$userid";
 
   try {
     response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
@@ -897,4 +896,158 @@ Future<bool> setFirebaseToken(BuildContext context, String firebaseToken, int to
   }else {
     return false;
   }
+}
+
+Future<bool> handleFollowing(BuildContext context, int token, int userId, bool following) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonMap = {
+    "token" : token,
+    "userid" : userId,
+    "following": following
+  };
+
+  String url = "${globals.baseUrl}V1/users/following";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonMap), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (012)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  } 
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (012)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    return true;
+  }else {
+    return false;
+  }
+}
+
+Future<List<NotificationItem>> getNotifications(BuildContext context, int token) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}V1/notifications?token=$token";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == 'false'){
+    List<NotificationItem> notifications = [];
+    for(var item in jsonResponse['notifications']) {
+      notifications.add(new NotificationItem(item));
+    }
+    return notifications;
+  }else {
+    return [];
+  }
+}
+
+removeNotification(BuildContext context, int token, int notification) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}V1/notifications?token=$token&notification=$notification";
+
+  try {
+    response = await http.delete(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding (045)", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred (045)", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+}
+
+setNotificationsRead(BuildContext context, int token) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonData = {
+    "token": token,
+  };
+
+  String url = "${globals.baseUrl}V1/notifications";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  // if(jsonResponse['error'] == 'false'){
+  //   return true;
+  // }else {
+  //   return false;
+  // }
 }

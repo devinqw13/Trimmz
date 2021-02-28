@@ -25,9 +25,11 @@ import 'package:trimmz/dialogs.dart';
 import 'package:trimmz/FeedItemWidget.dart';
 import 'package:trimmz/RippleButton.dart';
 import 'package:trimmz/Model/Service.dart';
+import 'package:trimmz/Model/NotificationItem.dart';
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
+import 'package:trimmz/Badge.dart';
 
 class UserController extends StatefulWidget {
   final List<DashboardItem> dashboardItems;
@@ -66,12 +68,14 @@ class UserControllerState extends State<UserController> with TickerProviderState
   List<User> setLocatedUsers = [];
   AsyncMemoizer _memoizer;
   AsyncMemoizer _memoizer2;
+  List<NotificationItem> notifications = [];
   var refreshFeedKey = GlobalKey<RefreshIndicatorState>();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
     firebaseCloudMessagingListeners();
+    initGetNotifications();
 
     globals.userControllerState = this;
 
@@ -170,6 +174,21 @@ class UserControllerState extends State<UserController> with TickerProviderState
     });
 
     super.initState();
+  }
+
+  initGetNotifications() async {
+    var result = await getNotifications(context, globals.user.token);
+    handleNotificationData(result);
+  }
+
+  handleNotificationData(var data) {
+    if(data is List<NotificationItem>) {
+      setState(() {
+        notifications = data;
+      });
+    }else {
+
+    }
   }
   
   void firebaseCloudMessagingListeners() {
@@ -1443,10 +1462,19 @@ class UserControllerState extends State<UserController> with TickerProviderState
             _searchWidgetStatus != WidgetStatus.VISIBLE ? Container(
               margin: EdgeInsets.only(left: 8.0, right: 8.0),
               child: GestureDetector(
-                child: Icon(Icons.notifications_none_sharp),
-                onTap: () {
-                  final notificationCenterController = new NotificationCenterController();
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationCenterController));
+                child: Badge(
+                  widget: Icon(Icons.notifications_none_sharp),
+                  count: notifications.where((e) => e.read == false).length
+                ),
+                onTap: () async {
+                  final notificationCenterController = new NotificationCenterController(notifications: notifications);
+                  await Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationCenterController));
+
+                  for(var item in notifications) {
+                    setState(() {
+                      item.read = true;
+                    });
+                  }
                 },
               )
             ) : Container(),

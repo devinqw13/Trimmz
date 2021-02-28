@@ -3,7 +3,6 @@ import 'package:progress_hud/progress_hud.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:flutter/services.dart';
 import 'package:trimmz/palette.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
 import 'package:trimmz/FloatingNavBar.dart';
 import 'package:trimmz/Controller/FeedController.dart';
@@ -27,15 +26,12 @@ class ClientController extends StatefulWidget {
 class ClientControllerState extends State<ClientController> {
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   int _index = 0;
   List<Widget> i = [];
   Appointments appointments;
 
   @override
   void initState() {
-    firebaseCloudMessagingListeners();
-
     _progressHUD = new ProgressHUD(
       color: Colors.white,
       borderRadius: 8.0,
@@ -53,36 +49,6 @@ class ClientControllerState extends State<ClientController> {
     ];
 
     super.initState();
-  }
-
-  void firebaseCloudMessagingListeners() {
-    if (Platform.isIOS) iOSPermission();
-
-    _firebaseMessaging.getToken().then((token) async {
-      print("CLOUD MESSAGING TOKEN: " + token);
-      await setFirebaseToken(context, token, globals.user.token);
-    });
-
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        
-      },
-      onResume: (Map<String, dynamic> message) async {
-        
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        
-      },
-    );
-  }
-
-  void iOSPermission() {
-    _firebaseMessaging.requestNotificationPermissions(
-        IosNotificationSettings(sound: true, badge: true, alert: true)
-    );
-    _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings){
-
-    });
   }
 
   void progressHUD() {

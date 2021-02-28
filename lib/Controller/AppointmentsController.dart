@@ -9,6 +9,7 @@ import 'package:trimmz/helpers.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:trimmz/Controller/AppointmentDetailsController.dart';
 import 'package:trimmz/Model/Service.dart';
+import 'package:trimmz/calls.dart';
 
 class AppointmentsController extends StatefulWidget {
   final List<Appointment> appointments;
@@ -53,6 +54,17 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
     Navigator.push(context, new MaterialPageRoute(builder: (context) => appointmentDetailsController));
   }
 
+  handleAppointmentStatus(Appointment appointment, int status) async {
+    progressHUD();
+    var results = await appointmentHandler(context, globals.user.token, appointment.id, status);
+    print(results);
+    setState(() {
+      appointment.status = results.status;
+    });
+    globals.userControllerState.refreshList();
+    progressHUD();
+  }
+
   _buildActionButtons(int status, Appointment appointment) {
     List<Widget> children = [];
     Widget viewButton = new Expanded(
@@ -75,7 +87,7 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
         margin: EdgeInsets.all(2),
         child: RaisedButton(
           color: Colors.blue,
-          onPressed: () => viewAppointment(appointment),
+          onPressed: () => handleAppointmentStatus(appointment, 1),
           child: Text(
             "Complete",
             style: TextStyle(
@@ -90,9 +102,24 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
         margin: EdgeInsets.all(2),
         child: RaisedButton(
           color: Colors.red,
-          onPressed: () => viewAppointment(appointment),
+          onPressed: () => handleAppointmentStatus(appointment, 2),
           child: Text(
             "Cancel",
+            style: TextStyle(
+              color: Colors.white
+            ),
+          ),
+        )
+      )
+    );
+    Widget noShowButton = new Expanded(
+      child: Container(
+        margin: EdgeInsets.all(2),
+        child: RaisedButton(
+          color: Colors.red,
+          onPressed: () => handleAppointmentStatus(appointment, 4),
+          child: Text(
+            "No Show",
             style: TextStyle(
               color: Colors.white
             ),
@@ -105,6 +132,9 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
       case 0: {
         if(DateTime.now().isAfter(DateTime.parse(appointment.appointmentFullTime))) {
           children.add(completeButton);
+          children.add(noShowButton);
+          children.add(cancelButton);
+        }else {
           children.add(cancelButton);
         }
         children.add(viewButton);
