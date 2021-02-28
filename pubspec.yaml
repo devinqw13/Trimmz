@@ -69,7 +69,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "images/trimmz_icon_g.png"
+  image_path: "images/trimmz_icon_b.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
@@ -84,9 +84,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/barberBackground.png
     - images/trimmz_icon_g.png
     - images/trimmz_icon_t.png
+    - images/trimmz_icon_b.png
     - ccimages/visa1.png
     - ccimages/mastercard1.png
     - ccimages/discover1.png
