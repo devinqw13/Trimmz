@@ -111,6 +111,10 @@ class ConversationControllerState extends State<ConversationController> with Tic
       opacityAnimationController.reverse(from: 1.0);
       _newMessageWidgetStatus = WidgetStatus.HIDDEN;
     }
+
+    setState(() {
+      newMessageUsers.forEach((element) => element.selected = false);
+    });
   }
 
   wserror(err) async {

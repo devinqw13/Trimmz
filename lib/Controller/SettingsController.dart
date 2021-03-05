@@ -7,6 +7,7 @@ import 'package:trimmz/CustomCupertinoSettings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'LoginController.dart';
+import 'package:trimmz/Controller/EditingAccountController.dart';
 
 class SettingsController extends StatefulWidget {
   SettingsController({Key key}) : super (key: key);
@@ -45,37 +46,42 @@ class SettingsControllerState extends State<SettingsController> with TickerProvi
     });
   }
 
+  goToEditAccount(String screen) {
+    final editingAccountController = new EditingAccountController(screen: screen);
+    Navigator.push(context, new MaterialPageRoute(builder: (context) => editingAccountController));
+  }
+
   @override
   Widget build(BuildContext context) {
     settings = new CupertinoSettings(<Widget>[
       new CSHeader(globals.user.username),
       new CSLink(
         'Name',
-        () {},
+        () {goToEditAccount("name");},
         subText: globals.user.name,
         style: CSWidgetStyle(
           icon: Icon(Icons.person_outline_rounded, color: globals.darkModeEnabled ? Colors.white : Colors.black54)
         )
       ),
       new CSLink(
-        'Phone',
-        () {},
-        subText: globals.user.phone == null ? "Add" : globals.user.phone,
-        style: CSWidgetStyle(
-          icon: Icon(Icons.phone_iphone, color: globals.darkModeEnabled ? Colors.white : Colors.black54)
-        )
-      ),
-      new CSLink(
         'Username',
-        () {},
+        () {goToEditAccount("username");},
         subText: globals.user.username,
         style: CSWidgetStyle(
           icon: Icon(Icons.person, color: globals.darkModeEnabled ? Colors.white : Colors.black54)
         )
       ),
       new CSLink(
+        'Phone',
+        () {goToEditAccount("phone");},
+        subText: globals.user.phone == null ? "Add" : globals.user.phone,
+        style: CSWidgetStyle(
+          icon: Icon(Icons.phone_iphone, color: globals.darkModeEnabled ? Colors.white : Colors.black54)
+        )
+      ),
+      new CSLink(
         'Email',
-        () {},
+        () {goToEditAccount("email");},
         subText: globals.user.userEmail,
         style: CSWidgetStyle(
           icon: Icon(Icons.email, color: globals.darkModeEnabled ? Colors.white : Colors.black54)
@@ -83,26 +89,26 @@ class SettingsControllerState extends State<SettingsController> with TickerProvi
       ),
       new CSLink(
         'Password',
-        () {},
+        () {goToEditAccount("password");},
         style: CSWidgetStyle(
           icon: Icon(Icons.lock, color: globals.darkModeEnabled ? Colors.white : Colors.black54)
         )
       ),
       new CSHeader("General"),
-      new CSLink(
+      globals.user.userType == 2 ? CSLink(
         'Advanced Options',
         () {},
         style: CSWidgetStyle(
           icon: Icon(Icons.settings_applications_sharp, color: globals.darkModeEnabled ? Colors.white : Colors.black54)
         )
-      ),
-      new CSLink(
+      ): Container(),
+      globals.user.userType == 2 ? new CSLink(
         'Mobile Pay',
         () {},
         style: CSWidgetStyle(
           icon: Icon(Icons.payments_outlined, color: globals.darkModeEnabled ? Colors.white : Colors.black54)
         )
-      ),
+      ): Container(),
       new CSLink(
         'Payment Method',
         () {},
@@ -139,6 +145,7 @@ class SettingsControllerState extends State<SettingsController> with TickerProvi
         backgroundColor: globals.darkModeEnabled ? richBlack : Color(0xFFFAFAFA),
         appBar: new AppBar(
           brightness: globals.userBrightness,
+          backgroundColor: globals.darkModeEnabled ? richBlack : Colors.white,
           centerTitle: true,
           title: new Text(
             "Settings",

@@ -1051,3 +1051,39 @@ setNotificationsRead(BuildContext context, int token) async {
   //   return false;
   // }
 }
+
+Future<bool> validatePassword(BuildContext context, int token, String password) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}V1/validate/password?token=$token&string=$password";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return false;
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return false;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == 'false'){
+    return jsonResponse['result'];
+  }else {
+    return false;
+  }
+}
