@@ -23,9 +23,13 @@ class EditingAccountControllerState extends State<EditingAccountController> with
   bool currentPass;
   bool newPass;
   bool currentPassValidating = false;
+  bool usernameValidating = false;
+  bool usernameAccepted;
+  bool canUpdate = false;
   final TextEditingController textTFController = new TextEditingController();
   final TextEditingController currentPasswordTFController = new TextEditingController();
   final TextEditingController newPasswordTFController = new TextEditingController();
+  StreamController<String> textStreamController = StreamController();
   StreamController<String> currentPasswordStreamController = StreamController();
   StreamController<String> newPasswordStreamController = StreamController();
   String newPassErrors = "";
@@ -41,12 +45,16 @@ class EditingAccountControllerState extends State<EditingAccountController> with
     );
 
     currentPasswordStreamController.stream
-    .debounce(Duration(seconds: 2))
+    .debounce(Duration(seconds: 1))
     .listen((s) => _validatePassword(s));
 
     newPasswordStreamController.stream
-    .debounce(Duration(seconds: 2))
+    .debounce(Duration(seconds: 1))
     .listen((s) => _newPasswordValidate(s));
+
+    textStreamController.stream
+    .debounce(Duration(seconds: 2))
+    .listen((s) => _textValidate(s));
 
     super.initState();
   }
@@ -68,6 +76,16 @@ class EditingAccountControllerState extends State<EditingAccountController> with
         currentPassValidating = true;
       }else {
         currentPassValidating = !currentPassValidating;
+      }
+    });
+  }
+
+  void validatingInProcess2() {
+    setState(() {
+      if(usernameValidating == null) {
+        usernameValidating = true;
+      }else {
+        usernameValidating = !usernameValidating;
       }
     });
   }
@@ -97,6 +115,24 @@ class EditingAccountControllerState extends State<EditingAccountController> with
         newPass = false;
       });
       handleValidateErrors(s);
+    }
+  }
+
+  _textValidate(String s) async {
+    if(widget.screen == "username"){
+      validatingInProcess2();
+      bool result = await validateUsername(context, globals.user.token, s);
+      validatingInProcess2();
+      
+      if(result) {
+        setState(() {
+          usernameAccepted = false;
+        });
+      }else {
+        setState(() {
+          usernameAccepted = true;
+        });
+      }
     }
   }
 
@@ -169,6 +205,10 @@ class EditingAccountControllerState extends State<EditingAccountController> with
           height: 60.0,
           child: TextField(
             controller: textTFController,
+            onChanged: (val) {
+              textStreamController.add(val);
+              handleCanUpdate();
+            },
             keyboardType: TextInputType.text,
             autocorrect: false,
             style: TextStyle(
@@ -176,6 +216,7 @@ class EditingAccountControllerState extends State<EditingAccountController> with
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
+              suffix: textSuffixWidget(),
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(left: 10.0),
               hintText: widget.screen.capitalize(),
@@ -229,6 +270,36 @@ class EditingAccountControllerState extends State<EditingAccountController> with
         margin: EdgeInsets.only(right: 10),
         child: Icon(Icons.close, color: Colors.red, size: 17)
       );
+    }
+  }
+
+  Widget textSuffixWidget() {
+    if(widget.screen != "username") {
+      return null;
+    }else {
+      if(usernameValidating) {
+        return Container(
+          margin: EdgeInsets.only(right: 10),
+          height: 13,
+          width: 13,
+          child: CircularProgressIndicator(
+            valueColor: new AlwaysStoppedAnimation(Colors.blue),
+            strokeWidth: 2.0,
+          )
+        );
+      }else if(usernameAccepted == null) {
+        return null;
+      }else if(usernameAccepted) {
+        return Container(
+          margin: EdgeInsets.only(right: 10),
+          child: Icon(Icons.check, color: Colors.green, size: 17)
+        );
+      }else {
+        return Container(
+          margin: EdgeInsets.only(right: 10),
+          child: Icon(Icons.close, color: Colors.red, size: 17)
+        );
+      }
     }
   }
 
@@ -303,6 +374,7 @@ class EditingAccountControllerState extends State<EditingAccountController> with
             controller: currentPasswordTFController,
             onChanged: (val) {
               currentPasswordStreamController.add(val);
+              handleCanUpdate();
             },
             keyboardType: TextInputType.text,
             autocorrect: false,
@@ -354,6 +426,7 @@ class EditingAccountControllerState extends State<EditingAccountController> with
             controller: newPasswordTFController,
             onChanged: (val) {
               newPasswordStreamController.add(val);
+              handleCanUpdate();
             },
             keyboardType: TextInputType.text,
             autocorrect: false,
@@ -385,34 +458,72 @@ class EditingAccountControllerState extends State<EditingAccountController> with
     );
   }
 
+  handleCanUpdate() {
+    if(widget.screen == "name" || widget.screen == "phone"|| widget.screen == "email") {
+      if(textTFController.text.length >= 5) {
+        setState(() {
+          canUpdate = true;
+        });
+      }else {
+        setState(() {
+          canUpdate = false;
+        });
+      }
+    }else if(widget.screen == "username") {
+      if(textTFController.text.length >= 5 && usernameAccepted) {
+        setState(() {
+          canUpdate = true;
+        });
+      }else {
+        setState(() {
+          canUpdate = false;
+        });
+      }
+    }else {
+      if(currentPasswordTFController.text.length >= 8 && newPasswordTFController.text.length >= 8 && currentPass && newPass) {
+        setState(() {
+          canUpdate = true;
+        });
+      }else {
+        setState(() {
+          canUpdate = false;
+        });
+      }
+    }
+  }
+
   Widget buildUpdatebtn() {
-    return new Container(
-      decoration: BoxDecoration(
-        color: globals.darkModeEnabled ? Color.fromARGB(225, 0, 0, 0) : Color.fromARGB(110, 0, 0, 0),
-        borderRadius: BorderRadius.all(Radius.circular(3)),
-        border: Border.all(
-          color: CustomColors1.mystic.withAlpha(100)
-        )
-      ),
-      child: RippleButton(
-        splashColor: CustomColors1.mystic.withAlpha(100),
-        onPressed: () {
-          FocusScope.of(context).unfocus();
-          
-        },
-        child: Container(
-          padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
-          child: Center(
-            child: Text(
-              "Update",
-              style: TextStyle(
-                color: Colors.white
-              )
-            ),
+    if(canUpdate) {
+      return new Container(
+        decoration: BoxDecoration(
+          color: globals.darkModeEnabled ? Color.fromARGB(225, 0, 0, 0) : Color.fromARGB(110, 0, 0, 0),
+          borderRadius: BorderRadius.all(Radius.circular(3)),
+          border: Border.all(
+            color: CustomColors1.mystic.withAlpha(100)
+          )
+        ),
+        child: RippleButton(
+          splashColor: CustomColors1.mystic.withAlpha(100),
+          onPressed: () {
+            FocusScope.of(context).unfocus();
+            
+          },
+          child: Container(
+            padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
+            child: Center(
+              child: Text(
+                "Update",
+                style: TextStyle(
+                  color: Colors.white
+                )
+              ),
+            )
           )
         )
-      )
-    );
+      );
+    }else {
+      return new Container();
+    }
   }
 
   Widget _buildScreen() {

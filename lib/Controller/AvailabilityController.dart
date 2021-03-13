@@ -136,7 +136,6 @@ class AvailabilityControllerState extends State<AvailabilityController> with Tic
 
   buildAvailabilityCalendar() {
     return TableCalendar(
-      locale: 'en_US',
       events: _availability,
       onDaySelected: _onAvailabilityDaySelect,
       availableGestures: AvailableGestures.horizontalSwipe,
@@ -146,8 +145,6 @@ class AvailabilityControllerState extends State<AvailabilityController> with Tic
       ),
       headerStyle: HeaderStyle(
         formatButtonVisible: false,
-        leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.blue),
-        rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.blue)
       ),
       calendarStyle: CalendarStyle(
         weekendStyle: TextStyle(color: globals.darkModeEnabled ? Colors.white : Colors.black),

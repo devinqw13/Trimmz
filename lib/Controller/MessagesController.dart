@@ -110,6 +110,7 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
       "key": "sendMessage",
       "token": conversation.userId,
       "recipientUsername": conversation.username,
+      "senderUsername": globals.user.username,
       "senderId": globals.user.token,
       "conversationId": conversation.id,
       "message": messageTFController.text,

@@ -177,38 +177,38 @@ class ConversationControllerState extends State<ConversationController> with Tic
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            Container(
-              margin: EdgeInsets.only(bottom: 10.0),
-              decoration: BoxDecoration(
-                color: globals.darkModeEnabled ? darkBackgroundGrey : Color.fromARGB(255, 232, 232, 232),
-                borderRadius: BorderRadius.circular(50.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 2.0,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: TextField(
-                keyboardType: TextInputType.text,
-                autocorrect: false,
-                style: TextStyle(
-                  color: globals.darkModeEnabled ? Colors.white : Colors.black,
-                  fontFamily: 'OpenSans',
-                ),
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(borderSide: BorderSide.none),
-                  isDense: true,
-                  contentPadding: EdgeInsets.only(left: 15, right: 8, top: 8, bottom: 8),
-                  hintText: 'Search',
-                  hintStyle: TextStyle(
-                    color: globals.darkModeEnabled ? Colors.white54 : Colors.black54,
-                    fontFamily: 'OpenSans',
-                  ),
-                ),
-              )
-            ),
+            // Container(
+            //   margin: EdgeInsets.only(bottom: 10.0),
+            //   decoration: BoxDecoration(
+            //     color: globals.darkModeEnabled ? darkBackgroundGrey : Color.fromARGB(255, 232, 232, 232),
+            //     borderRadius: BorderRadius.circular(50.0),
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.black12,
+            //         blurRadius: 2.0,
+            //         offset: Offset(0, 2),
+            //       ),
+            //     ],
+            //   ),
+            //   child: TextField(
+            //     keyboardType: TextInputType.text,
+            //     autocorrect: false,
+            //     style: TextStyle(
+            //       color: globals.darkModeEnabled ? Colors.white : Colors.black,
+            //       fontFamily: 'OpenSans',
+            //     ),
+            //     decoration: InputDecoration(
+            //       border: UnderlineInputBorder(borderSide: BorderSide.none),
+            //       isDense: true,
+            //       contentPadding: EdgeInsets.only(left: 15, right: 8, top: 8, bottom: 8),
+            //       hintText: 'Search',
+            //       hintStyle: TextStyle(
+            //         color: globals.darkModeEnabled ? Colors.white54 : Colors.black54,
+            //         fontFamily: 'OpenSans',
+            //       ),
+            //     ),
+            //   )
+            // ),
             conversationList.length > 0 ? ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
