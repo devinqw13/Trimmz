@@ -7,6 +7,11 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:trimmz/helpers.dart';
+import 'package:expandable/expandable.dart';
+import 'package:trimmz/userAppointmentControlButtons.dart';
+import 'package:trimmz/Model/Appointment.dart';
+import 'dart:convert';
+import 'package:trimmz/Model/Service.dart';
 
 class ScheduleController extends StatefulWidget {
   final Map<DateTime, List<dynamic>> calendarAppointments;
@@ -23,6 +28,7 @@ class ScheduleControllerState extends State<ScheduleController> with TickerProvi
   Map<DateTime, List> _calendarAppointments;
   DateTime _calendarSelectedDay = DateTime.now();
   List _selectedAppointments = [];
+  AnimationController animation;
 
   @override
   void initState() {
@@ -34,6 +40,11 @@ class ScheduleControllerState extends State<ScheduleController> with TickerProvi
       borderRadius: 8.0,
       loading: false,
       text: 'Loading...'
+    );
+
+    animation = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
     );
 
     super.initState();
@@ -116,10 +127,6 @@ class ScheduleControllerState extends State<ScheduleController> with TickerProvi
           return children;
         },
         selectedDayBuilder: (context, date, _) {
-          AnimationController animation = new AnimationController(
-            vsync: this,
-            duration: const Duration(milliseconds: 400),
-          );
           animation.forward();
           return FadeTransition(
             opacity: Tween(begin: 0.0, end: 1.0).animate(animation),
@@ -160,6 +167,56 @@ class ScheduleControllerState extends State<ScheduleController> with TickerProvi
     );
   }
 
+  buildServicesColumn(String servicesMap) {
+    List<Service> services = [];
+    Map servicesJson = json.decode(servicesMap);
+    servicesJson.forEach((key, value) {
+      services.add(new Service(value));
+    });
+
+    Map servicesMap2 = {};
+    List<Widget> _children = [];
+
+    for(var service in services) {
+      if(!servicesMap2.containsKey(service.id)) {
+        servicesMap2[service.id] = [Map.from(service.toMap())];
+      }else {
+        servicesMap2[service.id].add(Map.from(service.toMap()));
+      }
+    }
+
+    servicesMap2.forEach((appointmentId, s) {
+      _children.add(
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: s[0]['name'],
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 13.0, 
+                )
+              ),
+              s.length > 1 ? TextSpan(
+                text: " (${s.length})",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 12.0
+                )
+              ): TextSpan()
+            ]
+          ),
+        )
+      );
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: _children
+    );
+  }
+
   buildCalendarList() {
     if(_selectedAppointments.length > 0) {
       return Container(
@@ -173,12 +230,12 @@ class ScheduleControllerState extends State<ScheduleController> with TickerProvi
 
             return Container(
               padding: EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
-              child: IntrinsicHeight(
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: RichText(
+              child: ExpandablePanel(
+                headerAlignment: ExpandablePanelHeaderAlignment.center,
+                header: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      RichText(
                         text: TextSpan(
                           children: [
                             TextSpan(
@@ -199,48 +256,51 @@ class ScheduleControllerState extends State<ScheduleController> with TickerProvi
                             )
                           ]
                         ),
-                      )
-                    ),
-                    new Container(
-                      width: 4.0,
-                      color: statusBar,
-                      margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
-                      padding: const EdgeInsets.symmetric(vertical: 15.0),
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                _selectedAppointments[index]['client_id'] == 0 ? _selectedAppointments[index]['manual_client_name'] : _selectedAppointments[index]['client_name'],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
+                      ),
+                      new Container(
+                        width: 4.0,
+                        color: statusBar,
+                        margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  _selectedAppointments[index]['client_id'] == 0 ? _selectedAppointments[index]['manual_client_name'] : _selectedAppointments[index]['client_name'],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              Padding(padding: EdgeInsets.all(1)),
-                              _selectedAppointments[index]['client_id'] == 0 ? Icon(LineIcons.pencil, size: 17, color: textGrey) : Container()
-                            ]
-                          ),
-                          Text(
-                            _selectedAppointments[index]['package_name'],
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: textGrey
+                                Padding(padding: EdgeInsets.all(1)),
+                                _selectedAppointments[index]['client_id'] == 0 ? Icon(LineIcons.pencil, size: 17, color: textGrey) : Container()
+                              ]
                             ),
-                          ),
-                          Row(
-                            children: [
-                              Icon(_selectedAppointments[index]['cash_payment'] == 1 ? LineIcons.money : Icons.credit_card, size: 18, color: Color(0xFFD4AF37))
-                            ]
-                          )
-                        ]
-                      )
-                    ),
-                  ]
-                )
+                            buildServicesColumn(_selectedAppointments[index]['services']),
+                            Row(
+                              children: [
+                                Icon(_selectedAppointments[index]['cash_payment'] == 1 ? LineIcons.money : Icons.credit_card, size: 18, color: Color(0xFFD4AF37))
+                              ]
+                            )
+                          ]
+                        )
+                      ),
+                    ],
+                  ),
+                ),
+                expanded: UserAppointmentControlButtons(
+                  appointment: Appointment(_selectedAppointments[index]),
+                  controllerState: this,
+                  onUpdate: (Appointment value) {
+                    setState(() {
+                      _selectedAppointments[index]['status'] = value.status;
+                    });
+                    globals.userControllerState.refreshList();
+                  },
+                ),
               )
             );
           },

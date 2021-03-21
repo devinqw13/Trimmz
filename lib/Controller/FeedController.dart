@@ -240,7 +240,7 @@ class FeedControllerState extends State<FeedController> {
             child: GestureDetector(
               child: Badge(
                 widget: Icon(Icons.messenger_outline_outlined),
-                count: notifications.where((e) => e.read == false).length
+                count: 0
               ),
               onTap: () async {
                 var results = await getCached("conversations");

@@ -43,3 +43,38 @@ class _Badge extends State<Badge> {
     );
   }
 }
+
+class BadgeIndicator extends StatefulWidget {
+  final Widget widget;
+  final bool showIndicator;
+  BadgeIndicator({this.widget, this.showIndicator});
+
+  @override
+  _BadgeIndicator createState() => _BadgeIndicator();
+}
+
+class _BadgeIndicator extends State<BadgeIndicator> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: <Widget>[
+        Center(
+          child: widget.widget,
+        ),
+        widget.showIndicator ? Positioned(
+          top: 15,
+          right: 12,
+          child: Container(
+            padding: EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              shape: BoxShape.circle
+            ),
+          ),
+        ) : Container()
+      ],
+    );
+  }
+}

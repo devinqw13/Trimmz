@@ -140,12 +140,20 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
       case 0: {
         Widget widget;
         if(DateTime.now().isAfter(DateTime.parse(time))) {
-          widget = Container(
-            child: Text("AWAITING ACTION"),
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(15.0)
-            ),
+          widget = PulsingWidget(
+            child: Container(
+              padding: EdgeInsets.only(top: 2, bottom: 2, left: 10, right: 10),
+              child: Text(
+                "AWAITING ACTION",
+                style: TextStyle(
+                  fontSize: 12.0
+                )
+              ),
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(15.0)
+              ),
+            )
           );
         }else {
           widget = Container(
@@ -225,7 +233,7 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
             )
           ),
           decoration: BoxDecoration(
-            color: Colors.indigo,
+            color: Colors.purple[300],
             borderRadius: BorderRadius.circular(15.0)
           ),
         );
@@ -412,8 +420,8 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
                                     child: Container(
                                       padding: EdgeInsets.all(5),
                                       child: RaisedButton(
-                                        color: Colors.red,
-                                        onPressed: () => handleAppointmentStatus(appointment.id, 99),
+                                        color: Colors.purple[300],
+                                        onPressed: () => handleAppointmentStatus(appointment.id, 4),
                                         child: Text(
                                           "No Show",
                                           style: TextStyle(
@@ -446,8 +454,8 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
         case 0: {
           if(DateTime.now().isAfter(DateTime.parse(appointment.appointmentFullTime))) {
             _children.add(completeButton);
-            _children.add(cancelButton);
             _children.add(noShowButton);
+            _children.add(cancelButton);
           }else {
             _children.add(cancelButton);
           }

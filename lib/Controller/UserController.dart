@@ -30,6 +30,8 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
 import 'package:trimmz/Badge.dart';
+import 'package:trimmz/userAppointmentControlButtons.dart';
+import 'package:expandable/expandable.dart';
 
 class UserController extends StatefulWidget {
   final List<DashboardItem> dashboardItems;
@@ -437,7 +439,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
   }
 
   goToAppointments() {
-    var userAppointments = widget.appointments.list.where((element) => element.status == 1 || element.status == 0).toList();
+    var userAppointments = appointments.where((element) => element.status != 3 || element.status != 2).toList();
     userAppointments.sort((a,b) => DateTime.parse(a.appointmentFullTime).compareTo(DateTime.parse(b.appointmentFullTime)));
 
     final appointmentsController = new AppointmentsController(appointments: userAppointments);
@@ -513,7 +515,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: "${appointments.where((element) => element.status == 1 || element.status == 0).length.toString()} ",
+                                text: "${appointments.where((element) => element.status != 3 || element.status != 2).length.toString()} ",
                                 style: TextStyle(
                                   color: globals.darkModeEnabled ? Colors.white : Colors.black,
                                   fontWeight: FontWeight.w500,
@@ -768,64 +770,78 @@ class UserControllerState extends State<UserController> with TickerProviderState
 
             return Container(
               padding: EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
-              child: IntrinsicHeight(
-                child: Row(
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: startTime,
-                            style: TextStyle(
-                              color: globals.darkModeEnabled ? Colors.white : Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13.0
+              child: ExpandablePanel(
+                headerAlignment: ExpandablePanelHeaderAlignment.center,
+                header: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: startTime,
+                              style: TextStyle(
+                                color: globals.darkModeEnabled ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13.0
+                              )
+                            ),
+                            TextSpan(
+                              text: '\n'+endTime,
+                              style: TextStyle(
+                                color: textGrey,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 12.0
+                              )
                             )
-                          ),
-                          TextSpan(
-                            text: '\n'+endTime,
-                            style: TextStyle(
-                              color: textGrey,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 12.0
-                            )
-                          )
-                        ]
+                          ]
+                        ),
                       ),
-                    ),
-                    new Container(
-                      width: 4.0,
-                      color: statusBar,
-                      margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
-                      padding: const EdgeInsets.symmetric(vertical: 15.0),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                _selectedAppointments[index]['client_id'] == 0 ? _selectedAppointments[index]['manual_client_name'] : _selectedAppointments[index]['client_name'],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
+                      new Container(
+                        width: 4.0,
+                        color: statusBar,
+                        margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0, bottom: 0.0),
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  _selectedAppointments[index]['client_id'] == 0 ? _selectedAppointments[index]['manual_client_name'] : _selectedAppointments[index]['client_name'],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              Padding(padding: EdgeInsets.all(1)),
-                              _selectedAppointments[index]['client_id'] == 0 ? Icon(LineIcons.pencil, size: 17, color: textGrey) : Container()
-                            ]
-                          ),
-                          buildServicesColumn(_selectedAppointments[index]['services']),
-                          Row(
-                            children: [
-                              Icon(_selectedAppointments[index]['cash_payment'] == 1 ? LineIcons.money : Icons.credit_card, size: 18, color: Color(0xFFD4AF37))
-                            ]
-                          )
-                        ]
-                      )
-                    ),
-                  ]
-                )
+                                Padding(padding: EdgeInsets.all(1)),
+                                _selectedAppointments[index]['client_id'] == 0 ? Icon(LineIcons.pencil, size: 17, color: textGrey) : Container()
+                              ]
+                            ),
+                            buildServicesColumn(_selectedAppointments[index]['services']),
+                            Row(
+                              children: [
+                                Icon(_selectedAppointments[index]['cash_payment'] == 1 ? LineIcons.money : Icons.credit_card, size: 18, color: Color(0xFFD4AF37))
+                              ]
+                            )
+                          ]
+                        )
+                      ),
+                    ],
+                  ),
+                ),
+                expanded: UserAppointmentControlButtons(
+                  appointment: Appointment(_selectedAppointments[index]),
+                  controllerState: this,
+                  onUpdate: (Appointment value) {
+                    print(value.status);
+                    setState(() {
+                      _selectedAppointments[index]['status'] = value.status;
+                    });
+                    refreshList();
+                  },
+                ),
               )
             );
           },
@@ -1434,6 +1450,8 @@ class UserControllerState extends State<UserController> with TickerProviderState
         primaryColor: globals.darkModeEnabled ? Colors.black : Colors.white,
         brightness: globals.userBrightness,
         backgroundColor: globals.darkModeEnabled ? richBlack : Colors.white,
+        accentColor: globals.darkModeEnabled ? Colors.white : Colors.black,
+        dividerColor: Colors.transparent,
       ),
       child: new Scaffold(
         appBar: new AppBar(
@@ -1489,6 +1507,19 @@ class UserControllerState extends State<UserController> with TickerProviderState
               )
             )
           ],
+          leading: Builder(
+            builder: (BuildContext context) {
+              return GestureDetector(
+                child: BadgeIndicator(
+                  widget: Icon(Icons.menu),
+                  showIndicator: appointmentRequests.length > 0 ? true : false,
+                ),
+                onTap: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
+            },
+          ),
         ),
         drawer: buildDrawer(),
         body: AnnotatedRegion<SystemUiOverlayStyle>(

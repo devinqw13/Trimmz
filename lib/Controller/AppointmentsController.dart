@@ -10,6 +10,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:trimmz/Controller/AppointmentDetailsController.dart';
 import 'package:trimmz/Model/Service.dart';
 import 'package:trimmz/calls.dart';
+import 'package:trimmz/userAppointmentControlButtons.dart';
 
 class AppointmentsController extends StatefulWidget {
   final List<Appointment> appointments;
@@ -116,7 +117,7 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
       child: Container(
         margin: EdgeInsets.all(2),
         child: RaisedButton(
-          color: Colors.red,
+          color: Colors.purple[300],
           onPressed: () => handleAppointmentStatus(appointment, 4),
           child: Text(
             "No Show",
@@ -270,13 +271,17 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
                       ]
                     ),
                     children: [
-                      Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: Row(
-                          // mainAxisAlignment: MainAxisAlignment.center,
-                          children: _buildActionButtons(appointments[index].status, appointments[index])
-                        )
-                      )
+                      UserAppointmentControlButtons(
+                        appointment: appointments[index],
+                        controllerState: this,
+                        onUpdate: (Appointment value) {
+                          print(value.status);
+                          setState(() {
+                            appointments[index].status = value.status;
+                          });
+                          globals.userControllerState.refreshList();
+                        },
+                      ),
                     ],
                   ),
                 );

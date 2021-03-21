@@ -51,6 +51,21 @@ class SettingsControllerState extends State<SettingsController> with TickerProvi
     Navigator.push(context, new MaterialPageRoute(builder: (context) => editingAccountController));
   }
 
+  _handleDarkMode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('darkModeEnabled', !globals.darkModeEnabled);
+    setState(() {
+      if (globals.darkModeEnabled == true) {
+        globals.userBrightness = Brightness.light;
+        globals.darkModeEnabled = false;
+      }
+      else {
+        globals.userBrightness = Brightness.dark;
+        globals.darkModeEnabled = true;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     settings = new CupertinoSettings(<Widget>[
@@ -123,6 +138,9 @@ class SettingsControllerState extends State<SettingsController> with TickerProvi
           icon: Icon(Icons.info, color: globals.darkModeEnabled ? Colors.white : Colors.black54)
         )
       ),
+      // globals.user.userType == 1 ? new CSHeader("Appearance") : Container(),
+      // globals.user.userType == 1 ?
+      // new CSControl('Dark Mode', new CupertinoSwitch(value: globals.darkModeEnabled, onChanged: (value) {_handleDarkMode();}), style: CSWidgetStyle(icon: Icon(Icons.wb_sunny_outlined, color: globals.darkModeEnabled ? Colors.white : Colors.black54))) : Container(),
       Padding(padding: EdgeInsets.all(10)),
       new CSButton(
         CSButtonType.DESTRUCTIVE,

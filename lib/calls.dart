@@ -1123,3 +1123,45 @@ Future<bool> validateUsername(BuildContext context, int token, String username) 
     return false;
   }
 }
+
+Future<Map<dynamic, dynamic>> updateAccountInfo(BuildContext context, int token, String dataType, String data) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonData = {
+    "token": token,
+    "$dataType": "$data"
+  };
+
+  String url = "${globals.baseUrl}V1/users/id";
+
+  try {
+    response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  if(jsonResponse['error'] == 'false'){
+    return jsonResponse['results'];
+  }else {
+    return null;
+  }
+}

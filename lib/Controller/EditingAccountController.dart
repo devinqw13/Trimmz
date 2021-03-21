@@ -53,7 +53,7 @@ class EditingAccountControllerState extends State<EditingAccountController> with
     .listen((s) => _newPasswordValidate(s));
 
     textStreamController.stream
-    .debounce(Duration(seconds: 2))
+    .debounce(Duration(milliseconds: 700))
     .listen((s) => _textValidate(s));
 
     super.initState();
@@ -120,17 +120,39 @@ class EditingAccountControllerState extends State<EditingAccountController> with
 
   _textValidate(String s) async {
     if(widget.screen == "username"){
-      validatingInProcess2();
-      bool result = await validateUsername(context, globals.user.token, s);
-      validatingInProcess2();
-      
-      if(result) {
+      if(s.length >= 3) {
+        validatingInProcess2();
+        bool result = await validateUsername(context, globals.user.token, s);
+        validatingInProcess2();
+        
+        if(result) {
+          setState(() {
+            usernameAccepted = false;
+          });
+        }else {
+          setState(() {
+            usernameAccepted = true;
+          });
+        }
+
+        if(usernameAccepted) {
+          setState(() {
+            canUpdate = true;
+          });
+        }else {
+          setState(() {
+            canUpdate = false;
+          });
+        }
+      }
+    }else {
+      if(textTFController.text.length >= 5) {
         setState(() {
-          usernameAccepted = false;
+          canUpdate = true;
         });
       }else {
         setState(() {
-          usernameAccepted = true;
+          canUpdate = false;
         });
       }
     }
@@ -207,7 +229,6 @@ class EditingAccountControllerState extends State<EditingAccountController> with
             controller: textTFController,
             onChanged: (val) {
               textStreamController.add(val);
-              handleCanUpdate();
             },
             keyboardType: TextInputType.text,
             autocorrect: false,
@@ -374,7 +395,6 @@ class EditingAccountControllerState extends State<EditingAccountController> with
             controller: currentPasswordTFController,
             onChanged: (val) {
               currentPasswordStreamController.add(val);
-              handleCanUpdate();
             },
             keyboardType: TextInputType.text,
             autocorrect: false,
@@ -426,7 +446,6 @@ class EditingAccountControllerState extends State<EditingAccountController> with
             controller: newPasswordTFController,
             onChanged: (val) {
               newPasswordStreamController.add(val);
-              handleCanUpdate();
             },
             keyboardType: TextInputType.text,
             autocorrect: false,
@@ -458,38 +477,49 @@ class EditingAccountControllerState extends State<EditingAccountController> with
     );
   }
 
-  handleCanUpdate() {
-    if(widget.screen == "name" || widget.screen == "phone"|| widget.screen == "email") {
-      if(textTFController.text.length >= 5) {
+  handleReturnData(Map result) {
+    switch(result.keys.toList()[0]) {
+      case "name": {
         setState(() {
-          canUpdate = true;
+          globals.user.name = result['name'];
         });
-      }else {
-        setState(() {
-          canUpdate = false;
-        });
+        break;
       }
-    }else if(widget.screen == "username") {
-      if(textTFController.text.length >= 5 && usernameAccepted) {
+      case "username": {
         setState(() {
-          canUpdate = true;
+          globals.user.username = result['username'];
         });
-      }else {
-        setState(() {
-          canUpdate = false;
-        });
+        break;
       }
-    }else {
-      if(currentPasswordTFController.text.length >= 8 && newPasswordTFController.text.length >= 8 && currentPass && newPass) {
+      case "phone": {
         setState(() {
-          canUpdate = true;
+          globals.user.phone = result['phone'];
         });
-      }else {
+        break;
+      }
+      case "email": {
         setState(() {
-          canUpdate = false;
+          globals.user.userEmail = result['email'];
         });
+        break;
       }
     }
+  }
+
+  handleUpdateAccount() async {
+    String data = widget.screen == "password" ? newPasswordTFController.text : textTFController.text;
+
+    setState(() {
+      canUpdate = false;
+      textTFController.clear();
+      newPasswordTFController.clear();
+    });
+
+    progressHUD();
+    var results = await updateAccountInfo(context, globals.user.token, widget.screen, data);
+    progressHUD();
+
+    handleReturnData(results);
   }
 
   Widget buildUpdatebtn() {
@@ -506,7 +536,7 @@ class EditingAccountControllerState extends State<EditingAccountController> with
           splashColor: CustomColors1.mystic.withAlpha(100),
           onPressed: () {
             FocusScope.of(context).unfocus();
-            
+            handleUpdateAccount();
           },
           child: Container(
             padding: EdgeInsets.only(top: 12.0, bottom: 12.0),

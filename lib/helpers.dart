@@ -8,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trimmz/Model/Conversation.dart';
 import 'dart:convert';
 import 'package:trimmz/Controller/AppointmentRequestController.dart';
-import 'package:trimmz/Model/Appointment.dart';
 import 'package:trimmz/Controller/UserProfileController.dart';
 import 'package:trimmz/Controller/ScheduleController.dart';
 import 'package:intl/intl.dart';
@@ -107,7 +106,7 @@ getStatusBar(int status, var time) {
       return Colors.grey;
     }
     case 4: {
-      return Colors.indigo;
+      return Colors.purple[300];
     }
   }
 }
