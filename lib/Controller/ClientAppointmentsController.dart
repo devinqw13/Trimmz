@@ -42,6 +42,10 @@ class ClientAppointmentsControllerState extends State<ClientAppointmentsControll
         upcoming.add(item);
       }
     }
+
+    past.sort((a,b) => DateTime.parse(b.appointmentFullTime).compareTo(DateTime.parse(a.appointmentFullTime)));
+
+    upcoming.sort((a,b) => DateTime.parse(b.appointmentFullTime).compareTo(DateTime.parse(a.appointmentFullTime)));
     
     super.initState();
   }
@@ -310,7 +314,9 @@ class ClientAppointmentsControllerState extends State<ClientAppointmentsControll
         },
       );
     }else {
-      return Container();
+      return Center(
+        child: Text("No Past Appointments")
+      );
     }
   }
 

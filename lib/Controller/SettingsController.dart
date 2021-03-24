@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:progress_hud/progress_hud.dart';
+import 'package:trimmz/helpers.dart';
 import 'package:trimmz/palette.dart';
 import 'package:trimmz/CustomCupertinoSettings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'LoginController.dart';
 import 'package:trimmz/Controller/EditingAccountController.dart';
+import 'dart:ui' as ui;
+import 'package:trimmz/ProfilePictureWithUpdate.dart';
+import 'package:trimmz/Controller/PaymentMethodController.dart';
 
 class SettingsController extends StatefulWidget {
   SettingsController({Key key}) : super (key: key);
@@ -69,6 +73,33 @@ class SettingsControllerState extends State<SettingsController> with TickerProvi
   @override
   Widget build(BuildContext context) {
     settings = new CupertinoSettings(<Widget>[
+      new Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: globals.user.headerPicture != null ?
+              NetworkImage(
+                "${globals.baseImageUrl}${globals.user.headerPicture}",
+              ): AssetImage("images/trimmz_icon_t.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: ClipRRect(
+          child: BackdropFilter(
+            filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              color: globals.darkModeEnabled ? Colors.black.withAlpha(100) : Colors.white.withAlpha(100),
+              child: Align(
+                child: Stack(
+                  children: [
+                    ProfilePicture()
+                  ]
+                ),
+              )
+            )
+          )
+        ),
+        height: 100
+      ),
       new CSHeader(globals.user.username),
       new CSLink(
         'Name',
@@ -126,7 +157,10 @@ class SettingsControllerState extends State<SettingsController> with TickerProvi
       ): Container(),
       new CSLink(
         'Payment Method',
-        () {},
+        () {
+          final paymentMethodController = new PaymentMethodController();
+          Navigator.push(context, new MaterialPageRoute(builder: (context) => paymentMethodController));
+        },
         style: CSWidgetStyle(
           icon: Icon(Icons.payment, color: globals.darkModeEnabled ? Colors.white : Colors.black54)
         )
@@ -165,6 +199,7 @@ class SettingsControllerState extends State<SettingsController> with TickerProvi
           brightness: globals.userBrightness,
           backgroundColor: globals.darkModeEnabled ? richBlack : Colors.white,
           centerTitle: true,
+          automaticallyImplyLeading: globals.user.userType == 1 ? false : true,
           title: new Text(
             "Settings",
             style: TextStyle(

@@ -474,10 +474,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                   color: globals.darkModeEnabled ? Colors.grey[400] : Color.fromARGB(255, 80, 80, 80)
                 )
               ),
-              currentAccountPicture: new Image.network('${globals.baseImageUrl}${globals.user.profilePic}',
-                height: 60.0,
-                fit: BoxFit.fill,
-              ),
+              currentAccountPicture: buildUserProfilePicture(context, globals.user.profilePic, globals.user.username),
               otherDetails: Container(
                 padding: EdgeInsets.only(bottom: 5),
                 child: Row(

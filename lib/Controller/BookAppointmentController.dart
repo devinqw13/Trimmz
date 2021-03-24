@@ -356,22 +356,25 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
                     value: service.selected,
                     onChanged: (bool value) => selectService(service, index)
                   ),
-                  new Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        service.serviceName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600
+                  new Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          service.serviceName,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600
+                          ),
                         ),
-                      ),
-                      Text(
-                        "${service.duration} Minutes",
-                        style: TextStyle(
-                          color: Colors.grey
+                        Text(
+                          "${service.duration} Minutes",
+                          style: TextStyle(
+                            color: Colors.grey
+                          )
                         )
-                      )
-                    ]
+                      ]
+                    )
                   )
                 ]
               ),

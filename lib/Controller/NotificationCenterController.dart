@@ -71,22 +71,24 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
                   child: Container(
                     color: Colors.transparent,
                     padding: EdgeInsets.only(left: 10, right: 10),
-                    margin: EdgeInsets.only(top: 15, bottom: 15),
+                    margin: EdgeInsets.only(top: 10, bottom: 10),
                     child: Row(
                       children: [
                         buildSmallUserProfilePicture(context, notifications[index].profilePicture, notifications[index].fromUser),
                         Padding(padding: EdgeInsets.all(5)),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              notifications[index].title,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600
-                              )
-                            ),
-                            Text(notifications[index].body)
-                          ]
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                notifications[index].title,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600
+                                )
+                              ),
+                              Text(notifications[index].body)
+                            ]
+                          )
                         )
                       ]
                     )

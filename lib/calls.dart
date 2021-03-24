@@ -14,6 +14,7 @@ import 'package:trimmz/helpers.dart';
 import 'package:trimmz/Model/Service.dart';
 import 'package:trimmz/Model/FeedItem.dart';
 import 'package:trimmz/Model/NotificationItem.dart';
+import 'package:trimmz/Model/SignupUser.dart';
 
 Future<List> getDeviceDetails() async {
   String deviceName;
@@ -1164,4 +1165,41 @@ Future<Map<dynamic, dynamic>> updateAccountInfo(BuildContext context, int token,
   }else {
     return null;
   }
+}
+
+Future<Map<dynamic, dynamic>> signupUserAPI(BuildContext context, SignupUser user) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonData = user.toMap();
+
+  String url = "${globals.baseUrl}V1/signup";
+  print(url);
+  print(json.encode(jsonData));
+  try {
+    response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+
+  Map results = jsonResponse;
+  return results;
 }

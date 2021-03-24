@@ -66,99 +66,99 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
     progressHUD();
   }
 
-  _buildActionButtons(int status, Appointment appointment) {
-    List<Widget> children = [];
-    Widget viewButton = new Expanded(
-      child: Container(
-        margin: EdgeInsets.all(2),
-        child: RaisedButton(
-          color: Color(0xFFF7F7F7),
-          onPressed: () => viewAppointment(appointment),
-          child: Text(
-            "View",
-            style: TextStyle(
-              color: Colors.black
-            ),
-          ),
-        )
-      )
-    );
-    Widget completeButton = new Expanded(
-      child: Container(
-        margin: EdgeInsets.all(2),
-        child: RaisedButton(
-          color: Colors.blue,
-          onPressed: () => handleAppointmentStatus(appointment, 1),
-          child: Text(
-            "Complete",
-            style: TextStyle(
-              color: Colors.white
-            ),
-          ),
-        )
-      )
-    );
-    Widget cancelButton = new Expanded(
-      child: Container(
-        margin: EdgeInsets.all(2),
-        child: RaisedButton(
-          color: Colors.red,
-          onPressed: () => handleAppointmentStatus(appointment, 2),
-          child: Text(
-            "Cancel",
-            style: TextStyle(
-              color: Colors.white
-            ),
-          ),
-        )
-      )
-    );
-    Widget noShowButton = new Expanded(
-      child: Container(
-        margin: EdgeInsets.all(2),
-        child: RaisedButton(
-          color: Colors.purple[300],
-          onPressed: () => handleAppointmentStatus(appointment, 4),
-          child: Text(
-            "No Show",
-            style: TextStyle(
-              color: Colors.white
-            ),
-          ),
-        )
-      )
-    );
+  // _buildActionButtons(int status, Appointment appointment) {
+  //   List<Widget> children = [];
+  //   Widget viewButton = new Expanded(
+  //     child: Container(
+  //       margin: EdgeInsets.all(2),
+  //       child: RaisedButton(
+  //         color: Color(0xFFF7F7F7),
+  //         onPressed: () => viewAppointment(appointment),
+  //         child: Text(
+  //           "View",
+  //           style: TextStyle(
+  //             color: Colors.black
+  //           ),
+  //         ),
+  //       )
+  //     )
+  //   );
+  //   Widget completeButton = new Expanded(
+  //     child: Container(
+  //       margin: EdgeInsets.all(2),
+  //       child: RaisedButton(
+  //         color: Colors.blue,
+  //         onPressed: () => handleAppointmentStatus(appointment, 1),
+  //         child: Text(
+  //           "Complete",
+  //           style: TextStyle(
+  //             color: Colors.white
+  //           ),
+  //         ),
+  //       )
+  //     )
+  //   );
+  //   Widget cancelButton = new Expanded(
+  //     child: Container(
+  //       margin: EdgeInsets.all(2),
+  //       child: RaisedButton(
+  //         color: Colors.red,
+  //         onPressed: () => handleAppointmentStatus(appointment, 2),
+  //         child: Text(
+  //           "Cancel",
+  //           style: TextStyle(
+  //             color: Colors.white
+  //           ),
+  //         ),
+  //       )
+  //     )
+  //   );
+  //   Widget noShowButton = new Expanded(
+  //     child: Container(
+  //       margin: EdgeInsets.all(2),
+  //       child: RaisedButton(
+  //         color: Colors.purple[300],
+  //         onPressed: () => handleAppointmentStatus(appointment, 4),
+  //         child: Text(
+  //           "No Show",
+  //           style: TextStyle(
+  //             color: Colors.white
+  //           ),
+  //         ),
+  //       )
+  //     )
+  //   );
 
-    switch(status) {
-      case 0: {
-        if(DateTime.now().isAfter(DateTime.parse(appointment.appointmentFullTime))) {
-          children.add(completeButton);
-          children.add(noShowButton);
-          children.add(cancelButton);
-        }else {
-          children.add(cancelButton);
-        }
-        children.add(viewButton);
-        return children;
-      }
-      case 1: {
-        children.add(viewButton);
-        return children;
-      }
-      case 2: {
-        children.add(viewButton);
-        return children;
-      }
-      case 3: {
-        children.add(viewButton);
-        return children;
-      }
-      default: {
-        children.add(viewButton);
-        return children;
-      }
-    }
-  }
+  //   switch(status) {
+  //     case 0: {
+  //       if(DateTime.now().isAfter(DateTime.parse(appointment.appointmentFullTime))) {
+  //         children.add(completeButton);
+  //         children.add(noShowButton);
+  //         children.add(cancelButton);
+  //       }else {
+  //         children.add(cancelButton);
+  //       }
+  //       children.add(viewButton);
+  //       return children;
+  //     }
+  //     case 1: {
+  //       children.add(viewButton);
+  //       return children;
+  //     }
+  //     case 2: {
+  //       children.add(viewButton);
+  //       return children;
+  //     }
+  //     case 3: {
+  //       children.add(viewButton);
+  //       return children;
+  //     }
+  //     default: {
+  //       children.add(viewButton);
+  //       return children;
+  //     }
+  //   }
+  // }
 
   buildServicesColumn(List<Service> services) {
     Map servicesMap = {};
