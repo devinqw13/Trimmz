@@ -334,7 +334,7 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
     if(globals.user.userType == 2) {
       globals.userControllerState.refreshList();
     }else {
-      //TODO: handle client controller refresh list
+      globals.clientAppointmentsControllerState.refreshList();
     }
     progressHUD();
   }
@@ -604,7 +604,17 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
             children: [
               appointment.cashPayment ?
               Row(
-                children: []
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Icon(LineIcons.money),
+                  ),
+                  Expanded(
+                    flex: 9,
+                    child: Text("In Shop")
+                  )
+                ],
               ):
               PMCard(appointment.stripePaymentID),
               Row(

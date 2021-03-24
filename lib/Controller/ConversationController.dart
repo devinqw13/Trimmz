@@ -20,8 +20,9 @@ import 'dart:ui' as ui;
 
 class ConversationController extends StatefulWidget {
   final List<Conversation> cachedConversations;
+  final User user;
   final screenHeight;
-  ConversationController({Key key, this.cachedConversations, this.screenHeight}) : super (key: key);
+  ConversationController({Key key, this.cachedConversations, this.screenHeight, this.user}) : super (key: key);
 
   @override
   ConversationControllerState createState() => new ConversationControllerState();
@@ -146,6 +147,17 @@ class ConversationControllerState extends State<ConversationController> with Tic
       conversationList = results;
     });
     conversationList.sort((a,b) => a.created.compareTo(b.created));
+
+    if(widget.user != null) {
+      var selectedConversation = conversationList.where((e) => e.userId == widget.user.id);
+      
+      if(selectedConversation.length > 0) {
+        goToMessages(selectedConversation.first);
+      }else {
+        final newMessagesController = new NewMessagesController(user: widget.user);
+        Navigator.push(context, new MaterialPageRoute(builder: (context) => newMessagesController));
+      }
+    }
   }
 
   void progressHUD() {

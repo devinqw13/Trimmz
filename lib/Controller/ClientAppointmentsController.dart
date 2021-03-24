@@ -28,6 +28,8 @@ class ClientAppointmentsControllerState extends State<ClientAppointmentsControll
 
   @override
   void initState() {
+    globals.clientAppointmentsControllerState = this;
+
     _progressHUD = new ProgressHUD(
       color: Colors.white,
       borderRadius: 8.0,
@@ -59,6 +61,29 @@ class ClientAppointmentsControllerState extends State<ClientAppointmentsControll
       }
       _loadingInProgress = !_loadingInProgress;
     });
+  }
+
+  refreshList() async {
+    List<Appointment> newPast = [];
+    List<Appointment> newUpcoming = [];
+    var results = await getAppointments(context, globals.user.token, globals.user.userType);
+
+    for(var item in results.list) {
+      if(DateTime.now().isAfter(DateTime.parse(item.appointmentFullTime))) {
+        newPast.add(item);
+      }else {
+        newUpcoming.add(item);
+      }
+    }
+
+    setState(() {
+      past = newPast;
+      upcoming = newUpcoming;
+    });
+
+    past.sort((a,b) => DateTime.parse(b.appointmentFullTime).compareTo(DateTime.parse(a.appointmentFullTime)));
+
+    upcoming.sort((a,b) => DateTime.parse(b.appointmentFullTime).compareTo(DateTime.parse(a.appointmentFullTime)));
   }
 
   buildServicesColumn(List<Service> services) {

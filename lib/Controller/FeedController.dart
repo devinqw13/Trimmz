@@ -17,7 +17,8 @@ import 'package:trimmz/helpers.dart';
 
 class FeedController extends StatefulWidget {
   final List<DashboardItem> dashboardItems;
-  FeedController({Key key, this.dashboardItems}) : super (key: key);
+  final ValueChanged onAction;
+  FeedController({Key key, this.dashboardItems, this.onAction}) : super (key: key);
 
   @override
   FeedControllerState createState() => FeedControllerState();
@@ -149,8 +150,9 @@ class FeedControllerState extends State<FeedController> {
                   child: RippleButton(
                     splashColor: CustomColors1.mystic.withAlpha(100),
                     onPressed: () {
-                      //TODO: Call action VALUE CHANGED
-                      // onTapDownSearch();
+                      setState(() {
+                        widget.onAction("GoToSearchNavTab");
+                      });
                     },
                     child: Container(
                       padding: EdgeInsets.only(top: 12.0, bottom: 12.0),

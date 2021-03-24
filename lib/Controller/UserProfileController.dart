@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:trimmz/RippleButton.dart';
 import 'package:trimmz/Model/Service.dart';
+import 'package:trimmz/Controller/ConversationController.dart';
 
 class UserProfileController extends StatefulWidget {
   final int token;
@@ -139,11 +140,13 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
                 RippleButton(
                   splashColor: CustomColors1.mystic.withAlpha(100),
                   onPressed: () {
-                    
+                    final conversationController = new ConversationController(user: user);
+
+                    Navigator.push(context, new MaterialPageRoute(builder: (context) => conversationController));
                   },
                   child: Container(
                     padding: EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 5),
-                    child: Text("Message"),
+                    child: Icon(Icons.mail_outline, size: 17),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(3)),
                       border: Border.all(
@@ -412,22 +415,24 @@ class UserProfileControllerState extends State<UserProfileController> with Ticke
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600
+                    ),
                   ),
-                ),
-                Text(
-                  "${item.duration} minutes",
-                  style: TextStyle(
-                    color: textGrey
-                  ),
-                )
-              ]
+                  Text(
+                    "${item.duration} minutes",
+                    style: TextStyle(
+                      color: textGrey
+                    ),
+                  )
+                ]
+              )
             ),
             Text(
               "\$${item.price}"

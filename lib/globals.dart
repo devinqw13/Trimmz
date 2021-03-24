@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trimmz/Controller/ClientAppointmentsController.dart';
 import 'package:trimmz/Controller/UserController.dart';
 
 LoginUser user;
@@ -17,6 +18,8 @@ Brightness userBrightness;
 bool darkModeEnabled;
 
 UserControllerState userControllerState;
+
+ClientAppointmentsControllerState clientAppointmentsControllerState;
 
 double processingFee;
 double standardPayoutFee;

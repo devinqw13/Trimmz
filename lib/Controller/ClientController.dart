@@ -42,7 +42,9 @@ class ClientControllerState extends State<ClientController> {
     appointments = widget.appointments;
 
     i = [
-      FeedController(dashboardItems: widget.dashboardItems),
+      FeedController(
+        dashboardItems: widget.dashboardItems,
+        onAction: (value) => _performFeedControllerAction(value)),
       SearchController(),
       ClientAppointmentsController(appointments: appointments),
       SettingsController()
@@ -60,6 +62,16 @@ class ClientControllerState extends State<ClientController> {
       }
       _loadingInProgress = !_loadingInProgress;
     });
+  }
+
+  _performFeedControllerAction(String action) {
+    switch(action) {
+      case "GoToSearchNavTab": {
+        setState(() {
+          _index = 1;
+        });
+      }
+    }
   }
   
   @override

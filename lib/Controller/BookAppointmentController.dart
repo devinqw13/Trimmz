@@ -349,34 +349,36 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              new Row(
-                children: [
-                  new CircularCheckBox(
-                    activeColor: Colors.blue,
-                    value: service.selected,
-                    onChanged: (bool value) => selectService(service, index)
-                  ),
-                  new Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          service.serviceName,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600
+              new Expanded(
+                child: Row(
+                  children: [
+                    new CircularCheckBox(
+                      activeColor: Colors.blue,
+                      value: service.selected,
+                      onChanged: (bool value) => selectService(service, index)
+                    ),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            service.serviceName,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600
+                            ),
                           ),
-                        ),
-                        Text(
-                          "${service.duration} Minutes",
-                          style: TextStyle(
-                            color: Colors.grey
+                          Text(
+                            "${service.duration} Minutes",
+                            style: TextStyle(
+                              color: Colors.grey
+                            )
                           )
-                        )
-                      ]
+                        ]
+                      )
                     )
-                  )
-                ]
+                  ]
+                )
               ),
               Text(
                 "\$${service.price}",
@@ -570,7 +572,7 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
           return FadeTransition(
             opacity: Tween(begin: 0.0, end: 1.0).animate(animation),
             child: Container(
-              margin: const EdgeInsets.all(10.0),
+              margin: const EdgeInsets.all(6.0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.blue[500]
@@ -588,7 +590,7 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
           return FadeTransition(
             opacity: Tween(begin: 0.0, end: 1.0).animate(animation),
             child: Container(
-              margin: const EdgeInsets.all(10.0),
+              margin: const EdgeInsets.all(6.0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: globals.darkModeEnabled ? Colors.grey[800] : Colors.grey[350]
@@ -897,6 +899,11 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
         cardPaymentSelected ? paymentMethodJson : null
     );
     progressHUD();
+
+    if(globals.user.userType == 1) {
+      globals.clientAppointmentsControllerState.refreshList();
+    }
+
     final appointmentDetailsController = new AppointmentDetailsController(appointment: result);
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => appointmentDetailsController));
   }

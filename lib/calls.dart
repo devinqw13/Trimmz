@@ -1179,8 +1179,7 @@ Future<Map<dynamic, dynamic>> signupUserAPI(BuildContext context, SignupUser use
   var jsonData = user.toMap();
 
   String url = "${globals.baseUrl}V1/signup";
-  print(url);
-  print(json.encode(jsonData));
+  
   try {
     response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
   } catch (Exception) {
