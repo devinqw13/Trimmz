@@ -1003,8 +1003,9 @@ class UserControllerState extends State<UserController> with TickerProviderState
   }
 
   _fetchUserByLocationData() async {
+    int zipcode = await getCurrentLocationZipcode();
     return this._memoizer.runOnce(() async {
-      var res = await getUsersByLocation(context, 45241);
+      var res = await getUsersByLocation(context, zipcode);
       return res;
     });
   }
