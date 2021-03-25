@@ -1014,6 +1014,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
 
   _fetchUserByLocationData() async {
     int zipcode = await getCurrentLocationZipcode();
+    print(zipcode);
     return this._memoizer.runOnce(() async {
       var res = await getUsersByLocation(context, zipcode);
       return res;
@@ -1067,6 +1068,9 @@ class UserControllerState extends State<UserController> with TickerProviderState
                     splashColor: CustomColors1.mystic.withAlpha(100),
                     onPressed: () {
                       onTapDownSearch();
+       
+
+
                     },
                     child: Container(
                       padding: EdgeInsets.only(top: 12.0, bottom: 12.0),

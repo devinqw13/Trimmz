@@ -729,8 +729,29 @@ class LoginControllerState extends State<LoginController> with TickerProviderSta
               controller: _tabController,
               physics: NeverScrollableScrollPhysics(),
               children: [
-                Column(
+                ListView(
+                  padding: EdgeInsets.all(0),
+                  shrinkWrap: true,
+                  physics: AlwaysScrollableScrollPhysics(),
                   children: [
+                    // ListView(
+                    //   physics: AlwaysScrollableScrollPhysics(),
+                    //   child: Column(
+                    //     children: [
+                    //       SizedBox(
+                    //         height: 20.0,
+                    //       ),
+                    //       _buildEmailTF(),
+                    //       SizedBox(
+                    //         height: 30.0,
+                    //       ),
+                    //       _buildPasswordTF(),
+                    //       _buildForgotPasswordBtn(),
+                    //       _buildLoginBtn(),
+                    //       _buildSignupNote()
+                    //     ],
+                    //   ),
+                    // ),
                     SizedBox(
                       height: 20.0,
                     ),
