@@ -71,6 +71,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
   AsyncMemoizer _memoizer;
   AsyncMemoizer _memoizer2;
   List<NotificationItem> notifications = [];
+  List<User> clients = [];
   var refreshFeedKey = GlobalKey<RefreshIndicatorState>();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
@@ -78,6 +79,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
   void initState() {
     firebaseCloudMessagingListeners();
     initGetNotifications();
+    getClients();
 
     globals.userControllerState = this;
 
@@ -181,6 +183,14 @@ class UserControllerState extends State<UserController> with TickerProviderState
   initGetNotifications() async {
     var result = await getNotifications(context, globals.user.token);
     handleNotificationData(result);
+  }
+
+  getClients() async {
+    List<User> results = await getUserClients(context, globals.user.token);
+
+    setState(() {
+      clients = results;
+    });
   }
 
   handleNotificationData(var data) {
@@ -1483,7 +1493,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                   count: notifications.where((e) => e.read == false).length
                 ),
                 onTap: () async {
-                  final notificationCenterController = new NotificationCenterController(notifications: notifications);
+                  final notificationCenterController = new NotificationCenterController(notifications: notifications, clients: clients, screenHeight: MediaQuery.of(context).size.height);
                   await Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationCenterController));
 
                   for(var item in notifications) {

@@ -261,7 +261,7 @@ class FeedControllerState extends State<FeedController> {
                 count: notifications.where((e) => e.read == false).length
               ),
               onTap: () async {
-                final notificationCenterController = new NotificationCenterController(notifications: notifications);
+                final notificationCenterController = new NotificationCenterController(notifications: notifications, screenHeight: MediaQuery.of(context).size.height);
                 await Navigator.push(context, new MaterialPageRoute(builder: (context) => notificationCenterController));
 
                 for(var item in notifications) {

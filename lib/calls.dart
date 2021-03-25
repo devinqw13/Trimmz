@@ -1204,3 +1204,76 @@ Future<Map<dynamic, dynamic>> signupUserAPI(BuildContext context, SignupUser use
   Map results = jsonResponse;
   return results;
 }
+
+Future<List<User>> getUserClients(BuildContext context, int token) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  String url = "${globals.baseUrl}V1/clients?token=$token";
+
+  try {
+    response = await http.get(url, headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return [];
+  }
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return [];
+  }
+
+  if (json.decode(response.body) is List) {
+    var responseBody = response.body.substring(1, response.body.length - 1);
+    jsonResponse = json.decode(responseBody);
+  } else {
+    jsonResponse = json.decode(response.body);
+  }
+  
+  if(jsonResponse['error'] == 'false'){
+    var users = Users(jsonResponse['users']);
+    return users.list;
+  }else {
+    return [];
+  }
+}
+
+Future<Map<dynamic, dynamic>> postAnnoucement(BuildContext context, int token, int recipient, String message) async {
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Map jsonResponse = {};
+  http.Response response;
+
+  var jsonData = {
+    "title": "Announcement",
+    "body": message,
+    "sender": token,
+    "recipient": recipient
+  };
+
+  String url = "${globals.baseUrl}V1/announcements";
+  
+  try {
+    response = await http.post(url, body: json.encode(jsonData), headers: headers).timeout(Duration(seconds: 60));
+  } catch (Exception) {
+    showErrorDialog(context, "The Server is not responding", "Please try again. If this error continues to occur, please contact support.");
+    return null;
+  }
+  
+  if (response == null || response.statusCode != 200) {
+    showErrorDialog(context, "An error has occurred", "Please try again.");
+    return null;
+  }
+
+  print(response.body);
+
+  Map results = jsonResponse;
+  return results;
+}
