@@ -46,8 +46,10 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
     
     notifications = widget.notifications;
 
-    for(var item in widget.clients) {
-      clients.add(new SelectionOption(item));
+    if(widget.clients != null) {
+      for(var item in widget.clients) {
+        clients.add(new SelectionOption(item));
+      }
     }
 
     clientSearchController.addListener(() {
