@@ -58,11 +58,12 @@ class AppointmentsControllerState extends State<AppointmentsController> with Tic
   handleAppointmentStatus(Appointment appointment, int status) async {
     progressHUD();
     var results = await appointmentHandler(context, globals.user.token, appointment.id, status);
-    print(results);
-    setState(() {
-      appointment.status = results.status;
-    });
-    globals.userControllerState.refreshList();
+    if(results != null) {
+      setState(() {
+        appointment.status = results.status;
+      });
+      globals.userControllerState.refreshList();
+    }
     progressHUD();
   }
 

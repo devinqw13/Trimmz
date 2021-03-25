@@ -105,10 +105,11 @@ class _UserAppointmentControlButtons extends State<UserAppointmentControlButtons
   handleAppointmentStatus(Appointment appointment, int status) async {
     widget.controllerState.progressHUD();
     var results = await appointmentHandler(context, globals.user.token, appointment.id, status);
-    setState(() {
-      // appointment.status = results.status;
-      widget.onUpdate(results);
-    });
+    if(results != null){
+      setState(() {
+        widget.onUpdate(results);
+      });
+    }
     widget.controllerState.progressHUD();
   }
 

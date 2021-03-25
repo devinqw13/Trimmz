@@ -328,13 +328,15 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
     progressHUD();
     var results = await appointmentHandler(context, globals.user.token, appointmentId, status);
 
-    setState(() {
-      appointment.status = results.status;
-    });
-    if(globals.user.userType == 2) {
-      globals.userControllerState.refreshList();
-    }else {
-      globals.clientAppointmentsControllerState.refreshList();
+    if(results != null) {
+      setState(() {
+        appointment.status = results.status;
+      });
+      if(globals.user.userType == 2) {
+        globals.userControllerState.refreshList();
+      }else {
+        globals.clientAppointmentsControllerState.refreshList();
+      }
     }
     progressHUD();
   }

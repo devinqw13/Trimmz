@@ -314,6 +314,7 @@ Future<Appointment> appointmentHandler(BuildContext context, int barberId, int a
   var jsonMap = {
     "token": barberId,
     "status": "$status",
+    "trimmz_fee": globals.stripe.paymentMethodType == "instant" ? globals.instantPayoutFee : globals.standardPayoutFee
   };
 
   String url = "${globals.baseUrl}V1/appointments/$appointmentId";
@@ -339,6 +340,7 @@ Future<Appointment> appointmentHandler(BuildContext context, int barberId, int a
     Appointment appointment = new Appointment(jsonResponse['appointment']);
     return appointment;
   }else {
+    showErrorDialog(context, "An error has occurred", jsonResponse['message']);
     return null;
   }
 }

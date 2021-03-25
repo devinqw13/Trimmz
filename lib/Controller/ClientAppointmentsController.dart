@@ -138,11 +138,13 @@ class ClientAppointmentsControllerState extends State<ClientAppointmentsControll
   handleAppointmentStatus(int appointmentId, int status) async {
     progressHUD();
     var results = await appointmentHandler(context, globals.user.token, appointmentId, status);
-    Appointment appointment = upcoming.where((element) => element.id == results.id).first;
+    if(results != null) {
+      Appointment appointment = upcoming.where((element) => element.id == results.id).first;
 
-    setState(() {
-      appointment.status = results.status;
-    });
+      setState(() {
+        appointment.status = results.status;
+      });
+    }
     progressHUD();
   }
 

@@ -51,12 +51,15 @@ class AppointmentRequestControllerState extends State<AppointmentRequestControll
   handleAppointmentStatus(int appointmentId, int status) async {
     progressHUD();
     var results = await appointmentHandler(context, globals.user.token, appointmentId, status);
-    Appointment appointment = requests.where((element) => element.id == results.id).first;
 
-    setState(() {
-      requests.removeWhere((element) => element.id == appointment.id);
-    });
-    globals.userControllerState.refreshList();
+    if(results != null) {
+      Appointment appointment = requests.where((element) => element.id == results.id).first;
+
+      setState(() {
+        requests.removeWhere((element) => element.id == appointment.id);
+      });
+      globals.userControllerState.refreshList();
+    }
     progressHUD();
   }
 
