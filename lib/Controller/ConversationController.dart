@@ -92,7 +92,7 @@ class ConversationControllerState extends State<ConversationController> with Tic
   }
 
   getNewMessageUsers() async {
-    List<User> results = await getFollowedUsers(context, globals.user.token);
+    List<User> results = await getConversationUsers(context, globals.user.token);
 
     for(User item in results) {
       setState(() {

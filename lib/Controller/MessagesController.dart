@@ -25,6 +25,7 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
   List<MessageBubble> messageWidgets = [];
   List<Message> messages = [];
   TrimmzWebSocket webSocket;
+  bool isSending = false;
 
   @override
   void initState() {
@@ -90,6 +91,9 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
     var jsonData = json.decode(event);
     var data = jsonData['data'];
     if(data['conversationId'] == conversation.id) {
+      setState(() {
+        isSending = false;
+      });
       Map messageJson = {
         "id": data['id'],
         "conversationId": data['conversationId'],
@@ -105,6 +109,9 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
   }
 
   sendMessage() {
+    setState(() {
+      isSending = true;
+    });
     var data = {
       "action": "onaction",
       "key": "sendMessage",
@@ -220,6 +227,13 @@ class MessagesControllerState extends State<MessagesController> with TickerProvi
           brightness: globals.userBrightness,
           backgroundColor: globals.darkModeEnabled ? richBlack : Colors.white,
           centerTitle: true,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(2.0),
+            child: isSending ? LinearProgressIndicator(
+              minHeight: 2.0,
+              valueColor: new AlwaysStoppedAnimation(Colors.blue)
+            ) : Container()
+          ),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,

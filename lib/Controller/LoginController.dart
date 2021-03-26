@@ -127,27 +127,33 @@ class LoginControllerState extends State<LoginController> with TickerProviderSta
     if(password != "") {
       progressHUD();
       var results = await login(context, user, password);
-      setGlobals(results);
-      var dashboardItems = await getDashboardItems(globals.user.token, context);
-      var appointments = await getAppointments(context, globals.user.token, globals.user.userType);
-      progressHUD();
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
-      prefs.setBool('darkModeEnabled', globals.darkModeEnabled);
-      prefs.setInt('token', globals.user.token);
-      if (globals.darkModeEnabled) {
-        globals.userBrightness = Brightness.dark;
+      if(results.length == 0) {
+        progressHUD();
+        showErrorDialog(context, "Login Error", "Incorrect username or password. Try again;");
+        return;
       }else {
-        globals.userBrightness = Brightness.light;
-      }
+        setGlobals(results);
+        var dashboardItems = await getDashboardItems(globals.user.token, context);
+        var appointments = await getAppointments(context, globals.user.token, globals.user.userType);
+        progressHUD();
 
-      if(globals.user.userType == 1) {
-        final clientController = new ClientController(dashboardItems: dashboardItems, appointments: appointments);
-        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => clientController));
-      }else {
-        final userController = new UserController(screenHeight: MediaQuery.of(context).size.height, dashboardItems: dashboardItems, appointments: appointments);
-        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => userController));
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        globals.darkModeEnabled = prefs.getBool('darkModeEnabled') == null ? true : prefs.getBool('darkModeEnabled');
+        prefs.setBool('darkModeEnabled', globals.darkModeEnabled);
+        prefs.setInt('token', globals.user.token);
+        if (globals.darkModeEnabled) {
+          globals.userBrightness = Brightness.dark;
+        }else {
+          globals.userBrightness = Brightness.light;
+        }
+
+        if(globals.user.userType == 1) {
+          final clientController = new ClientController(dashboardItems: dashboardItems, appointments: appointments);
+          Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => clientController));
+        }else {
+          final userController = new UserController(screenHeight: MediaQuery.of(context).size.height, dashboardItems: dashboardItems, appointments: appointments);
+          Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => userController));
+        }
       }
     }else {
       showOkDialog(context, "Please enter a valid password");
