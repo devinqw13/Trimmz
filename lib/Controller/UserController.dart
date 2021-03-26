@@ -495,7 +495,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: "N/A ",
+                              text: "${clients.length} ",
                               style: TextStyle(
                                 color: globals.darkModeEnabled ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w500,

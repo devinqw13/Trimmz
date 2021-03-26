@@ -278,10 +278,11 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
             fontWeight: FontWeight.bold
           )
         ),
-        Row(
+        filter == null || filter == "" ? Row(
           children: [
             Text("Select all clients"),
             CircularCheckBox(
+              // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               activeColor: Colors.blue,
               value: allClientsSelected,
               onChanged: (value) {
@@ -300,7 +301,7 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
               }
             )
           ],
-        )
+        ): Container()
       ],
     );
   }
@@ -327,7 +328,7 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
         physics: AlwaysScrollableScrollPhysics(),
         child: Column(
           children: List<Widget>.generate(clients.length, (index) {
-            return Container(
+            return filter == null || filter == "" ? Container(
               padding: EdgeInsets.all(0),
               child: ListTile(
                 contentPadding: EdgeInsets.all(0),
@@ -346,7 +347,27 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
                   }
                 ),
               ),
-            );
+            ): searchFilterText(clients[index].user) ?
+            Container(
+              padding: EdgeInsets.all(0),
+              child: ListTile(
+                contentPadding: EdgeInsets.all(0),
+                leading: buildUserProfilePicture(context, clients[index].user.profilePicture, clients[index].user.username),
+                title: Text(clients[index].user.name),
+                subtitle: Text(clients[index].user.username),
+                trailing: CircularCheckBox(
+                  activeColor: Colors.blue,
+                  value: clients[index].selected,
+                  onChanged: (value) {
+                    setState(() {
+                      clients[index].selected = value;
+                    });
+
+                    checkSelections(clients[index]);
+                  }
+                ),
+              ),
+            ): Container();
           })
         ),
       )

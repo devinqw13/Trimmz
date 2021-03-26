@@ -39,6 +39,8 @@ class ConversationControllerState extends State<ConversationController> with Tic
   List<Conversation> conversationList = [];
   List<NewMessageUser> newMessageUsers = [];
   TrimmzWebSocket webSocket = new TrimmzWebSocket("Conversation", 0);
+  TextEditingController searchRecipientsTFController = new TextEditingController();
+  String filter;
 
   @override
   void initState() {
@@ -47,6 +49,12 @@ class ConversationControllerState extends State<ConversationController> with Tic
     }, onDone: webSocketReconnect);
 
     conversationList = widget.cachedConversations ?? [];
+
+    searchRecipientsTFController.addListener(() {
+      setState(() {
+        filter = searchRecipientsTFController.text;
+      });
+    });
 
     _progressHUD = new ProgressHUD(
       color: Colors.white,
@@ -89,6 +97,15 @@ class ConversationControllerState extends State<ConversationController> with Tic
   void dispose() {
     super.dispose();
     webSocket.channel.sink.close(status.goingAway);
+  }
+
+  bool searchFilterText(User result) {
+    bool match = false;
+    if (result.username.toLowerCase().contains(filter.toLowerCase()) ||result.name.toLowerCase().contains(filter.toLowerCase())) {
+      match = true;
+      return match;
+    }
+    return match;
   }
 
   getNewMessageUsers() async {
@@ -302,7 +319,7 @@ class ConversationControllerState extends State<ConversationController> with Tic
       itemCount: newMessageUsers.length,
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        return new Card(
+        return filter == null || filter == "" ? new Card(
           color: Colors.transparent,
           elevation: 0.0,
           child: Container(
@@ -341,7 +358,47 @@ class ConversationControllerState extends State<ConversationController> with Tic
               ]
             )
           )
-        );
+        ) : searchFilterText(newMessageUsers[index].user) ? 
+        new Card(
+          color: Colors.transparent,
+          elevation: 0.0,
+          child: Container(
+            padding: EdgeInsets.all(5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    buildSmallUserProfilePicture(context, newMessageUsers[index].user.profilePicture, newMessageUsers[index].user.username),
+                    Padding(padding: EdgeInsets.all(5)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          newMessageUsers[index].user.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600
+                          )
+                        ),
+                        Text(newMessageUsers[index].user.username)
+                      ]
+                    )
+                  ],
+                ),
+                new CircularCheckBox(
+                  activeColor: Colors.blue,
+                  value: newMessageUsers[index].selected,
+                  onChanged: (bool value) {
+                    setState(() {
+                      newMessageUsers.forEach((element) => element.selected = false);
+                      newMessageUsers[index].selected = !newMessageUsers[index].selected;
+                    });
+                  }
+                ),
+              ]
+            )
+          )
+        ) : Container();
       },
     );
   }
@@ -363,6 +420,7 @@ class ConversationControllerState extends State<ConversationController> with Tic
             ],
           ),
           child: TextField(
+            controller: searchRecipientsTFController,
             keyboardType: TextInputType.text,
             autocorrect: false,
             style: TextStyle(
