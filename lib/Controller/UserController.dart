@@ -782,27 +782,30 @@ class UserControllerState extends State<UserController> with TickerProviderState
                 header: IntrinsicHeight(
                   child: Row(
                     children: [
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: startTime,
-                              style: TextStyle(
-                                color: globals.darkModeEnabled ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13.0
+                      Expanded(
+                        flex: 1,
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: startTime,
+                                style: TextStyle(
+                                  color: globals.darkModeEnabled ? Colors.white : Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13.0
+                                )
+                              ),
+                              TextSpan(
+                                text: '\n'+endTime,
+                                style: TextStyle(
+                                  color: textGrey,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 12.0
+                                )
                               )
-                            ),
-                            TextSpan(
-                              text: '\n'+endTime,
-                              style: TextStyle(
-                                color: textGrey,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 12.0
-                              )
-                            )
-                          ]
-                        ),
+                            ]
+                          ),
+                        )
                       ),
                       new Container(
                         width: 4.0,
@@ -811,6 +814,7 @@ class UserControllerState extends State<UserController> with TickerProviderState
                         padding: const EdgeInsets.symmetric(vertical: 15.0),
                       ),
                       Expanded(
+                        flex: 4,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
