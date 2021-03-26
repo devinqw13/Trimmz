@@ -49,8 +49,8 @@ class SearchControllerState extends State<SearchController> {
   }
 
   _fetchUserByLocationData() async {
-    int zipcode = await getCurrentLocationZipcode();
     return this._memoizer.runOnce(() async {
+      int zipcode = await getCurrentLocationZipcode();
       var res = await getUsersByLocation(context, zipcode);
       return res;
     });
