@@ -43,7 +43,7 @@ class LoginControllerState extends State<LoginController> with TickerProviderSta
   void initState() {
     super.initState();
 
-    _tabController = new TabController(length: 2, vsync: this);
+    _tabController = new TabController(length: 3, vsync: this);
 
     _progressHUD = new ProgressHUD(
       color: Colors.white,
@@ -533,7 +533,11 @@ class LoginControllerState extends State<LoginController> with TickerProviderSta
     return Container(
       alignment: Alignment.centerRight,
       child: FlatButton(
-        onPressed: () => print('Forgot Password Button Pressed'),
+        onPressed: () {
+          setState(() {
+            _tabController.index = 2;
+          });
+        },
         padding: EdgeInsets.only(right: 0.0),
         child: Text(
           'Forgot Password?',
@@ -717,16 +721,22 @@ class LoginControllerState extends State<LoginController> with TickerProviderSta
 
   Widget buildTabBarView() {
     return new DefaultTabController(
-      length: 2,
+      length: 3,
       child: Column(
         children: <Widget>[
           Container(
             child: TabBar(
+              onTap: (index) {
+                setState(() {
+                  _tabController.index = index;
+                });
+              },
               controller: _tabController,
-              indicatorColor: Colors.white,
+              indicatorColor: _tabController.index == 2 ? Colors.transparent : Colors.white,
               tabs: [
                 Tab(text: "Login"),
-                Tab(text: "Sign up")
+                Tab(text: "Sign up"),
+                Container()
               ],
             )
           ),
@@ -740,24 +750,6 @@ class LoginControllerState extends State<LoginController> with TickerProviderSta
                   shrinkWrap: true,
                   physics: AlwaysScrollableScrollPhysics(),
                   children: [
-                    // ListView(
-                    //   physics: AlwaysScrollableScrollPhysics(),
-                    //   child: Column(
-                    //     children: [
-                    //       SizedBox(
-                    //         height: 20.0,
-                    //       ),
-                    //       _buildEmailTF(),
-                    //       SizedBox(
-                    //         height: 30.0,
-                    //       ),
-                    //       _buildPasswordTF(),
-                    //       _buildForgotPasswordBtn(),
-                    //       _buildLoginBtn(),
-                    //       _buildSignupNote()
-                    //     ],
-                    //   ),
-                    // ),
                     SizedBox(
                       height: 20.0,
                     ),
@@ -805,7 +797,26 @@ class LoginControllerState extends State<LoginController> with TickerProviderSta
                     ),
                     _buildSignupBtn(),
                   ]
-                )
+                ),
+                Container() //TODO: FORGOT PASSWORD
+                // ListView(
+                //   padding: EdgeInsets.all(0),
+                //   shrinkWrap: true,
+                //   physics: AlwaysScrollableScrollPhysics(),
+                //   children: [
+                //     SizedBox(
+                //       height: 20.0,
+                //     ),
+                //     _buildForgotEmail(),
+                //     SizedBox(
+                //       height: 30.0,
+                //     ),
+                //     _buildPasswordTF(),
+                //     _buildForgotPasswordBtn(),
+                //     _buildLoginBtn(),
+                //     _buildSignupNote()
+                //   ]
+                // ),
               ],
             )
           ),
