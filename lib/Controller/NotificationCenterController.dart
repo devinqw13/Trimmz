@@ -37,6 +37,7 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
   String filter;
   bool allClientsSelected = false;
   List<SelectionOption> clients = [];
+  FocusNode focusNode = new FocusNode();
 
   @override
   void initState() {
@@ -94,6 +95,7 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
   void dispose() {
     super.dispose();
     clientSearchController.dispose();
+    focusNode.dispose();
   }
 
   void progressHUD() {
@@ -198,6 +200,59 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
     );
   }
 
+  List<Widget> _buildClientsToList() {
+    List<Widget> _children = [];
+
+    clients.forEach((e) {
+      if(e.selected) {
+        _children.add(
+          Center(
+            child: Container(
+              margin: EdgeInsets.all(2),
+              padding: EdgeInsets.only(top: 5, bottom: 5, left: 8, right: 8),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(5)
+              ),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    e.user.username,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        e.selected = false;
+                      });
+                      checkSelections(e);
+                    },
+                    child: Icon(Icons.close, size: 15, color: Colors.white),
+                  )
+                ]
+              )
+            )
+          )
+        );
+      }
+    });
+    _children.add(
+      IntrinsicWidth(
+        child: TextField(
+          controller: clientSearchController,
+          focusNode: focusNode,
+          autocorrect: false,
+          decoration: InputDecoration(
+            hintText: clients.where((e) => e.selected == true).length > 0 ? '' : 'Search',
+            hintStyle: TextStyle(fontStyle: FontStyle.italic),
+            border: InputBorder.none
+          ),
+        )
+      )
+    );
+    return _children;
+  }
+
   Widget _buildClientsTo() {
     return Container(
       padding: EdgeInsets.all(5),
@@ -205,62 +260,13 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('To', style: TextStyle(fontWeight: FontWeight.bold)),
-          Row(
-            children: <Widget>[
-              Container(
-                height: 50,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: clients.length,
-                  itemBuilder: (context, i) {
-                    if(!clients[i].selected) {
-                      return Container();
-                    }else {
-                      return Center(
-                        child: Container(
-                          margin: EdgeInsets.all(2),
-                          padding: EdgeInsets.only(top: 5, bottom: 5, left: 8, right: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(5)
-                          ),
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                clients[i].user.username,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    clients[i].selected = false;
-                                  });
-
-                                  checkSelections(clients[i]);
-                                },
-                                child: Icon(Icons.close, size: 15, color: Colors.white),
-                              )
-                            ]
-                          )
-                        )
-                      );
-                    }
-                  },
-                )
-              ),
-              Expanded(
-                child: TextField(
-                  controller: clientSearchController,
-                  autocorrect: false,
-                  decoration: InputDecoration(
-                    hintText: clients.where((e) => e.selected == true).length > 0 ? '' : 'Search',
-                    hintStyle: TextStyle(fontStyle: FontStyle.italic),
-                    border: InputBorder.none
-                  ),
-                )
-              )
-            ]
+          Container(
+            height: 50,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              children: _buildClientsToList(),
+            )
           )
         ]
       )
@@ -282,7 +288,6 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
           children: [
             Text("Select all clients"),
             CircularCheckBox(
-              // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               activeColor: Colors.blue,
               value: allClientsSelected,
               onChanged: (value) {
@@ -376,70 +381,70 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
 
   Widget buildAddClients() {
     return Container(
-      padding: EdgeInsets.only(top: 20),
       child: Column(
         children: [
           Expanded(
-            child:  Column(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildClientsTo(),
                 _buildSelectAll(),
                 _buildClientsList(),
-                clients.where((e) => e.selected == true).length > 0 ?
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: globals.darkModeEnabled ? Color.fromARGB(225, 0, 0, 0) : Color.fromARGB(110, 0, 0, 0),
-                          borderRadius: BorderRadius.all(Radius.circular(3)),
-                          border: Border.all(
-                            color: CustomColors1.mystic.withAlpha(100)
-                          )
-                        ),
-                        child: RippleButton(
-                          splashColor: CustomColors1.mystic.withAlpha(100),
-                          onPressed: () async {
-                            List<int> recipientIds = [];
-                            clients.where((e) => e.selected == true).forEach((i) {recipientIds.add(i.user.id);});
-
-                            print(recipientIds);
-
-                            final composeAnnoucementController = new ComposeAnnoucementController(recipients: recipientIds);
-                            bool res = await Navigator.push(context, new MaterialPageRoute(builder: (context) => composeAnnoucementController));
-
-                            if(res != null){
-                              if(res){
-                                onTapDown();
-
-                                for(var item in clients) {
-                                  setState(() {
-                                    item.selected = false;
-                                  });
-                                  checkSelections(item);
-                                }
-                              }
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
-                            child: Center(
-                              child: Text(
-                                "Create Announcement",
-                                style: TextStyle(
-                                  color: Colors.white
-                                )
-                              ),
-                            )
-                          )
-                        )
-                      ),
-                    )
-                  ]
-                ): Container()
               ]
             )
           ),
+          clients.where((e) => e.selected == true).length > 0 ?
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: globals.darkModeEnabled ? Color.fromARGB(225, 0, 0, 0) : Color.fromARGB(110, 0, 0, 0),
+                    borderRadius: BorderRadius.all(Radius.circular(3)),
+                    border: Border.all(
+                      color: CustomColors1.mystic.withAlpha(100)
+                    )
+                  ),
+                  child: RippleButton(
+                    splashColor: CustomColors1.mystic.withAlpha(100),
+                    onPressed: () async {
+                      List<int> recipientIds = [];
+                      clients.where((e) => e.selected == true).forEach((i) {recipientIds.add(i.user.id);});
+
+                      print(recipientIds);
+
+                      final composeAnnoucementController = new ComposeAnnoucementController(recipients: recipientIds);
+                      bool res = await Navigator.push(context, new MaterialPageRoute(builder: (context) => composeAnnoucementController));
+
+                      if(res != null){
+                        if(res){
+                          onTapDown();
+
+                          for(var item in clients) {
+                            setState(() {
+                              item.selected = false;
+                            });
+                            checkSelections(item);
+                          }
+                        }
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
+                      child: Center(
+                        child: Text(
+                          "Create Announcement",
+                          style: TextStyle(
+                            color: Colors.white
+                          )
+                        ),
+                      )
+                    )
+                  )
+                ),
+              )
+            ]
+          ): Container()
         ]
       )
     );
@@ -508,7 +513,8 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
               splashColor: Colors.transparent,
               icon: Icon(Icons.add),
               onPressed: () {
-                FocusScope.of(context).unfocus();
+                // FocusScope.of(context).unfocus();
+                focusNode.requestFocus();
                 onTapDown();
               },
             ):
@@ -517,6 +523,11 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
               splashColor: Colors.transparent,
               onPressed: () {
                 FocusScope.of(context).unfocus();
+                clients.forEach((element) {
+                  setState(() {
+                    element.selected = false;
+                  });
+                });
                 onTapDown();
               },
               child: Text("Cancel")
@@ -526,7 +537,7 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
         body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light,
           child: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
+            // onTap: () => FocusScope.of(context).unfocus(),
             child: new Container(
               color: globals.userBrightness == Brightness.light ? Colors.white : richBlack,
               child: new Stack(
