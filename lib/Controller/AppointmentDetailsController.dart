@@ -643,7 +643,7 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
     return "\$$finalString";
   }
 
-  Widget _buildPaymentMethod() {
+  Widget _buildClientPaymentMethod() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -797,6 +797,168 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
     );
   }
 
+  Widget _buildUserPaymentMethod() {
+    double servicePercent = 
+      globals.stripe.paymentMethodType == 'instant' ?
+        globals.instantPayoutFee : globals.standardPayoutFee;
+
+    double subtractedFees = ((appointment.subTotal + appointment.tip) * servicePercent);
+
+    double totalEarned = (appointment.subTotal + appointment.tip) - subtractedFees;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "PAYMENT METHOD",
+          style: TextStyle(
+            fontWeight: FontWeight.w600
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: Color(0xff0a0a0a).withAlpha(225),
+            borderRadius: BorderRadius.circular(15.0)
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              appointment.cashPayment ?
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Icon(LineIcons.money),
+                  ),
+                  Expanded(
+                    flex: 9,
+                    child: Text("In Shop")
+                  )
+                ],
+              ):
+              PMCard(appointment.stripePaymentID),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Container()
+                  ),
+                  Expanded(
+                    flex: 9,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Amount",
+                          style: TextStyle(
+                            color: Colors.grey
+                          ),
+                        ),
+                        Text(
+                          "+ " + formatCurrency(appointment.subTotal),
+                          style: TextStyle(
+                            color: Colors.grey
+                          ),
+                        )
+                      ]
+                    ),
+                  )
+                ]
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Container()
+                  ),
+                  Expanded(
+                    flex: 9,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Tip",
+                          style: TextStyle(
+                            color: Colors.grey
+                          ),
+                        ),
+                        Text(
+                          "+ " + formatCurrency(appointment.tip),
+                          style: TextStyle(
+                            color: Colors.grey
+                          ),
+                        )
+                      ]
+                    ),
+                  )
+                ]
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Container()
+                  ),
+                  Expanded(
+                    flex: 9,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Service Fees",
+                          style: TextStyle(
+                            color: Colors.grey
+                          ),
+                        ),
+                        Text(
+                          "- " +formatCurrency(subtractedFees),
+                          style: TextStyle(
+                            color: Colors.grey
+                          ),
+                        )
+                      ]
+                    ),
+                  )
+                ]
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Container()
+                  ),
+                  Expanded(
+                    flex: 9,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Total",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15.0
+                          ),
+                        ),
+                        Text(
+                          formatCurrency(totalEarned),
+                          style: TextStyle(
+                            color: Colors.grey
+                          ),
+                        )
+                      ]
+                    ),
+                  )
+                ]
+              )
+            ]
+          )
+        )
+      ]
+    );
+  }
+
   Widget _buildScreen() {
     return Container(
       padding: EdgeInsets.all(10),
@@ -810,7 +972,7 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
             Padding(padding: EdgeInsets.all(8)),
             _buildSummary(),
             Padding(padding: EdgeInsets.all(8)),
-            _buildPaymentMethod()
+            appointment.clientID == globals.user.token ? _buildClientPaymentMethod() : _buildUserPaymentMethod()
           ]
         ),
       )
