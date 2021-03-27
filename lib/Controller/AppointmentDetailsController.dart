@@ -269,7 +269,7 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
             children: [
               appointment.clientID == globals.user.token ?
               buildUserProfilePicture(context, appointment.userProfilePicture, appointment.userName):
-              buildUserProfilePicture(context, appointment.clientProfilePicture, appointment.clientName),
+              buildUserProfilePicture(context, appointment.clientProfilePicture, appointment.clientID == 0 ? appointment.manualClientName : appointment.clientName),
               Expanded(
                 flex: 9,
                 child: Container(
@@ -280,12 +280,15 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
                       Text(
                         appointment.clientID == globals.user.token ?
                         "${appointment.userName}" :
+                        appointment.clientID == 0 ?
+                        "${appointment.manualClientName}${appointment.manualClientPhone != null ? appointment.manualClientPhone : ''}":
                         "${appointment.clientName}",
                         style: TextStyle(
                           fontWeight: FontWeight.w600
                         )
                       ),
                       buildServicesColumn(appointment.services),
+                      Padding(padding: EdgeInsets.all(2)),
                       _buildStatusLabel(appointment.status, appointment.appointmentFullTime)
                     ]
                   ),
