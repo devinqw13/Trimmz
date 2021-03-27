@@ -102,7 +102,7 @@ class ClientControllerState extends State<ClientController> {
             )
           )
         ),
-        floatingActionButton: _index == 0 ? new FloatingActionButton(
+        floatingActionButton: _index == 0 || _index == 2 ? new FloatingActionButton(
           onPressed: () {
             final selectUserController = new SelectUserBookAppointmentController(token: globals.user.token);
             Navigator.push(context, new MaterialPageRoute(builder: (context) => selectUserController));

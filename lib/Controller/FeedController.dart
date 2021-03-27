@@ -241,23 +241,7 @@ class FeedControllerState extends State<FeedController> {
             margin: EdgeInsets.only(left: 8.0, right: 8.0),
             child: GestureDetector(
               child: Badge(
-                widget: Icon(Icons.messenger_outline_outlined),
-                count: 0
-              ),
-              onTap: () async {
-                var results = await getCached("conversations");
-                final messageController = new ConversationController(cachedConversations: results, screenHeight: MediaQuery.of(context).size.height);
-
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => messageController));
-              },
-            )
-          ),
-
-          Container(
-            margin: EdgeInsets.only(left: 8.0, right: 8.0),
-            child: GestureDetector(
-              child: Badge(
-                widget: Icon(Icons.notifications_none_sharp),
+                widget: Icon(Icons.notifications_none_rounded, size: 26),
                 count: notifications.where((e) => e.read == false).length
               ),
               onTap: () async {
@@ -271,7 +255,22 @@ class FeedControllerState extends State<FeedController> {
                 }
               },
             )
-          )
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 8.0, right: 15.0),
+            child: GestureDetector(
+              child: Badge(
+                widget: Icon(Icons.messenger_outline_outlined),
+                count: 0
+              ),
+              onTap: () async {
+                var results = await getCached("conversations");
+                final messageController = new ConversationController(cachedConversations: results, screenHeight: MediaQuery.of(context).size.height);
+
+                Navigator.push(context, new MaterialPageRoute(builder: (context) => messageController));
+              },
+            )
+          ),
         ],
         elevation: 0.0,
       ),

@@ -508,6 +508,7 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
               splashColor: Colors.transparent,
               icon: Icon(Icons.add),
               onPressed: () {
+                FocusScope.of(context).unfocus();
                 onTapDown();
               },
             ):
@@ -515,6 +516,7 @@ class NotificationCenterControllerState extends State<NotificationCenterControll
               highlightColor: Colors.transparent,
               splashColor: Colors.transparent,
               onPressed: () {
+                FocusScope.of(context).unfocus();
                 onTapDown();
               },
               child: Text("Cancel")
