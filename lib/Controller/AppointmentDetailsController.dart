@@ -10,6 +10,7 @@ import 'package:trimmz/Model/Service.dart';
 import 'package:trimmz/PulsingWidget.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:trimmz/CustomDialogBox.dart';
 
 class AppointmentDetailsController extends StatefulWidget {
   final Appointment appointment;
@@ -324,7 +325,61 @@ class AppointmentDetailsControllerState extends State<AppointmentDetailsControll
     );
   }
 
+  Future<bool> confirmationPopup(Appointment appointment, int status) async {
+    String title = "";
+    String desc = "";
+    Color buttonColor;
+
+    if(status == 1) {
+      title = "Complete Appointment";
+      desc = "Are you sure you want to complete your appointment with ${appointment.clientName} for ${DateFormat('EEEE, MMMM d, yyyy').format(DateTime.parse(appointment.appointmentFullTime))} at ${DateFormat('h:mm a').format(DateTime.parse(appointment.appointmentFullTime))}";
+      buttonColor = Colors.blue;
+    }else if(status == 2) {
+      title = "Cancel Appointment";
+      desc = "Are you sure you want to cancel your appointment with ${globals.user.userType == 2 ? appointment.clientName : appointment.userName} for ${DateFormat('EEEE, MMMM d, yyyy').format(DateTime.parse(appointment.appointmentFullTime))} at ${DateFormat('h:mm a').format(DateTime.parse(appointment.appointmentFullTime))}";
+      buttonColor = Colors.red;
+    }else if(status == 4) {
+      title = "Mark No-Show Appointment";
+      desc = "Are you sure you want to mark your appointment with ${appointment.clientName} for ${DateFormat('EEEE, MMMM d, yyyy').format(DateTime.parse(appointment.appointmentFullTime))} at ${DateFormat('h:mm a').format(DateTime.parse(appointment.appointmentFullTime))} as no-show";
+      buttonColor = Colors.purple[300];
+    }else if(status == 0) {
+      title = "Accept Appointment Request";
+      desc = "Are you sure you want to accept your appointment with ${appointment.clientName} for ${DateFormat('EEEE, MMMM d, yyyy').format(DateTime.parse(appointment.appointmentFullTime))} at ${DateFormat('h:mm a').format(DateTime.parse(appointment.appointmentFullTime))}";
+      buttonColor = Colors.blue;
+    }else if(status == 99) {
+      title = "Decline Appointment Request";
+      desc = "Are you sure you want to decline your appointment with ${appointment.clientName} for ${DateFormat('EEEE, MMMM d, yyyy').format(DateTime.parse(appointment.appointmentFullTime))} at ${DateFormat('h:mm a').format(DateTime.parse(appointment.appointmentFullTime))}";
+      buttonColor = Colors.red;
+    }
+
+    var response = await showCustomDialog(
+      context: context, 
+      title: title, 
+      description: desc, 
+      descAlignment: TextAlign.left,
+      buttons: {
+        "Confirm": {
+          "action": () => Navigator.of(context).pop(true),
+          "color": buttonColor,
+          "textColor": Colors.white
+        },
+        "Cancel": {
+          "action": () => Navigator.of(context).pop(false),
+          "color": Colors.blueGrey,
+          "textColor": Colors.white
+        }
+      }
+    );
+    return response;
+  }
+
   handleAppointmentStatus(int appointmentId, int status) async {
+    if(status != 98) {
+      bool result = await confirmationPopup(appointment, status);
+      if(result == null || !result) {
+        return;
+      }
+    }
     progressHUD();
     var results = await appointmentHandler(context, globals.user.token, appointmentId, status);
 

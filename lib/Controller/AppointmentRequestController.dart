@@ -9,6 +9,7 @@ import 'package:progress_hud/progress_hud.dart';
 import 'package:trimmz/helpers.dart';
 import 'package:intl/intl.dart';
 import 'package:trimmz/Controller/AppointmentDetailsController.dart';
+import 'package:trimmz/CustomDialogBox.dart';
 
 class AppointmentRequestController extends StatefulWidget {
   final List<Appointment> requests;
@@ -48,9 +49,51 @@ class AppointmentRequestControllerState extends State<AppointmentRequestControll
     });
   }
 
-  handleAppointmentStatus(int appointmentId, int status) async {
+  Future<bool> confirmationPopup(Appointment appointment, int status) async {
+    String title = "";
+    String desc = "";
+    Color buttonColor;
+
+    if(status == 0) {
+      title = "Accept Appointment Request";
+      desc = "Are you sure you want to accept your appointment with ${appointment.clientName} for ${DateFormat('EEEE, MMMM d, yyyy').format(DateTime.parse(appointment.appointmentFullTime))} at ${DateFormat('h:mm a').format(DateTime.parse(appointment.appointmentFullTime))}";
+      buttonColor = Colors.blue;
+    }else if(status == 99) {
+      title = "Decline Appointment Request";
+      desc = "Are you sure you want to decline your appointment with ${appointment.clientName} for ${DateFormat('EEEE, MMMM d, yyyy').format(DateTime.parse(appointment.appointmentFullTime))} at ${DateFormat('h:mm a').format(DateTime.parse(appointment.appointmentFullTime))}";
+      buttonColor = Colors.red;
+    }
+
+    var response = await showCustomDialog(
+      context: context, 
+      title: title, 
+      description: desc, 
+      descAlignment: TextAlign.left,
+      buttons: {
+        "Confirm": {
+          "action": () => Navigator.of(context).pop(true),
+          "color": buttonColor,
+          "textColor": Colors.white
+        },
+        "Cancel": {
+          "action": () => Navigator.of(context).pop(false),
+          "color": Colors.blueGrey,
+          "textColor": Colors.white
+        }
+      }
+    );
+    return response;
+  }
+
+  handleAppointmentStatus(Appointment appointment, int status) async {
+    if(status != 98) {
+      bool result = await confirmationPopup(appointment, status);
+      if(result == null || !result) {
+        return;
+      }
+    }
     progressHUD();
-    var results = await appointmentHandler(context, globals.user.token, appointmentId, status);
+    var results = await appointmentHandler(context, globals.user.token, appointment.id, status);
 
     if(results != null) {
       Appointment appointment = requests.where((element) => element.id == results.id).first;
@@ -76,7 +119,7 @@ class AppointmentRequestControllerState extends State<AppointmentRequestControll
                                           padding: EdgeInsets.all(5),
                                           child:  RaisedButton(
                                             color: Colors.blue,
-                                            onPressed: () => handleAppointmentStatus(request.id, 0),
+                                            onPressed: () => handleAppointmentStatus(request, 0),
                                             child: Text(
                                               "Accept",
                                               style: TextStyle(
@@ -91,7 +134,7 @@ class AppointmentRequestControllerState extends State<AppointmentRequestControll
                                       padding: EdgeInsets.all(5),
                                       child: RaisedButton(
                                         color: Colors.red,
-                                        onPressed: () => handleAppointmentStatus(request.id, 99),
+                                        onPressed: () => handleAppointmentStatus(request, 99),
                                         child: Text(
                                           "Decline",
                                           style: TextStyle(
@@ -121,7 +164,7 @@ class AppointmentRequestControllerState extends State<AppointmentRequestControll
                                       padding: EdgeInsets.all(5),
                                       child: RaisedButton(
                                         color: Colors.blue,
-                                        onPressed: () => handleAppointmentStatus(request.id, 98),
+                                        onPressed: () => handleAppointmentStatus(request, 98),
                                         child: Text(
                                           "Dismiss",
                                           style: TextStyle(
