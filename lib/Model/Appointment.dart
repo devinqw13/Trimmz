@@ -55,6 +55,7 @@ class Appointment {
   bool cashPayment;
   String clientProfilePicture;
   String userProfilePicture;
+  Map<dynamic, dynamic> map;
 
   Appointment(Map input) {
     final df = new DateFormat('hh:mm a');
@@ -80,7 +81,7 @@ class Appointment {
     this.cashPayment = input['cash_payment'] == 1 ? true : false;
     this.clientProfilePicture = input['client_pp'];
     this.userProfilePicture = input['barber_pp'];
-    
+    this.map = input;
     Map servicesJson = json.decode(input['services']);
     servicesJson.forEach((key, value) {
       services.add(new Service(value));

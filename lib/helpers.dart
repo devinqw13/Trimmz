@@ -55,7 +55,9 @@ setGlobals(Map results) async {
 Future<dynamic> buildMicroAppController(BuildContext context, DashboardItem item, {dynamic data}) async {
   switch (item.cmdCode) {
     case "user_schedule": {
-      return new ScheduleController(calendarAppointments: data, screenHeight: MediaQuery.of(context).size.height);
+      var services = await getServices(context, globals.user.token);
+      var availability = await getAvailability(context, globals.user.token);
+      return new ScheduleController(calendarAppointments: data, screenHeight: MediaQuery.of(context).size.height, services: services, availability: availability);
     }
     case "user_services": {
       var services = await getServices(context, globals.user.token);

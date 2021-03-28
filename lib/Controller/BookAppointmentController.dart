@@ -252,7 +252,6 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
 
         overallServices.removeWhere((e) => e['id'] == service.serviceId);
         removeTip();
-        //------ END -------//
       }
     });
     calculateTip();
@@ -446,6 +445,11 @@ class BookAppointmentControllerState extends State<BookAppointmentController> wi
       setState(() {
         overallDateTime = null;
         _availableTimes = result;
+      });
+    }else {
+      setState(() {
+        overallDateTime = null;
+        _availableTimes = [];
       });
     }
   }
