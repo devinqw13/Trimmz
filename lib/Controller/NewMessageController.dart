@@ -25,6 +25,7 @@ class NewMessagesControllerState extends State<NewMessagesController> with Ticke
   List<MessageBubble> messageWidgets = [];
   List<Message> messages = [];
   TrimmzWebSocket webSocket;
+  bool isSending = false;
 
   @override
   void initState() {
@@ -109,11 +110,15 @@ class NewMessagesControllerState extends State<NewMessagesController> with Ticke
   }
 
   sendMessage() {
+    setState(() {
+      isSending = true;
+    });
     var data = {
       "action": "onaction",
       "key": "sendMessage",
       "token": conversation.userId,
       "recipientUsername": conversation.username,
+      "senderUsername": globals.user.username,
       "senderId": globals.user.token,
       "conversationId": conversation.id,
       "message": messageTFController.text,
@@ -124,10 +129,14 @@ class NewMessagesControllerState extends State<NewMessagesController> with Ticke
   }
 
   createConversation() {
+    setState(() {
+      isSending = true;
+    });
     var data = {
       "action": "onaction",
       "key": "createConversation",
       "recipientUsername": widget.user.username,
+      "senderUsername": globals.user.username,
       "recipientName": widget.user.name,
       "profile_picture": widget.user.profilePicture,
       "senderid": globals.user.token.toString(),
@@ -280,6 +289,13 @@ class NewMessagesControllerState extends State<NewMessagesController> with Ticke
                 ]
               )
             ]
+          ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(2.0),
+            child: isSending ? LinearProgressIndicator(
+              minHeight: 2.0,
+              valueColor: new AlwaysStoppedAnimation(Colors.blue)
+            ) : Container()
           ),
           elevation: 0.0,
         ),
