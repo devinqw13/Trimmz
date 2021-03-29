@@ -14,6 +14,7 @@ import 'package:stream_transform/stream_transform.dart';
 import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_check_box/circular_check_box.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginController extends StatefulWidget {
   LoginController({Key key}) : super (key: key);
@@ -798,7 +799,40 @@ class LoginControllerState extends State<LoginController> with TickerProviderSta
                     _buildSignupBtn(),
                   ]
                 ),
-                Container() //TODO: FORGOT PASSWORD
+                Column(
+
+                  children: [
+                    Text(
+                      "Reset Password",
+                      style: TextStyle(
+                        fontSize: 25.0
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.all(10)),
+                    Text(
+                      "To reset your password please emails:"
+                    ),
+                    Padding(padding: EdgeInsets.all(5)),
+                    GestureDetector(
+                      onTap: () async {
+                        String email = 'trimmzapp@gmail.com';
+                        if (await canLaunch("mailto:$email")) {
+                          await launch("mailto:$email?subject=Password Reset");
+                        } else {
+                          throw 'Could not launch';
+                        }
+                      },
+                      child: Text(
+                        "trimmzapp@gmail.com",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline
+                        ),
+                      ),
+                    )
+                  ]
+                ) //TODO: FORGOT PASSWORD
                 // ListView(
                 //   padding: EdgeInsets.all(0),
                 //   shrinkWrap: true,
