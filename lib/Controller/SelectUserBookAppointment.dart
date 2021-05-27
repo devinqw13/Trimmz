@@ -6,6 +6,9 @@ import 'package:progress_hud/progress_hud.dart';
 import 'package:trimmz/palette.dart';
 import 'package:trimmz/helpers.dart';
 import 'package:trimmz/Controller/BookAppointmentController.dart';
+import 'package:stream_transform/stream_transform.dart';
+import 'dart:async';
+import 'package:trimmz/Model/User.dart';
 
 class SelectUserBookAppointmentController extends StatefulWidget {
   final int token;
@@ -18,6 +21,10 @@ class SelectUserBookAppointmentController extends StatefulWidget {
 class SelectUserBookAppointmentControllerState extends State<SelectUserBookAppointmentController> {
   ProgressHUD _progressHUD;
   bool _loadingInProgress = false;
+  StreamController<String> searchStreamController = StreamController();
+  List<User> searchedUsers = [];
+  final TextEditingController searchTFController = new TextEditingController();
+  int charLength = 0;
 
   @override
   void initState() {
@@ -31,6 +38,26 @@ class SelectUserBookAppointmentControllerState extends State<SelectUserBookAppoi
       text: "Loading...",
       loading: false,
     );
+
+    searchStreamController.stream
+    .debounce(Duration(milliseconds: 300))
+    .listen((s) => _searchUsers(s));
+  }
+
+  _searchUsers(String s) async {
+    if(s.length > 0) {
+      var results = await getSearchUsers(context, s);
+      print(results);
+      setState(() {
+        charLength = s.length;
+        searchedUsers = results;
+      });
+    }else if(s.length == 0) {
+      setState(() {
+        charLength = s.length;
+        searchedUsers = [];
+      });
+    }
   }
 
   void progressHUD() {
@@ -160,8 +187,12 @@ class SelectUserBookAppointmentControllerState extends State<SelectUserBookAppoi
                 ],
               ),
               child: TextField(
+                controller: searchTFController,
                 keyboardType: TextInputType.text,
                 autocorrect: false,
+                onChanged: (val) {
+                  searchStreamController.add(val);
+                },
                 style: TextStyle(
                   color: globals.darkModeEnabled ? Colors.white : Colors.black,
                   fontFamily: 'OpenSans',
@@ -178,7 +209,7 @@ class SelectUserBookAppointmentControllerState extends State<SelectUserBookAppoi
                 ),
               )
             ),
-            FutureBuilder(
+            searchedUsers.length == 0 && charLength == 0 ? FutureBuilder(
               future: getFollowedUsers(context, globals.user.token),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -189,7 +220,7 @@ class SelectUserBookAppointmentControllerState extends State<SelectUserBookAppoi
                   );
                 }
               }
-            )
+            ) : searchedUsers.length == 0 && charLength > 0 ? Center(child: Text("No Results Found")) : buildUsersList(searchedUsers)
           ]
         )
       )

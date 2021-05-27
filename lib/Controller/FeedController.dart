@@ -14,6 +14,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
 import 'package:trimmz/Controller/ConversationController.dart';
 import 'package:trimmz/helpers.dart';
+import 'package:trimmz/Controller/SelectUserBookAppointment.dart';
 
 class FeedController extends StatefulWidget {
   final List<DashboardItem> dashboardItems;
@@ -285,6 +286,27 @@ class FeedControllerState extends State<FeedController> {
               Column(
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: RaisedButton(
+                          color: Colors.black,
+                          onPressed: () {
+                            final selectUserController = new SelectUserBookAppointmentController(token: globals.user.token);
+                            Navigator.push(context, new MaterialPageRoute(builder: (context) => selectUserController));
+                          },
+                          child: Text(
+                            "BOOK APPOINTMENT",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w600
+                            )
+                          )
+                        )
+                      )
+                    ]
+                  ),
                   Expanded(
                     flex: 6,
                     child: _buildPhotoFeed()

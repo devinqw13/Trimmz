@@ -207,7 +207,7 @@ Future<dynamic> getCached(String key) async {
       });
 
       var results = Conversations(conversations, messages);
-      results.list.sort((a,b) => a.created.compareTo(b.created));
+      // results.list.sort((a,b) => a.created.compareTo(b.created));
       return results.list;
     }
     default: {

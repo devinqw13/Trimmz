@@ -3,16 +3,13 @@ import 'package:progress_hud/progress_hud.dart';
 import 'package:trimmz/globals.dart' as globals;
 import 'package:flutter/services.dart';
 import 'package:trimmz/palette.dart';
-import 'dart:io';
 import 'package:trimmz/FloatingNavBar.dart';
 import 'package:trimmz/Controller/FeedController.dart';
 import 'package:trimmz/Controller/SearchController.dart';
 import 'package:trimmz/Controller/SettingsController.dart';
 import 'package:trimmz/Controller/ClientAppointmentsController.dart';
-import 'package:trimmz/Controller/SelectUserBookAppointment.dart';
 import 'package:trimmz/Model/DashboardItem.dart';
 import 'package:trimmz/Model/Appointment.dart';
-import 'package:trimmz/calls.dart';
 
 class ClientController extends StatefulWidget {
   final List<DashboardItem> dashboardItems;
@@ -102,17 +99,17 @@ class ClientControllerState extends State<ClientController> {
             )
           )
         ),
-        floatingActionButton: _index == 0 || _index == 2 ? new FloatingActionButton(
-          onPressed: () {
-            final selectUserController = new SelectUserBookAppointmentController(token: globals.user.token);
-            Navigator.push(context, new MaterialPageRoute(builder: (context) => selectUserController));
-          },
-          child: new Icon(Icons.add),
-          tooltip: "Book Appointment",
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          heroTag: null,
-        ) : null,
+        // floatingActionButton: _index == 0 || _index == 2 ? new FloatingActionButton(
+        //   onPressed: () {
+        //     final selectUserController = new SelectUserBookAppointmentController(token: globals.user.token);
+        //     Navigator.push(context, new MaterialPageRoute(builder: (context) => selectUserController));
+        //   },
+        //   child: new Icon(Icons.add),
+        //   tooltip: "Book Appointment",
+        //   backgroundColor: Colors.blue,
+        //   foregroundColor: Colors.white,
+        //   heroTag: null,
+        // ) : null,
         bottomNavigationBar: FloatingNavbar(
           onTap: (int val) => setState(() => _index = val),
           currentIndex: _index,

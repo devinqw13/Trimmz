@@ -163,7 +163,6 @@ class ConversationControllerState extends State<ConversationController> with Tic
     setState(() {
       conversationList = results;
     });
-    conversationList.sort((a,b) => a.created.compareTo(b.created));
 
     if(widget.user != null) {
       var selectedConversation = conversationList.where((e) => e.userId == widget.user.id);
