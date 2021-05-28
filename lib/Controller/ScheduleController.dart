@@ -37,6 +37,7 @@ class ScheduleControllerState extends State<ScheduleController> with TickerProvi
   CalendarController _calendarController = new CalendarController();
   CalendarController _manualCalendarController = new CalendarController();
   Map<DateTime, List> _calendarAppointments;
+  Map<DateTime, List> _activeCalendarAppointments;
   DateTime _calendarSelectedDay = DateTime.now();
   List _selectedAppointments = [];
   AnimationController animation, addAnimationController, opacityAnimationController;
@@ -55,6 +56,16 @@ class ScheduleControllerState extends State<ScheduleController> with TickerProvi
   @override
   void initState() {
     _calendarAppointments = widget.calendarAppointments;
+    
+    widget.calendarAppointments.forEach((k, v) {
+      _activeCalendarAppointments[k] = [];
+      for(var item in v) {
+        if(item['status'] != 2) {
+          _activeCalendarAppointments[k].add(item);
+        }
+      }
+    });
+
     _selectedAppointments = _calendarAppointments[DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toString())))] ?? [];
 
     for(var item in widget.services) {
@@ -151,7 +162,7 @@ class ScheduleControllerState extends State<ScheduleController> with TickerProvi
     DateTime daySelected = DateTime.parse(DateFormat('yyyy-MM-dd').format(day));
     DateTime currentDay = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now()));
     if(daySelected.isAfter(currentDay) || daySelected.isAtSameMomentAs(currentDay)) {
-      var result = calculateAvailability(widget.availability, _calendarAppointments, day);
+      var result = calculateAvailability(widget.availability, _activeCalendarAppointments, day);
       setState(() {
         manual.dateTime = null;
         _availableTimes = result;
